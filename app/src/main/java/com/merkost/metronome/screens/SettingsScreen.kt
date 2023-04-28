@@ -1,9 +1,7 @@
 package com.merkost.metronome.screens
 
-import android.annotation.SuppressLint
 import android.content.Context.AUDIO_SERVICE
 import android.media.AudioManager
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
@@ -11,20 +9,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
@@ -41,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -53,7 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -75,6 +68,8 @@ fun SettingsScreen(upPress: () -> Unit) {
     val colorScheme by viewModel.colorScheme.collectAsState()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
+    val totalTime by viewModel.totalTime.collectAsState()
+    val currentStereo by viewModel.currentStereo.collectAsState()
 
 
     Scaffold(
@@ -120,9 +115,6 @@ fun SettingsScreen(upPress: () -> Unit) {
             var currentVolume by remember {
                 mutableStateOf(volumeLevel)
             }
-            var currentStereo by remember {
-                mutableStateOf(0)
-            }
 
             SettingsRow(title = "Volume") {
                 Slider(
@@ -146,17 +138,13 @@ fun SettingsScreen(upPress: () -> Unit) {
                 )
             }
 
-            SettingsRow(
-                title = "Stereo Panning",
-            ) {
+            SettingsRow(title = "Stereo Panning") {
                 Slider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(16.dp),
                     value = currentStereo.toFloat(),
-                    onValueChange = {
-                        currentStereo = it.toInt()
-                    },
+                    onValueChange = viewModel::onStereoChanged,
                     valueRange = -5f..5f,
                     steps = 11,
                     colors = SliderDefaults.colors(
@@ -190,7 +178,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                 ) {
                     Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
                     Text(
-                        text = TimestampMillisecondsFormatter.format(0),
+                        text = TimestampMillisecondsFormatter.format(totalTime),
                         maxLines = 1,
                         lineHeight = 18.sp,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
@@ -198,8 +186,18 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             }
 
-            SettingsSwitch("Color Flash", colorFlash, viewModel::onColorFlashChanged)
-            SettingsSwitch("Background Play", backgroundPlay, viewModel::onBackgroundPlayChanged)
+            SettingsSwitch(
+                "Color Flash",
+                colorFlash,
+                colorScheme.color,
+                viewModel::onColorFlashChanged
+            )
+            SettingsSwitch(
+                "Background Play",
+                backgroundPlay,
+                colorScheme.color,
+                viewModel::onBackgroundPlayChanged
+            )
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -280,6 +278,7 @@ fun SettingsRow(
 fun SettingsSwitch(
     title: String,
     checked: Boolean,
+    colorScheme: Color,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
@@ -291,6 +290,9 @@ fun SettingsSwitch(
             text = title,
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
         )
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked, onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(checkedTrackColor = Color.Black)
+        )
     }
 }

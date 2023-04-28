@@ -1,0 +1,119 @@
+package com.merkost.metronome.viewModels
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.merkost.metronome.MetronomeService
+import com.merkost.metronome.model.AppDatastore
+import com.merkost.metronome.model.ColorScheme
+import com.merkost.metronome.model.MetronomeState
+import com.merkost.metronome.model.StopWatchState
+import com.merkost.metronome.screens.BallsCount
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.launch
+
+private val Int.interval: Int
+    get() = 60000 / this
+
+class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
+    private var lastTapMilis: Long? = null
+
+    val colorScheme = appDatastore.color
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ColorScheme.WHITE)
+    val colorFlash = appDatastore.colorFlash
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val backgroundPlay = appDatastore.backgroundPlay
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val currentStereo = appDatastore.stereo
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Pair(1, 1))
+
+    private val metronomeMinimum = MetronomeService.MIN_BPM
+    private val metronomeMaximum = MetronomeService.MAX_BPM
+
+    val metronomeRange = (metronomeMinimum.toFloat()..metronomeMaximum.toFloat())
+    val steps = metronomeMaximum - metronomeMinimum
+
+    private val _metronomeState = MutableStateFlow<MetronomeState>(MetronomeState())
+    val metronomeState = _metronomeState.asStateFlow()
+
+    val isPlaying = _metronomeState.map { it.playing }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+
+//    val smth = isPlaying.map {
+//        if (it) startMetronomeCoroutine() else index.update { -1 }
+//    }.launchIn(viewModelScope)
+
+
+    fun onStopClicked() {
+        _metronomeState.update { it.copy(playing = false) }
+    }
+
+    private suspend fun startMetronomeCoroutine() {
+        while (metronomeState.value.playing) {
+//            delay(metronomeState.value.interval.toLong())
+//            index.update { getNextIndex(it) }
+        }
+    }
+
+    fun onSliderValueChanged(newSliderValue: Float) {
+        _metronomeState.update {
+            it.updateRhythm(newSliderValue.toInt())
+//                interval = newSliderValue.toInt().interval
+        }
+    }
+
+    fun onSliderValueDecreased() {
+        _metronomeState.update { it.copy(rhythm = if (it.rhythm - 1 >= metronomeMinimum) it.rhythm - 1 else it.rhythm) }
+    }
+
+    fun onSliderValueIncreased() {
+        _metronomeState.update { it.copy(rhythm = if (it.rhythm + 1 <= metronomeMaximum) it.rhythm + 1 else it.rhythm) }
+    }
+
+    fun onMinusFive() {
+        _metronomeState.update { it.copy(rhythm = if (it.rhythm - 5 >= metronomeMinimum) it.rhythm - 5 else it.rhythm) }
+    }
+
+    fun onPlusFive() {
+        _metronomeState.update { it.copy(rhythm = if (it.rhythm + 5 <= metronomeMaximum) it.rhythm + 5 else it.rhythm) }
+    }
+
+    fun divideByTwo() {
+        _metronomeState.update { it.copy(rhythm = if (it.rhythm / 2 >= metronomeMinimum) it.rhythm / 2 else it.rhythm) }
+    }
+
+    fun multiplyByTwo() {
+        _metronomeState.update { it.copy(rhythm = if (it.rhythm * 2 <= metronomeMaximum) it.rhythm * 2 else it.rhythm) }
+    }
+
+    fun onTempoTap() {
+        val currentMillis = System.currentTimeMillis()
+        lastTapMilis?.let { lastTap ->
+            val difference = currentMillis - lastTap
+            val calculatedBpm = (60000 / difference).toInt()
+            _metronomeState.update {
+                it.copy(
+                    rhythm = calculatedBpm.coerceIn(metronomeMinimum, metronomeMaximum)
+                )
+            }
+        }
+        lastTapMilis = currentMillis
+    }
+
+}
+
+fun getNextIndex(it: Int): Int {
+    return when (it) {
+        in 0 until BallsCount - 1 -> it + 1
+        else -> 0
+    }
+}
+
