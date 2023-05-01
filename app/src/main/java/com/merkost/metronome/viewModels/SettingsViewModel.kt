@@ -17,7 +17,10 @@ class SettingsViewModel(val appDatastore: AppDatastore) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val backgroundPlay = appDatastore.backgroundPlay
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-
+    val totalTime = appDatastore.totalTime
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
+    val currentStereo = appDatastore.stereoSettings
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -34,6 +37,18 @@ class SettingsViewModel(val appDatastore: AppDatastore) : ViewModel() {
     fun onColorSchemeChanged(it: ColorScheme) {
         viewModelScope.launch {
             appDatastore.saveColor(it)
+        }
+    }
+
+    fun onStereoChanged(stereo: Float) {
+        viewModelScope.launch {
+            appDatastore.saveStereo(stereo.toInt().coerceIn(-5,5))
+        }
+    }
+
+    fun resetTotalTime() {
+        viewModelScope.launch {
+            appDatastore.resetTime()
         }
     }
 }

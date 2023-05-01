@@ -42,6 +42,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -75,6 +76,8 @@ fun SettingsScreen(upPress: () -> Unit) {
     val colorScheme by viewModel.colorScheme.collectAsState()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
+    val totalTime by viewModel.totalTime.collectAsState()
+    val currentStereo by viewModel.currentStereo.collectAsState()
 
 
     Scaffold(
@@ -120,9 +123,6 @@ fun SettingsScreen(upPress: () -> Unit) {
             var currentVolume by remember {
                 mutableStateOf(volumeLevel)
             }
-            var currentStereo by remember {
-                mutableStateOf(0)
-            }
 
             SettingsRow(title = "Volume") {
                 Slider(
@@ -154,9 +154,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                         .fillMaxWidth()
                         .height(16.dp),
                     value = currentStereo.toFloat(),
-                    onValueChange = {
-                        currentStereo = it.toInt()
-                    },
+                    onValueChange = viewModel::onStereoChanged,
                     valueRange = -5f..5f,
                     steps = 11,
                     colors = SliderDefaults.colors(
@@ -182,19 +180,27 @@ fun SettingsScreen(upPress: () -> Unit) {
 
             SettingsRow(title = "Total Practice Time") {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp)
                 ) {
-                    Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
-                    Text(
-                        text = TimestampMillisecondsFormatter.format(0),
-                        maxLines = 1,
-                        lineHeight = 18.sp,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
+                        Text(
+                            text = TimestampMillisecondsFormatter.format(totalTime),
+                            maxLines = 1,
+                            lineHeight = 18.sp,
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
+                        )
+                    }
+                    TextButton(onClick = viewModel::resetTotalTime) {
+                        Text(text = "Reset")
+                    }
                 }
             }
 
