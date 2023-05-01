@@ -1,4 +1,3 @@
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.background
@@ -19,10 +18,10 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.merkost.metronome.BallColor
-import com.merkost.metronome.BallSize
-import com.merkost.metronome.CircleSize
-import com.merkost.metronome.CircleWeight
+import com.merkost.metronome.screens.BallColor
+import com.merkost.metronome.screens.BallSize
+import com.merkost.metronome.screens.CircleSize
+import com.merkost.metronome.screens.CircleWeight
 
 @Composable
 fun MetronomeBalls(
@@ -34,6 +33,7 @@ fun MetronomeBalls(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
+
     // Track how "selected" each item is [0, 1]
     val selectionFractions = remember(itemCount) {
         List(itemCount) { i ->
@@ -85,14 +85,13 @@ fun MetronomeBalls(
         val heightRaz = (indicatorPlaceable.height - itemPlaceables.first().height) / 2
         val widthRaz = (indicatorPlaceable.width - itemPlaceables.first().width) / 2
 
-        Log.e("minWidth", width.toString())
-        Log.e("maxWidth", constraints.maxWidth.toString())
+//        Log.e("minWidth", width.toString())
+//        Log.e("maxWidth", constraints.maxWidth.toString())
 
         layout(
             width = width * itemCount + arrangementSpacingPx * (itemCount),
             height = itemPlaceables.maxByOrNull { it.height }?.height ?: 0
         ) {
-            Log.e("PX", arrangementSpacingPx.toString())
             val indicatorLeft =
                 width * indicatorIndex.value + indicatorIndex.value * (arrangementSpacingPx)
             indicatorPlaceable.placeRelative(x = indicatorLeft.toInt(), y = 0)
@@ -120,10 +119,12 @@ fun Ball(color: Color = BallColor) {
 }
 
 @Composable
-fun OutlinedCircle() {
+fun OutlinedCircle(colorWhite: Boolean) {
+//    val color by animateColorAsState(targetValue = if (colorWhite) Color.White else Color.Black)
+    val color = Color.Black
     Spacer(
         modifier = Modifier
             .size(CircleSize)
-            .border(CircleWeight, Color.Black, CircleShape)
+            .border(CircleWeight, color, CircleShape)
     )
 }
