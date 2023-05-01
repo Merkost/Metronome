@@ -1,72 +1,120 @@
 package com.merkost.metronome
 
+import android.app.NotificationManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.merkost.metronome.components.checkNotificationPolicyAccess
+import com.merkost.metronome.model.AppDatastore
+import com.merkost.metronome.screens.MainScreen
+import com.merkost.metronome.screens.SettingsScreen
 import com.merkost.metronome.ui.theme.MetronomeTheme
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import org.koin.android.ext.android.get
 
 class MainActivity : ComponentActivity() {
+
+    private val appDatastore: AppDatastore = get()
+
+    private val shouldWorkInBackground = appDatastore.backgroundPlay
+        .stateIn(lifecycleScope, SharingStarted.Eagerly, false)
+
+    private var isServiceBound: Boolean = false
+    var metronomeService: MetronomeService? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        bindService()
+
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         setContent {
             MetronomeTheme {
-                MainMetronomeScreen()
-                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                ) {
-//                    Greeting("Android")
-//                }
+                checkNotificationPolicyAccess(
+                    notificationManager = notificationManager,
+                    context = this
+                )
+                Navigator()
             }
+        }
+
+    }
+
+
+    private fun bindService() {
+        this.bindService(
+            Intent(
+                this,
+                MetronomeService::class.java
+            ), serviceConnection, Context.BIND_AUTO_CREATE
+        )
+        isServiceBound = true
+    }
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            metronomeService = (service as MetronomeService.MetronomeBinder).getService()
+            Log.e("BINDED_SERVICE", metronomeService.toString())
+        }
+
+        override fun onServiceDisconnected(className: ComponentName) {
+            metronomeService = null
+            isServiceBound = false
         }
     }
 
+    override fun onStop() {
+        if (!shouldWorkInBackground.value) {
+            metronomeService?.stopPlaying()
+        }
+        super.onStop()
+
+    }
 
 }
 
-@Composable
-private fun Greeting(s: String) {
-    Text(text = s)
+object MainDestinations {
+    const val MAIN = "main"
+    const val SETTINGS = "settings"
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    MetronomeTheme {
-//        Greeting("Android")
+fun Navigator() {
+    val navController = rememberNavController()
+
+    NavHost(
+        modifier = Modifier,
+        navController = navController,
+        startDestination = MainDestinations.MAIN,
+    ) {
+
+        composable(MainDestinations.MAIN) {
+            MainScreen {
+                navController.navigate(MainDestinations.SETTINGS)
+            }
+        }
+
+        composable(MainDestinations.SETTINGS) {
+            SettingsScreen(upPress = navController::popBackStack)
+        }
+
     }
 }
+
