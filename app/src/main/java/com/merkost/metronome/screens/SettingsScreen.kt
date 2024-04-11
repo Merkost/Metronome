@@ -1,37 +1,36 @@
 package com.merkost.metronome.screens
 
-import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Context.AUDIO_SERVICE
+import android.content.Intent
 import android.media.AudioManager
-import android.util.Log
-import androidx.compose.animation.animateColorAsState
+import android.net.Uri
+import android.os.Build
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Smartphone
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,15 +46,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,17 +64,19 @@ import androidx.compose.ui.unit.sp
 import com.merkost.metronome.R
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
-import com.merkost.metronome.model.ColorScheme
+import com.merkost.metronome.ui.theme.AppColorScheme
+import com.merkost.metronome.utils.appVersion
 import com.merkost.metronome.viewModels.SettingsViewModel
-import org.koin.androidx.compose.get
+import org.koin.androidx.compose.koinViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(upPress: () -> Unit) {
     val context = LocalContext.current
-    val viewModel: SettingsViewModel = get()
+    val viewModel: SettingsViewModel = koinViewModel()
 
-    val colorScheme by viewModel.colorScheme.collectAsState()
+    val appColorScheme by viewModel.colorScheme.collectAsState()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
@@ -93,9 +96,9 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Rounded.MoreVert, Icons.Rounded.MoreVert.name)
-                    }
+//                    IconButton(onClick = { /*TODO*/ }) {
+//                        Icon(Icons.Rounded.MoreVert, Icons.Rounded.MoreVert.name)
+//                    }
                 }
             )
         }
@@ -106,22 +109,49 @@ fun SettingsScreen(upPress: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(it)
                 .padding(horizontalPadding),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
 
             // Declare an audio manager
             val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
 
-            // on below line we are creating variables for
-            // volume level, max volume, volume percent.
             val volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
             val maxVolumeLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
 
-            // on below line we are creating a variable
-            // for current volume and initializing it.
             var currentVolume by remember {
-                mutableStateOf(volumeLevel)
+                mutableIntStateOf(volumeLevel)
+            }
+
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                            contentDescription = "Icon_launcher"
+                        )
+                    }
+                    Column {
+                        Text(text = stringResource(id = R.string.app_full_name))
+                        Text(
+                            text = context.appVersion?.versionName.orEmpty(),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
             }
 
             SettingsRow(title = "Volume") {
@@ -131,17 +161,14 @@ fun SettingsScreen(upPress: () -> Unit) {
                         .height(16.dp),
                     value = currentVolume.toFloat(),
                     onValueChange = {
-                        // on below line we are decreasing volume
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, it.toInt(), 0)
-                        // on below line we are getting our current volume level.
                         val volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
                         currentVolume = volumeLevel
                     },
                     valueRange = 0f..maxVolumeLevel.toFloat(),
                     steps = maxVolumeLevel - 1,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Black, activeTrackColor = Color.Black,
-                        inactiveTrackColor = Color.LightGray
+                        inactiveTickColor = Color.Transparent
                     )
                 )
             }
@@ -158,33 +185,73 @@ fun SettingsScreen(upPress: () -> Unit) {
                     valueRange = -5f..5f,
                     steps = 11,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Black, activeTrackColor = Color.Black,
-                        inactiveTrackColor = Color.LightGray
+                        inactiveTickColor = Color.Transparent
                     )
                 )
             }
 
             SettingsRow(title = "Color Scheme") {
-                val colors = remember { ColorScheme.values() }
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(colors) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        item {
+                            ColorSecondaryButton(
+                                modifier = Modifier,
+                                content = {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(55.dp)
+                                            .padding(6.dp)
+                                            .clip(CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.Smartphone,
+                                            Icons.Rounded.Smartphone.name
+                                        )
+                                    }
+                                },
+                                isSelected = appColorScheme == AppColorScheme.MATERIAL3,
+                                onClick = { viewModel.onColorSchemeChanged(AppColorScheme.MATERIAL3) })
+                        }
+                    }
+
+                    items(AppColorScheme.defaultValues()) { colorScheme ->
                         ColorSecondaryButton(
-                            it,
-                            colorScheme == it,
-                            onClick = { viewModel.onColorSchemeChanged(it) })
+                            modifier = Modifier,
+                            content = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(55.dp)
+                                        .padding(6.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            Brush.horizontalGradient(
+                                                listOf(
+                                                    colorScheme.lightColor.primary,
+                                                    colorScheme.darkColor.primary
+                                                ),
+                                                tileMode = TileMode.Repeated
+                                            )
+                                        ),
+                                )
+                            },
+                            isSelected = colorScheme == appColorScheme,
+                            onClick = { viewModel.onColorSchemeChanged(colorScheme) })
                     }
                 }
             }
 
-            SettingsRow(title = "Total Practice Time") {
+            SettingsRow(
+                title = "Total Practice Time",
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp)
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -210,31 +277,50 @@ fun SettingsScreen(upPress: () -> Unit) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SettingsBigButton("Send Feedback", {})
-                SettingsBigButton("Rate Us", {})
+                SettingsBigButton("Contact support") {
+
+                }
+                SettingsBigButton("Rate the App") {
+                    context.openGooglePlay()
+                }
             }
         }
 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+private fun Context.openGooglePlay() {
+    runCatching {
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("market://details?id=" + this.packageName)
+            )
+        )
+    }.onFailure {
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("http://play.google.com/store/apps/details?id=" + this.packageName)
+            )
+        )
+    }
+}
+
 @Composable
 fun SettingsBigButton(
     text: String,
     onClick: () -> Unit
 ) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.Black, contentColor = Color.White),
+    Button(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         shape = CircleShape
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(8.dp),
                 text = text,
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
             )
         }
 
@@ -243,36 +329,31 @@ fun SettingsBigButton(
 
 
 @Composable
-fun ColorSecondaryButton(color: ColorScheme, isSelected: Boolean, onClick: () -> Unit) {
+fun ColorSecondaryButton(
+    modifier: Modifier,
+    content: @Composable () -> Unit,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val borderDp by animateDpAsState(targetValue = if (isSelected) 6.dp else 1.dp)
 
-    val borderDp by animateDpAsState(targetValue = if (isSelected) 3.dp else 1.dp)
-    val borderColor by animateColorAsState(
-        targetValue = if (isSelected) Color.Black else Color.LightGray.copy(
-            alpha = 0.5f
-        )
-    )
     MySecondaryButton(
         onClick = onClick,
-        border = BorderStroke(borderDp, borderColor)
+        border = BorderStroke(borderDp, MaterialTheme.colorScheme.primary)
     ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .padding(8.dp)
-                .clip(CircleShape)
-                .background(color.color),
-        )
+        content()
     }
 }
 
 @Composable
 fun SettingsRow(
     title: String,
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(16.dp),
     content: @Composable () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = verticalArrangement
     ) {
         Text(
             text = title,

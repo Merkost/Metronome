@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.MetronomeService.Companion.MAX_BPM
 import com.merkost.metronome.MetronomeService.Companion.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
-import com.merkost.metronome.model.ColorScheme
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.StopWatchState
-import com.merkost.metronome.screens.BallsCount
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,17 +18,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-private val Int.interval: Int
-    get() = 60000 / this
 
 class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
     private var lastTapMilis: Long? = null
-
-    val colorScheme = appDatastore.color.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        ColorScheme.WHITE
-    )
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val currentStereo = appDatastore.stereo
@@ -60,7 +50,7 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
         _metronomeState.update { it.copy(playing = false) }
     }
 
-    suspend fun startTimerCoroutine() {
+    private suspend fun startTimerCoroutine() {
         isPlaying.collectLatest { isPlaying ->
             val stopWatchState = metronomeState.value.stopWatchState
 
@@ -81,8 +71,6 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
             } else {
                 appDatastore.addTotalTime(stopWatchState.elapsedTime)
             }
-
-
         }
     }
 
@@ -94,10 +82,6 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
     fun onSliderValueChanged(newSliderValue: Float) {
         _metronomeState.update {
             it.updateRhythm(newSliderValue.toInt())
-//            it.copy(
-//                rhythm = newSliderValue.toInt(),
-//                interval = newSliderValue.toInt().interval
-//            )
         }
     }
 

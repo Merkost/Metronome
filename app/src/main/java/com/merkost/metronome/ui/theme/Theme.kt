@@ -1,58 +1,92 @@
 package com.merkost.metronome.ui.theme
 
-import android.app.Activity
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
+import com.merkost.metronome.model.AppDatastore
+import org.koin.compose.koinInject
 
-private val DarkColorScheme = darkColorScheme(
+enum class AppColorScheme(val lightColor: ColorScheme, val darkColor: ColorScheme) {
+    @RequiresApi(31)
+    MATERIAL3(BlackNWhiteLightColorScheme, BlackNWhiteDarkColorScheme),
+
+    BLACKNWHITE(BlackNWhiteLightColorScheme, BlackNWhiteDarkColorScheme),
+    MELROSE(PurpleLightColorScheme, PurpleDarkColorScheme);
+//    PERIWINKLE(Periwinkle),
+//    MINTGREEN(MintGreen),
+//    PINKLACE(PinkLace);
+
+    companion object {
+        fun defaultValues(): List<AppColorScheme> {
+            return listOf(BLACKNWHITE, MELROSE)
+        }
+    }
+}
+
+
+private val BlackNWhiteDarkColorScheme = darkColorScheme(
+    primary = Color.White,
+    onPrimary = Color.Black,
+    primaryContainer = Color.LightGray,
+)
+
+private val BlackNWhiteLightColorScheme = lightColorScheme(
+    primary = Color.Black,
+    onPrimary = Color.White,
+    primaryContainer = Color.LightGray.copy(0.5f),
+
+    )
+
+private val PurpleDarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
-private val LightColorScheme = lightColorScheme(
+private val PurpleLightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
+/* Other default colors to override
+background = Color(0xFFFFFBFE),
+surface = Color(0xFFFFFBFE),
+onPrimary = Color.White,
+onSecondary = Color.White,
+onTertiary = Color.White,
+onBackground = Color(0xFF1C1B1F),
+onSurface = Color(0xFF1C1B1F),
+*/
+
 
 @Composable
 fun MetronomeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val darkTheme = false
-    val colorScheme = when {
-//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-//            val context = LocalContext.current
-//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-//        }
+    val appDatastore: AppDatastore = koinInject()
+    val selectedColorScheme by appDatastore.colorScheme.collectAsState(AppColorScheme.BLACKNWHITE)
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = when {
+        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && selectedColorScheme == AppColorScheme.MATERIAL3) -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        else -> {
+            if (darkTheme) selectedColorScheme.darkColor else selectedColorScheme.lightColor
+        }
     }
 
     MaterialTheme(

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -23,13 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.screens.defaultIconButtonSize
 import com.merkost.metronome.screens.defaultPlayButtonSize
 import com.merkost.metronome.screens.defaultSecondaryIconButtonSize
@@ -46,11 +43,10 @@ fun MySecondaryTextButton(text: String, onClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MySecondaryButton(
     modifier: Modifier = Modifier,
-    border: BorderStroke = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+    border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
     shape: Shape = CircleShape,
     onClick: () -> Unit,
     content: @Composable () -> Unit
@@ -67,7 +63,6 @@ fun MySecondaryButton(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyIconButton(
     icon: ImageVector,
@@ -79,6 +74,9 @@ fun MyIconButton(
         modifier = Modifier
             .size(size)
             .then(modifier),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
         onClick = onClick,
         shape = CircleShape
     ) {
@@ -88,7 +86,6 @@ fun MyIconButton(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayButton(
     modifier: Modifier = Modifier,
@@ -105,7 +102,10 @@ fun PlayButton(
     )
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.Black, contentColor = Color.White),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ),
         modifier = Modifier
             .size(size)
             .then(modifier),
@@ -122,7 +122,6 @@ fun PlayButton(
                     Icon(
                         imageVector = Icons.Rounded.Pause,
                         contentDescription = Icons.Rounded.Pause.name,
-                        tint = Color.White,
                         modifier = Modifier
                             .size(50.dp)
                             .align(Alignment.Center)
@@ -131,7 +130,6 @@ fun PlayButton(
                     Icon(
                         imageVector = Icons.Rounded.PlayArrow,
                         contentDescription = Icons.Rounded.PlayArrow.name,
-                        tint = Color.White,
                         modifier = Modifier
                             .size(50.dp)
                             .align(Alignment.Center)
