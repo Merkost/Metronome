@@ -4,7 +4,6 @@ import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.Flow
 
 interface AppDatastore {
-    val color: Flow<AppColorScheme>
     val colorFlash: Flow<Boolean>
     val backgroundPlay: Flow<Boolean>
     val stereo: Flow<Pair<Int, Int>>
@@ -13,7 +12,7 @@ interface AppDatastore {
     val colorScheme: Flow<AppColorScheme>
 
     suspend fun saveStereo(value: Int)
-    suspend fun saveColor(color: AppColorScheme)
+    suspend fun saveColorScheme(colorScheme: AppColorScheme)
     suspend fun saveColorFlash(colorFlash: Boolean)
     suspend fun saveBackgroundPlay(backgroundPlay: Boolean)
     suspend fun addTotalTime(elapsedTime: Long)
