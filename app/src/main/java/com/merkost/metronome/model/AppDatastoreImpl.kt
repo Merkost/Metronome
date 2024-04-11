@@ -13,28 +13,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class AppDatastoreImpl(val context: Context) : AppDatastore {
+class AppDatastoreImpl(private val context: Context) : AppDatastore {
 
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("appSettings")
 
         private val TOTAL_TIME = longPreferencesKey("TOTAL_TIME")
         private val STEREO = intPreferencesKey("STEREO")
-        private val COLOR = intPreferencesKey("COLOR")
+        private val COLOR_SCHEME = intPreferencesKey("COLOR_SCHEME")
         private val COLOR_FLASH = booleanPreferencesKey("COLOR_FLASH")
         private val BACKGROUND_PLAY = booleanPreferencesKey("BACKGROUND_PLAY")
 
     }
 
-    override val color = context.dataStore.data
-        .map { preferences ->
-            kotlin.runCatching { AppColorScheme.values()[preferences[COLOR] ?: 0] }
-                .getOrDefault(AppColorScheme.BLACKNWHITE)
-        }
-
     override val colorScheme: Flow<AppColorScheme> = context.dataStore.data
         .map { preferences ->
-            kotlin.runCatching { AppColorScheme.values()[preferences[COLOR] ?: 0] }
+            kotlin.runCatching { AppColorScheme.entries[preferences[COLOR_SCHEME] ?: 0] }
                 .getOrDefault(AppColorScheme.BLACKNWHITE)
         }
 
@@ -76,9 +70,9 @@ class AppDatastoreImpl(val context: Context) : AppDatastore {
         }
     }
 
-    override suspend fun saveColor(color: AppColorScheme) {
+    override suspend fun saveColorScheme(colorScheme: AppColorScheme) {
         context.dataStore.edit { preferences ->
-            preferences[COLOR] = color.ordinal
+            preferences[COLOR_SCHEME] = colorScheme.ordinal
         }
     }
 
