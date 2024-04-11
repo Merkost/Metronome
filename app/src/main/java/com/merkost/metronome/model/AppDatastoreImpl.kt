@@ -8,10 +8,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.single
 
 class AppDatastoreImpl(val context: Context) : AppDatastore {
 
@@ -28,9 +28,16 @@ class AppDatastoreImpl(val context: Context) : AppDatastore {
 
     override val color = context.dataStore.data
         .map { preferences ->
-            kotlin.runCatching { ColorScheme.values()[preferences[COLOR] ?: 0] }
-                .getOrDefault(ColorScheme.WHITE)
+            kotlin.runCatching { AppColorScheme.values()[preferences[COLOR] ?: 0] }
+                .getOrDefault(AppColorScheme.BLACKNWHITE)
         }
+
+    override val colorScheme: Flow<AppColorScheme> = context.dataStore.data
+        .map { preferences ->
+            kotlin.runCatching { AppColorScheme.values()[preferences[COLOR] ?: 0] }
+                .getOrDefault(AppColorScheme.BLACKNWHITE)
+        }
+
     override val colorFlash = context.dataStore.data
         .map { preferences ->
             preferences[COLOR_FLASH] ?: false
@@ -69,7 +76,7 @@ class AppDatastoreImpl(val context: Context) : AppDatastore {
         }
     }
 
-    override suspend fun saveColor(color: ColorScheme) {
+    override suspend fun saveColor(color: AppColorScheme) {
         context.dataStore.edit { preferences ->
             preferences[COLOR] = color.ordinal
         }
