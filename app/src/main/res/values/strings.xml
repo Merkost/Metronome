@@ -3,6 +3,7 @@
     <string name="settings">Settings</string>
     <string name="notification_title">Metronome</string>
     <string name="permissions_title">Permission Needed</string>
-    <string name="Permissions_description">Allow BeatMate access to notifications in order to work in background. Pressing \'No\' will disable background abilities.</string>
+    <string name="Permissions_description">Allow Metronome: Feel the Beat! access to notifications in order to work in background. Pressing \'No\' will disable background abilities.</string>
     <string name="notification_message">Running in background</string>
+    <string name="app_full_name">Metronome: Fill the Beat!</string>
 </resources>
