@@ -7,12 +7,9 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.graphics.drawable.Icon
-import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.repeat
@@ -22,7 +19,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,6 +35,7 @@ class MetronomeService : Service(), KoinComponent {
         const val MIN_BPM = 40
     }
 
+    private val soundPool: SoundPool = get()
     private val appDatastore: AppDatastore = get()
 
     private val binder = MetronomeBinder()
@@ -68,18 +65,9 @@ class MetronomeService : Service(), KoinComponent {
 
 
     override fun onCreate() {
-        val soundPool: SoundPool = SoundPool.Builder()
-            .setMaxStreams(4) // to prevent delaying the next tick under any circumstances
-            .setAudioAttributes(
-                AudioAttributes.Builder().setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
-                    .setLegacyStreamType(AudioManager.STREAM_ALARM)
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
-            ).build()
+        val sound = soundPool.load(this, R.raw.wood, 3)
 
-        val sound = soundPool.load(this, R.raw.wood, 1)
-
-        job = coroutineScope.launch() {
+        job = coroutineScope.launch {
             viewModel.isPlaying.collectLatest { playing ->
                 when (playing) {
                     true -> {
@@ -89,20 +77,20 @@ class MetronomeService : Service(), KoinComponent {
                         var interval = viewModel.metronomeState.value.interval.toLong()
 
                         sequence.onEach { delay(interval) }.collectLatest { index ->
-                                viewModel.index.update { index }
-                                interval = viewModel.metronomeState.value.interval.toLong()
+                            viewModel.index.update { index }
+                            interval = viewModel.metronomeState.value.interval.toLong()
 
-                                val stereoPanningLeft =
-                                    viewModel.currentStereo.value.first.toFloat()
-                                val stereoPanningRight =
-                                    viewModel.currentStereo.value.second.toFloat()
+                            val stereoPanningLeft =
+                                viewModel.currentStereo.value.first.toFloat()
+                            val stereoPanningRight =
+                                viewModel.currentStereo.value.second.toFloat()
 
-                                var rate = 1f
-                                if (index == 0) rate = 1.4f
-                                if (index >= 0) soundPool.play(
-                                    sound, stereoPanningLeft, stereoPanningRight, 1, 0, rate
-                                )
-                            }
+                            var rate = 1f
+                            if (index == 0) rate = 1.4f
+                            if (index >= 0) soundPool.play(
+                                sound, stereoPanningLeft, stereoPanningRight, 1, 0, rate
+                            )
+                        }
                     }
 
                     else -> {
@@ -145,7 +133,7 @@ class MetronomeService : Service(), KoinComponent {
             .setContentTitle(getText(R.string.notification_title))
             .setContentText(getText(R.string.notification_message))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-//            .setLargeIcon(Icon.createWithResource(this, R.drawable.ic_metronome_icon_circle_bg))
+            .setLargeIcon(Icon.createWithResource(this, R.drawable.ic_launcher_foreground))
             .setContentIntent(pendingIntent).addAction(stopAction).setDeleteIntent(pStopSelf)
             .build()
 
