@@ -41,8 +41,7 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
     val isPlaying = _metronomeState.map { it.playing }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
-
-    val smth2 = flow<Nothing> {
+    val timerCoroutine = flow<Nothing> {
         startTimerCoroutine()
     }.launchIn(viewModelScope)
 
@@ -66,7 +65,7 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
                             )
                         )
                     }
-                    delay(20)
+                    delay(1000)
                 }
             } else {
                 appDatastore.addTotalTime(stopWatchState.elapsedTime)

@@ -29,14 +29,13 @@ class MetronomeService : Service(), KoinComponent {
 
     companion object {
         private const val TAG = "METRONOME_SERVICE"
-        private const val CHANNEL_ID = "METRONOME SERVICE"
+        private const val CHANNEL_ID = "Metronome service"
         private const val STOP_SERVICE = "STOP_METRONOME_SERVICE"
         const val MAX_BPM = 220
         const val MIN_BPM = 40
     }
 
     private val soundPool: SoundPool = get()
-    private val appDatastore: AppDatastore = get()
 
     private val binder = MetronomeBinder()
     private val viewModel: MetronomeViewModel = get()
@@ -67,7 +66,7 @@ class MetronomeService : Service(), KoinComponent {
     override fun onCreate() {
         val sound = soundPool.load(this, R.raw.wood, 3)
 
-        job = coroutineScope.launch {
+        job = coroutineScope.launch(Dispatchers.Default) {
             viewModel.isPlaying.collectLatest { playing ->
                 when (playing) {
                     true -> {
@@ -141,7 +140,7 @@ class MetronomeService : Service(), KoinComponent {
     }
 
     override fun onDestroy() {
-//        job?.cancel()
+        job?.cancel()
     }
 
 

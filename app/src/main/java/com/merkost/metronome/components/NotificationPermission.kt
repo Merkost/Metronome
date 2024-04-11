@@ -7,12 +7,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,12 +19,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat.startActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.merkost.metronome.R
+import timber.log.Timber
 
 @Composable
 fun checkNotificationPolicyAccess(
@@ -47,11 +45,11 @@ fun checkNotificationPolicyAccess(
 @Composable
 internal fun PermissionDialog(context: Context) {
     var openDialog by remember { mutableStateOf(true) }
-    val smsPermissions =
+    val notificationPermissions =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
-    LaunchedEffect(smsPermissions.status) {
-        if (smsPermissions.status.isGranted) {
+    LaunchedEffect(notificationPermissions.status) {
+        if (notificationPermissions.status.isGranted) {
             openDialog = false
         }
     }
@@ -60,8 +58,8 @@ internal fun PermissionDialog(context: Context) {
         AlertDialog(onDismissRequest = {
             openDialog = false
         },
-            title = { Text(stringResource(R.string.permissions_title)) },
-            text = { Text(stringResource(R.string.Permissions_description)) },
+            title = { Text(stringResource(R.string.notification_permission_title)) },
+            text = { Text(stringResource(R.string.notification_permission_description)) },
             dismissButton = {
                 Button(
                     onClick = {
@@ -74,10 +72,10 @@ internal fun PermissionDialog(context: Context) {
             confirmButton = {
                 Button(
                     onClick = {
-                        if (smsPermissions.status.shouldShowRationale) {
-                            context.startSmsSettings()
+                        if (notificationPermissions.status.shouldShowRationale) {
+                            context.startNotificationSettings()
                         } else {
-                            smsPermissions.launchPermissionRequest()
+                            notificationPermissions.launchPermissionRequest()
                         }
                     },
                 ) { Text(text = "Yes") }
@@ -95,28 +93,24 @@ internal fun OldPermissionDialog(context: Context) {
         AlertDialog(onDismissRequest = {
             openDialog = false
         },
-            title = { Text(stringResource(R.string.permissions_title)) },
-            text = { Text(stringResource(R.string.Permissions_description)) },
+            title = { Text(stringResource(R.string.notification_permission_title)) },
+            text = { Text(stringResource(R.string.notification_permission_description)) },
             dismissButton = {
                 Button(
-                    onClick = {
-                        openDialog = false
-                    },
+                    onClick = { openDialog = false },
                 ) {
                     Text(text = "No")
                 }
             },
             confirmButton = {
                 Button(
-                    onClick = {
-                        context.startSmsSettings()
-                    },
+                    onClick = { context.startNotificationSettings() },
                 ) { Text(text = "Yes") }
             })
     }
 }
 
-private fun Context.startSmsSettings() {
+private fun Context.startNotificationSettings() {
     try {
         val intent = Intent()
         intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
@@ -124,6 +118,6 @@ private fun Context.startSmsSettings() {
         intent.data = uri
         startActivity(intent)
     } catch (e: Exception) {
-        Log.w("TAG", e.message ?: "")
+        Timber.w("startNotificationSettings", e.message ?: "")
     }
 }

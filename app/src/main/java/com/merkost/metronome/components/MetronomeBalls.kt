@@ -83,9 +83,6 @@ fun MetronomeBalls(
         val heightRaz = (indicatorPlaceable.height - itemPlaceables.first().height) / 2
         val widthRaz = (indicatorPlaceable.width - itemPlaceables.first().width) / 2
 
-//        Log.e("minWidth", width.toString())
-//        Log.e("maxWidth", constraints.maxWidth.toString())
-
         layout(
             width = width * itemCount + arrangementSpacingPx * (itemCount),
             height = itemPlaceables.maxByOrNull { it.height }?.height ?: 0
