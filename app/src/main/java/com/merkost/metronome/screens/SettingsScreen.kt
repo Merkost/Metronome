@@ -7,6 +7,7 @@ import android.content.Intent
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -84,7 +85,8 @@ fun SettingsScreen(upPress: () -> Unit) {
     val currentStereo by viewModel.currentStereo.collectAsState()
 
     if (backgroundPlay) {
-        val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         checkNotificationPolicyAccess(
             notificationManager = notificationManager,
@@ -287,7 +289,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SettingsBigButton("Contact support") {
-
+                    context.contactSupport()
                 }
                 SettingsBigButton("Rate the App") {
                     context.openGooglePlay()
@@ -295,6 +297,37 @@ fun SettingsScreen(upPress: () -> Unit) {
             }
         }
 
+    }
+}
+
+private fun Context.contactSupport() {
+    runCatching {
+        val osVersion = Build.VERSION.RELEASE
+        val phoneModel = Build.MODEL
+        val manufacturer = Build.MANUFACTURER
+        val appVersionName = appVersion?.versionName
+        val appVersionNumber = appVersion?.versionNumber
+
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("merkostdev+metronome@gmail.com"))
+            putExtra(Intent.EXTRA_SUBJECT, "Support Request from Metronome App")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Please describe the issue you're experiencing or your question below:\n" +
+                        "\n\n\n\n\n" +
+                        "Device Information:\n" +
+                        "OS Version: $osVersion\n" +
+                        "Phone Model: $phoneModel\n" +
+                        "Manufacturer: $manufacturer\n" +
+                        "App version: $appVersionName ($appVersionNumber)\n"
+            )
+        }
+
+        startActivity(Intent.createChooser(emailIntent, "Send email..."))
+
+    }.onFailure {
+        Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show()
     }
 }
 
