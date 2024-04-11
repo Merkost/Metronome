@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(val appDatastore: AppDatastore) : ViewModel() {
+class SettingsViewModel(
+    private val appDatastore: AppDatastore
+) : ViewModel() {
 
-    val colorScheme = appDatastore.color
+    val colorScheme = appDatastore.colorScheme
         .stateIn(viewModelScope, SharingStarted.Eagerly, AppColorScheme.BLACKNWHITE)
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
@@ -35,7 +37,7 @@ class SettingsViewModel(val appDatastore: AppDatastore) : ViewModel() {
 
     fun onColorSchemeChanged(it: AppColorScheme) {
         viewModelScope.launch {
-            appDatastore.saveColor(it)
+            appDatastore.saveColorScheme(it)
         }
     }
 

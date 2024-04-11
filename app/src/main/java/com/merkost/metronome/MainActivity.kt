@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.merkost.metronome.components.checkNotificationPolicyAccess
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.screens.MainScreen
 import com.merkost.metronome.screens.SettingsScreen
@@ -26,6 +25,7 @@ import com.merkost.metronome.ui.theme.MetronomeTheme
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import org.koin.android.ext.android.get
+import timber.log.Timber
 
 class MainActivity : ComponentActivity() {
 
@@ -45,15 +45,8 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
-        val notificationManager: NotificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
         setContent {
             MetronomeTheme {
-                checkNotificationPolicyAccess(
-                    notificationManager = notificationManager,
-                    context = this
-                )
                 Navigator()
             }
         }
@@ -74,7 +67,7 @@ class MainActivity : ComponentActivity() {
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             metronomeService = (service as MetronomeService.MetronomeBinder).getService()
-            Log.e("BINDED_SERVICE", metronomeService.toString())
+            Timber.tag("BOUND_SERVICE").d(metronomeService.toString())
         }
 
         override fun onServiceDisconnected(className: ComponentName) {
