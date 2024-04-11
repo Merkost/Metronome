@@ -69,8 +69,6 @@ fun MetronomeBalls(
         }
 
         // Divide the width into n+1 slots and give the selected item 2 slots
-//        val width = constraints.maxWidth / (itemCount+1)
-//        val selectedWidth = 2 * unselectedWidth
         val indicatorMeasurable = measurables.first { it.layoutId == "indicator" }
 
         val itemPlaceables = measurables
@@ -119,9 +117,8 @@ fun Ball(color: Color = BallColor) {
 }
 
 @Composable
-fun OutlinedCircle(colorWhite: Boolean) {
+fun OutlinedCircle(color: Color) {
 //    val color by animateColorAsState(targetValue = if (colorWhite) Color.White else Color.Black)
-    val color = Color.Black
     Spacer(
         modifier = Modifier
             .size(CircleSize)
