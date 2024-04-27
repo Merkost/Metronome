@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.screens.defaultPlayButtonSize
 import com.merkost.metronome.screens.horizontalPadding
@@ -90,7 +89,9 @@ fun MainButtonsRow(
         )
         Spacer(modifier = Modifier.size(horizontalPadding))
 
-        MySecondaryButton(onClick = onTempoTap, shape = RoundedCornerShape(30),
+        MySecondaryButton(
+            onClick = onTempoTap,
+            shape = RoundedCornerShape(30),
             modifier = Modifier
                 .onSizeChanged {
                     secondaryButtonSize = it

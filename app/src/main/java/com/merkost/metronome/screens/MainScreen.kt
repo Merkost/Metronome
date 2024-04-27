@@ -73,9 +73,8 @@ val defaultSecondaryIconButtonSize = defaultIconButtonSize
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(onSettingsClicked: () -> Unit) {
-    val context = LocalContext.current
     val viewModel: MetronomeViewModel = koinViewModel()
-
+//    val context = LocalContext.current
 //    val service = (context as MainActivity).metronomeService
     val colorFlash by viewModel.colorFlash.collectAsState()
     val metronomeState: MetronomeState by viewModel.metronomeState.collectAsState()

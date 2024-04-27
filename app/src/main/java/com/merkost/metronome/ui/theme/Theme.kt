@@ -38,6 +38,8 @@ enum class AppColorScheme(val lightColor: ColorScheme, val darkColor: ColorSchem
 private val BlackNWhiteDarkColorScheme = darkColorScheme(
     primary = Color.White,
     onPrimary = Color.Black,
+    background = Color.Black,
+    surface = Color.Black,
     primaryContainer = Color.DarkGray,
     surfaceVariant = Color.DarkGray,
 )
@@ -45,6 +47,8 @@ private val BlackNWhiteDarkColorScheme = darkColorScheme(
 private val BlackNWhiteLightColorScheme = lightColorScheme(
     primary = Color.Black,
     onPrimary = Color.White,
+    background = Color.White,
+    surface = Color.White,
     primaryContainer = Color.LightGray.copy(0.5f),
     surfaceVariant = Color.LightGray.copy(0.5f),
 )
