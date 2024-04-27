@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.seconds
 
 
 class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
-    private var lastTapMilis: Long? = null
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val currentStereo = appDatastore.stereo
@@ -28,6 +28,10 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
 
     private val metronomeMinimum = MIN_BPM
     private val metronomeMaximum = MAX_BPM
+
+    private val tapIntervals = mutableListOf<Long>()
+    private var lastTapMillis: Long? = null
+    private val timeoutThreshold = 2.seconds
 
     val metronomeRange = (metronomeMinimum.toFloat()..metronomeMaximum.toFloat())
     val steps = metronomeMaximum - metronomeMinimum
@@ -110,16 +114,31 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
 
     fun onTempoTap() {
         val currentMillis = System.currentTimeMillis()
-        lastTapMilis?.let { lastTap ->
+        lastTapMillis?.let { lastTap ->
             val difference = currentMillis - lastTap
-            val calculatedBpm = (60000 / difference).toInt()
-            _metronomeState.update {
-                it.copy(
-                    rhythm = calculatedBpm.coerceIn(metronomeMinimum, metronomeMaximum)
-                )
+            if (difference > timeoutThreshold.inWholeMilliseconds) {
+                tapIntervals.clear()
+            } else {
+                tapIntervals.add(difference)
+                if (tapIntervals.size >= 2) {
+                    updateBpmFromMedian()
+                }
             }
         }
-        lastTapMilis = currentMillis
+        lastTapMillis = currentMillis
+    }
+
+    private fun updateBpmFromMedian() {
+        if (tapIntervals.isNotEmpty()) {
+            val sortedIntervals = tapIntervals.sorted()
+            val medianInterval = if (sortedIntervals.size % 2 == 1) {
+                sortedIntervals[sortedIntervals.size / 2]
+            } else {
+                (sortedIntervals[sortedIntervals.size / 2 - 1] + sortedIntervals[sortedIntervals.size / 2]) / 2
+            }
+            val medianBpm = (60000 / medianInterval).toInt().coerceIn(metronomeMinimum, metronomeMaximum)
+            _metronomeState.update { it.copy(rhythm = medianBpm) }
+        }
     }
 }
 
