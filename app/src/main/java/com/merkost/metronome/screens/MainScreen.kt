@@ -42,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -95,9 +94,32 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             }
         }
     }
+    val primaryColor = MaterialTheme.colorScheme.primary
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0.dp)
+        contentWindowInsets = WindowInsets(0.dp),
+                topBar = {
+            CenterAlignedTopAppBar(
+                modifier = Modifier.drawWithContent {
+                    drawContent()
+                    drawRect(
+                        primaryColor,
+                        alpha = boxColorAnimation.value.coerceIn(0f, 0.5f)
+                    )
+                },
+                title = {
+                    Text(
+                        text = "Feel the Beat",
+                        style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
+                    )
+                },
+                actions = {
+                    IconButton(onClick = onSettingsClicked) {
+                        Icon(Icons.Default.Settings, Icons.Default.Settings.name)
+                    }
+                }
+            )
+        }
     ) {
         Column(
             modifier = Modifier
@@ -106,7 +128,6 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            val primaryColor = MaterialTheme.colorScheme.primary
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -117,23 +138,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             alpha = boxColorAnimation.value.coerceIn(0f, 0.5f)
                         )
                     }
+                    .padding(top = 32.dp)
                     .padding(horizontal = horizontalPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = "Feel the Beat",
-                            style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
-                        )
-                    },
-                    actions = {
-                        IconButton(onClick = onSettingsClicked) {
-                            Icon(Icons.Default.Settings, Icons.Default.Settings.name)
-                        }
-                    }
-                )
 
                 MetronomeBalls(
                     modifier = Modifier.padding(bottom = 64.dp),
