@@ -145,7 +145,8 @@ fun SettingsScreen(upPress: () -> Unit) {
                         modifier = Modifier
                             .size(64.dp)
                             .clip(CircleShape)
-                            .background(Color.White),
+                            .background(Color.White)
+                            .padding(4.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
