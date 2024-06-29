@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,11 +41,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import com.merkost.metronome.R
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
@@ -73,8 +74,6 @@ val defaultSecondaryIconButtonSize = defaultIconButtonSize
 @Composable
 fun MainScreen(onSettingsClicked: () -> Unit) {
     val viewModel: MetronomeViewModel = koinViewModel()
-//    val context = LocalContext.current
-//    val service = (context as MainActivity).metronomeService
     val colorFlash by viewModel.colorFlash.collectAsState()
     val metronomeState: MetronomeState by viewModel.metronomeState.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
@@ -97,8 +96,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     val primaryColor = MaterialTheme.colorScheme.primary
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0.dp),
-                topBar = {
+        topBar = {
             CenterAlignedTopAppBar(
                 modifier = Modifier.drawWithContent {
                     drawContent()
@@ -109,7 +107,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                 },
                 title = {
                     Text(
-                        text = "Feel the Beat",
+                        text = stringResource(R.string.app_name),
                         style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
                     )
                 },
@@ -126,7 +124,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                 .padding(it)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
                 modifier = Modifier
@@ -179,7 +177,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
 
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -221,16 +220,22 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     MySecondaryTextButton(text = "× 2", onClick = viewModel::multiplyByTwo)
                     MySecondaryTextButton(text = "+ 5", onClick = viewModel::onPlusFive)
                 }
-                Spacer(modifier = Modifier.size(1.dp))
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
             }
-            MainButtonsRow(
-                Modifier.padding(horizontal = horizontalPadding),
-                isPlaying = isPlaying,
-                metronomeState.stopWatchState,
-                onPlayPause = viewModel::onPlayPauseClicked,
-                onTempoTap = viewModel::onTempoTap
-            )
+            Spacer(modifier = Modifier.size(16.dp))
+
+            Column(
+                modifier = Modifier.padding(vertical = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                MainButtonsRow(
+                    Modifier.padding(horizontal = horizontalPadding),
+                    isPlaying = isPlaying,
+                    metronomeState.stopWatchState,
+                    onPlayPause = viewModel::onPlayPauseClicked,
+                    onTempoTap = viewModel::onTempoTap
+                )
+            }
         }
     }
 
