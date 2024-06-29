@@ -21,7 +21,7 @@ val Context.appVersion: AppVersion?
                 packageManager.getPackageInfo(packageName, 0)
             }
             AppVersion(
-                versionName = packageInfo.versionName,
+                versionName = packageInfo.versionName.orEmpty(),
                 versionNumber = PackageInfoCompat.getLongVersionCode(packageInfo),
             )
         } catch (e: Exception) {
