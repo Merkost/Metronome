@@ -5,6 +5,7 @@ import MetronomeBalls
 import OutlinedCircle
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.SpringSpec
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.merkost.metronome.R
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MyIconButton
@@ -70,7 +72,7 @@ val defaultIconButtonSize = 70.dp
 val defaultSecondaryIconButtonSize = defaultIconButtonSize
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(onSettingsClicked: () -> Unit) {
     val viewModel: MetronomeViewModel = koinViewModel()
@@ -129,6 +131,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .weight(1f)
                     .drawWithContent {
                         drawContent()
                         drawRect(
@@ -166,11 +169,15 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     AnimatedContent(targetState = metronomeState.tempoName) { name ->
                         Text(
                             text = name,
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            ),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -178,7 +185,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -191,7 +198,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             text = metronomeState.rhythm.toString(),
                             style = MaterialTheme.typography.displayLarge.copy(
                                 fontWeight = FontWeight.ExtraBold,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                fontSize = 62.sp
                             )
                         )
                         MyIconButton(
@@ -220,11 +228,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     MySecondaryTextButton(text = "× 2", onClick = viewModel::multiplyByTwo)
                     MySecondaryTextButton(text = "+ 5", onClick = viewModel::onPlusFive)
                 }
+                Spacer(modifier = Modifier.size(32.dp))
             }
-            Spacer(modifier = Modifier.size(16.dp))
 
             Column(
-                modifier = Modifier.padding(vertical = 32.dp),
+                modifier = Modifier.padding(bottom = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
