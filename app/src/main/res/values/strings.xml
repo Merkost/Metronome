@@ -5,5 +5,5 @@
     <string name="notification_permission_title">Permission Needed</string>
     <string name="notification_permission_description">Allow Metronome: Feel the Beat! access to notifications in order to work in background.</string>
     <string name="notification_message">Running in background</string>
-    <string name="app_full_name">Metronome: Fill the Beat!</string>
+    <string name="app_full_name">Metronome: Feel the Beat!</string>
 </resources>
