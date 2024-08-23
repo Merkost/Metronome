@@ -10,13 +10,14 @@ import android.graphics.drawable.Icon
 import android.media.SoundPool
 import android.os.Binder
 import android.os.IBinder
-import com.merkost.metronome.model.AppDatastore
+import com.merkost.metronome.model.Beat
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.repeat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
@@ -39,8 +40,6 @@ class MetronomeService : Service(), KoinComponent {
 
     private val binder = MetronomeBinder()
     private val viewModel: MetronomeViewModel = get()
-
-    private val sequence = sequenceOf(0, 1, 2, 3).repeat().asFlow()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
@@ -75,21 +74,21 @@ class MetronomeService : Service(), KoinComponent {
 
                         var interval = viewModel.metronomeState.value.interval.toLong()
 
-                        sequence.onEach { delay(interval) }.collectLatest { index ->
-                            viewModel.index.update { index }
-                            interval = viewModel.metronomeState.value.interval.toLong()
+                        createBeatsSequence(viewModel.metronomeState.value.beats)
+                            .onEach { delay(interval) }.collectLatest { index ->
+                                val beat = viewModel.metronomeState.value.beats[index]
+                                viewModel.index.update { index }
+                                interval = viewModel.metronomeState.value.interval.toLong()
 
-                            val stereoPanningLeft =
-                                viewModel.currentStereo.value.first.toFloat()
-                            val stereoPanningRight =
-                                viewModel.currentStereo.value.second.toFloat()
+                                val stereoPanningLeft =
+                                    viewModel.currentStereo.value.first.toFloat()
+                                val stereoPanningRight =
+                                    viewModel.currentStereo.value.second.toFloat()
 
-                            var rate = 1f
-                            if (index == 0) rate = 1.4f
-                            if (index >= 0) soundPool.play(
-                                sound, stereoPanningLeft, stereoPanningRight, 1, 0, rate
-                            )
-                        }
+                                soundPool.play(
+                                    sound, stereoPanningLeft, stereoPanningRight, 1, 0, beat.rate
+                                )
+                            }
                     }
 
                     else -> {
@@ -100,6 +99,11 @@ class MetronomeService : Service(), KoinComponent {
             }
         }
     }
+
+    private fun createBeatsSequence(beats: List<Beat>): Flow<Int> {
+        return beats.indices.asSequence().repeat().asFlow()
+    }
+
 
     private fun startForegroundNotification() {
         val mChannel =

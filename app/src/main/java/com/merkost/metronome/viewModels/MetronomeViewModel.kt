@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.MetronomeService.Companion.MAX_BPM
 import com.merkost.metronome.MetronomeService.Companion.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
+import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.StopWatchState
 import kotlinx.coroutines.delay
@@ -78,8 +79,8 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
     }
 
 
-    fun onPlayPauseClicked() {
-        _metronomeState.update { it.copy(playing = it.playing.not()) }
+    fun onPlayPauseClicked(isPlaying: Boolean) {
+        _metronomeState.update { it.copy(playing = isPlaying.not()) }
     }
 
     fun onSliderValueChanged(newSliderValue: Float) {
@@ -139,6 +140,11 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
             val medianBpm = (60000 / medianInterval).toInt().coerceIn(metronomeMinimum, metronomeMaximum)
             _metronomeState.update { it.copy(rhythm = medianBpm) }
         }
+    }
+
+    fun onBallClicked(index: Int, beat: Beat) {
+        val newBeat = beat.next()
+        _metronomeState.update { it.copy(beats = it.beats.toMutableList().apply { set(index, newBeat) }) }
     }
 }
 

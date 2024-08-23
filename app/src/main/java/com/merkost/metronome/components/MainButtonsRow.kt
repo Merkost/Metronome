@@ -36,7 +36,7 @@ fun MainButtonsRow(
     modifier: Modifier,
     isPlaying: Boolean,
     stopWatchState: StopWatchState,
-    onPlayPause: () -> Unit,
+    onPlayPause: (isPlaying: Boolean) -> Unit,
     onTempoTap: () -> Unit
 ) {
     Row(
@@ -85,7 +85,7 @@ fun MainButtonsRow(
         PlayButton(
             Modifier,
             isPlaying = isPlaying,
-            onClick = onPlayPause
+            onClick = { onPlayPause(isPlaying) }
         )
         Spacer(modifier = Modifier.size(horizontalPadding))
 

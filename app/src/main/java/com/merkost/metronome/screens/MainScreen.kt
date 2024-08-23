@@ -5,7 +5,6 @@ import MetronomeBalls
 import OutlinedCircle
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.SpringSpec
@@ -36,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,6 +53,7 @@ import com.merkost.metronome.R
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
+import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.ui.theme.MetronomeTheme
 import com.merkost.metronome.viewModels.MetronomeViewModel
@@ -63,8 +64,6 @@ val CircleSize = BallSize + 32.dp
 val CircleWeight = 5.dp
 val BallColor = Color.LightGray
 
-val BallsCount = 4
-
 val defaultPlayButtonSize = 85.dp
 val horizontalPadding = 18.dp
 
@@ -72,12 +71,15 @@ val defaultIconButtonSize = 70.dp
 val defaultSecondaryIconButtonSize = defaultIconButtonSize
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(onSettingsClicked: () -> Unit) {
     val viewModel: MetronomeViewModel = koinViewModel()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val metronomeState: MetronomeState by viewModel.metronomeState.collectAsState()
+    val beats by remember(metronomeState.beats) {
+        derivedStateOf { metronomeState.beats }
+    }
     val isPlaying by viewModel.isPlaying.collectAsState()
     val selectedIndex by viewModel.index.collectAsState()
 
@@ -147,22 +149,22 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
 
                 MetronomeBalls(
                     modifier = Modifier.padding(bottom = 64.dp),
-                    selectedIndex = selectedIndex.coerceIn(0..3),
-                    itemCount = BallsCount,
+                    selectedIndex = selectedIndex.coerceIn(beats.indices),
+                    itemCount = beats.size,
                     animSpec = springSpec,
                     indicator = {
                         OutlinedCircle(MaterialTheme.colorScheme.primary)
                     },
                 ) {
-                    (1..BallsCount).forEach {
+                    beats.forEachIndexed { index, beat ->
                         val color by animateColorAsState(
                             targetValue =
-                            if (it == 1 || selectedIndex.coerceIn(0..3) == it - 1) {
+                            if (beat == Beat.HIGH) {
                                 MaterialTheme.colorScheme.primary
                             } else MaterialTheme.colorScheme.primaryContainer,
                             label = "ballsColor"
                         )
-                        Ball(color = color)
+                        Ball(color = color, onClick = { viewModel.onBallClicked(index, beat) })
                     }
                 }
 
