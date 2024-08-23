@@ -4,6 +4,12 @@ private val Int.interval: Int
     get() = 60000 / this
 
 data class MetronomeState(
+    val beats: List<Beat> = listOf(
+        Beat.HIGH,
+        Beat.LOW,
+        Beat.LOW,
+        Beat.LOW
+    ),
     val playing: Boolean = false,
     var rhythm: Int = 80,
     var stopWatchState: StopWatchState = StopWatchState(),

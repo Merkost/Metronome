@@ -2,6 +2,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Spacer
@@ -103,13 +104,14 @@ fun MetronomeBalls(
 }
 
 @Composable
-fun Ball(color: Color = BallColor) {
+fun Ball(color: Color = BallColor, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(BallSize)
             .padding(2.dp)
             .clip(CircleShape)
             .background(color)
+            .clickable { onClick() }
     )
 }
 
