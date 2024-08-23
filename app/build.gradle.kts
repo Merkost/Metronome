@@ -6,6 +6,7 @@ plugins {
     id("com.google.firebase.firebase-perf")
     id("com.google.firebase.crashlytics")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 
 }
 
@@ -50,9 +51,6 @@ android {
     buildFeatures {
         compose = true
         prefab = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
