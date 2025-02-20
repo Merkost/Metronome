@@ -23,9 +23,9 @@ enum class AppColorScheme(val lightColor: ColorScheme, val darkColor: ColorSchem
 
     BLACKNWHITE(BlackNWhiteLightColorScheme, BlackNWhiteDarkColorScheme),
     MELROSE(PurpleLightColorScheme, PurpleDarkColorScheme);
-//    PERIWINKLE(Periwinkle),
-//    MINTGREEN(MintGreen),
-//    PINKLACE(PinkLace);
+//    PERIWINKLE(PeriwinkleLightColorScheme, PeriwinkleDarkColorScheme),
+//    MINTGREEN(MintGreenLightColorScheme, MintGreenDarkColorScheme),
+//    PINKLACE(PinkLaceLightColorScheme, PinkLaceDarkColorScheme);
 
     companion object {
         fun defaultValues(): List<AppColorScheme> {
@@ -42,6 +42,7 @@ private val BlackNWhiteDarkColorScheme = darkColorScheme(
     surface = Color.Black,
     primaryContainer = Color.DarkGray,
     surfaceVariant = Color.DarkGray,
+    secondaryContainer = Color.DarkGray,
 )
 
 private val BlackNWhiteLightColorScheme = lightColorScheme(
@@ -51,6 +52,7 @@ private val BlackNWhiteLightColorScheme = lightColorScheme(
     surface = Color.White,
     primaryContainer = Color.LightGray.copy(0.5f),
     surfaceVariant = Color.LightGray.copy(0.5f),
+    secondaryContainer = Color.LightGray.copy(0.5f),
 )
 
 private val PurpleDarkColorScheme = darkColorScheme(
@@ -63,6 +65,62 @@ private val PurpleLightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
+)
+
+private val PeriwinkleLightColorScheme = lightColorScheme(
+    primary = Periwinkle,
+    onPrimary = Color.White,
+    background = Color.White,
+    surface = Color.White,
+    primaryContainer = Periwinkle.copy(alpha = 0.7f),
+    surfaceVariant = Periwinkle.copy(alpha = 0.7f)
+)
+
+private val PeriwinkleDarkColorScheme = darkColorScheme(
+    primary = Periwinkle,
+    onPrimary = Color.Black,
+    background = Color.Black,
+    surface = Color.Black,
+    primaryContainer = Periwinkle.copy(alpha = 0.7f),
+    surfaceVariant = Periwinkle.copy(alpha = 0.7f)
+)
+
+// MintGreen theme
+private val MintGreenLightColorScheme = lightColorScheme(
+    primary = MintGreen,
+    onPrimary = Color.White,
+    background = Color.White,
+    surface = Color.White,
+    primaryContainer = MintGreen.copy(alpha = 0.7f),
+    surfaceVariant = MintGreen.copy(alpha = 0.7f)
+)
+
+private val MintGreenDarkColorScheme = darkColorScheme(
+    primary = MintGreen,
+    onPrimary = Color.Black,
+    background = Color.Black,
+    surface = Color.Black,
+    primaryContainer = MintGreen.copy(alpha = 0.7f),
+    surfaceVariant = MintGreen.copy(alpha = 0.7f)
+)
+
+// PinkLace theme
+private val PinkLaceLightColorScheme = lightColorScheme(
+    primary = PinkLace,
+    onPrimary = Color.White,
+    background = Color.White,
+    surface = Color.White,
+    primaryContainer = PinkLace.copy(alpha = 0.7f),
+    surfaceVariant = PinkLace.copy(alpha = 0.7f)
+)
+
+private val PinkLaceDarkColorScheme = darkColorScheme(
+    primary = PinkLace,
+    onPrimary = Color.Black,
+    background = Color.Black,
+    surface = Color.Black,
+    primaryContainer = PinkLace.copy(alpha = 0.7f),
+    surfaceVariant = PinkLace.copy(alpha = 0.7f)
 )
 /* Other default colors to override
 background = Color(0xFFFFFBFE),

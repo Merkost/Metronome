@@ -1,13 +1,12 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    id("com.android.application")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.firebase-perf")
-    id("com.google.firebase.crashlytics")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebasePerf)
+    alias(libs.plugins.firebaseCrashlytics)
+    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinCompose)
 }
 
 android {
@@ -66,42 +65,44 @@ android {
 }
 
 dependencies {
-
 //    api("com.google.oboe:oboe:1.8.1")
-    implementation("com.jakewharton.timber:timber:5.0.1")
 
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-util")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.timber)
 
-    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
-    implementation("com.google.firebase:firebase-perf")
+    implementation(libs.androidxCore)
+    implementation(libs.lifecycleRuntime)
+    implementation(libs.activityCompose)
+    implementation(libs.lifecycleViewModelCompose)
+    implementation(platform(libs.composeBom))
+    implementation(libs.composeUi)
+    implementation(libs.composeUiUtil)
+    implementation(libs.composeUiGraphics)
+    implementation(libs.composeToolingPreview)
+    implementation(libs.material3)
+    implementation(libs.materialIconsExtended)
+
+    implementation(platform(libs.firebaseBom))
+    implementation(libs.firebaseAnalytics)
+    implementation(libs.firebaseCrashlytics)
+    implementation(libs.firebasePerf)
 
     // Preferences DataStore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation(libs.datastore)
 
     // Koin main features for Android
-    implementation("io.insert-koin:koin-android:3.5.3")
-    implementation("io.insert-koin:koin-androidx-compose:3.5.3")
-    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation(libs.koinAndroid)
+    implementation(libs.koinAndroidCompose)
+    implementation(libs.accompanistPermissions)
 
-//    implementation 'androidx.preference:preference-ktx:1.2.0' //support fo SharedPrefs
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Optionally, for SharedPreferences support (currently commented out)
+    // implementation(libs.preferenceKtx)
+
+    implementation(libs.navigationCompose)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidxJunit)
+    androidTestImplementation(libs.espresso)
+    androidTestImplementation(platform(libs.composeBom))
+    androidTestImplementation(libs.composeUiTestJunit4)
+    debugImplementation(libs.composeTooling)
+    debugImplementation(libs.composeTestManifest)
 }
