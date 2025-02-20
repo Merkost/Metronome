@@ -218,7 +218,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     steps = viewModel.steps,
                     colors = SliderDefaults.colors(
                         activeTickColor = Color.Transparent,
-                        inactiveTickColor = Color.Transparent
+                        inactiveTickColor = Color.Transparent,
+
                     )
                 )
                 Row(
