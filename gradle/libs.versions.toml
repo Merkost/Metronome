@@ -1,26 +1,26 @@
 [versions]
-kotlin = "2.0.0"
-gradleApp = "8.3.2"
-androidxCore = "1.15.0"
-lifecycle = "2.8.7"
-activityCompose = "1.10.0"
-lifecycleViewModelCompose = "2.8.7"
-composeBom = "2025.02.00"
-firebaseBom = "33.9.0"
-datastore = "1.1.2"
-koin = "4.0.2"
-accompanist = "0.37.0"
-navigationCompose = "2.8.7"
+kotlin = "2.3.20"
+gradleApp = "8.13.2"
+androidxCore = "1.18.0"
+lifecycle = "2.10.0"
+activityCompose = "1.13.0"
+lifecycleViewModelCompose = "2.10.0"
+composeBom = "2026.03.00"
+firebaseBom = "34.11.0"
+datastore = "1.2.1"
+koin = "4.2.0"
+accompanist = "0.37.3"
+navigationCompose = "2.9.7"
 junit = "4.13.2"
-androidxJunit = "1.2.1"
-espresso = "3.6.1"
+androidxJunit = "1.3.0"
+espresso = "3.7.0"
 timber = "5.0.1"
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "gradleApp" }
-googleServices = { id = "com.google.gms.google-services", version = "4.4.2" }
-firebasePerf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
-firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
+googleServices = { id = "com.google.gms.google-services", version = "4.4.4" }
+firebasePerf = { id = "com.google.firebase.firebase-perf", version = "2.0.2" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.6" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
