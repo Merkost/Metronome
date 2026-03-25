@@ -208,7 +208,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             } else MaterialTheme.colorScheme.primaryContainer,
                             label = "ballsColor"
                         )
-                        Ball(color = color, onClick = { viewModel.onBallClicked(index, beat) })
+                        Ball(
+                            color = color,
+                            isActive = isPlaying && index == selectedIndex.coerceIn(beats.indices),
+                            onClick = { viewModel.onBallClicked(index, beat) }
+                        )
                     }
                 }
 
