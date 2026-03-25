@@ -43,11 +43,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.merkost.metronome.components.CoachMarksOverlay
 import com.merkost.metronome.components.Ball
 import com.merkost.metronome.components.DropdownSelector
 import com.merkost.metronome.components.MainButtonsRow
@@ -84,6 +88,14 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     }
     val isPlaying by viewModel.isPlaying.collectAsState()
     val selectedIndex by viewModel.index.collectAsState()
+
+    val onboardingStep by viewModel.onboardingStep.collectAsState()
+    var beatBallsBounds by remember { mutableStateOf<Rect?>(null) }
+    var tempoSectionBounds by remember { mutableStateOf<Rect?>(null) }
+    var bottomControlsBounds by remember { mutableStateOf<Rect?>(null) }
+    val spotlightTargets = remember(beatBallsBounds, tempoSectionBounds, bottomControlsBounds) {
+        listOfNotNull(beatBallsBounds, tempoSectionBounds, bottomControlsBounds)
+    }
 
     var tsExpanded by remember { mutableStateOf(false) }
     var presetsExpanded by remember { mutableStateOf(false) }
@@ -192,7 +204,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             ) {
 
                 MetronomeBalls(
-                    modifier = Modifier.padding(bottom = 64.dp),
+                    modifier = Modifier
+                        .padding(bottom = 64.dp)
+                        .onGloballyPositioned { coordinates ->
+                            beatBallsBounds = coordinates.boundsInRoot()
+                        },
                     selectedIndex = selectedIndex.coerceIn(beats.indices),
                     itemCount = beats.size,
                     animSpec = springSpec,
@@ -217,7 +233,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                 }
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coordinates ->
+                            tempoSectionBounds = coordinates.boundsInRoot()
+                        },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
@@ -313,7 +333,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             }
 
             Column(
-                modifier = Modifier.padding(bottom = 32.dp),
+                modifier = Modifier
+                    .padding(bottom = 32.dp)
+                    .onGloballyPositioned { coordinates ->
+                        bottomControlsBounds = coordinates.boundsInRoot()
+                    },
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -325,6 +349,16 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     onTempoTap = viewModel::onTempoTap
                 )
             }
+        }
+
+        if (onboardingStep >= 0 && spotlightTargets.size == 3) {
+            CoachMarksOverlay(
+                step = onboardingStep,
+                targetBounds = spotlightTargets,
+                onNext = viewModel::onOnboardingNext,
+                onBack = viewModel::onOnboardingBack,
+                onDismiss = viewModel::onOnboardingDismiss,
+            )
         }
     }
 }

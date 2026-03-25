@@ -51,11 +51,33 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
 
     val index = MutableStateFlow(-1)
 
+    val onboardingStep = MutableStateFlow(-1)
+
     init {
         viewModelScope.launch {
             val ts = appDatastore.timeSignature.first()
             _metronomeState.update { it.copy(timeSignature = ts, beats = ts.defaultBeats) }
         }
+        viewModelScope.launch {
+            appDatastore.onboardingComplete.first().let { complete ->
+                if (!complete) {
+                    onboardingStep.value = 0
+                }
+            }
+        }
+    }
+
+    fun onOnboardingNext() {
+        onboardingStep.update { if (it < 2) it + 1 else it }
+    }
+
+    fun onOnboardingBack() {
+        onboardingStep.update { if (it > 0) it - 1 else it }
+    }
+
+    fun onOnboardingDismiss() {
+        onboardingStep.value = -1
+        viewModelScope.launch { appDatastore.saveOnboardingComplete(true) }
     }
 
     val isPlaying = _metronomeState.map { it.playing }
