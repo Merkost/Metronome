@@ -1,0 +1,26 @@
+package com.merkost.metronome.platform
+
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.content.pm.PackageInfoCompat
+
+class AndroidAppVersionProvider(private val context: Context) : AppVersionProvider {
+    override fun getAppVersion(): AppVersionInfo? {
+        return try {
+            val packageManager = context.packageManager
+            val packageName = context.packageName
+            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+            } else {
+                packageManager.getPackageInfo(packageName, 0)
+            }
+            AppVersionInfo(
+                versionName = packageInfo.versionName.orEmpty(),
+                versionNumber = PackageInfoCompat.getLongVersionCode(packageInfo),
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+}

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Metronome</string>
+    <string name="settings">Settings</string>
+    <string name="app_full_name">Metronome: Feel the Beat!</string>
+</resources>
