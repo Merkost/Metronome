@@ -2,21 +2,32 @@ package com.merkost.metronome.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.unit.Dp
@@ -106,14 +117,76 @@ fun MetronomeBalls(
 }
 
 @Composable
-fun Ball(color: Color = BallColor, onClick: () -> Unit) {
+fun Ball(
+    color: Color = BallColor,
+    isActive: Boolean = false,
+    onClick: () -> Unit
+) {
+    val primaryColor = MaterialTheme.colorScheme.primary
+
+    // Glow alpha: animate to 0.3f when active, 0f when not
+    val glowAlpha by animateFloatAsState(
+        targetValue = if (isActive) 0.3f else 0f,
+        animationSpec = SpringSpec(stiffness = 600f, dampingRatio = 0.8f),
+        label = "ballGlowAlpha"
+    )
+
+    // Scale bump: animate to 1.15f when active, 1.0f otherwise
+    val beatScale by animateFloatAsState(
+        targetValue = if (isActive) 1.15f else 1.0f,
+        animationSpec = SpringSpec(
+            stiffness = Spring.StiffnessMedium,
+            dampingRatio = Spring.DampingRatioMediumBouncy
+        ),
+        label = "ballBeatScale"
+    )
+
+    // Press feedback
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.85f else 1.0f,
+        animationSpec = SpringSpec(
+            stiffness = Spring.StiffnessMedium,
+            dampingRatio = Spring.DampingRatioMediumBouncy
+        ),
+        label = "ballPressScale"
+    )
+
+    val combinedScale = beatScale * pressScale
+
     Box(
         modifier = Modifier
             .size(BallSize)
+            .graphicsLayer {
+                scaleX = combinedScale
+                scaleY = combinedScale
+            }
+            .drawBehind {
+                if (glowAlpha > 0f) {
+                    val center = Offset(size.width / 2f, size.height / 2f)
+                    val radius = size.maxDimension / 2f * 1.6f
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                primaryColor.copy(alpha = glowAlpha),
+                                primaryColor.copy(alpha = 0f)
+                            ),
+                            center = center,
+                            radius = radius
+                        ),
+                        radius = radius,
+                        center = center
+                    )
+                }
+            }
             .padding(2.dp)
             .clip(CircleShape)
             .background(color)
-            .clickable { onClick() }
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { onClick() }
     )
 }
 
