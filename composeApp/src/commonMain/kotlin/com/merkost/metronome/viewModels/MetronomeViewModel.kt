@@ -8,17 +8,20 @@ import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.StopWatchState
+import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.platform.currentTimeMillis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -42,6 +45,13 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
     val metronomeState = _metronomeState.asStateFlow()
 
     val index = MutableStateFlow(-1)
+
+    init {
+        viewModelScope.launch {
+            val ts = appDatastore.timeSignature.first()
+            _metronomeState.update { it.copy(timeSignature = ts, beats = ts.defaultBeats) }
+        }
+    }
 
     val isPlaying = _metronomeState.map { it.playing }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
@@ -145,6 +155,12 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
     fun onBallClicked(index: Int, beat: Beat) {
         val newBeat = beat.next()
         _metronomeState.update { it.copy(beats = it.beats.toMutableList().apply { set(index, newBeat) }) }
+    }
+
+    fun onTimeSignatureChanged(ts: TimeSignature) {
+        _metronomeState.update { it.copy(timeSignature = ts, beats = ts.defaultBeats) }
+        index.value = -1
+        viewModelScope.launch { appDatastore.saveTimeSignature(ts) }
     }
 }
 

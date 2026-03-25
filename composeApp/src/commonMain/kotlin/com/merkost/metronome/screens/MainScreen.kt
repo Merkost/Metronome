@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.SpringSpec
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -33,9 +36,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.merkost.metronome.components.Ball
+import com.merkost.metronome.components.DropdownSelector
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
@@ -50,6 +57,7 @@ import com.merkost.metronome.components.MySecondaryTextButton
 import com.merkost.metronome.components.OutlinedCircle
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.MetronomeState
+import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import metronome.composeapp.generated.resources.Res
@@ -69,6 +77,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     }
     val isPlaying by viewModel.isPlaying.collectAsState()
     val selectedIndex by viewModel.index.collectAsState()
+
+    var tsExpanded by remember { mutableStateOf(false) }
 
     val springSpec = SpringSpec<Float>(stiffness = 600f, dampingRatio = 0.8f)
 
@@ -103,6 +113,45 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     )
                 },
                 actions = {
+                    DropdownSelector(
+                        expanded = tsExpanded,
+                        onDismiss = { tsExpanded = false },
+                        items = TimeSignature.entries.toList(),
+                        selectedItem = metronomeState.timeSignature,
+                        onSelect = {
+                            viewModel.onTimeSignatureChanged(it)
+                            tsExpanded = false
+                        },
+                        itemContent = { ts, _ ->
+                            Column {
+                                Text(
+                                    text = ts.label,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                                Text(
+                                    text = "${ts.defaultBeats.size} beats",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        },
+                        anchor = {
+                            Text(
+                                text = "${metronomeState.timeSignature.label} \u25BC",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .clickable { tsExpanded = true }
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    )
                     IconButton(onClick = onSettingsClicked) {
                         Icon(Icons.Default.Settings, Icons.Default.Settings.name)
                     }
