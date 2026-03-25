@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -19,6 +20,10 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val COLOR_SCHEME = intPreferencesKey("COLOR_SCHEME")
         private val COLOR_FLASH = booleanPreferencesKey("COLOR_FLASH")
         private val BACKGROUND_PLAY = booleanPreferencesKey("BACKGROUND_PLAY")
+        private val SELECTED_SOUND = stringPreferencesKey("SELECTED_SOUND")
+        private val HAPTIC_ENABLED = booleanPreferencesKey("HAPTIC_ENABLED")
+        private val ONBOARDING_COMPLETE = booleanPreferencesKey("ONBOARDING_COMPLETE")
+        private val TIME_SIGNATURE = stringPreferencesKey("TIME_SIGNATURE")
     }
 
     override val colorScheme: Flow<AppColorScheme> = dataStore.data
@@ -92,6 +97,54 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     override suspend fun resetTime() {
         dataStore.edit { preferences ->
             preferences[TOTAL_TIME] = 0L
+        }
+    }
+
+    override val selectedSound: Flow<ClickSound> = dataStore.data
+        .map { preferences ->
+            kotlin.runCatching {
+                ClickSound.valueOf(preferences[SELECTED_SOUND] ?: ClickSound.WOOD.name)
+            }.getOrDefault(ClickSound.WOOD)
+        }
+
+    override suspend fun saveSelectedSound(sound: ClickSound) {
+        dataStore.edit { preferences ->
+            preferences[SELECTED_SOUND] = sound.name
+        }
+    }
+
+    override val hapticEnabled: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[HAPTIC_ENABLED] ?: true
+        }
+
+    override suspend fun saveHapticEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[HAPTIC_ENABLED] = enabled
+        }
+    }
+
+    override val onboardingComplete: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[ONBOARDING_COMPLETE] ?: false
+        }
+
+    override suspend fun saveOnboardingComplete(complete: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[ONBOARDING_COMPLETE] = complete
+        }
+    }
+
+    override val timeSignature: Flow<TimeSignature> = dataStore.data
+        .map { preferences ->
+            kotlin.runCatching {
+                TimeSignature.valueOf(preferences[TIME_SIGNATURE] ?: TimeSignature.FOUR_FOUR.name)
+            }.getOrDefault(TimeSignature.FOUR_FOUR)
+        }
+
+    override suspend fun saveTimeSignature(timeSignature: TimeSignature) {
+        dataStore.edit { preferences ->
+            preferences[TIME_SIGNATURE] = timeSignature.name
         }
     }
 }
