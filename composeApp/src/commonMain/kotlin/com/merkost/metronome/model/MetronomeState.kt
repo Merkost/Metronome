@@ -13,6 +13,7 @@ data class MetronomeState(
     val playing: Boolean = false,
     var rhythm: Int = 80,
     var stopWatchState: StopWatchState = StopWatchState(),
+    val timeSignature: TimeSignature = TimeSignature.FOUR_FOUR,
 ) {
 
     val interval: Int
