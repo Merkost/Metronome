@@ -6,6 +6,7 @@ import android.media.AudioManager
 import android.media.SoundPool
 import com.merkost.metronome.R
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.ClickSound
 
 class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
     private var soundPool: SoundPool? = null
@@ -34,5 +35,16 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
     override fun release() {
         soundPool?.release()
         soundPool = null
+    }
+
+    private fun soundResource(sound: ClickSound): Int = when (sound) {
+        ClickSound.WOOD -> R.raw.wood
+        ClickSound.CLICK -> R.raw.click
+        ClickSound.CLASSIC -> R.raw.metronome
+    }
+
+    override fun switchSound(sound: ClickSound) {
+        soundPool?.unload(soundId)
+        soundId = soundPool?.load(context, soundResource(sound), 3) ?: 0
     }
 }

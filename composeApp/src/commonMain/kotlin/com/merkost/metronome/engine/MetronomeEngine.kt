@@ -24,6 +24,11 @@ class MetronomeEngine(
     fun start() {
         player.initialize()
         job = coroutineScope.launch {
+            launch {
+                viewModel.selectedSound.collectLatest { sound ->
+                    player.switchSound(sound)
+                }
+            }
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
                     viewModel.index.update { -1 }

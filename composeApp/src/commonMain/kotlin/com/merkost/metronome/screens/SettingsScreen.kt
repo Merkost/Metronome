@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
+import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.theme.AppColorScheme
@@ -69,6 +71,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
+    val selectedSound by viewModel.selectedSound.collectAsState()
 
     BackgroundPlayPermissionCheck(backgroundPlay)
 
@@ -95,6 +98,42 @@ fun SettingsScreen(upPress: () -> Unit) {
         ) {
 
             AppInfoCard()
+
+            SettingsRow(title = "Click Sound") {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ClickSound.entries.forEach { sound ->
+                        val isSelected = sound == selectedSound
+                        MySecondaryButton(
+                            onClick = { viewModel.onSoundChanged(sound) },
+                            border = BorderStroke(
+                                if (isSelected) 3.dp else 1.dp,
+                                if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
+                            ) {
+                                Text(
+                                    text = sound.emoji,
+                                    fontSize = 24.sp
+                                )
+                                Text(
+                                    text = sound.displayName,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+                    }
+                }
+            }
 
             VolumeSlider()
 
