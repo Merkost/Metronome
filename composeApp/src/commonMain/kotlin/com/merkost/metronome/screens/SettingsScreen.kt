@@ -69,6 +69,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val appColorScheme by viewModel.colorScheme.collectAsState()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
+    val hapticEnabled by viewModel.hapticEnabled.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
@@ -231,6 +232,7 @@ fun SettingsScreen(upPress: () -> Unit) {
             }
 
             SettingsSwitch("Color Flash", colorFlash, viewModel::onColorFlashChanged)
+            SettingsSwitch("Haptic Feedback", hapticEnabled, viewModel::onHapticChanged, subtitle = "Vibrate on each beat")
             SettingsSwitch("Background Play", backgroundPlay, viewModel::onBackgroundPlayChanged)
 
             Column(
@@ -295,16 +297,30 @@ fun SettingsRow(
 }
 
 @Composable
-fun SettingsSwitch(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+fun SettingsSwitch(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    subtitle: String? = null,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            )
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }

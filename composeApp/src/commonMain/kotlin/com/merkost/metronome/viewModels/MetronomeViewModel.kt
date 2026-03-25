@@ -33,6 +33,8 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Pair(1, 1))
     val selectedSound = appDatastore.selectedSound
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
+    val hapticEnabled = appDatastore.hapticEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     private val metronomeMinimum = MIN_BPM
     private val metronomeMaximum = MAX_BPM

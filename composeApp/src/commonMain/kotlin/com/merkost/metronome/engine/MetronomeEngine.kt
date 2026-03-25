@@ -1,6 +1,7 @@
 package com.merkost.metronome.engine
 
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.repeat
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class MetronomeEngine(
     private val player: MetronomePlayer,
     private val viewModel: MetronomeViewModel,
+    private val hapticProvider: HapticProvider,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
@@ -41,6 +43,9 @@ class MetronomeEngine(
                             interval = viewModel.metronomeState.value.interval.toLong()
                             val stereo = viewModel.currentStereo.value
                             player.play(beat, stereo.first.toFloat(), stereo.second.toFloat())
+                            if (viewModel.hapticEnabled.value) {
+                                hapticProvider.playBeatHaptic(beat)
+                            }
                         }
                 } else {
                     viewModel.index.update { -1 }
