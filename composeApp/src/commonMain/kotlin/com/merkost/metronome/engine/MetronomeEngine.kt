@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
@@ -23,6 +25,11 @@ class MetronomeEngine(
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
 
+    private val _barCompleted = MutableSharedFlow<Int>(extraBufferCapacity = 1)
+    val barCompleted: SharedFlow<Int> = _barCompleted
+    private var beatCount = 0
+    private var barNumber = 0
+
     fun start() {
         player.initialize()
         job = coroutineScope.launch {
@@ -34,6 +41,8 @@ class MetronomeEngine(
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
                     viewModel.index.update { -1 }
+                    beatCount = 0
+                    barNumber = 0
                     var interval = viewModel.metronomeState.value.interval.toLong()
                     createBeatsSequence(viewModel.metronomeState.value.beats)
                         .onEach { delay(interval) }
@@ -45,6 +54,18 @@ class MetronomeEngine(
                             player.play(beat, stereo.first.toFloat(), stereo.second.toFloat())
                             if (viewModel.hapticEnabled.value) {
                                 hapticProvider.playBeatHaptic(beat)
+                            }
+                            // Bar counting for gradual tempo
+                            beatCount++
+                            val beatsPerBar = viewModel.metronomeState.value.beats.size
+                            if (beatCount >= beatsPerBar) {
+                                beatCount = 0
+                                barNumber++
+                                _barCompleted.tryEmit(barNumber)
+                                val config = viewModel.gradualTempoConfig.value
+                                if (config != null) {
+                                    viewModel.incrementGradualTempo()
+                                }
                             }
                         }
                 } else {

@@ -4,8 +4,10 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.SpringSpec
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,6 +56,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.merkost.metronome.model.GradualTempoConfig
+import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.components.CoachMarksOverlay
 import com.merkost.metronome.components.Ball
 import com.merkost.metronome.components.DropdownSelector
@@ -82,7 +87,7 @@ private val TEMPO_PRESETS = listOf(
     "Presto" to 180,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(onSettingsClicked: () -> Unit) {
     val viewModel: MetronomeViewModel = koinInject()
@@ -105,6 +110,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     val practiceTimerGoal by viewModel.practiceTimerGoal.collectAsState()
     val practiceTimerRemaining by viewModel.practiceTimerRemaining.collectAsState()
     var showTimerPicker by remember { mutableStateOf(false) }
+
+    val gradualTempoConfig by viewModel.gradualTempoConfig.collectAsState()
+    val gradualTempoCurrentBar by viewModel.gradualTempoCurrentBar.collectAsState()
+    var showGradualTempoPicker by remember { mutableStateOf(false) }
 
     var tsExpanded by remember { mutableStateOf(false) }
     var presetsExpanded by remember { mutableStateOf(false) }
@@ -303,15 +312,34 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             Icons.Default.Remove,
                             onClick = viewModel::onSliderValueDecreased
                         )
-                        Text(
+                        Column(
                             modifier = Modifier.weight(1f),
-                            text = metronomeState.rhythm.toString(),
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                textAlign = TextAlign.Center,
-                                fontSize = 62.sp
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                modifier = Modifier.combinedClickable(
+                                    onClick = {},
+                                    onLongClick = {
+                                        viewModel.onLongPressConfirm()
+                                        showGradualTempoPicker = true
+                                    }
+                                ),
+                                text = metronomeState.rhythm.toString(),
+                                style = MaterialTheme.typography.displayLarge.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 62.sp
+                                )
                             )
-                        )
+                            if (gradualTempoConfig != null) {
+                                Text(
+                                    text = "\u2197 Auto-increasing",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFFFF9800),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                         MyIconButton(
                             Icons.Default.Add,
                             onClick = viewModel::onSliderValueIncreased
@@ -351,7 +379,66 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             ) {
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-                if (practiceTimerGoal != null) {
+                if (gradualTempoConfig != null) {
+                    val config = gradualTempoConfig!!
+                    val currentBar = gradualTempoCurrentBar
+                    val completed = currentBar >= config.totalBars
+                    Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                        FeatureCard(
+                            title = "\uD83D\uDCC8 Gradual Tempo",
+                            statusTag = {
+                                StatusTag(
+                                    if (completed) "COMPLETE" else "RUNNING",
+                                    Color(0xFFFF9800)
+                                )
+                            },
+                            progress = currentBar.toFloat() / config.totalBars.toFloat(),
+                            progressColor = Color(0xFFFF9800),
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        "Start",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        "${config.startBpm}",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                                Spacer(Modifier.weight(1f))
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        "End",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        "${config.endBpm}",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                            }
+                            Text(
+                                "+${config.increment} BPM / ${config.barsPerStep} bars  \u2022  Bar $currentBar / ${config.totalBars}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        TextButton(
+                            onClick = { viewModel.dismissGradualTempo() },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text("Dismiss")
+                        }
+                    }
+                } else if (practiceTimerGoal != null) {
                     val goal = practiceTimerGoal!!
                     val remaining = practiceTimerRemaining
                     Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
@@ -453,4 +540,139 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             }
         )
     }
+
+    if (showGradualTempoPicker) {
+        GradualTempoDialog(
+            currentBpm = metronomeState.rhythm,
+            onDismiss = { showGradualTempoPicker = false },
+            onStart = { config ->
+                viewModel.startGradualTempo(config)
+                showGradualTempoPicker = false
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun GradualTempoDialog(
+    currentBpm: Int,
+    onDismiss: () -> Unit,
+    onStart: (GradualTempoConfig) -> Unit,
+) {
+    var startBpm by remember { mutableStateOf(currentBpm) }
+    var endBpm by remember { mutableStateOf((currentBpm + 40).coerceAtMost(MAX_BPM)) }
+    var selectedIncrement by remember { mutableStateOf(2) }
+    var selectedBarsPerStep by remember { mutableStateOf(4) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Gradual Tempo", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                // Start BPM
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("Start BPM", style = MaterialTheme.typography.bodyMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { if (startBpm > 40) startBpm-- }) {
+                            Icon(Icons.Default.Remove, "Decrease start BPM")
+                        }
+                        Text(
+                            "$startBpm",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        IconButton(onClick = { if (startBpm < endBpm - 1) startBpm++ }) {
+                            Icon(Icons.Default.Add, "Increase start BPM")
+                        }
+                    }
+                }
+
+                // End BPM
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("End BPM", style = MaterialTheme.typography.bodyMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { if (endBpm > startBpm + 1) endBpm-- }) {
+                            Icon(Icons.Default.Remove, "Decrease end BPM")
+                        }
+                        Text(
+                            "$endBpm",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        IconButton(onClick = { if (endBpm < MAX_BPM) endBpm++ }) {
+                            Icon(Icons.Default.Add, "Increase end BPM")
+                        }
+                    }
+                }
+
+                // Increment chips
+                Column {
+                    Text(
+                        "Increment",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(1, 2, 3, 5).forEach { inc ->
+                            FilterChip(
+                                selected = selectedIncrement == inc,
+                                onClick = { selectedIncrement = inc },
+                                label = { Text("+$inc") }
+                            )
+                        }
+                    }
+                }
+
+                // Frequency chips
+                Column {
+                    Text(
+                        "Every N bars",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(2, 4, 8).forEach { bars ->
+                            FilterChip(
+                                selected = selectedBarsPerStep == bars,
+                                onClick = { selectedBarsPerStep = bars },
+                                label = { Text("$bars") }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onStart(
+                        GradualTempoConfig(
+                            startBpm = startBpm,
+                            endBpm = endBpm,
+                            increment = selectedIncrement,
+                            barsPerStep = selectedBarsPerStep,
+                        )
+                    )
+                }
+            ) {
+                Text("Start", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

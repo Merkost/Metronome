@@ -7,6 +7,7 @@ import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
+import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.model.TimeSignature
@@ -221,6 +222,39 @@ class MetronomeViewModel(
     fun dismissPracticeTimer() {
         _practiceTimerGoal.value = null
         _practiceTimerRemaining.value = 0L
+    }
+
+    // Gradual Tempo
+    private val _gradualTempoConfig = MutableStateFlow<GradualTempoConfig?>(null)
+    val gradualTempoConfig: StateFlow<GradualTempoConfig?> = _gradualTempoConfig
+    private val _gradualTempoCurrentBar = MutableStateFlow(0)
+    val gradualTempoCurrentBar: StateFlow<Int> = _gradualTempoCurrentBar
+
+    fun startGradualTempo(config: GradualTempoConfig) {
+        _gradualTempoConfig.value = config
+        _gradualTempoCurrentBar.value = 0
+        _metronomeState.update { it.copy(rhythm = config.startBpm) }
+    }
+
+    fun dismissGradualTempo() {
+        _gradualTempoConfig.value = null
+        _gradualTempoCurrentBar.value = 0
+    }
+
+    fun incrementGradualTempo() {
+        val config = _gradualTempoConfig.value ?: return
+        _gradualTempoCurrentBar.update { it + 1 }
+        val currentBar = _gradualTempoCurrentBar.value
+        if (currentBar > 0 && currentBar % config.barsPerStep == 0) {
+            val newBpm = (_metronomeState.value.rhythm + config.increment).coerceAtMost(config.endBpm)
+            _metronomeState.update { it.copy(rhythm = newBpm) }
+            if (newBpm >= config.endBpm) {
+                viewModelScope.launch {
+                    delay(3000)
+                    dismissGradualTempo()
+                }
+            }
+        }
     }
 
     fun onLongPressConfirm() {
