@@ -1,7 +1,12 @@
 package com.merkost.metronome.components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
@@ -22,8 +27,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -101,12 +109,43 @@ fun PlayButton(
         animationSpec = animationSpec
     )
 
+    // Breathing glow when playing
+    val glowColor = MaterialTheme.colorScheme.primary
+    val glowExtensionPx = with(LocalDensity.current) { 8.dp.toPx() }
+
+    val glowModifier = if (isPlaying) {
+        val infiniteTransition = rememberInfiniteTransition(label = "playButtonGlow")
+        val glowAlpha by infiniteTransition.animateFloat(
+            initialValue = 0.06f,
+            targetValue = 0.18f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 2000,
+                    easing = FastOutSlowInEasing
+                ),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "playButtonGlowAlpha"
+        )
+        Modifier.drawBehind {
+            val center = Offset(this.size.width / 2f, this.size.height / 2f)
+            val radius = this.size.maxDimension / 2f + glowExtensionPx
+            drawCircle(
+                color = glowColor.copy(alpha = glowAlpha),
+                radius = radius,
+                center = center
+            )
+        }
+    } else {
+        Modifier
+    }
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        modifier = Modifier
+        modifier = glowModifier
             .size(size)
             .then(modifier),
         onClick = onClick,
