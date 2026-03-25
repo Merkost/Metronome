@@ -25,6 +25,8 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
     val selectedSound = appDatastore.selectedSound
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
+    val hapticEnabled = appDatastore.hapticEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -35,6 +37,12 @@ class SettingsViewModel(
     fun onBackgroundPlayChanged(b: Boolean) {
         viewModelScope.launch {
             appDatastore.saveBackgroundPlay(b)
+        }
+    }
+
+    fun onHapticChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            appDatastore.saveHapticEnabled(enabled)
         }
     }
 
