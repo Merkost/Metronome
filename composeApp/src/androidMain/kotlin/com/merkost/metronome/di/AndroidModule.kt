@@ -5,6 +5,8 @@ import com.merkost.metronome.engine.MetronomePlayerAndroid
 import com.merkost.metronome.platform.AndroidAppVersionProvider
 import com.merkost.metronome.platform.AndroidPlatformActions
 import com.merkost.metronome.platform.AppVersionProvider
+import com.merkost.metronome.platform.HapticProvider
+import com.merkost.metronome.platform.HapticProviderAndroid
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.createDataStore
 import org.koin.android.ext.koin.androidContext
@@ -15,4 +17,5 @@ val androidModule = module {
     single<MetronomePlayer> { MetronomePlayerAndroid(androidContext()) }
     single<PlatformActions> { AndroidPlatformActions(androidContext()) }
     single<AppVersionProvider> { AndroidAppVersionProvider(androidContext()) }
+    single<HapticProvider> { HapticProviderAndroid(androidContext()) }
 }
