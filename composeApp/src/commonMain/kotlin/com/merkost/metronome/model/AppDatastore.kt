@@ -18,4 +18,16 @@ interface AppDatastore {
     suspend fun addTotalTime(elapsedTime: Long)
     suspend fun resetTime()
 
+    val selectedSound: Flow<ClickSound>
+    suspend fun saveSelectedSound(sound: ClickSound)
+
+    val hapticEnabled: Flow<Boolean>
+    suspend fun saveHapticEnabled(enabled: Boolean)
+
+    val onboardingComplete: Flow<Boolean>
+    suspend fun saveOnboardingComplete(complete: Boolean)
+
+    val timeSignature: Flow<TimeSignature>
+    suspend fun saveTimeSignature(timeSignature: TimeSignature)
+
 }
