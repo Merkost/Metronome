@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.\\(xml|json\\)$\")",
+      "Bash(grep -r \"AudioTrack\\\\|MediaPlayer\\\\|SoundPool\" /Users/merkost/StudioProjects/Metronome/app/src/main/java --include=*.kt)",
+      "Bash(find /Users/merkost/StudioProjects/Metronome/app/src/main/res/drawable* -type f)",
+      "Bash(find /Users/merkost/StudioProjects/Metronome/app/src/main/res/mipmap* -type f)",
+      "WebSearch",
+      "Bash(git checkout:*)",
+      "Bash(./gradlew :composeApp:assembleDebug)",
+      "Bash(./gradlew :composeApp:compileDebugKotlinAndroid)",
+      "Bash(curl -s https://maven.pkg.jetbrains.space/public/p/compose/dev/org/jetbrains/compose/runtime/runtime/)",
+      "Bash(curl -s https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/)",
+      "Bash(find composeApp/src/androidMain -name AndroidManifest.xml -o -name *.xml -path */main/*)",
+      "Bash(./gradlew :composeApp:compileKotlinIosArm64)",
+      "Bash(find ~/.gradle/caches -path *compose*icon* -name *.pom)"
+    ]
+  }
+}
