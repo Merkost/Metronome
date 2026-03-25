@@ -1,5 +1,7 @@
 package com.merkost.metronome.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,13 +33,15 @@ import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.ui.defaultPlayButtonSize
 import com.merkost.metronome.ui.horizontalPadding
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainButtonsRow(
     modifier: Modifier,
     isPlaying: Boolean,
     stopWatchState: StopWatchState,
     onPlayPause: (isPlaying: Boolean) -> Unit,
-    onTempoTap: () -> Unit
+    onTempoTap: () -> Unit,
+    onStopwatchLongPress: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -55,7 +59,12 @@ fun MainButtonsRow(
         MySecondaryButton(
             onClick = {},
             shape = RoundedCornerShape(30),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = onStopwatchLongPress
+                )
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(

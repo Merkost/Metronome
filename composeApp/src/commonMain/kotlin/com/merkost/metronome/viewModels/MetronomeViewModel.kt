@@ -10,6 +10,7 @@ import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.platform.currentTimeMillis
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,13 +21,17 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 
-class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
+class MetronomeViewModel(
+    private val appDatastore: AppDatastore,
+    private val hapticProvider: HapticProvider,
+) : ViewModel() {
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val currentStereo = appDatastore.stereo
@@ -188,6 +193,38 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
         _metronomeState.update { it.copy(timeSignature = ts, beats = ts.defaultBeats) }
         index.value = -1
         viewModelScope.launch { appDatastore.saveTimeSignature(ts) }
+    }
+
+    // Practice Timer
+    private val _practiceTimerGoal = MutableStateFlow<Long?>(null) // null = inactive, else milliseconds
+    private val _practiceTimerRemaining = MutableStateFlow(0L)
+    val practiceTimerGoal: StateFlow<Long?> = _practiceTimerGoal
+    val practiceTimerRemaining: StateFlow<Long> = _practiceTimerRemaining
+
+    fun startPracticeTimer(minutes: Int) {
+        val goalMs = minutes * 60_000L
+        _practiceTimerGoal.value = goalMs
+        _practiceTimerRemaining.value = goalMs
+        viewModelScope.launch {
+            while (_practiceTimerRemaining.value > 0 && _practiceTimerGoal.value != null) {
+                delay(1000L)
+                if (metronomeState.value.playing) {
+                    _practiceTimerRemaining.update { (it - 1000L).coerceAtLeast(0L) }
+                }
+            }
+            if (_practiceTimerRemaining.value <= 0 && _practiceTimerGoal.value != null) {
+                hapticProvider.playConfirmHaptic()
+            }
+        }
+    }
+
+    fun dismissPracticeTimer() {
+        _practiceTimerGoal.value = null
+        _practiceTimerRemaining.value = 0L
+    }
+
+    fun onLongPressConfirm() {
+        hapticProvider.playConfirmHaptic()
     }
 }
 

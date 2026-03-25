@@ -10,7 +10,7 @@ import org.koin.dsl.module
 
 val commonModule = module {
     single<AppDatastore> { AppDatastoreImpl(get()) }
-    single { MetronomeViewModel(get()) }
+    single { MetronomeViewModel(get(), get()) }
     single { MetronomeEngine(get(), get(), get()) }
     viewModel { SettingsViewModel(get()) }
 }
