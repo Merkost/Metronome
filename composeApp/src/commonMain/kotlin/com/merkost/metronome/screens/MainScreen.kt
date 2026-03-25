@@ -65,6 +65,13 @@ import metronome.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
+private val TEMPO_PRESETS = listOf(
+    "Largo" to 50,
+    "Andante" to 80,
+    "Moderato" to 110,
+    "Allegro" to 140,
+    "Presto" to 180,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +86,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     val selectedIndex by viewModel.index.collectAsState()
 
     var tsExpanded by remember { mutableStateOf(false) }
+    var presetsExpanded by remember { mutableStateOf(false) }
 
     val springSpec = SpringSpec<Float>(stiffness = 600f, dampingRatio = 0.8f)
 
@@ -209,16 +217,47 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    AnimatedContent(targetState = metronomeState.tempoName) { name ->
-                        Text(
-                            text = name,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    DropdownSelector(
+                        expanded = presetsExpanded,
+                        onDismiss = { presetsExpanded = false },
+                        items = TEMPO_PRESETS,
+                        selectedItem = TEMPO_PRESETS.firstOrNull { it.second == metronomeState.rhythm },
+                        onSelect = {
+                            viewModel.onSliderValueChanged(it.second.toFloat())
+                            presetsExpanded = false
+                        },
+                        itemContent = { preset, _ ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = preset.first,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                                Text(
+                                    text = "${preset.second} BPM",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        },
+                        anchor = {
+                            AnimatedContent(targetState = metronomeState.tempoName) { name ->
+                                Text(
+                                    text = "$name \u25BE",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp
+                                    ),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.clickable { presetsExpanded = !presetsExpanded }
+                                )
+                            }
+                        }
+                    )
 
                     Row(
                         modifier = Modifier
