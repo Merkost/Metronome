@@ -3,6 +3,7 @@ package com.merkost.metronome.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.model.AppDatastore
+import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -22,6 +23,8 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
     val currentStereo = appDatastore.stereoSettings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    val selectedSound = appDatastore.selectedSound
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -38,6 +41,12 @@ class SettingsViewModel(
     fun onColorSchemeChanged(it: AppColorScheme) {
         viewModelScope.launch {
             appDatastore.saveColorScheme(it)
+        }
+    }
+
+    fun onSoundChanged(sound: ClickSound) {
+        viewModelScope.launch {
+            appDatastore.saveSelectedSound(sound)
         }
     }
 

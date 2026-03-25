@@ -6,6 +6,7 @@ import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.model.TimeSignature
@@ -30,6 +31,8 @@ class MetronomeViewModel(private val appDatastore: AppDatastore) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val currentStereo = appDatastore.stereo
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Pair(1, 1))
+    val selectedSound = appDatastore.selectedSound
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
 
     private val metronomeMinimum = MIN_BPM
     private val metronomeMaximum = MAX_BPM
