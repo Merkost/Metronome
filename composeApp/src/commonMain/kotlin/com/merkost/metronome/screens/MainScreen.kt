@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -31,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,11 +56,14 @@ import androidx.compose.ui.unit.sp
 import com.merkost.metronome.components.CoachMarksOverlay
 import com.merkost.metronome.components.Ball
 import com.merkost.metronome.components.DropdownSelector
+import com.merkost.metronome.components.FeatureCard
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
 import com.merkost.metronome.components.OutlinedCircle
+import com.merkost.metronome.components.StatusTag
+import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.TimeSignature
@@ -96,6 +101,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     val spotlightTargets = remember(beatBallsBounds, tempoSectionBounds, bottomControlsBounds) {
         listOfNotNull(beatBallsBounds, tempoSectionBounds, bottomControlsBounds)
     }
+
+    val practiceTimerGoal by viewModel.practiceTimerGoal.collectAsState()
+    val practiceTimerRemaining by viewModel.practiceTimerRemaining.collectAsState()
+    var showTimerPicker by remember { mutableStateOf(false) }
 
     var tsExpanded by remember { mutableStateOf(false) }
     var presetsExpanded by remember { mutableStateOf(false) }
@@ -338,15 +347,61 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     .onGloballyPositioned { coordinates ->
                         bottomControlsBounds = coordinates.boundsInRoot()
                     },
-                verticalArrangement = Arrangement.spacedBy(32.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+                if (practiceTimerGoal != null) {
+                    val goal = practiceTimerGoal!!
+                    val remaining = practiceTimerRemaining
+                    Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                        FeatureCard(
+                            title = "\u23F1 Practice Timer",
+                            statusTag = {
+                                if (remaining > 0) {
+                                    StatusTag("ACTIVE", Color(0xFF4CAF50))
+                                } else {
+                                    StatusTag("DONE", Color(0xFFFF9800))
+                                }
+                            },
+                            progress = 1f - (remaining.toFloat() / goal.toFloat()),
+                            progressColor = Color(0xFF4CAF50),
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    TimestampMillisecondsFormatter.format(remaining),
+                                    style = MaterialTheme.typography.displaySmall,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                                Text(
+                                    "of ${TimestampMillisecondsFormatter.format(goal)}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        TextButton(
+                            onClick = { viewModel.dismissPracticeTimer() },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text("Dismiss")
+                        }
+                    }
+                }
+
                 MainButtonsRow(
                     Modifier.padding(horizontal = horizontalPadding),
                     isPlaying = isPlaying,
                     metronomeState.stopWatchState,
                     onPlayPause = viewModel::onPlayPauseClicked,
-                    onTempoTap = viewModel::onTempoTap
+                    onTempoTap = viewModel::onTempoTap,
+                    onStopwatchLongPress = {
+                        viewModel.onLongPressConfirm()
+                        showTimerPicker = true
+                    }
                 )
             }
         }
@@ -360,5 +415,42 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                 onDismiss = viewModel::onOnboardingDismiss,
             )
         }
+    }
+
+    if (showTimerPicker) {
+        AlertDialog(
+            onDismissRequest = { showTimerPicker = false },
+            title = { Text("Practice Timer", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "Choose practice duration:",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    listOf(5, 10, 15, 20, 30).forEach { minutes ->
+                        TextButton(
+                            onClick = {
+                                viewModel.startPracticeTimer(minutes)
+                                showTimerPicker = false
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                "$minutes minutes",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showTimerPicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
