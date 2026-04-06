@@ -35,6 +35,7 @@ fun <T> DropdownSelector(
     onSelect: (T) -> Unit,
     itemContent: @Composable (T, Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    footer: (@Composable () -> Unit)? = null,
     anchor: @Composable () -> Unit,
 ) {
     val dropdownShape = RoundedCornerShape(16.dp)
@@ -72,6 +73,9 @@ fun <T> DropdownSelector(
                     ) {
                         itemContent(item, isSelected)
                     }
+                }
+                if (footer != null) {
+                    footer()
                 }
             }
         }

@@ -301,6 +301,34 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                 )
                             }
                         },
+                        footer = {
+                            HorizontalDivider(Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        presetsExpanded = false
+                                        showGradualTempoPicker = true
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Gradual Tempo",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Setup \u2192",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
                         anchor = {
                             AnimatedContent(targetState = metronomeState.tempoName) { name ->
                                 Text(
@@ -331,13 +359,6 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
-                                modifier = Modifier.combinedClickable(
-                                    onClick = {},
-                                    onLongClick = {
-                                        viewModel.onLongPressConfirm()
-                                        showGradualTempoPicker = true
-                                    }
-                                ),
                                 text = metronomeState.rhythm.toString(),
                                 style = MaterialTheme.typography.displayLarge.copy(
                                     fontWeight = FontWeight.ExtraBold,
