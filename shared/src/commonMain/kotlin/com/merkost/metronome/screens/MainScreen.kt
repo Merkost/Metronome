@@ -511,10 +511,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     metronomeState.stopWatchState,
                     onPlayPause = viewModel::onPlayPauseClicked,
                     onTempoTap = viewModel::onTempoTap,
-                    onStopwatchLongPress = {
-                        viewModel.onLongPressConfirm()
-                        showTimerPicker = true
-                    }
+                    onTimerClick = { showTimerPicker = true }
                 )
             }
         }

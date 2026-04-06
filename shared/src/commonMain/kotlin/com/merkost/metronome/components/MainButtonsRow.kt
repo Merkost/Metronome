@@ -1,7 +1,5 @@
 package com.merkost.metronome.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,10 +29,8 @@ import androidx.compose.ui.unit.dp
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.ui.defaultPlayButtonSize
 import com.merkost.metronome.ui.horizontalPadding
-import com.merkost.metronome.ui.pulseOnChange
 import com.merkost.metronome.ui.spacingSmall
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainButtonsRow(
     modifier: Modifier,
@@ -42,43 +38,27 @@ fun MainButtonsRow(
     stopWatchState: StopWatchState,
     onPlayPause: (isPlaying: Boolean) -> Unit,
     onTempoTap: () -> Unit,
-    onStopwatchLongPress: () -> Unit = {},
+    onTimerClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
-        var secondaryButtonSize by remember {
-            mutableStateOf(IntSize.Zero)
-        }
-
+        var secondaryButtonSize by remember { mutableStateOf(IntSize.Zero) }
         val density = LocalDensity.current
 
         MySecondaryButton(
-            onClick = {},
+            onClick = onTimerClick,
             shape = RoundedCornerShape(30),
-            modifier = Modifier
-                .weight(1f)
-                .combinedClickable(
-                    onClick = {},
-                    onLongClick = onStopwatchLongPress
-                )
+            modifier = Modifier.weight(1f)
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(
-                    spacingSmall,
-                    Alignment.CenterHorizontally
-                ),
+                horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(
-                        density.run { secondaryButtonSize.height.toDp() },
-                        defaultPlayButtonSize
-                    )
+                    .heightIn(density.run { secondaryButtonSize.height.toDp() }, defaultPlayButtonSize)
                     .padding(16.dp)
             ) {
                 Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
@@ -98,27 +78,16 @@ fun MainButtonsRow(
         )
         Spacer(modifier = Modifier.size(horizontalPadding))
 
-        // Tap tempo with pulse feedback via reusable modifier
-        var tapCount by remember { mutableStateOf(0) }
-
         MySecondaryButton(
-            onClick = {
-                tapCount++
-                onTempoTap()
-            },
+            onClick = onTempoTap,
             shape = RoundedCornerShape(30),
             modifier = Modifier
-                .pulseOnChange(tapCount)
-                .onSizeChanged {
-                    secondaryButtonSize = it
-                }
+                .onSizeChanged { secondaryButtonSize = it }
                 .weight(1f)
-                .fillMaxWidth()) {
+                .fillMaxWidth()
+        ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(
-                    spacingSmall,
-                    Alignment.CenterHorizontally
-                ),
+                horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(16.dp)
