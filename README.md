@@ -1,10 +1,8 @@
-<p align="center">
-  <img src="androidApp/src/main/ic_launcher-playstore.png" width="120" alt="Metronome icon" />
-</p>
+<img src="androidApp/src/main/ic_launcher-playstore.png" width="80" alt="Metronome icon" />
 
-<h1 align="center">Metronome</h1>
-<p align="center"><i>Feel the Beat!</i></p>
-<p align="center">A clean, simple metronome app built with <b>Kotlin Multiplatform</b> and <b>Compose Multiplatform</b> for Android and iOS.</p>
+# Metronome
+
+*Feel the Beat!* — A clean, simple metronome app built with **Kotlin Multiplatform** and **Compose Multiplatform** for Android and iOS.
 
 ---
 
