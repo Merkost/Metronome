@@ -302,16 +302,17 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             }
                         },
                         footer = {
-                            HorizontalDivider(Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                            HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 6.dp))
                             Row(
                                 modifier = Modifier
+                                    .padding(horizontal = 6.dp)
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
                                         presetsExpanded = false
                                         showGradualTempoPicker = true
                                     }
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    .padding(horizontal = 14.dp, vertical = 12.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -323,8 +324,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "Setup \u2192",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    text = "\u2192",
+                                    style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }

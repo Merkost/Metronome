@@ -13,19 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
-/**
- * A generic reusable dropdown selector that wraps an anchor element with a [DropdownMenu].
- *
- * @param T the type of items in the dropdown
- * @param expanded controls menu visibility
- * @param onDismiss called when the user taps outside the menu
- * @param items the menu items to display
- * @param selectedItem the currently selected item (used for highlight)
- * @param onSelect called when the user selects an item
- * @param itemContent how to render each item; receives the item and whether it is selected
- * @param modifier modifier applied to the outer Box
- * @param anchor the tappable element that triggers the dropdown
- */
 @Composable
 fun <T> DropdownSelector(
     expanded: Boolean,
@@ -61,15 +48,11 @@ fun <T> DropdownSelector(
 
                     Box(
                         modifier = Modifier
+                            .padding(horizontal = 6.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(itemBackground)
                             .clickable { onSelect(item) }
-                            .padding(
-                                PaddingValues(
-                                    horizontal = 16.dp,
-                                    vertical = 12.dp,
-                                )
-                            )
+                            .padding(PaddingValues(horizontal = 14.dp, vertical = 12.dp))
                     ) {
                         itemContent(item, isSelected)
                     }
