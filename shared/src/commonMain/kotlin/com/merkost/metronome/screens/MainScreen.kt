@@ -85,6 +85,7 @@ import com.merkost.metronome.ui.CircleSize
 import com.merkost.metronome.ui.cornerRadiusSmall
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
+import com.merkost.metronome.ui.pulseOnChange
 import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -366,6 +367,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                     fontWeight = FontWeight.ExtraBold,
                                     textAlign = TextAlign.Center,
                                     fontSize = tempoDisplaySize
+                                ),
+                                modifier = Modifier.pulseOnChange(
+                                    metronomeState.rhythm,
+                                    peakScale = 1.02f
                                 )
                             )
                             if (gradualTempoConfig != null) {
