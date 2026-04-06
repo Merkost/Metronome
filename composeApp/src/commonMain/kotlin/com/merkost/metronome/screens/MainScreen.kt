@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -83,6 +84,7 @@ import com.merkost.metronome.ui.BallSize
 import com.merkost.metronome.ui.CircleSize
 import com.merkost.metronome.ui.cornerRadiusSmall
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -215,9 +217,13 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             )
         }
     ) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(it),
+            contentAlignment = Alignment.TopCenter
+        ) {
         Column(
             modifier = Modifier
-                .padding(it)
+                .widthIn(max = maxContentWidth)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -511,6 +517,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     }
                 )
             }
+        }
         }
 
     }

@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -58,6 +60,7 @@ import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.ui.cornerRadiusMedium
 import com.merkost.metronome.ui.emojiSize
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.theme.AppColorScheme
@@ -102,10 +105,14 @@ fun SettingsScreen(upPress: () -> Unit) {
             })
         }
     ) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(it),
+            contentAlignment = Alignment.TopCenter
+        ) {
         Column(
             Modifier
+                .widthIn(max = maxContentWidth)
                 .verticalScroll(rememberScrollState())
-                .padding(it)
                 .padding(horizontalPadding),
             verticalArrangement = Arrangement.spacedBy(spacingMedium)
         ) {
@@ -288,6 +295,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                     platformActions.rateApp()
                 }
             }
+        }
         }
     }
 }
