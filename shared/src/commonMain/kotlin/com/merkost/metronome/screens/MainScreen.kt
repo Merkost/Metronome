@@ -294,6 +294,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                         fontWeight = FontWeight.Bold
                                     )
                                 )
+                                Spacer(Modifier.widthIn(min = 32.dp))
                                 Text(
                                     text = "${preset.second} BPM",
                                     style = MaterialTheme.typography.bodyMedium,
