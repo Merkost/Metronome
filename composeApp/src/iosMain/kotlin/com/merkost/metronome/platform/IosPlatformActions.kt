@@ -10,7 +10,7 @@ class IosPlatformActions : PlatformActions {
     }
 
     override fun rateApp() {
-        val url = NSURL(string = "https://apps.apple.com/app/idXXXXXXXXX")
+        val url = NSURL(string = "https://apps.apple.com/app/id6480380648")
         UIApplication.sharedApplication.openURL(url)
     }
 

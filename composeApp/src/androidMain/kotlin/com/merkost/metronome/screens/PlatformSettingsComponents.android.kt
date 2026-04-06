@@ -54,7 +54,7 @@ actual fun AppInfoCard() {
                 modifier = Modifier
                     .size(64.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {

@@ -17,3 +17,17 @@ local.properties
 /docs
 .kotlin
 .superpowers/
+
+# Build artifacts
+composeApp/release/
+
+# User-specific IDE files
+.idea/deploymentTargetSelector.xml
+.idea/deploymentTargetDropDown.xml
+.idea/copilot.data.migration.ask2agent.xml
+
+# Xcode user data
+iosApp/iosApp.xcodeproj/xcuserdata/
+
+# Local Claude settings
+.claude/settings.local.json
