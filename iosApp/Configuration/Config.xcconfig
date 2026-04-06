@@ -1,0 +1,11 @@
+// Framework search paths for Kotlin Multiplatform ComposeApp framework
+FRAMEWORK_SEARCH_PATHS = $(inherited) $(SRCROOT)/../composeApp/build/bin/$(PLATFORM_NAME)Arm64/$(CONFIGURATION)Framework
+
+// Link the static ComposeApp framework
+OTHER_LDFLAGS = $(inherited) -framework ComposeApp
+
+// Deployment target
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+
+// Swift version
+SWIFT_VERSION = 5.0

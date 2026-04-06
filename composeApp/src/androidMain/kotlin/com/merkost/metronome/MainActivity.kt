@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
 import androidx.activity.ComponentActivity
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        volumeControlStream = AudioManager.STREAM_MUSIC
         bindMetronomeService()
 
         enableEdgeToEdge()

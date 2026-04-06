@@ -1,7 +1,12 @@
 package com.merkost.metronome.screens
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.AnimatedVisibility
+
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -9,10 +14,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,6 +59,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,20 +68,25 @@ import androidx.compose.ui.unit.sp
 import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.components.CoachMarksOverlay
-import com.merkost.metronome.components.Ball
 import com.merkost.metronome.components.DropdownSelector
 import com.merkost.metronome.components.FeatureCard
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
-import com.merkost.metronome.components.OutlinedCircle
 import com.merkost.metronome.components.StatusTag
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.ui.BallSize
+import com.merkost.metronome.ui.CircleSize
+import com.merkost.metronome.ui.cornerRadiusSmall
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.spacingLarge
+import com.merkost.metronome.ui.spacingMedium
+import com.merkost.metronome.ui.spacingSmall
+import com.merkost.metronome.ui.tempoDisplaySize
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import metronome.composeapp.generated.resources.Res
 import metronome.composeapp.generated.resources.app_name
@@ -91,6 +105,8 @@ private val TEMPO_PRESETS = listOf(
 @Composable
 fun MainScreen(onSettingsClicked: () -> Unit) {
     val viewModel: MetronomeViewModel = koinInject()
+    // Trigger MetronomeEngine creation (and auto-start) on first composition
+    koinInject<com.merkost.metronome.engine.MetronomeEngine>()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val metronomeState: MetronomeState by viewModel.metronomeState.collectAsState()
     val beats by remember(metronomeState.beats) {
@@ -118,6 +134,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     var tsExpanded by remember { mutableStateOf(false) }
     var presetsExpanded by remember { mutableStateOf(false) }
 
+    val density = LocalDensity.current
     val springSpec = SpringSpec<Float>(stiffness = 600f, dampingRatio = 0.8f)
 
     val boxColorAnimation = remember { Animatable(0f) }
@@ -134,6 +151,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     }
     val primaryColor = MaterialTheme.colorScheme.primary
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -215,49 +233,40 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             alpha = boxColorAnimation.value.coerceIn(0f, 0.5f)
                         )
                     }
-                    .padding(top = 32.dp)
-                    .padding(horizontal = horizontalPadding),
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = spacingLarge),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(32.dp)
+                verticalArrangement = Arrangement.spacedBy(spacingLarge)
             ) {
+
+                val ballSpacing = if (beats.size > 5) spacingMedium else spacingLarge
+                val indicatorSize = minOf(CircleSize, BallSize + ballSpacing)
 
                 MetronomeBalls(
                     modifier = Modifier
-                        .padding(bottom = 64.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = spacingLarge)
                         .onGloballyPositioned { coordinates ->
                             beatBallsBounds = coordinates.boundsInRoot()
                         },
                     selectedIndex = selectedIndex.coerceIn(beats.indices),
-                    itemCount = beats.size,
+                    beats = beats,
+                    isPlaying = isPlaying,
                     animSpec = springSpec,
-                    indicator = {
-                        OutlinedCircle(MaterialTheme.colorScheme.primary)
-                    },
-                ) {
-                    beats.forEachIndexed { index, beat ->
-                        val color by animateColorAsState(
-                            targetValue =
-                            if (beat == Beat.HIGH) {
-                                MaterialTheme.colorScheme.primary
-                            } else MaterialTheme.colorScheme.primaryContainer,
-                            label = "ballsColor"
-                        )
-                        Ball(
-                            color = color,
-                            isActive = isPlaying && index == selectedIndex.coerceIn(beats.indices),
-                            onClick = { viewModel.onBallClicked(index, beat) }
-                        )
-                    }
-                }
+                    arrangementSpacing = ballSpacing,
+                    indicatorSize = indicatorSize,
+                    onBallClicked = viewModel::onBallClicked,
+                )
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = horizontalPadding)
                         .onGloballyPositioned { coordinates ->
                             tempoSectionBounds = coordinates.boundsInRoot()
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(spacingSmall)
                 ) {
                     DropdownSelector(
                         expanded = presetsExpanded,
@@ -290,9 +299,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             AnimatedContent(targetState = metronomeState.tempoName) { name ->
                                 Text(
                                     text = "$name \u25BE",
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 20.sp
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.Bold
                                     ),
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.clickable { presetsExpanded = !presetsExpanded }
@@ -304,7 +312,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = spacingSmall),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -328,15 +336,13 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                 style = MaterialTheme.typography.displayLarge.copy(
                                     fontWeight = FontWeight.ExtraBold,
                                     textAlign = TextAlign.Center,
-                                    fontSize = 62.sp
+                                    fontSize = tempoDisplaySize
                                 )
                             )
                             if (gradualTempoConfig != null) {
-                                Text(
-                                    text = "\u2197 Auto-increasing",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFFFF9800),
-                                    fontWeight = FontWeight.Bold
+                                StatusTag(
+                                    text = "Auto-increasing",
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                         }
@@ -347,7 +353,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     }
                 }
                 Slider(
-                    modifier = Modifier.height(20.dp),
+                    modifier = Modifier.padding(horizontal = horizontalPadding).height(20.dp),
                     value = metronomeState.rhythm.toFloat(),
                     onValueChange = viewModel::onSliderValueChanged,
                     valueRange = viewModel.metronomeRange,
@@ -358,7 +364,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     )
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     MySecondaryTextButton(text = "- 5", onClick = viewModel::onMinusFive)
@@ -366,67 +372,61 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     MySecondaryTextButton(text = "× 2", onClick = viewModel::multiplyByTwo)
                     MySecondaryTextButton(text = "+ 5", onClick = viewModel::onPlusFive)
                 }
-                Spacer(modifier = Modifier.size(32.dp))
-            }
 
-            Column(
-                modifier = Modifier
-                    .padding(bottom = 32.dp)
-                    .onGloballyPositioned { coordinates ->
-                        bottomControlsBounds = coordinates.boundsInRoot()
-                    },
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                // Feature cards live in the scrollable area so they
+                // don't squeeze the controls above.
+                val tertiaryColor = MaterialTheme.colorScheme.tertiary
+                val primaryColor2 = MaterialTheme.colorScheme.primary
 
-                if (gradualTempoConfig != null) {
-                    val config = gradualTempoConfig!!
+                AnimatedVisibility(
+                    visible = gradualTempoConfig != null,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut(),
+                    modifier = Modifier.padding(horizontal = horizontalPadding)
+                ) {
+                    val config = gradualTempoConfig ?: return@AnimatedVisibility
                     val currentBar = gradualTempoCurrentBar
                     val completed = currentBar >= config.totalBars
-                    Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                    Column {
                         FeatureCard(
                             title = "\uD83D\uDCC8 Gradual Tempo",
                             statusTag = {
                                 StatusTag(
                                     if (completed) "COMPLETE" else "RUNNING",
-                                    Color(0xFFFF9800)
+                                    tertiaryColor
                                 )
                             },
                             progress = currentBar.toFloat() / config.totalBars.toFloat(),
-                            progressColor = Color(0xFFFF9800),
+                            progressColor = tertiaryColor,
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        "Start",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        "${config.startBpm}",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.ExtraBold
-                                    )
-                                }
+                                Text(
+                                    "${config.startBpm}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                                Text(
+                                    " \u2192 ",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    "${config.endBpm} BPM",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
                                 Spacer(Modifier.weight(1f))
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        "End",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        "${config.endBpm}",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.ExtraBold
-                                    )
-                                }
+                                Text(
+                                    "+${config.increment} / ${config.barsPerStep} bars",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                             Text(
-                                "+${config.increment} BPM / ${config.barsPerStep} bars  \u2022  Bar $currentBar / ${config.totalBars}",
+                                "Bar $currentBar / ${config.totalBars}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -438,21 +438,28 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             Text("Dismiss")
                         }
                     }
-                } else if (practiceTimerGoal != null) {
-                    val goal = practiceTimerGoal!!
+                }
+
+                AnimatedVisibility(
+                    visible = gradualTempoConfig == null && practiceTimerGoal != null,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut(),
+                    modifier = Modifier.padding(horizontal = horizontalPadding)
+                ) {
+                    val goal = practiceTimerGoal ?: return@AnimatedVisibility
                     val remaining = practiceTimerRemaining
-                    Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                    Column {
                         FeatureCard(
                             title = "\u23F1 Practice Timer",
                             statusTag = {
                                 if (remaining > 0) {
-                                    StatusTag("ACTIVE", Color(0xFF4CAF50))
+                                    StatusTag("ACTIVE", primaryColor2)
                                 } else {
-                                    StatusTag("DONE", Color(0xFFFF9800))
+                                    StatusTag("DONE", tertiaryColor)
                                 }
                             },
                             progress = 1f - (remaining.toFloat() / goal.toFloat()),
-                            progressColor = Color(0xFF4CAF50),
+                            progressColor = primaryColor2,
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -479,6 +486,19 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                     }
                 }
 
+                Spacer(modifier = Modifier.size(spacingLarge))
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(bottom = spacingLarge)
+                    .onGloballyPositioned { coordinates ->
+                        bottomControlsBounds = coordinates.boundsInRoot()
+                    },
+                verticalArrangement = Arrangement.spacedBy(spacingMedium)
+            ) {
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
                 MainButtonsRow(
                     Modifier.padding(horizontal = horizontalPadding),
                     isPlaying = isPlaying,
@@ -493,23 +513,30 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             }
         }
 
-        if (onboardingStep >= 0 && spotlightTargets.size == 3) {
-            CoachMarksOverlay(
-                step = onboardingStep,
-                targetBounds = spotlightTargets,
-                onNext = viewModel::onOnboardingNext,
-                onBack = viewModel::onOnboardingBack,
-                onDismiss = viewModel::onOnboardingDismiss,
-            )
-        }
     }
+
+    // Overlay outside Scaffold so it covers the top bar too
+    AnimatedVisibility(
+        visible = onboardingStep >= 0 && spotlightTargets.size == 3,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        CoachMarksOverlay(
+            step = onboardingStep,
+            targetBounds = spotlightTargets,
+            onNext = viewModel::onOnboardingNext,
+            onBack = viewModel::onOnboardingBack,
+            onDismiss = viewModel::onOnboardingDismiss,
+        )
+    }
+    } // Box
 
     if (showTimerPicker) {
         AlertDialog(
             onDismissRequest = { showTimerPicker = false },
             title = { Text("Practice Timer", fontWeight = FontWeight.Bold) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
                     Text(
                         "Choose practice duration:",
                         style = MaterialTheme.typography.bodyMedium
@@ -569,7 +596,7 @@ private fun GradualTempoDialog(
         onDismissRequest = onDismiss,
         title = { Text("Gradual Tempo", fontWeight = FontWeight.Bold) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
                 // Start BPM
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -622,7 +649,7 @@ private fun GradualTempoDialog(
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(4.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
                         listOf(1, 2, 3, 5).forEach { inc ->
                             FilterChip(
                                 selected = selectedIncrement == inc,
@@ -641,7 +668,7 @@ private fun GradualTempoDialog(
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(4.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
                         listOf(2, 4, 8).forEach { bars ->
                             FilterChip(
                                 selected = selectedBarsPerStep == bars,

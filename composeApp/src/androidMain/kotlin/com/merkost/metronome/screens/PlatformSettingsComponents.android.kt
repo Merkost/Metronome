@@ -86,6 +86,11 @@ actual fun VolumeSlider() {
     }
 
     SettingsRow(title = "Volume") {
+        Text(
+            text = "$currentVolume / $maxVolumeLevel",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Slider(
             modifier = Modifier
                 .fillMaxWidth()

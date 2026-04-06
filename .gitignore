@@ -9,8 +9,11 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
-/.idea
+/.idese
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+/docs
+.kotlin
+.superpowers/

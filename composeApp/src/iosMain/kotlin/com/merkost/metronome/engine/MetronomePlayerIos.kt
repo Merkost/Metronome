@@ -22,11 +22,12 @@ class MetronomePlayerIos : MetronomePlayer {
     private var varispeedNode: AVAudioUnitVarispeed? = null
     private var audioBuffer: AVAudioPCMBuffer? = null
 
-    override fun initialize() {
+    override fun initialize(initialSound: ClickSound) {
         AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error = null)
         AVAudioSession.sharedInstance().setActive(true, error = null)
 
-        val url = NSBundle.mainBundle.URLForResource("wood", withExtension = "mp3") ?: return
+        val (name, ext) = soundFileInfo(initialSound)
+        val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext) ?: return
         val audioFile = AVAudioFile(forReading = url, error = null)
 
         val frameCount = audioFile.length.toUInt()
@@ -108,10 +109,26 @@ class MetronomePlayerIos : MetronomePlayer {
         val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext) ?: return
         val audioFile = AVAudioFile(forReading = url, error = null)
         val frameCount = audioFile.length.toUInt()
-        val buffer = AVAudioPCMBuffer(pCMFormat = audioFile.processingFormat, frameCapacity = frameCount)
+        val newFormat = audioFile.processingFormat
+        val buffer = AVAudioPCMBuffer(pCMFormat = newFormat, frameCapacity = frameCount)
         audioFile.readIntoBuffer(buffer, error = null)
-        playerNode?.stop()
+
+        val engine = audioEngine ?: return
+        val player = playerNode ?: return
+        val varispeed = varispeedNode ?: return
+
+        // Stop playback, reconnect with new format, restart
+        player.stop()
+        engine.disconnectNodeOutput(player)
+        engine.disconnectNodeOutput(varispeed)
+        engine.connect(player, varispeed, newFormat)
+        engine.connect(varispeed, engine.mainMixerNode, newFormat)
+
+        if (!engine.running) {
+            engine.startAndReturnError(null)
+        }
+
         audioBuffer = buffer
-        playerNode?.play()
+        player.play()
     }
 }

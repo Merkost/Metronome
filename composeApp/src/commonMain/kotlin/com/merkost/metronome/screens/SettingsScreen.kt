@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -37,6 +39,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +55,11 @@ import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.platform.PlatformActions
+import com.merkost.metronome.ui.cornerRadiusMedium
+import com.merkost.metronome.ui.emojiSize
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.spacingMedium
+import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.theme.AppColorScheme
 import com.merkost.metronome.viewModels.SettingsViewModel
 import metronome.composeapp.generated.resources.Res
@@ -74,7 +83,10 @@ fun SettingsScreen(upPress: () -> Unit) {
     val currentStereo by viewModel.currentStereo.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
 
-    BackgroundPlayPermissionCheck(backgroundPlay)
+    var showBackgroundPlayPermission by remember { mutableStateOf(false) }
+    if (showBackgroundPlayPermission) {
+        BackgroundPlayPermissionCheck(true)
+    }
 
     Scaffold(
         topBar = {
@@ -95,14 +107,17 @@ fun SettingsScreen(upPress: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(it)
                 .padding(horizontalPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(spacingMedium)
         ) {
 
             AppInfoCard()
 
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
             SettingsRow(title = "Click Sound") {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     ClickSound.entries.forEach { sound ->
                         val isSelected = sound == selectedSound
@@ -113,20 +128,24 @@ fun SettingsScreen(upPress: () -> Unit) {
                                 if (isSelected) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.surfaceVariant
                             ),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(cornerRadiusMedium),
                             modifier = Modifier.weight(1f)
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp, horizontal = 8.dp)
                             ) {
                                 Text(
                                     text = sound.emoji,
-                                    fontSize = 24.sp
+                                    fontSize = emojiSize
                                 )
+                                Spacer(Modifier.height(4.dp))
                                 Text(
                                     text = sound.displayName,
                                     style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                     color = if (isSelected) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.onSurface
                                 )
@@ -139,6 +158,16 @@ fun SettingsScreen(upPress: () -> Unit) {
             VolumeSlider()
 
             SettingsRow(title = "Stereo Panning") {
+                val stereoLabel = when {
+                    currentStereo < 0 -> "L${-currentStereo}"
+                    currentStereo > 0 -> "R$currentStereo"
+                    else -> "Center"
+                }
+                Text(
+                    text = stereoLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Slider(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -146,16 +175,20 @@ fun SettingsScreen(upPress: () -> Unit) {
                     value = currentStereo.toFloat(),
                     onValueChange = viewModel::onStereoChanged,
                     valueRange = -5f..5f,
-                    steps = 11,
+                    steps = 9,
                     colors = SliderDefaults.colors(
                         inactiveTickColor = Color.Transparent
                     )
                 )
             }
 
+            SettingsSwitch("Haptic Feedback", hapticEnabled, viewModel::onHapticChanged, subtitle = "Vibrate on each beat")
+
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
             SettingsRow(title = "Color Scheme") {
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(spacingSmall)
                 ) {
                     if (platformActions.isDynamicColorSupported()) {
                         item {
@@ -214,14 +247,13 @@ fun SettingsScreen(upPress: () -> Unit) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
                         Text(
                             text = TimestampMillisecondsFormatter.format(totalTime),
                             maxLines = 1,
-                            lineHeight = 18.sp,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
                         )
                     }
@@ -232,11 +264,22 @@ fun SettingsScreen(upPress: () -> Unit) {
             }
 
             SettingsSwitch("Color Flash", colorFlash, viewModel::onColorFlashChanged)
-            SettingsSwitch("Haptic Feedback", hapticEnabled, viewModel::onHapticChanged, subtitle = "Vibrate on each beat")
-            SettingsSwitch("Background Play", backgroundPlay, viewModel::onBackgroundPlayChanged)
+
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+            SettingsSwitch(
+                "Background Play",
+                backgroundPlay,
+                onCheckedChange = { enabled ->
+                    viewModel.onBackgroundPlayChanged(enabled)
+                    if (enabled) showBackgroundPlayPermission = true
+                }
+            )
+
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(spacingSmall)
             ) {
                 SettingsBigButton("Contact support") {
                     platformActions.contactSupport()
@@ -281,7 +324,7 @@ fun ColorSecondaryButton(
 @Composable
 fun SettingsRow(
     title: String,
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(16.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(spacingMedium),
     content: @Composable () -> Unit
 ) {
     Column(

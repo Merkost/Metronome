@@ -36,7 +36,7 @@ class MetronomeViewModel(
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val currentStereo = appDatastore.stereo
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Pair(1, 1))
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Pair(1f, 1f))
     val selectedSound = appDatastore.selectedSound
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
     val hapticEnabled = appDatastore.hapticEnabled

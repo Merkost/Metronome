@@ -9,25 +9,33 @@ import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
 
 class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
+    @Volatile
     private var soundPool: SoundPool? = null
+    @Volatile
     private var soundId: Int = 0
+    @Volatile
+    private var soundReady: Boolean = false
 
-    override fun initialize() {
-        soundPool = SoundPool.Builder()
+    override fun initialize(initialSound: ClickSound) {
+        val pool = SoundPool.Builder()
             .setMaxStreams(4)
             .setAudioAttributes(
                 AudioAttributes.Builder()
-                    .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
-                    .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
-                    .setUsage(AudioAttributes.USAGE_ASSISTANT)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build()
             ).build()
-        soundId = soundPool!!.load(context, R.raw.wood, 3)
+        pool.setOnLoadCompleteListener { _, _, status ->
+            if (status == 0) soundReady = true
+        }
+        soundPool = pool
+        soundId = pool.load(context, soundResource(initialSound), 1)
     }
 
     override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) {
-        soundPool?.play(soundId, stereoLeft, stereoRight, 1, 0, beat.rate)
+        if (soundReady) {
+            soundPool?.play(soundId, stereoLeft, stereoRight, 1, 0, beat.rate)
+        }
     }
 
     override fun stop() { /* SoundPool handles this */ }
@@ -35,6 +43,7 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
     override fun release() {
         soundPool?.release()
         soundPool = null
+        soundReady = false
     }
 
     private fun soundResource(sound: ClickSound): Int = when (sound) {
@@ -44,7 +53,8 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
     }
 
     override fun switchSound(sound: ClickSound) {
+        soundReady = false
         soundPool?.unload(soundId)
-        soundId = soundPool?.load(context, soundResource(sound), 3) ?: 0
+        soundId = soundPool?.load(context, soundResource(sound), 1) ?: 0
     }
 }

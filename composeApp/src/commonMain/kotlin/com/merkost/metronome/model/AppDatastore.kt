@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface AppDatastore {
     val colorFlash: Flow<Boolean>
     val backgroundPlay: Flow<Boolean>
-    val stereo: Flow<Pair<Int, Int>>
+    val stereo: Flow<Pair<Float, Float>>
     val stereoSettings: Flow<Int>
     val totalTime: Flow<Long>
     val colorScheme: Flow<AppColorScheme>

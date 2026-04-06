@@ -28,10 +28,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.ui.defaultPlayButtonSize
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.pulseOnChange
+import com.merkost.metronome.ui.spacingSmall
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -68,7 +69,7 @@ fun MainButtonsRow(
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(
-                    8.dp,
+                    spacingSmall,
                     Alignment.CenterHorizontally
                 ),
                 verticalAlignment = Alignment.CenterVertically,
@@ -84,7 +85,6 @@ fun MainButtonsRow(
                 Text(
                     text = TimestampMillisecondsFormatter.format(stopWatchState.elapsedTime),
                     maxLines = 2,
-                    lineHeight = 18.sp,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
                 )
             }
@@ -98,10 +98,17 @@ fun MainButtonsRow(
         )
         Spacer(modifier = Modifier.size(horizontalPadding))
 
+        // Tap tempo with pulse feedback via reusable modifier
+        var tapCount by remember { mutableStateOf(0) }
+
         MySecondaryButton(
-            onClick = onTempoTap,
+            onClick = {
+                tapCount++
+                onTempoTap()
+            },
             shape = RoundedCornerShape(30),
             modifier = Modifier
+                .pulseOnChange(tapCount)
                 .onSizeChanged {
                     secondaryButtonSize = it
                 }
@@ -109,7 +116,7 @@ fun MainButtonsRow(
                 .fillMaxWidth()) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(
-                    8.dp,
+                    spacingSmall,
                     Alignment.CenterHorizontally
                 ),
                 verticalAlignment = Alignment.CenterVertically,
@@ -121,7 +128,6 @@ fun MainButtonsRow(
                 Text(
                     text = "Tap\nTempo",
                     maxLines = 2,
-                    lineHeight = 18.sp,
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
