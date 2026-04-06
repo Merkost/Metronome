@@ -1,0 +1,5 @@
+// Deployment target
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+
+// Swift version
+SWIFT_VERSION = 5.0

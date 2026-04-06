@@ -1,0 +1,33 @@
+package com.merkost.metronome.model
+
+import com.merkost.metronome.ui.theme.AppColorScheme
+import kotlinx.coroutines.flow.Flow
+
+interface AppDatastore {
+    val colorFlash: Flow<Boolean>
+    val backgroundPlay: Flow<Boolean>
+    val stereo: Flow<Pair<Float, Float>>
+    val stereoSettings: Flow<Int>
+    val totalTime: Flow<Long>
+    val colorScheme: Flow<AppColorScheme>
+
+    suspend fun saveStereo(value: Int)
+    suspend fun saveColorScheme(colorScheme: AppColorScheme)
+    suspend fun saveColorFlash(colorFlash: Boolean)
+    suspend fun saveBackgroundPlay(backgroundPlay: Boolean)
+    suspend fun addTotalTime(elapsedTime: Long)
+    suspend fun resetTime()
+
+    val selectedSound: Flow<ClickSound>
+    suspend fun saveSelectedSound(sound: ClickSound)
+
+    val hapticEnabled: Flow<Boolean>
+    suspend fun saveHapticEnabled(enabled: Boolean)
+
+    val onboardingComplete: Flow<Boolean>
+    suspend fun saveOnboardingComplete(complete: Boolean)
+
+    val timeSignature: Flow<TimeSignature>
+    suspend fun saveTimeSignature(timeSignature: TimeSignature)
+
+}
