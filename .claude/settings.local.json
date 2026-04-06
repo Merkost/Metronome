@@ -13,7 +13,19 @@
       "Bash(curl -s https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/)",
       "Bash(find composeApp/src/androidMain -name AndroidManifest.xml -o -name *.xml -path */main/*)",
       "Bash(./gradlew :composeApp:compileKotlinIosArm64)",
-      "Bash(find ~/.gradle/caches -path *compose*icon* -name *.pom)"
+      "Bash(find ~/.gradle/caches -path *compose*icon* -name *.pom)",
+      "Bash(wc:*)",
+      "Bash(grep -r \"\\\\.bundle\\\\|NSBundle\\\\|Bundle\\\\|BundledResource\" /Users/merkost/StudioProjects/Metronome --include=*.gradle* --include=*.xml --include=*.swift)",
+      "Bash(./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 2>&1)",
+      "Bash(./gradlew :composeApp:compileKotlinIosSimulatorArm64 2>&1)",
+      "Bash(file:*)",
+      "Bash(/Users/merkost/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/start-server.sh --project-dir /Users/merkost/StudioProjects/Metronome 2>&1)",
+      "Bash(/Users/merkost/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/stop-server.sh /Users/merkost/StudioProjects/Metronome/.superpowers/brainstorm/83964-1774420075 2>&1)",
+      "Bash(./gradlew :composeApp:compileKotlinIosSimulatorArm64 :composeApp:compileDebugKotlinAndroid 2>&1)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(open:*)",
+      "Bash(./gradlew :composeApp:assembleDebug :composeApp:linkDebugFrameworkIosSimulatorArm64)"
     ]
   }
 }

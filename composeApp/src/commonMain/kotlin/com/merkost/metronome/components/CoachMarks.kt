@@ -1,5 +1,10 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -38,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.merkost.metronome.ui.AppAnimations
 
 private data class CoachStep(val title: String, val description: String, val tooltipBelow: Boolean)
 
@@ -62,7 +68,6 @@ private val coachSteps = listOf(
 private val SpotlightPadding = 12.dp
 private val TooltipMargin = 16.dp
 private val TooltipHorizontalMargin = 24.dp
-private val GotItGreen = Color(0xFF22C55E)
 
 @Composable
 fun CoachMarksOverlay(
@@ -80,23 +85,37 @@ fun CoachMarksOverlay(
     val spotlightPaddingPx = with(density) { SpotlightPadding.toPx() }
     val cornerRadiusPx = with(density) { 16.dp.toPx() }
 
-    val spotlightRect = Rect(
-        left = target.left - spotlightPaddingPx,
-        top = target.top - spotlightPaddingPx,
-        right = target.right + spotlightPaddingPx,
-        bottom = target.bottom + spotlightPaddingPx
+    // Animate spotlight position smoothly between steps
+    val spotLeft by animateFloatAsState(
+        target.left - spotlightPaddingPx, AppAnimations.Bouncy, label = "spotL"
     )
+    val spotTop by animateFloatAsState(
+        target.top - spotlightPaddingPx, AppAnimations.Bouncy, label = "spotT"
+    )
+    val spotRight by animateFloatAsState(
+        target.right + spotlightPaddingPx, AppAnimations.Bouncy, label = "spotR"
+    )
+    val spotBottom by animateFloatAsState(
+        target.bottom + spotlightPaddingPx, AppAnimations.Bouncy, label = "spotB"
+    )
+    val spotlightRect = Rect(spotLeft, spotTop, spotRight, spotBottom)
+
+    var containerHeight by remember { mutableStateOf(0f) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .zIndex(100f)
+            .onGloballyPositioned { coordinates ->
+                containerHeight = coordinates.size.height.toFloat()
+            }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { /* consume taps on overlay */ }
     ) {
-        // Semi-transparent overlay with spotlight cutout
+        // Semi-transparent overlay with animated spotlight cutout
+        val scrimColor = MaterialTheme.colorScheme.scrim
         Canvas(modifier = Modifier.fillMaxSize()) {
             val overlayPath = Path().apply {
                 fillType = PathFillType.EvenOdd
@@ -110,7 +129,7 @@ fun CoachMarksOverlay(
             }
             drawPath(
                 path = overlayPath,
-                color = Color.Black.copy(alpha = 0.82f)
+                color = scrimColor.copy(alpha = 0.82f)
             )
         }
 
@@ -125,15 +144,22 @@ fun CoachMarksOverlay(
                 .clickable { onDismiss() }
         )
 
-        // Tooltip card
+        // Tooltip card with animated position
         val tooltipMarginPx = with(density) { TooltipMargin.toPx() }
         var cardHeightPx by remember { mutableStateOf(0) }
 
-        val tooltipYOffset = if (currentStep.tooltipBelow) {
-            (spotlightRect.bottom + tooltipMarginPx).toInt()
+        val targetY = if (currentStep.tooltipBelow) {
+            if (containerHeight > 0f) {
+                (containerHeight - cardHeightPx - tooltipMarginPx * 2)
+            } else {
+                spotlightRect.bottom + tooltipMarginPx
+            }
         } else {
-            (spotlightRect.top - tooltipMarginPx - cardHeightPx).toInt()
+            spotlightRect.top - tooltipMarginPx - cardHeightPx
         }
+        val tooltipYOffset by animateFloatAsState(
+            targetY, AppAnimations.Bouncy, label = "tooltipY"
+        )
 
         Card(
             modifier = Modifier
@@ -142,19 +168,28 @@ fun CoachMarksOverlay(
                 .onGloballyPositioned { coordinates ->
                     cardHeightPx = coordinates.size.height
                 }
-                .offset { IntOffset(0, tooltipYOffset) },
+                .offset { IntOffset(0, tooltipYOffset.toInt()) },
             shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            TooltipContent(
-                step = step,
-                totalSteps = coachSteps.size,
-                currentStep = currentStep,
-                onNext = onNext,
-                onBack = onBack,
-                onDismiss = onDismiss
-            )
+            // Crossfade between step contents
+            AnimatedContent(
+                targetState = step,
+                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                label = "tooltipContent"
+            ) { animatedStep ->
+                if (animatedStep in coachSteps.indices) {
+                    TooltipContent(
+                        step = animatedStep,
+                        totalSteps = coachSteps.size,
+                        currentStep = coachSteps[animatedStep],
+                        onNext = onNext,
+                        onBack = onBack,
+                        onDismiss = onDismiss
+                    )
+                }
+            }
         }
     }
 }
@@ -175,12 +210,12 @@ private fun TooltipContent(
         Text(
             text = currentStep.title,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = currentStep.description,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -190,7 +225,7 @@ private fun TooltipContent(
             Text(
                 text = "${step + 1} / $totalSteps",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -200,7 +235,7 @@ private fun TooltipContent(
                     TextButton(onClick = onBack) {
                         Text(
                             text = "\u2190 Back",
-                            color = Color.DarkGray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -219,10 +254,10 @@ private fun TooltipContent(
                         onClick = onDismiss,
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = GotItGreen
+                            containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
-                        Text(text = "Got it \u2713", color = Color.White)
+                        Text(text = "Got it \u2713")
                     }
                 }
             }

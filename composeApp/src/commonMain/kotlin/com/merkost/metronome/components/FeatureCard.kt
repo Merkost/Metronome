@@ -22,11 +22,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.merkost.metronome.ui.cornerRadiusLarge
+import com.merkost.metronome.ui.cornerRadiusSmall
+import com.merkost.metronome.ui.elevationMedium
 
 @Composable
 fun StatusTag(text: String, color: Color) {
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(cornerRadiusSmall),
         color = color.copy(alpha = 0.15f),
     ) {
         Text(
@@ -49,9 +52,10 @@ fun FeatureCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(cornerRadiusLarge),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        elevation = CardDefaults.cardElevation(defaultElevation = elevationMedium),
     ) {
         Column(Modifier.padding(14.dp)) {
             Row(

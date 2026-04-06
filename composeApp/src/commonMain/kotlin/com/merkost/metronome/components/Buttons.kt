@@ -35,9 +35,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.defaultIconButtonSize
 import com.merkost.metronome.ui.defaultPlayButtonSize
 import com.merkost.metronome.ui.defaultSecondaryIconButtonSize
+import com.merkost.metronome.ui.elevationLarge
+import com.merkost.metronome.ui.elevationSmall
+import com.merkost.metronome.ui.playButtonIconSize
 
 @Composable
 fun MySecondaryTextButton(text: String, onClick: () -> Unit) {
@@ -109,9 +113,10 @@ fun PlayButton(
         animationSpec = animationSpec
     )
 
-    // Breathing glow when playing
+    // Breathing glow when playing — shape matches the animated corner radius
     val glowColor = MaterialTheme.colorScheme.primary
     val glowExtensionPx = with(LocalDensity.current) { 8.dp.toPx() }
+    val cornerRadiusPx = with(LocalDensity.current) { cornerRadius.toPx() }
 
     val glowModifier = if (isPlaying) {
         val infiniteTransition = rememberInfiniteTransition(label = "playButtonGlow")
@@ -128,12 +133,17 @@ fun PlayButton(
             label = "playButtonGlowAlpha"
         )
         Modifier.drawBehind {
-            val center = Offset(this.size.width / 2f, this.size.height / 2f)
-            val radius = this.size.maxDimension / 2f + glowExtensionPx
-            drawCircle(
+            val ext = glowExtensionPx
+            drawRoundRect(
                 color = glowColor.copy(alpha = glowAlpha),
-                radius = radius,
-                center = center
+                topLeft = Offset(-ext, -ext),
+                size = androidx.compose.ui.geometry.Size(
+                    this.size.width + ext * 2,
+                    this.size.height + ext * 2
+                ),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+                    cornerRadiusPx + ext
+                )
             )
         }
     } else {
@@ -162,7 +172,7 @@ fun PlayButton(
                         imageVector = Icons.Rounded.Pause,
                         contentDescription = Icons.Rounded.Pause.name,
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(playButtonIconSize)
                             .align(Alignment.Center)
                     )
                 } else {
@@ -170,7 +180,7 @@ fun PlayButton(
                         imageVector = Icons.Rounded.PlayArrow,
                         contentDescription = Icons.Rounded.PlayArrow.name,
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(playButtonIconSize)
                             .align(Alignment.Center)
                     )
                 }

@@ -1,22 +1,20 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,140 +30,177 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.merkost.metronome.ui.BallColor
+import com.merkost.metronome.model.Beat
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.BallSize
 import com.merkost.metronome.ui.CircleSize
 import com.merkost.metronome.ui.CircleWeight
+import com.merkost.metronome.ui.pressScale
+import kotlin.math.ceil
 
+/**
+ * Beat balls arranged in centered rows with a single indicator circle
+ * that slides smoothly between balls — including across rows.
+ */
 @Composable
 fun MetronomeBalls(
     selectedIndex: Int,
-    itemCount: Int,
+    beats: List<Beat>,
+    isPlaying: Boolean,
     animSpec: AnimationSpec<Float>,
     arrangementSpacing: Dp = 32.dp,
-    indicator: @Composable BoxScope.() -> Unit,
+    indicatorSize: Dp = CircleSize,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    onBallClicked: (index: Int, Beat) -> Unit,
 ) {
-
-    // Track how "selected" each item is [0, 1]
-    val selectionFractions = remember(itemCount) {
-        List(itemCount) { i ->
-            Animatable(if (i == selectedIndex) 1f else 0f)
+    // Animate the indicator position (as a float index) between balls
+    val indicatorIndex = remember { Animatable(selectedIndex.coerceAtLeast(0).toFloat()) }
+    LaunchedEffect(selectedIndex) {
+        if (selectedIndex >= 0) {
+            indicatorIndex.animateTo(selectedIndex.toFloat(), animSpec)
         }
     }
 
-    selectionFractions.forEachIndexed { index, selectionFraction ->
-        val target = if (index == selectedIndex) 1f else 0f
-        LaunchedEffect(target, animSpec) {
-            selectionFraction.animateTo(target, animSpec)
-        }
-    }
+    val indicatorAlpha by animateFloatAsState(
+        targetValue = if (selectedIndex >= 0) 1f else 0f,
+        animationSpec = AppAnimations.Bouncy,
+        label = "indicatorAlpha"
+    )
 
-    // Animate the position of the indicator
-    val indicatorIndex = remember { Animatable(0f) }
-    val targetIndicatorIndex = selectedIndex.toFloat()
-    LaunchedEffect(targetIndicatorIndex) {
-        indicatorIndex.animateTo(targetIndicatorIndex, animSpec)
-    }
+    val primaryColor = MaterialTheme.colorScheme.primary
 
     Layout(
         modifier = modifier,
         content = {
-            content()
-            Box(Modifier.layoutId("indicator"), content = indicator)
+            beats.forEachIndexed { index, beat ->
+                Box(Modifier.layoutId("ball")) {
+                    Ball(
+                        beat = beat,
+                        isActive = isPlaying && index == selectedIndex,
+                        onClick = { onBallClicked(index, beat) }
+                    )
+                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .layoutId("indicator")
+                    .size(indicatorSize)
+                    .graphicsLayer { alpha = indicatorAlpha }
+                    .border(CircleWeight, primaryColor, CircleShape)
+            )
         }
     ) { measurables, constraints ->
-        check(itemCount == (measurables.size - 1)) // account for indicator
+        val indicatorMeasurable = measurables.first { it.layoutId == "indicator" }
+        val ballMeasurables = measurables.filter { it.layoutId == "ball" }
 
-        val arrangementSpacingPx = with(this) {
-            arrangementSpacing.roundToPx()
+        // Measure children with loose constraints so they use intrinsic size
+        val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+        val ballPlaceables = ballMeasurables.map { it.measure(looseConstraints) }
+        val indicatorPlaceable = indicatorMeasurable.measure(looseConstraints)
+
+        if (ballPlaceables.isEmpty()) return@Layout layout(0, 0) {}
+
+        val ballW = ballPlaceables.first().width
+        val ballH = ballPlaceables.first().height
+        val indW = indicatorPlaceable.width
+        val indH = indicatorPlaceable.height
+        val spacingPx = arrangementSpacing.roundToPx()
+
+        // How many balls fit in one row?
+        val availableWidth = constraints.maxWidth
+        val maxPerRow = ((availableWidth + spacingPx) / (ballW + spacingPx)).coerceAtLeast(1)
+        val rowCount = ceil(ballPlaceables.size.toFloat() / maxPerRow).toInt()
+
+        // Offset to center balls within the indicator cell
+        val cellOffsetX = (indW - ballW) / 2
+        val cellOffsetY = (indH - ballH) / 2
+
+        val rowSpacingPx = spacingPx
+        val rowHeight = indH
+        val totalHeight = rowHeight * rowCount + rowSpacingPx * (rowCount - 1).coerceAtLeast(0)
+
+        // Pre-compute each ball's top-left position (ball coords, not indicator coords)
+        data class BallPos(val x: Int, val y: Int)
+        val positions = mutableListOf<BallPos>()
+
+        var ballIdx = 0
+        for (row in 0 until rowCount) {
+            val countInRow = if (ballIdx + maxPerRow <= ballPlaceables.size) maxPerRow
+            else ballPlaceables.size - ballIdx
+            val rowContentWidth = ballW * countInRow + spacingPx * (countInRow - 1)
+            val rowStartX = (availableWidth - rowContentWidth) / 2 // center the row
+            val rowY = row * (rowHeight + rowSpacingPx)
+
+            for (col in 0 until countInRow) {
+                val x = rowStartX + col * (ballW + spacingPx)
+                positions.add(BallPos(x, rowY + cellOffsetY))
+                ballIdx++
+            }
         }
 
-        // Divide the width into n+1 slots and give the selected item 2 slots
-        val indicatorMeasurable = measurables.first { it.layoutId == "indicator" }
+        layout(availableWidth, totalHeight) {
+            // Place the animated indicator
+            val animIdx = indicatorIndex.value.coerceIn(0f, (ballPlaceables.size - 1).toFloat())
+            val fromIdx = animIdx.toInt().coerceIn(positions.indices)
+            val toIdx = (fromIdx + 1).coerceIn(positions.indices)
+            val fraction = animIdx - fromIdx
 
-        val itemPlaceables = measurables
-            .filterNot { it == indicatorMeasurable }
-            .mapIndexed { index, measurable ->
-                measurable.measure(constraints)
-            }
+            val fromPos = positions[fromIdx]
+            val toPos = positions[toIdx]
+            val indX = (fromPos.x + (toPos.x - fromPos.x) * fraction - cellOffsetX).toInt()
+            val indY = (fromPos.y + (toPos.y - fromPos.y) * fraction - cellOffsetY).toInt()
+            indicatorPlaceable.placeRelative(x = indX, y = indY)
 
-        val width = itemPlaceables.first().width
-        val indicatorPlaceable = indicatorMeasurable.measure(constraints)
-
-        val heightRaz = (indicatorPlaceable.height - itemPlaceables.first().height) / 2
-        val widthRaz = (indicatorPlaceable.width - itemPlaceables.first().width) / 2
-
-        layout(
-            width = width * itemCount + arrangementSpacingPx * (itemCount),
-            height = itemPlaceables.maxByOrNull { it.height }?.height ?: 0
-        ) {
-            val indicatorLeft =
-                width * indicatorIndex.value + indicatorIndex.value * (arrangementSpacingPx)
-            indicatorPlaceable.placeRelative(x = indicatorLeft.toInt(), y = 0)
-            var x = 0
-            itemPlaceables.forEachIndexed { index, placeable ->
-                placeable.placeRelative(x = x + widthRaz, y = 0 + heightRaz)
-                if (index != itemPlaceables.size - 1) {
-                    x += arrangementSpacingPx
-                }
-                x += placeable.width
+            // Place balls
+            ballPlaceables.forEachIndexed { index, placeable ->
+                val pos = positions[index]
+                placeable.placeRelative(x = pos.x, y = pos.y)
             }
         }
     }
 }
 
 @Composable
-fun Ball(
-    color: Color = BallColor,
+private fun Ball(
+    beat: Beat,
     isActive: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
 
-    // Glow alpha: animate to 0.3f when active, 0f when not
+    val color by animateColorAsState(
+        targetValue = if (beat == Beat.HIGH) {
+            MaterialTheme.colorScheme.primary
+        } else MaterialTheme.colorScheme.primaryContainer,
+        label = "ballColor"
+    )
+
     val glowAlpha by animateFloatAsState(
         targetValue = if (isActive) 0.3f else 0f,
-        animationSpec = SpringSpec(stiffness = 600f, dampingRatio = 0.8f),
+        animationSpec = AppAnimations.Bouncy,
         label = "ballGlowAlpha"
     )
 
-    // Scale bump: animate to 1.15f when active, 1.0f otherwise
     val beatScale by animateFloatAsState(
         targetValue = if (isActive) 1.15f else 1.0f,
-        animationSpec = SpringSpec(
-            stiffness = Spring.StiffnessMedium,
-            dampingRatio = Spring.DampingRatioMediumBouncy
-        ),
+        animationSpec = AppAnimations.Interactive,
         label = "ballBeatScale"
     )
 
-    // Press feedback
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val pressScale by animateFloatAsState(
-        targetValue = if (isPressed) 0.85f else 1.0f,
-        animationSpec = SpringSpec(
-            stiffness = Spring.StiffnessMedium,
-            dampingRatio = Spring.DampingRatioMediumBouncy
-        ),
-        label = "ballPressScale"
-    )
-
-    val combinedScale = beatScale * pressScale
 
     Box(
         modifier = Modifier
             .size(BallSize)
             .graphicsLayer {
-                scaleX = combinedScale
-                scaleY = combinedScale
+                scaleX = beatScale
+                scaleY = beatScale
             }
+            .pressScale(interactionSource)
             .drawBehind {
                 if (glowAlpha > 0f) {
                     val center = Offset(size.width / 2f, size.height / 2f)
-                    val radius = size.maxDimension / 2f * 1.6f
+                    val radius = size.maxDimension / 2f * 1.15f
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(
@@ -185,17 +220,16 @@ fun Ball(
             .background(color)
             .clickable(
                 interactionSource = interactionSource,
-                indication = null
+                indication = ripple(bounded = true)
             ) { onClick() }
     )
 }
 
 @Composable
-fun OutlinedCircle(color: Color) {
-//    val color by animateColorAsState(targetValue = if (colorWhite) Color.White else Color.Black)
+fun OutlinedCircle(color: Color, size: Dp = CircleSize) {
     Spacer(
         modifier = Modifier
-            .size(CircleSize)
+            .size(size)
             .border(CircleWeight, color, CircleShape)
     )
 }

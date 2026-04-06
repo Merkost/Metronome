@@ -42,18 +42,10 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         }
     override val stereo = dataStore.data
         .map { preferences ->
-            val s = (preferences[STEREO] ?: 0).coerceIn(-5..5)
-            when (s) {
-                in -5 until 0 -> {
-                    Pair(1, 1 - s * 2)
-                }
-
-                in 5 downTo 1 -> {
-                    Pair(1 - s * 2, 1)
-                }
-
-                else -> Pair(1, 1)
-            }
+            val s = (preferences[STEREO] ?: 0).coerceIn(-5, 5)
+            val left = if (s > 0) (5 - s) / 5f else 1f
+            val right = if (s < 0) (5 + s) / 5f else 1f
+            Pair(left, right)
         }
     override val stereoSettings = dataStore.data.map { preferences ->
         (preferences[STEREO] ?: 0).coerceIn(-5..5)

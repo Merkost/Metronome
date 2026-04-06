@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,7 +33,8 @@ class MetronomeEngine(
     private var barNumber = 0
 
     fun start() {
-        player.initialize()
+        val initialSound = viewModel.selectedSound.value
+        player.initialize(initialSound)
         job = coroutineScope.launch {
             launch {
                 viewModel.selectedSound.collectLatest { sound ->
@@ -40,33 +43,40 @@ class MetronomeEngine(
             }
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
-                    viewModel.index.update { -1 }
-                    beatCount = 0
-                    barNumber = 0
-                    var interval = viewModel.metronomeState.value.interval.toLong()
-                    createBeatsSequence(viewModel.metronomeState.value.beats)
-                        .onEach { delay(interval) }
-                        .collectLatest { index ->
-                            val beat = viewModel.metronomeState.value.beats[index]
-                            viewModel.index.update { index }
-                            interval = viewModel.metronomeState.value.interval.toLong()
-                            val stereo = viewModel.currentStereo.value
-                            player.play(beat, stereo.first.toFloat(), stereo.second.toFloat())
-                            if (viewModel.hapticEnabled.value) {
-                                hapticProvider.playBeatHaptic(beat)
-                            }
-                            // Bar counting for gradual tempo
-                            beatCount++
-                            val beatsPerBar = viewModel.metronomeState.value.beats.size
-                            if (beatCount >= beatsPerBar) {
-                                beatCount = 0
-                                barNumber++
-                                _barCompleted.tryEmit(barNumber)
-                                val config = viewModel.gradualTempoConfig.value
-                                if (config != null) {
-                                    viewModel.incrementGradualTempo()
+                    // React to beat-list changes (time signature) while playing
+                    viewModel.metronomeState
+                        .map { it.beats }
+                        .distinctUntilChanged()
+                        .collectLatest { beats ->
+                            viewModel.index.update { -1 }
+                            beatCount = 0
+                            barNumber = 0
+                            var interval = viewModel.metronomeState.value.interval.toLong()
+                            createBeatsSequence(beats)
+                                .onEach { delay(interval) }
+                                .collectLatest { index ->
+                                    val beat = beats[index]
+                                    viewModel.index.update { index }
+                                    interval =
+                                        viewModel.metronomeState.value.interval.toLong()
+                                    val stereo = viewModel.currentStereo.value
+                                    player.play(beat, stereo.first, stereo.second)
+                                    if (viewModel.hapticEnabled.value) {
+                                        hapticProvider.playBeatHaptic(beat)
+                                    }
+                                    // Bar counting for gradual tempo
+                                    beatCount++
+                                    val beatsPerBar = beats.size
+                                    if (beatCount >= beatsPerBar) {
+                                        beatCount = 0
+                                        barNumber++
+                                        _barCompleted.tryEmit(barNumber)
+                                        val config = viewModel.gradualTempoConfig.value
+                                        if (config != null) {
+                                            viewModel.incrementGradualTempo()
+                                        }
+                                    }
                                 }
-                            }
                         }
                 } else {
                     viewModel.index.update { -1 }
