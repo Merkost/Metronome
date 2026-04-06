@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.merkost.metronome.android.androidApp-mergeDebugResources-54:/values-ldltr-v21/values-ldltr-v21.xml",
+            "map": [
+                {
+                    "source": "/Users/merkost/.gradle/caches/8.13/transforms/25a6d917df8ec389fcdbae52c39536dc/transformed/appcompat-1.7.1/res/values-ldltr-v21/values-ldltr-v21.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "112",
+                        "endOffsets": "163"
+                    }
+                }
+            ]
+        }
+    ]
+}

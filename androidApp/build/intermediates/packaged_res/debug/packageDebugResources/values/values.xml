@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <string name="com.google.firebase.crashlytics.mapping_file_id" ns1:ignore="UnusedResources,TypographyDashes" translatable="false">00000000000000000000000000000000</string>
+    <string name="com.google.firebase.crashlytics.version_control_info">""</string>
+    <string name="gcm_defaultSenderId" translatable="false">191513493655</string>
+    <string name="google_api_key" translatable="false">AIzaSyCN6a6JPG_iy05g5BsLN_JlM_NQManXZWs</string>
+    <string name="google_app_id" translatable="false">1:191513493655:android:179b4476ccb8b26bd1e9d2</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCN6a6JPG_iy05g5BsLN_JlM_NQManXZWs</string>
+    <string name="google_storage_bucket" translatable="false">metronome-29a74.appspot.com</string>
+    <string name="project_id" translatable="false">metronome-29a74</string>
+</resources>

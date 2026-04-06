@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.merkost.metronome.android.androidApp-mergeDebugResources-54:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/Users/merkost/.gradle/caches/8.13/transforms/25a6d917df8ec389fcdbae52c39536dc/transformed/appcompat-1.7.1/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}
