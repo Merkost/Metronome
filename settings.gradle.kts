@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Metronome"
-include(":composeApp")
+include(":shared", ":androidApp")
