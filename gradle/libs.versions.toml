@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.3.20"
 agp = "8.13.2"
-composeMultiplatform = "1.11.0-alpha04"
+composeMultiplatform = "1.11.0-beta01"
 lifecycle = "2.10.0"
 navigationCompose = "2.9.2"
 datastore = "1.2.1"
