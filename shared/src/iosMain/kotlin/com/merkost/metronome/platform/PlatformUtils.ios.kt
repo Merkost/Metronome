@@ -1,7 +1,7 @@
 package com.merkost.metronome.platform
 
-import platform.Foundation.NSDate
-import platform.Foundation.timeIntervalSince1970
+import kotlin.experimental.ExperimentalNativeApi
+import kotlin.native.Platform
 
-actual fun currentTimeMillis(): Long =
-    (NSDate().timeIntervalSince1970 * 1000).toLong()
+@OptIn(ExperimentalNativeApi::class)
+actual fun isDebug(): Boolean = Platform.isDebugBinary
