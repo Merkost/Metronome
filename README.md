@@ -12,7 +12,7 @@
 
 ## Features
 
-- **Tap tempo** and BPM slider (20-300 BPM) with quick-adjust buttons
+- **Tap tempo** and BPM slider (40-220 BPM) with quick-adjust buttons
 - **Time signatures** -- 2/4, 3/4, 4/4, 5/4, 6/8, 7/8
 - **Click sounds** -- Wood, Click, Classic
 - **Stereo panning** and volume control
