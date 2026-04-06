@@ -59,7 +59,7 @@ fun Modifier.pressScale(
 }
 
 fun Modifier.pulseOnChange(
-    trigger: Any,
+    trigger: Int,
     peakScale: Float = 1.1f,
 ): Modifier = composed {
     val scale = remember { Animatable(1f) }

@@ -79,6 +79,7 @@ class MetronomeEngine(
                                 }
                         }
                 } else {
+                    player.stop()
                     viewModel.index.update { -1 }
                 }
             }

@@ -13,6 +13,7 @@ import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.platform.currentTimeMillis
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -197,16 +198,18 @@ class MetronomeViewModel(
     }
 
     // Practice Timer
-    private val _practiceTimerGoal = MutableStateFlow<Long?>(null) // null = inactive, else milliseconds
+    private val _practiceTimerGoal = MutableStateFlow<Long?>(null)
     private val _practiceTimerRemaining = MutableStateFlow(0L)
     val practiceTimerGoal: StateFlow<Long?> = _practiceTimerGoal
     val practiceTimerRemaining: StateFlow<Long> = _practiceTimerRemaining
+    private var practiceTimerJob: Job? = null
 
     fun startPracticeTimer(minutes: Int) {
+        practiceTimerJob?.cancel()
         val goalMs = minutes * 60_000L
         _practiceTimerGoal.value = goalMs
         _practiceTimerRemaining.value = goalMs
-        viewModelScope.launch {
+        practiceTimerJob = viewModelScope.launch {
             while (_practiceTimerRemaining.value > 0 && _practiceTimerGoal.value != null) {
                 delay(1000L)
                 if (metronomeState.value.playing) {
@@ -220,6 +223,8 @@ class MetronomeViewModel(
     }
 
     fun dismissPracticeTimer() {
+        practiceTimerJob?.cancel()
+        practiceTimerJob = null
         _practiceTimerGoal.value = null
         _practiceTimerRemaining.value = 0L
     }

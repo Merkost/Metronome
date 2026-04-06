@@ -117,18 +117,20 @@ class MetronomePlayerIos : MetronomePlayer {
         val player = playerNode ?: return
         val varispeed = varispeedNode ?: return
 
-        // Stop playback, reconnect with new format, restart
+        val wasRunning = engine.running
         player.stop()
+        engine.stop()
+
         engine.disconnectNodeOutput(player)
         engine.disconnectNodeOutput(varispeed)
         engine.connect(player, varispeed, newFormat)
         engine.connect(varispeed, engine.mainMixerNode, newFormat)
 
-        if (!engine.running) {
-            engine.startAndReturnError(null)
-        }
-
         audioBuffer = buffer
-        player.play()
+
+        if (wasRunning) {
+            engine.startAndReturnError(null)
+            player.play()
+        }
     }
 }

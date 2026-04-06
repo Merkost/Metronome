@@ -28,7 +28,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
 
     override val colorScheme: Flow<AppColorScheme> = dataStore.data
         .map { preferences ->
-            kotlin.runCatching { AppColorScheme.entries[preferences[COLOR_SCHEME] ?: 0] }
+            kotlin.runCatching { AppColorScheme.entries[preferences[COLOR_SCHEME] ?: AppColorScheme.BLACKNWHITE.ordinal] }
                 .getOrDefault(AppColorScheme.BLACKNWHITE)
         }
 
@@ -107,7 +107,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
 
     override val hapticEnabled: Flow<Boolean> = dataStore.data
         .map { preferences ->
-            preferences[HAPTIC_ENABLED] ?: true
+            preferences[HAPTIC_ENABLED] ?: false
         }
 
     override suspend fun saveHapticEnabled(enabled: Boolean) {

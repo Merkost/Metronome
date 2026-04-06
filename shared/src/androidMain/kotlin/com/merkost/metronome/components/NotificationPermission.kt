@@ -118,6 +118,6 @@ private fun Context.startNotificationSettings() {
         intent.data = uri
         startActivity(intent)
     } catch (e: Exception) {
-        Timber.w("startNotificationSettings", e.message ?: "")
+        Timber.w(e, "startNotificationSettings")
     }
 }
