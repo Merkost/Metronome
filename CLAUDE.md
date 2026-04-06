@@ -15,11 +15,12 @@ A metronome app built with Kotlin Multiplatform and Compose Multiplatform target
 ### Module Structure
 
 ```
-composeApp/
-  src/commonMain/   — Shared UI, models, view models, engine
-  src/androidMain/  — Android Activity, Service, audio, platform impls
-  src/iosMain/      — iOS view controller, audio, platform impls
-iosApp/             — Xcode project (Swift entry point, resources)
+shared/                 — KMP library module
+  src/commonMain/       — Shared UI, models, view models, engine
+  src/androidMain/      — Android platform impls, audio, resources
+  src/iosMain/          — iOS platform impls, MainViewController
+androidApp/             — Android application shell (Activity, Service, Firebase)
+iosApp/                 — Xcode project (Swift entry point, resources)
 ```
 
 ### Key Patterns
@@ -33,17 +34,18 @@ iosApp/             — Xcode project (Swift entry point, resources)
 
 ```bash
 # Android debug build
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 
 # iOS framework (simulator)
-./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 
 # iOS framework (device)
-./gradlew :composeApp:linkReleaseFrameworkIosArm64
+./gradlew :shared:linkReleaseFrameworkIosArm64
 ```
 
 ## Code Style
 
+- **No comments** in code. Ever.
 - **Animations**: Use `SpringSpec` for interactive animations (`StiffnessMedium`, `DampingRatioMediumBouncy`). Use `InfiniteTransition` only for ambient/non-interactive effects.
 - **Spacing**: Follow `Dimensions.kt` constants — `horizontalPadding = 18.dp`, `BallSize = 40.dp`, `defaultPlayButtonSize = 85.dp`.
 - **Colors**: Always use `MaterialTheme.colorScheme.*` — never hardcode hex values for UI elements. The app supports both light and dark themes across multiple color schemes.
@@ -53,11 +55,11 @@ iosApp/             — Xcode project (Swift entry point, resources)
 
 ## Audio Resources
 
-- Android: `composeApp/src/androidMain/res/raw/` — wood.mp3, click.mp3, metronome.wav
+- Android: `shared/src/androidMain/res/raw/` — wood.mp3, click.mp3, metronome.wav
 - iOS: `iosApp/iosApp/Resources/` — must be added to Xcode "Copy Bundle Resources"
 
 ## Testing
 
 ```bash
-./gradlew :composeApp:testDebugUnitTest   # Android unit tests
+./gradlew :shared:testDebugUnitTest   # Android unit tests
 ```

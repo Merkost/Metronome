@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="composeApp/src/main/ic_launcher-playstore.png" width="120" alt="Metronome icon" />
+  <img src="androidApp/src/main/ic_launcher-playstore.png" width="120" alt="Metronome icon" />
 </p>
 
 <h1 align="center">Metronome</h1>
@@ -37,21 +37,22 @@
 ## Project Structure
 
 ```
-composeApp/
-  src/commonMain/   -- Shared UI, models, view models, engine
-  src/androidMain/  -- Android Activity, Service, audio
-  src/iosMain/      -- iOS audio, platform implementations
-iosApp/             -- Xcode project entry point
+shared/                 -- KMP library (shared UI, models, engine)
+  src/commonMain/       -- Shared code
+  src/androidMain/      -- Android platform implementations
+  src/iosMain/          -- iOS platform implementations
+androidApp/             -- Android application shell
+iosApp/                 -- Xcode project entry point
 ```
 
 ## Build
 
 ```bash
 # Android
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 
 # iOS (simulator)
-./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 ```
 
 Then open `iosApp/iosApp.xcodeproj` in Xcode to run on iOS.
