@@ -45,17 +45,17 @@ class MetronomeEngine(
                 if (playing) {
                     // React to beat-list changes (time signature) while playing
                     viewModel.metronomeState
-                        .map { it.beats }
+                        .map { it.beats.size }
                         .distinctUntilChanged()
-                        .collectLatest { beats ->
+                        .collectLatest { beatsCount ->
                             viewModel.index.update { -1 }
                             beatCount = 0
                             barNumber = 0
                             var interval = viewModel.metronomeState.value.interval.toLong()
-                            createBeatsSequence(beats)
+                            createBeatsSequence(beatsCount)
                                 .onEach { delay(interval) }
                                 .collectLatest { index ->
-                                    val beat = beats[index]
+                                    val beat = viewModel.metronomeState.value.beats[index]
                                     viewModel.index.update { index }
                                     interval =
                                         viewModel.metronomeState.value.interval.toLong()
@@ -66,7 +66,7 @@ class MetronomeEngine(
                                     }
                                     // Bar counting for gradual tempo
                                     beatCount++
-                                    val beatsPerBar = beats.size
+                                    val beatsPerBar = beatsCount
                                     if (beatCount >= beatsPerBar) {
                                         beatCount = 0
                                         barNumber++
@@ -79,6 +79,7 @@ class MetronomeEngine(
                                 }
                         }
                 } else {
+                    player.stop()
                     viewModel.index.update { -1 }
                 }
             }
@@ -95,6 +96,6 @@ class MetronomeEngine(
         player.release()
     }
 
-    private fun createBeatsSequence(beats: List<Beat>): Flow<Int> =
-        beats.indices.asSequence().repeat().asFlow()
+    private fun createBeatsSequence(beatsCount: Int): Flow<Int> =
+        (0 until beatsCount).asSequence().repeat().asFlow()
 }

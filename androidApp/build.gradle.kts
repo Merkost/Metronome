@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebasePerf)
@@ -34,6 +35,12 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 
     buildFeatures {

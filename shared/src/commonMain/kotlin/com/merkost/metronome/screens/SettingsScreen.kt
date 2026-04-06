@@ -1,5 +1,6 @@
 package com.merkost.metronome.screens
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -128,13 +129,20 @@ fun SettingsScreen(upPress: () -> Unit) {
                 ) {
                     ClickSound.entries.forEach { sound ->
                         val isSelected = sound == selectedSound
+                        val borderWidth by animateDpAsState(
+                            targetValue = if (isSelected) 2.5.dp else 0.dp
+                        )
+                        val borderColor by animateColorAsState(
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+                            else Color.Transparent
+                        )
+                        val containerColor by animateColorAsState(
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+                            else Color.Transparent
+                        )
                         MySecondaryButton(
                             onClick = { viewModel.onSoundChanged(sound) },
-                            border = BorderStroke(
-                                if (isSelected) 3.dp else 1.dp,
-                                if (isSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surfaceVariant
-                            ),
+                            border = BorderStroke(borderWidth, borderColor),
                             shape = RoundedCornerShape(cornerRadiusMedium),
                             modifier = Modifier.weight(1f)
                         ) {
@@ -142,6 +150,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .background(containerColor)
                                     .padding(vertical = 12.dp, horizontal = 8.dp)
                             ) {
                                 Text(

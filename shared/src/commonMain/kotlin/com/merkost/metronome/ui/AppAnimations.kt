@@ -14,12 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 
-/**
- * Standard animation specs for the app.
- * - [Interactive]: Snappy response for user-driven actions (press, tap, toggle).
- * - [Bouncy]: Playful overshoot for beat pulses and selection changes.
- * - [Gentle]: Smooth transitions for layout changes and appearance.
- */
 object AppAnimations {
     val Interactive = SpringSpec<Float>(
         stiffness = Spring.StiffnessMedium,
@@ -47,19 +41,6 @@ object AppAnimations {
     )
 }
 
-/**
- * Scales down to [pressedScale] when pressed, returns to 1.0 on release.
- * Uses [AppAnimations.Interactive] for a bouncy feel.
- *
- * Usage:
- * ```
- * Box(
- *     Modifier
- *         .pressScale(interactionSource)
- *         .clickable(interactionSource, indication) { ... }
- * )
- * ```
- */
 @Composable
 fun Modifier.pressScale(
     interactionSource: MutableInteractionSource,
@@ -77,18 +58,8 @@ fun Modifier.pressScale(
     }
 }
 
-/**
- * Pulses scale up then back when [trigger] changes.
- * Useful for tap feedback, beat indicators, etc.
- *
- * Usage:
- * ```
- * var tapCount by remember { mutableStateOf(0) }
- * Box(Modifier.pulseOnChange(tapCount))
- * ```
- */
 fun Modifier.pulseOnChange(
-    trigger: Any,
+    trigger: Int,
     peakScale: Float = 1.1f,
 ): Modifier = composed {
     val scale = remember { Animatable(1f) }

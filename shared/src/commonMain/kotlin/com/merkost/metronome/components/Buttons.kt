@@ -5,10 +5,13 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -25,11 +28,13 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -39,9 +44,10 @@ import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.defaultIconButtonSize
 import com.merkost.metronome.ui.defaultPlayButtonSize
 import com.merkost.metronome.ui.defaultSecondaryIconButtonSize
-import com.merkost.metronome.ui.elevationLarge
-import com.merkost.metronome.ui.elevationSmall
 import com.merkost.metronome.ui.playButtonIconSize
+
+private const val BUTTON_PRESS_SCALE = 0.96f
+private const val PLAY_PRESS_SCALE = 0.92f
 
 @Composable
 fun MySecondaryTextButton(text: String, onClick: () -> Unit) {
@@ -63,17 +69,28 @@ fun MySecondaryButton(
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) BUTTON_PRESS_SCALE else 1f,
+        animationSpec = AppAnimations.Interactive,
+        label = "secondaryButtonScale"
+    )
+
     OutlinedCard(
         border = border,
         colors = CardDefaults.outlinedCardColors(),
-        modifier = modifier,
+        modifier = modifier.graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        },
         onClick = onClick,
-        shape = shape
+        shape = shape,
+        interactionSource = interactionSource
     ) {
         content()
     }
 }
-
 
 @Composable
 fun MyIconButton(
@@ -82,15 +99,28 @@ fun MyIconButton(
     size: Dp = defaultIconButtonSize,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) BUTTON_PRESS_SCALE else 1f,
+        animationSpec = AppAnimations.Interactive,
+        label = "iconButtonScale"
+    )
+
     Card(
         modifier = Modifier
             .size(size)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .then(modifier),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         onClick = onClick,
-        shape = CircleShape
+        shape = CircleShape,
+        interactionSource = interactionSource
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Icon(icon, icon.name, modifier = Modifier.align(Alignment.Center))
@@ -105,15 +135,20 @@ fun PlayButton(
     size: Dp = defaultPlayButtonSize,
     onClick: () -> Unit
 ) {
-
-    val animationSpec = tween<Dp>(250)
-    val cornerRadius by animateDpAsState(
-        targetValue = if (isPlaying)
-            size / 4 else size, label = "playButtonCorners",
-        animationSpec = animationSpec
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) PLAY_PRESS_SCALE else 1f,
+        animationSpec = AppAnimations.Interactive,
+        label = "playButtonPressScale"
     )
 
-    // Breathing glow when playing — shape matches the animated corner radius
+    val cornerRadius by animateDpAsState(
+        targetValue = if (isPlaying) size / 4 else size,
+        label = "playButtonCorners",
+        animationSpec = tween(250)
+    )
+
     val glowColor = MaterialTheme.colorScheme.primary
     val glowExtensionPx = with(LocalDensity.current) { 8.dp.toPx() }
     val cornerRadiusPx = with(LocalDensity.current) { cornerRadius.toPx() }
@@ -124,10 +159,7 @@ fun PlayButton(
             initialValue = 0.06f,
             targetValue = 0.18f,
             animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = 2000,
-                    easing = FastOutSlowInEasing
-                ),
+                animation = tween(durationMillis = 2000, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse
             ),
             label = "playButtonGlowAlpha"
@@ -141,9 +173,7 @@ fun PlayButton(
                     this.size.width + ext * 2,
                     this.size.height + ext * 2
                 ),
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
-                    cornerRadiusPx + ext
-                )
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadiusPx + ext)
             )
         }
     } else {
@@ -157,33 +187,27 @@ fun PlayButton(
         ),
         modifier = glowModifier
             .size(size)
+            .graphicsLayer {
+                scaleX = pressScale
+                scaleY = pressScale
+            }
             .then(modifier),
         onClick = onClick,
-        shape = RoundedCornerShape(cornerRadius)
+        shape = RoundedCornerShape(cornerRadius),
+        interactionSource = interactionSource
     ) {
         Crossfade(
-            isPlaying, label = "playButtonIcon",
+            isPlaying,
+            label = "playButtonIcon",
             modifier = Modifier.fillMaxSize(),
             animationSpec = tween(250)
-        ) { isPlaying ->
+        ) { playing ->
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                if (isPlaying) {
-                    Icon(
-                        imageVector = Icons.Rounded.Pause,
-                        contentDescription = Icons.Rounded.Pause.name,
-                        modifier = Modifier
-                            .size(playButtonIconSize)
-                            .align(Alignment.Center)
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Rounded.PlayArrow,
-                        contentDescription = Icons.Rounded.PlayArrow.name,
-                        modifier = Modifier
-                            .size(playButtonIconSize)
-                            .align(Alignment.Center)
-                    )
-                }
+                Icon(
+                    imageVector = if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                    contentDescription = null,
+                    modifier = Modifier.size(playButtonIconSize)
+                )
             }
         }
     }

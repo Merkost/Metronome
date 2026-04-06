@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.20"
-agp = "8.13.2"
+agp = "9.0.1"
 composeMultiplatform = "1.11.0-beta01"
 lifecycle = "2.10.0"
 navigationCompose = "2.9.2"
@@ -19,6 +19,7 @@ espresso = "3.7.0"
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 googleServices = { id = "com.google.gms.google-services", version = "4.4.4" }
