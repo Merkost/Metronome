@@ -31,6 +31,9 @@ val elevationMedium = 2.dp
 val elevationLarge = 4.dp
 val elevationXLarge = 8.dp
 
+// Adaptive layout
+val maxContentWidth = 480.dp
+
 // Typography overrides
 val tempoDisplaySize = 62.sp
 val emojiSize = 28.sp
