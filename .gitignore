@@ -8,7 +8,7 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
-/build
+**/build
 /.idese
 /captures
 .externalNativeBuild
@@ -19,7 +19,8 @@ local.properties
 .superpowers/
 
 # Build artifacts
-composeApp/release/
+shared/release/
+androidApp/release/
 
 # User-specific IDE files
 .idea/deploymentTargetSelector.xml
