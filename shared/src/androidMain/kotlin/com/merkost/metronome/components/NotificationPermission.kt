@@ -117,6 +117,6 @@ private fun Context.startNotificationSettings() {
         intent.data = uri
         startActivity(intent)
     } catch (e: Exception) {
-        Cedar.tag("NotificationPermission").w("startNotificationSettings")
+        Cedar.tag("NotificationPermission").w(e, "startNotificationSettings")
     }
 }
