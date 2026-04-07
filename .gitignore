@@ -14,7 +14,7 @@
 .externalNativeBuild
 .cxx
 local.properties
-/docs
+/docs/superpowers
 .kotlin
 .superpowers/
 
