@@ -22,6 +22,75 @@
             font-size: 1.05rem;
         }
         .features li span { margin-right: 12px; }
+        .carousel {
+            position: relative;
+            margin-bottom: 48px;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.4s ease;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .carousel-slide img {
+            width: 260px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .carousel-slide .caption {
+            margin-top: 16px;
+            text-align: center;
+        }
+        .carousel-slide .caption h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .carousel-slide .caption p {
+            font-size: 0.9rem;
+            color: #999;
+        }
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #333;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.3s;
+        }
+        .carousel-dot.active { background: #f5f5f5; }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #f5f5f5;
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 2;
+            transition: background 0.2s;
+        }
+        .carousel-btn:hover { background: rgba(255,255,255,0.2); }
+        .carousel-btn.prev { left: 8px; }
+        .carousel-btn.next { right: 8px; }
         .badges { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
         .badges a img { height: 52px; border-radius: 8px; }
         .links { margin-top: 32px; }
@@ -59,6 +128,39 @@
             <li><span>&#9654;</span> Keeps playing with screen off</li>
         </ul>
 
+        <div class="carousel">
+            <button class="carousel-btn prev" onclick="moveSlide(-1)">&#8249;</button>
+            <button class="carousel-btn next" onclick="moveSlide(1)">&#8250;</button>
+            <div class="carousel-track" id="carouselTrack">
+                <div class="carousel-slide">
+                    <img src="screenshots/screen1.png" alt="Main metronome screen">
+                    <div class="caption">
+                        <h3>Perfect Tempo</h3>
+                        <p>Precise BPM control</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="screenshots/screen2.png" alt="Settings screen">
+                    <div class="caption">
+                        <h3>Make It Yours</h3>
+                        <p>Themes, sounds &amp; more</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="screenshots/screen3.png" alt="Color flash with pink theme">
+                    <div class="caption">
+                        <h3>Feel the Beat</h3>
+                        <p>Visual pulse on every click</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-nav">
+                <button class="carousel-dot active" onclick="goToSlide(0)"></button>
+                <button class="carousel-dot" onclick="goToSlide(1)"></button>
+                <button class="carousel-dot" onclick="goToSlide(2)"></button>
+            </div>
+        </div>
+
         <div class="badges">
             <a href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
                 <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="52">
@@ -77,5 +179,22 @@
             &copy; 2024 Merkost. All rights reserved.
         </footer>
     </div>
+    <script>
+        let current = 0;
+        const total = 3;
+        function moveSlide(dir) { goToSlide((current + dir + total) % total); }
+        function goToSlide(i) {
+            current = i;
+            document.getElementById('carouselTrack').style.transform = 'translateX(-' + (current * 100) + '%)';
+            document.querySelectorAll('.carousel-dot').forEach((d, idx) => d.classList.toggle('active', idx === current));
+        }
+        let startX = 0;
+        const track = document.getElementById('carouselTrack');
+        track.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        track.addEventListener('touchend', e => {
+            const diff = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) moveSlide(diff > 0 ? 1 : -1);
+        });
+    </script>
 </body>
 </html>
