@@ -56,7 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
@@ -158,13 +158,6 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier.drawWithContent {
-                    drawContent()
-                    drawRect(
-                        primaryColor,
-                        alpha = boxColorAnimation.value.coerceIn(0f, 0.5f)
-                    )
-                },
                 title = {
                     Text(
                         text = stringResource(Res.string.app_name),
@@ -233,13 +226,6 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .drawWithContent {
-                        drawContent()
-                        drawRect(
-                            primaryColor,
-                            alpha = boxColorAnimation.value.coerceIn(0f, 0.5f)
-                        )
-                    }
                     .verticalScroll(rememberScrollState())
                     .padding(top = spacingLarge),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -547,7 +533,18 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
 
     }
 
-    // Overlay outside Scaffold so it covers the top bar too
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 140.dp)
+            .drawBehind {
+                drawRect(
+                    primaryColor,
+                    alpha = boxColorAnimation.value.coerceIn(0f, 0.5f)
+                )
+            }
+    )
+
     AnimatedVisibility(
         visible = onboardingStep >= 0 && spotlightTargets.size == 3,
         enter = fadeIn(),

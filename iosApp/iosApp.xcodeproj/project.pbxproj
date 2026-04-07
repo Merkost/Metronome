@@ -11,6 +11,11 @@
 		7555FF81242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* ContentView.swift */; };
 		7555FF83242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565B00829871 /* Assets.xcassets */; };
 		A1B2C3D4E5F60001AABBCCDD /* wood.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60002AABBCCDD /* wood.mp3 */; };
+		CDE04C9B2F847E6100FBAFE7 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CDE04C9A2F847E6100FBAFE7 /* FirebaseCrashlytics */; };
+		CDE04CA42F848C8800FBAFE7 /* metronome.wav in Resources */ = {isa = PBXBuildFile; fileRef = CDE04CA12F848C8800FBAFE7 /* metronome.wav */; };
+		CDE04CA52F848C8800FBAFE7 /* click.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CDE04CA02F848C8800FBAFE7 /* click.mp3 */; };
+		CDE04CA62F848C8800FBAFE7 /* wood.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CDE04CA22F848C8800FBAFE7 /* wood.mp3 */; };
+		CDE04CA82F84C9A900FBAFE7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE04CA72F84C9A900FBAFE7 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +26,10 @@
 		7555FF87242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1B2C3D4E5F60002AABBCCDD /* wood.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wood.mp3; sourceTree = "<group>"; };
 		A1B2C3D4E5F60003AABBCCDD /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		CDE04CA02F848C8800FBAFE7 /* click.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = click.mp3; sourceTree = "<group>"; };
+		CDE04CA12F848C8800FBAFE7 /* metronome.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = metronome.wav; sourceTree = "<group>"; };
+		CDE04CA22F848C8800FBAFE7 /* wood.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wood.mp3; sourceTree = "<group>"; };
+		CDE04CA72F84C9A900FBAFE7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDE04C9B2F847E6100FBAFE7 /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,11 +64,13 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				CDE04CA32F848C8800FBAFE7 /* Resources */,
 				7555FF7E242A565900829871 /* iOSApp.swift */,
 				7555FF80242A565900829871 /* ContentView.swift */,
 				7555FF82242A565B00829871 /* Assets.xcassets */,
 				7555FF87242A565B00829871 /* Info.plist */,
 				A1B2C3D4E5F60005AABBCCDD /* Resources */,
+				CDE04CA72F84C9A900FBAFE7 /* GoogleService-Info.plist */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -75,6 +87,16 @@
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F60002AABBCCDD /* wood.mp3 */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		CDE04CA32F848C8800FBAFE7 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CDE04CA02F848C8800FBAFE7 /* click.mp3 */,
+				CDE04CA12F848C8800FBAFE7 /* metronome.wav */,
+				CDE04CA22F848C8800FBAFE7 /* wood.mp3 */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -124,6 +146,9 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+				CDE04C992F847E6100FBAFE7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -139,6 +164,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7555FF83242A565B00829871 /* Assets.xcassets in Resources */,
+				CDE04CA82F84C9A900FBAFE7 /* GoogleService-Info.plist in Resources */,
+				CDE04CA42F848C8800FBAFE7 /* metronome.wav in Resources */,
+				CDE04CA52F848C8800FBAFE7 /* click.mp3 in Resources */,
+				CDE04CA62F848C8800FBAFE7 /* wood.mp3 in Resources */,
 				A1B2C3D4E5F60001AABBCCDD /* wood.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,6 +333,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P47X2292CM;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Metronome;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -324,6 +354,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P47X2292CM;
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Metronome;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -358,6 +389,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CDE04C992F847E6100FBAFE7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CDE04C9A2F847E6100FBAFE7 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CDE04C992F847E6100FBAFE7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }

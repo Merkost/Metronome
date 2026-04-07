@@ -35,6 +35,7 @@ iosApp/iosApp.xcodeproj/xcuserdata/
 iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
 
 **/google-services.json
+**/GoogleService-Info.plist
 keystore.properties
 *.jks
 *.keystore
