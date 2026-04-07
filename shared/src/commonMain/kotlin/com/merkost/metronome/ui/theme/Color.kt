@@ -12,5 +12,8 @@ val Pink40 = Color(0xFF7D5260)
 
 val Melrose = Color(0xFFb89fff)
 val Periwinkle = Color(0xFFc9d5fe)
+val PeriwinkleDark = Color(0xFF5b6abf)
 val MintGreen = Color(0xFF9effae)
+val MintGreenDark = Color(0xFF1a8a2e)
 val PinkLace = Color(0xFFffcaea)
+val PinkLaceDark = Color(0xFFc4547e)
