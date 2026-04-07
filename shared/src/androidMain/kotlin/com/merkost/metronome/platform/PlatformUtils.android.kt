@@ -1,3 +1,5 @@
 package com.merkost.metronome.platform
 
-actual fun currentTimeMillis(): Long = System.currentTimeMillis()
+var debugFlag: Boolean = false
+
+actual fun isDebug(): Boolean = debugFlag

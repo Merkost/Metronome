@@ -3,6 +3,7 @@ package com.merkost.metronome.engine
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
 import kotlinx.cinterop.ExperimentalForeignApi
+import org.kimplify.cedar.logging.Cedar
 import platform.AVFAudio.AVAudioEngine
 import platform.AVFAudio.AVAudioFile
 import platform.AVFAudio.AVAudioPCMBuffer
@@ -13,13 +14,18 @@ import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.AVAudioUnitVarispeed
 import platform.AVFAudio.setActive
 import platform.Foundation.NSBundle
+import kotlin.concurrent.Volatile
 import kotlin.math.max
 
 @OptIn(ExperimentalForeignApi::class)
 class MetronomePlayerIos : MetronomePlayer {
+    @Volatile
     private var audioEngine: AVAudioEngine? = null
+    @Volatile
     private var playerNode: AVAudioPlayerNode? = null
+    @Volatile
     private var varispeedNode: AVAudioUnitVarispeed? = null
+    @Volatile
     private var audioBuffer: AVAudioPCMBuffer? = null
 
     override fun initialize(initialSound: ClickSound) {
@@ -27,7 +33,11 @@ class MetronomePlayerIos : MetronomePlayer {
         AVAudioSession.sharedInstance().setActive(true, error = null)
 
         val (name, ext) = soundFileInfo(initialSound)
-        val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext) ?: return
+        val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext)
+        if (url == null) {
+            Cedar.tag("MetronomePlayerIos").e("Audio resource not found: $name.$ext")
+            return
+        }
         val audioFile = AVAudioFile(forReading = url, error = null)
 
         val frameCount = audioFile.length.toUInt()
@@ -49,7 +59,10 @@ class MetronomePlayerIos : MetronomePlayer {
         engine.connect(player, varispeed, format)
         engine.connect(varispeed, engine.mainMixerNode, format)
 
-        engine.startAndReturnError(null)
+        if (!engine.startAndReturnError(null)) {
+            Cedar.tag("MetronomePlayerIos").e("Failed to start audio engine")
+            return
+        }
         player.play()
 
         audioEngine = engine
@@ -106,7 +119,11 @@ class MetronomePlayerIos : MetronomePlayer {
 
     override fun switchSound(sound: ClickSound) {
         val (name, ext) = soundFileInfo(sound)
-        val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext) ?: return
+        val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext)
+        if (url == null) {
+            Cedar.tag("MetronomePlayerIos").e("Audio resource not found: $name.$ext")
+            return
+        }
         val audioFile = AVAudioFile(forReading = url, error = null)
         val frameCount = audioFile.length.toUInt()
         val newFormat = audioFile.processingFormat
@@ -129,7 +146,10 @@ class MetronomePlayerIos : MetronomePlayer {
         audioBuffer = buffer
 
         if (wasRunning) {
-            engine.startAndReturnError(null)
+            if (!engine.startAndReturnError(null)) {
+                Cedar.tag("MetronomePlayerIos").e("Failed to restart audio engine after sound switch")
+                return
+            }
             player.play()
         }
     }

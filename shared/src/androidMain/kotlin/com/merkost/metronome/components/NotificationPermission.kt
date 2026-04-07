@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -24,7 +23,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.merkost.metronome.R
-import timber.log.Timber
+import org.kimplify.cedar.logging.Cedar
 
 @Composable
 fun checkNotificationPolicyAccess(
@@ -118,6 +117,6 @@ private fun Context.startNotificationSettings() {
         intent.data = uri
         startActivity(intent)
     } catch (e: Exception) {
-        Timber.w(e, "startNotificationSettings")
+        Cedar.tag("NotificationPermission").w(e, "startNotificationSettings")
     }
 }

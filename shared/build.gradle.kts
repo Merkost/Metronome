@@ -21,6 +21,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            binaryOption("bundleId", "com.merkost.metronome")
         }
     }
 
@@ -43,13 +44,16 @@ kotlin {
 
             implementation(libs.datastore.preferences)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
+
+            api(libs.cedar.logging)
+            implementation(libs.gitlive.crashlytics)
         }
 
         androidMain.dependencies {
             implementation(libs.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.accompanist.permissions)
-            implementation(libs.timber)
             implementation(libs.kotlinx.coroutines.android)
         }
 
@@ -60,10 +64,10 @@ kotlin {
 
 android {
     namespace = "com.merkost.metronome"
-    compileSdk = 35
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 26
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     compileOptions {

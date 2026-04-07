@@ -18,7 +18,7 @@ import com.merkost.metronome.ui.theme.MetronomeTheme
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import org.koin.android.ext.android.get
-import timber.log.Timber
+import org.kimplify.cedar.logging.Cedar
 
 class MainActivity : ComponentActivity() {
 
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             metronomeService = (service as MetronomeService.MetronomeBinder).getService()
-            Timber.tag("BOUND_SERVICE").d(metronomeService.toString())
+            Cedar.tag("BOUND_SERVICE").d(metronomeService.toString())
         }
 
         override fun onServiceDisconnected(className: ComponentName) {

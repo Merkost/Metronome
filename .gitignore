@@ -14,7 +14,7 @@
 .externalNativeBuild
 .cxx
 local.properties
-/docs
+/docs/superpowers
 .kotlin
 .superpowers/
 
@@ -35,3 +35,6 @@ iosApp/iosApp.xcodeproj/xcuserdata/
 iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
 
 **/google-services.json
+keystore.properties
+*.jks
+*.keystore
