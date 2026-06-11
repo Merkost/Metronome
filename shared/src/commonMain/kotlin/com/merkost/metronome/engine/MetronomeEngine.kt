@@ -60,7 +60,7 @@ class MetronomeEngine(
                                 val gapBar = (barNumber - viewModel.gapTrainerStartBar.value).coerceAtLeast(0)
                                 val muted = viewModel.gapTrainerConfig.value?.isMuted(gapBar) == true
                                 viewModel.index.update { index }
-                                if (!muted) {
+                                if (!muted && beat != Beat.MUTE) {
                                     player.play(beat, stereo.first, stereo.second)
                                     if (viewModel.hapticEnabled.value) {
                                         hapticProvider.playBeatHaptic(beat)

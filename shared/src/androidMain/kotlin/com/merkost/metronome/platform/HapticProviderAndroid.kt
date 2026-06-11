@@ -21,6 +21,7 @@ class HapticProviderAndroid(private val context: Context) : HapticProvider {
         val duration = when (beat) {
             Beat.HIGH -> 40L
             Beat.LOW -> 20L
+            Beat.MUTE -> return
         }
         vibrator?.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
     }

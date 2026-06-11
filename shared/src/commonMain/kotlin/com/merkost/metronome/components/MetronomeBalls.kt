@@ -169,11 +169,20 @@ private fun Ball(
     val primaryColor = MaterialTheme.colorScheme.primary
 
     val color by animateColorAsState(
-        targetValue = if (beat == Beat.HIGH) {
-            MaterialTheme.colorScheme.primary
-        } else MaterialTheme.colorScheme.primaryContainer,
+        targetValue = when (beat) {
+            Beat.HIGH -> MaterialTheme.colorScheme.primary
+            Beat.LOW -> MaterialTheme.colorScheme.primaryContainer
+            Beat.MUTE -> Color.Transparent
+        },
         label = "ballColor"
     )
+
+    val outlineAlpha by animateFloatAsState(
+        targetValue = if (beat == Beat.MUTE) 1f else 0f,
+        animationSpec = AppAnimations.Interactive,
+        label = "ballOutlineAlpha"
+    )
+    val outlineColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     val glowAlpha by animateFloatAsState(
         targetValue = if (isActive) 0.3f else 0f,
@@ -218,6 +227,7 @@ private fun Ball(
             .padding(2.dp)
             .clip(CircleShape)
             .background(color)
+            .border(1.5.dp, outlineColor.copy(alpha = outlineAlpha * 0.5f), CircleShape)
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple(bounded = true)

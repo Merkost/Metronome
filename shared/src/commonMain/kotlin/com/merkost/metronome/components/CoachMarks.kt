@@ -50,7 +50,7 @@ private data class CoachStep(val title: String, val description: String, val too
 private val coachSteps = listOf(
     CoachStep(
         "Customize your beat",
-        "Tap any circle to toggle accent beats. The first beat is accented by default \u2014 creating a strong downbeat.",
+        "Tap any circle to cycle accented, normal, and muted beats. The first beat is accented by default \u2014 creating a strong downbeat.",
         true
     ),
     CoachStep(

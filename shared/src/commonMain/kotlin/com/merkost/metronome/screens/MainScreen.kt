@@ -69,6 +69,7 @@ import com.merkost.metronome.components.StatusStrip
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.platform.KeepScreenOn
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.BallSize
@@ -136,6 +137,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     LaunchedEffect(showTempoSheet) { viewModel.setTempoSheetVisible(showTempoSheet) }
 
     var tsExpanded by remember { mutableStateOf(false) }
+
+    KeepScreenOn(enabled = isPlaying)
 
     val springSpec = AppAnimations.Bouncy
 
