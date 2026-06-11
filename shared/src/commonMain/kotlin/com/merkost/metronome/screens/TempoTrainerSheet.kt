@@ -1,6 +1,8 @@
 package com.merkost.metronome.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -16,10 +18,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.TrendingDown
 import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,7 +50,9 @@ import com.merkost.metronome.model.GapTrainerConfig
 import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
+import com.merkost.metronome.model.SavedTempo
 import com.merkost.metronome.model.Subdivision
+import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.sheetButtonHeight
@@ -71,6 +80,8 @@ fun TempoTrainerSheet(
     beatsPerBar: Int,
     isPlaying: Boolean,
     subdivision: Subdivision,
+    timeSignature: TimeSignature,
+    savedTempos: List<SavedTempo>,
     activeConfig: GradualTempoConfig?,
     currentBar: Int,
     lastConfig: GradualTempoConfig?,
@@ -78,6 +89,9 @@ fun TempoTrainerSheet(
     lastGapConfig: GapTrainerConfig?,
     initialSection: TempoSheetSection?,
     onPresetSelected: (Int) -> Unit,
+    onApplySavedTempo: (SavedTempo) -> Unit,
+    onSaveCurrentTempo: () -> Unit,
+    onDeleteSavedTempo: (SavedTempo) -> Unit,
     onSubdivisionChanged: (Subdivision) -> Unit,
     onStartTrainer: (GradualTempoConfig) -> Unit,
     onStopTrainer: (resetToStart: Boolean) -> Unit,
@@ -113,6 +127,16 @@ fun TempoTrainerSheet(
                     onPresetSelected(it)
                     dismissAnimated()
                 },
+            )
+            SavedTemposRow(
+                savedTempos = savedTempos,
+                current = SavedTempo(currentBpm, timeSignature, subdivision),
+                onApply = {
+                    onApplySavedTempo(it)
+                    dismissAnimated()
+                },
+                onSave = onSaveCurrentTempo,
+                onDelete = onDeleteSavedTempo,
             )
             Spacer(Modifier.height(spacingSmall))
             HorizontalDivider()
@@ -252,6 +276,59 @@ private fun <T> FlowRowChips(
                 selected = selected == option,
                 onClick = { onSelect(option) },
                 label = { Text(display(option)) }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SavedTemposRow(
+    savedTempos: List<SavedTempo>,
+    current: SavedTempo,
+    onApply: (SavedTempo) -> Unit,
+    onSave: () -> Unit,
+    onDelete: (SavedTempo) -> Unit,
+) {
+    val currentSaved = savedTempos.contains(current)
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        savedTempos.forEach { tempo ->
+            InputChip(
+                selected = tempo == current,
+                onClick = { onApply(tempo) },
+                label = { Text(tempo.label) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Star,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp)
+                    )
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = "Remove",
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clickable { onDelete(tempo) }
+                    )
+                },
+            )
+        }
+        AnimatedVisibility(visible = !currentSaved && savedTempos.size < SavedTempo.MAX_SAVED) {
+            AssistChip(
+                onClick = onSave,
+                label = { Text("Save ${current.label}") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                },
             )
         }
     }

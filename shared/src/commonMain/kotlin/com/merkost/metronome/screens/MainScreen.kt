@@ -113,6 +113,9 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     val practiceTimerRemaining by viewModel.practiceTimerRemaining.collectAsState()
     val lastTimerMinutes by viewModel.lastTimerMinutes.collectAsState()
     val totalPracticeTime by viewModel.totalPracticeTime.collectAsState()
+    val todayPracticeTime by viewModel.todayPracticeTime.collectAsState()
+    val practiceStreak by viewModel.practiceStreak.collectAsState()
+    val savedTempos by viewModel.savedTempos.collectAsState()
     var showTimerSheet by remember { mutableStateOf(false) }
 
     val gradualTempoConfig by viewModel.gradualTempoConfig.collectAsState()
@@ -205,10 +208,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                     ),
                                     color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(spacingSmall))
+                                        .clip(RoundedCornerShape(50))
                                         .background(MaterialTheme.colorScheme.surfaceVariant)
                                         .clickable { tsExpanded = true }
-                                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
                                 )
                             }
                         )
@@ -285,10 +288,14 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                         fontWeight = FontWeight.Bold
                                     ),
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.clickable {
-                                        tempoSheetSection = null
-                                        showTempoSheet = true
-                                    }
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(50))
+                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                        .clickable {
+                                            tempoSheetSection = null
+                                            showTempoSheet = true
+                                        }
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
                                 )
                             }
 
@@ -477,7 +484,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             timerGoal = practiceTimerGoal,
             timerRemaining = practiceTimerRemaining,
             lastTimerMinutes = lastTimerMinutes,
-            sessionElapsed = metronomeState.stopWatchState.elapsedTime,
+            todayPracticeTime = todayPracticeTime,
+            practiceStreak = practiceStreak,
             totalPracticeTime = totalPracticeTime,
             onStart = viewModel::startPracticeTimer,
             onExtend = viewModel::extendPracticeTimer,
@@ -493,6 +501,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             beatsPerBar = beats.size,
             isPlaying = isPlaying,
             subdivision = metronomeState.subdivision,
+            timeSignature = metronomeState.timeSignature,
+            savedTempos = savedTempos,
             activeConfig = gradualTempoConfig,
             currentBar = gradualTempoCurrentBar,
             lastConfig = lastTrainerConfig,
@@ -500,6 +510,9 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             lastGapConfig = lastGapConfig,
             initialSection = tempoSheetSection,
             onPresetSelected = { viewModel.onSliderValueChanged(it.toFloat()) },
+            onApplySavedTempo = viewModel::applySavedTempo,
+            onSaveCurrentTempo = viewModel::saveCurrentTempo,
+            onDeleteSavedTempo = viewModel::deleteSavedTempo,
             onSubdivisionChanged = viewModel::onSubdivisionChanged,
             onStartTrainer = viewModel::startGradualTempo,
             onStopTrainer = viewModel::stopGradualTempo,

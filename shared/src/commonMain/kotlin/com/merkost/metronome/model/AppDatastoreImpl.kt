@@ -10,6 +10,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 
 class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatastore {
 
@@ -32,7 +35,16 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val GAP_PLAY_BARS = intPreferencesKey("GAP_PLAY_BARS")
         private val GAP_MUTE_BARS = intPreferencesKey("GAP_MUTE_BARS")
         private val KEEP_SCREEN_AWAKE = booleanPreferencesKey("KEEP_SCREEN_AWAKE")
+        private val SAVED_TEMPOS = stringPreferencesKey("SAVED_TEMPOS")
+        private val TODAY_TIME = longPreferencesKey("TODAY_TIME")
+        private val TODAY_DAY = longPreferencesKey("TODAY_DAY")
+        private val STREAK_DAYS = intPreferencesKey("STREAK_DAYS")
+        private val LAST_PRACTICE_DAY = longPreferencesKey("LAST_PRACTICE_DAY")
+        private const val STREAK_MIN_MS = 60_000L
     }
+
+    private fun currentEpochDay(): Long =
+        Clock.System.todayIn(TimeZone.currentSystemDefault()).toEpochDays().toLong()
 
     override val colorScheme: Flow<AppColorScheme> = dataStore.data
         .map { preferences ->
@@ -89,16 +101,79 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     }
 
     override suspend fun addTotalTime(elapsedTime: Long) {
+        if (elapsedTime <= 0L) return
         dataStore.edit { preferences ->
             preferences[TOTAL_TIME] = (preferences[TOTAL_TIME] ?: 0L) + elapsedTime
+            val today = currentEpochDay()
+            val storedDay = preferences[TODAY_DAY]
+            val todayBase = if (storedDay == today) preferences[TODAY_TIME] ?: 0L else 0L
+            val newTodayTime = todayBase + elapsedTime
+            preferences[TODAY_DAY] = today
+            preferences[TODAY_TIME] = newTodayTime
+            if (newTodayTime >= STREAK_MIN_MS) {
+                val lastDay = preferences[LAST_PRACTICE_DAY]
+                if (lastDay != today) {
+                    val streak = preferences[STREAK_DAYS] ?: 0
+                    preferences[STREAK_DAYS] = if (lastDay == today - 1) streak + 1 else 1
+                    preferences[LAST_PRACTICE_DAY] = today
+                }
+            }
         }
     }
 
     override suspend fun resetTime() {
         dataStore.edit { preferences ->
             preferences[TOTAL_TIME] = 0L
+            preferences[TODAY_TIME] = 0L
+            preferences[STREAK_DAYS] = 0
+            preferences.remove(LAST_PRACTICE_DAY)
         }
     }
+
+    override val todayPracticeTime: Flow<Long> = dataStore.data
+        .map { preferences ->
+            if (preferences[TODAY_DAY] == currentEpochDay()) {
+                preferences[TODAY_TIME] ?: 0L
+            } else {
+                0L
+            }
+        }
+
+    override val practiceStreak: Flow<Int> = dataStore.data
+        .map { preferences ->
+            val lastDay = preferences[LAST_PRACTICE_DAY] ?: return@map 0
+            val today = currentEpochDay()
+            if (lastDay == today || lastDay == today - 1) {
+                preferences[STREAK_DAYS] ?: 0
+            } else {
+                0
+            }
+        }
+
+    override val savedTempos: Flow<List<SavedTempo>> = dataStore.data
+        .map { preferences ->
+            decodeSavedTempos(preferences[SAVED_TEMPOS])
+        }
+
+    override suspend fun addSavedTempo(tempo: SavedTempo) {
+        dataStore.edit { preferences ->
+            val current = decodeSavedTempos(preferences[SAVED_TEMPOS])
+            if (tempo in current) return@edit
+            preferences[SAVED_TEMPOS] = (listOf(tempo) + current)
+                .take(SavedTempo.MAX_SAVED)
+                .joinToString("\n") { it.encode() }
+        }
+    }
+
+    override suspend fun removeSavedTempo(tempo: SavedTempo) {
+        dataStore.edit { preferences ->
+            val current = decodeSavedTempos(preferences[SAVED_TEMPOS])
+            preferences[SAVED_TEMPOS] = (current - tempo).joinToString("\n") { it.encode() }
+        }
+    }
+
+    private fun decodeSavedTempos(raw: String?): List<SavedTempo> =
+        (raw ?: "").split("\n").mapNotNull { SavedTempo.decode(it) }
 
     override val selectedSound: Flow<ClickSound> = dataStore.data
         .map { preferences ->

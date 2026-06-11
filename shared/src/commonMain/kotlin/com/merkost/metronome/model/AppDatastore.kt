@@ -44,4 +44,11 @@ interface AppDatastore {
 
     val keepScreenAwake: Flow<Boolean>
     suspend fun saveKeepScreenAwake(enabled: Boolean)
+
+    val savedTempos: Flow<List<SavedTempo>>
+    suspend fun addSavedTempo(tempo: SavedTempo)
+    suspend fun removeSavedTempo(tempo: SavedTempo)
+
+    val todayPracticeTime: Flow<Long>
+    val practiceStreak: Flow<Int>
 }

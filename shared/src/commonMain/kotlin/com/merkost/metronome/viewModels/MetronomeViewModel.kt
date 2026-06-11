@@ -10,6 +10,7 @@ import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.GapTrainerConfig
 import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.MetronomeState
+import com.merkost.metronome.model.SavedTempo
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
@@ -213,6 +214,44 @@ class MetronomeViewModel(
 
     val totalPracticeTime = appDatastore.totalTime
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
+
+    val todayPracticeTime = appDatastore.todayPracticeTime
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
+
+    val practiceStreak = appDatastore.practiceStreak
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+
+    val savedTempos = appDatastore.savedTempos
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    fun saveCurrentTempo() {
+        val state = _metronomeState.value
+        val tempo = SavedTempo(state.rhythm, state.timeSignature, state.subdivision)
+        viewModelScope.launch { appDatastore.addSavedTempo(tempo) }
+    }
+
+    fun applySavedTempo(tempo: SavedTempo) {
+        val tsChanged = _metronomeState.value.timeSignature != tempo.timeSignature
+        _metronomeState.update {
+            it.copy(
+                rhythm = tempo.bpm,
+                timeSignature = tempo.timeSignature,
+                beats = if (tsChanged) tempo.timeSignature.defaultBeats else it.beats,
+                subdivision = tempo.subdivision,
+            )
+        }
+        if (tsChanged) {
+            index.value = -1
+        }
+        viewModelScope.launch {
+            appDatastore.saveTimeSignature(tempo.timeSignature)
+            appDatastore.saveSubdivision(tempo.subdivision)
+        }
+    }
+
+    fun deleteSavedTempo(tempo: SavedTempo) {
+        viewModelScope.launch { appDatastore.removeSavedTempo(tempo) }
+    }
 
     val lastTimerMinutes = appDatastore.lastTimerMinutes
         .stateIn(viewModelScope, SharingStarted.Eagerly, 15)

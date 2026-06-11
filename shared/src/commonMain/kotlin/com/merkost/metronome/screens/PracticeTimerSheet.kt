@@ -43,7 +43,8 @@ fun PracticeTimerSheet(
     timerGoal: Long?,
     timerRemaining: Long,
     lastTimerMinutes: Int,
-    sessionElapsed: Long,
+    todayPracticeTime: Long,
+    practiceStreak: Int,
     totalPracticeTime: Long,
     onStart: (minutes: Int) -> Unit,
     onExtend: (minutes: Int) -> Unit,
@@ -78,7 +79,8 @@ fun PracticeTimerSheet(
                 ConfigTimerContent(
                     isPlaying = isPlaying,
                     lastTimerMinutes = lastTimerMinutes,
-                    sessionElapsed = sessionElapsed,
+                    todayPracticeTime = todayPracticeTime,
+                    practiceStreak = practiceStreak,
                     totalPracticeTime = totalPracticeTime,
                     onStart = { minutes ->
                         onStart(minutes)
@@ -94,7 +96,8 @@ fun PracticeTimerSheet(
 private fun ConfigTimerContent(
     isPlaying: Boolean,
     lastTimerMinutes: Int,
-    sessionElapsed: Long,
+    todayPracticeTime: Long,
+    practiceStreak: Int,
     totalPracticeTime: Long,
     onStart: (minutes: Int) -> Unit,
 ) {
@@ -157,9 +160,21 @@ private fun ConfigTimerContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            StatText(label = "This session", value = TimestampMillisecondsFormatter.format(sessionElapsed))
             StatText(
-                label = "Total practice",
+                label = "Today",
+                value = TimestampMillisecondsFormatter.formatHuman(todayPracticeTime),
+            )
+            StatText(
+                label = "Streak",
+                value = if (practiceStreak > 0) {
+                    if (practiceStreak == 1) "1 day" else "$practiceStreak days"
+                } else {
+                    "—"
+                },
+                alignCenter = true,
+            )
+            StatText(
+                label = "Total",
                 value = TimestampMillisecondsFormatter.formatHuman(totalPracticeTime),
                 alignEnd = true,
             )
@@ -221,8 +236,18 @@ private fun ActiveTimerContent(
 }
 
 @Composable
-private fun StatText(label: String, value: String, alignEnd: Boolean = false) {
-    Column(horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start) {
+private fun StatText(
+    label: String,
+    value: String,
+    alignEnd: Boolean = false,
+    alignCenter: Boolean = false,
+) {
+    val alignment = when {
+        alignCenter -> Alignment.CenterHorizontally
+        alignEnd -> Alignment.End
+        else -> Alignment.Start
+    }
+    Column(horizontalAlignment = alignment) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
