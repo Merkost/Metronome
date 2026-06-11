@@ -66,13 +66,14 @@ import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
 import com.merkost.metronome.components.StatusStrip
+import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
-import com.merkost.metronome.platform.KeepScreenOn
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.BallSize
+import com.merkost.metronome.ui.BallSizeCompact
 import com.merkost.metronome.ui.CircleSize
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
@@ -118,6 +119,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     val gradualTempoCurrentBar by viewModel.gradualTempoCurrentBar.collectAsState()
     val lastTrainerConfig by viewModel.lastTrainerConfig.collectAsState()
     var showTempoSheet by remember { mutableStateOf(false) }
+    var tempoSheetSection by remember { mutableStateOf<TempoSheetSection?>(null) }
 
     var lastShownTrainerConfig by remember { mutableStateOf(gradualTempoConfig) }
     LaunchedEffect(gradualTempoConfig) {
@@ -138,7 +140,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
 
     var tsExpanded by remember { mutableStateOf(false) }
 
-    KeepScreenOn(enabled = isPlaying)
+    val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
 
     val springSpec = AppAnimations.Bouncy
 
@@ -156,7 +158,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     }
     val primaryColor = MaterialTheme.colorScheme.primary
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .then(if (isPlaying && keepScreenAwake) Modifier.keepScreenOn() else Modifier)
+    ) {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
@@ -234,12 +240,15 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                         verticalArrangement = Arrangement.spacedBy(spacingLarge)
                     ) {
 
-                        val ballSpacing = if (beats.size > 5) spacingMedium else spacingLarge
-                        val indicatorSize = minOf(CircleSize, BallSize + ballSpacing)
+                        val compactBalls = beats.size > 5
+                        val ballSpacing = if (compactBalls) spacingSmall else spacingLarge
+                        val ballSize = if (compactBalls) BallSizeCompact else BallSize
+                        val indicatorSize = minOf(CircleSize, ballSize + ballSpacing)
 
                         MetronomeBalls(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(horizontal = horizontalPadding)
                                 .padding(bottom = spacingLarge)
                                 .onGloballyPositioned { coordinates ->
                                     beatBallsBounds = coordinates.boundsInRoot()
@@ -250,6 +259,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             animSpec = springSpec,
                             arrangementSpacing = ballSpacing,
                             indicatorSize = indicatorSize,
+                            ballSize = ballSize,
                             onBallClicked = viewModel::onBallClicked,
                         )
 
@@ -275,7 +285,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                         fontWeight = FontWeight.Bold
                                     ),
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.clickable { showTempoSheet = true }
+                                    modifier = Modifier.clickable {
+                                        tempoSheetSection = null
+                                        showTempoSheet = true
+                                    }
                                 )
                             }
 
@@ -366,7 +379,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                     },
                                     progress = config.progressFor(metronomeState.rhythm),
                                     accent = MaterialTheme.colorScheme.tertiary,
-                                    onClick = { showTempoSheet = true },
+                                    onClick = {
+                                        tempoSheetSection = TempoSheetSection.TRAINER
+                                        showTempoSheet = true
+                                    },
                                     onStop = { viewModel.stopGradualTempo() },
                                     titleModifier = Modifier.pulseOnChange(metronomeState.rhythm),
                                 )
@@ -401,7 +417,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                     },
                                     progress = config.cycleProgress(gapBar),
                                     accent = MaterialTheme.colorScheme.primary,
-                                    onClick = { showTempoSheet = true },
+                                    onClick = {
+                                        tempoSheetSection = TempoSheetSection.GAP
+                                        showTempoSheet = true
+                                    },
                                     onStop = { viewModel.stopGapTrainer() },
                                     titleModifier = Modifier.pulseOnChange(currentBar),
                                 )
@@ -479,6 +498,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             lastConfig = lastTrainerConfig,
             activeGapConfig = gapTrainerConfig,
             lastGapConfig = lastGapConfig,
+            initialSection = tempoSheetSection,
             onPresetSelected = { viewModel.onSliderValueChanged(it.toFloat()) },
             onSubdivisionChanged = viewModel::onSubdivisionChanged,
             onStartTrainer = viewModel::startGradualTempo,

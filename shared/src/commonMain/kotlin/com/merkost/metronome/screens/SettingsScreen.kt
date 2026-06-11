@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -84,6 +85,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
     val hapticEnabled by viewModel.hapticEnabled.collectAsState()
+    val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
@@ -138,13 +140,14 @@ fun SettingsScreen(upPress: () -> Unit) {
         }
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().padding(it),
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
             contentAlignment = Alignment.TopCenter
         ) {
         Column(
             Modifier
                 .widthIn(max = maxContentWidth)
                 .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
                 .padding(horizontalPadding),
             verticalArrangement = Arrangement.spacedBy(spacingMedium)
         ) {
@@ -311,6 +314,13 @@ fun SettingsScreen(upPress: () -> Unit) {
             }
 
             SettingsSwitch("Color Flash", colorFlash, viewModel::onColorFlashChanged)
+
+            SettingsSwitch(
+                "Keep Screen Awake",
+                keepScreenAwake,
+                viewModel::onKeepScreenAwakeChanged,
+                subtitle = "While the metronome plays",
+            )
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 

@@ -41,4 +41,7 @@ interface AppDatastore {
 
     val lastGapConfig: Flow<GapTrainerConfig?>
     suspend fun saveLastGapConfig(config: GapTrainerConfig)
+
+    val keepScreenAwake: Flow<Boolean>
+    suspend fun saveKeepScreenAwake(enabled: Boolean)
 }

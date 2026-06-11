@@ -50,6 +50,7 @@ fun MetronomeBalls(
     animSpec: AnimationSpec<Float>,
     arrangementSpacing: Dp = 32.dp,
     indicatorSize: Dp = CircleSize,
+    ballSize: Dp = BallSize,
     modifier: Modifier = Modifier,
     onBallClicked: (index: Int, Beat) -> Unit,
 ) {
@@ -77,6 +78,7 @@ fun MetronomeBalls(
                     Ball(
                         beat = beat,
                         isActive = isPlaying && index == selectedIndex,
+                        ballSize = ballSize,
                         onClick = { onBallClicked(index, beat) }
                     )
                 }
@@ -164,6 +166,7 @@ fun MetronomeBalls(
 private fun Ball(
     beat: Beat,
     isActive: Boolean = false,
+    ballSize: Dp = BallSize,
     onClick: () -> Unit,
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -200,7 +203,7 @@ private fun Ball(
 
     Box(
         modifier = Modifier
-            .size(BallSize)
+            .size(ballSize)
             .graphicsLayer {
                 scaleX = beatScale
                 scaleY = beatScale

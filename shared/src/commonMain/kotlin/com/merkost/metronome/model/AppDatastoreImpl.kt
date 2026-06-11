@@ -31,6 +31,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val SUBDIVISION = stringPreferencesKey("SUBDIVISION")
         private val GAP_PLAY_BARS = intPreferencesKey("GAP_PLAY_BARS")
         private val GAP_MUTE_BARS = intPreferencesKey("GAP_MUTE_BARS")
+        private val KEEP_SCREEN_AWAKE = booleanPreferencesKey("KEEP_SCREEN_AWAKE")
     }
 
     override val colorScheme: Flow<AppColorScheme> = dataStore.data
@@ -206,6 +207,17 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         dataStore.edit { preferences ->
             preferences[GAP_PLAY_BARS] = config.playBars
             preferences[GAP_MUTE_BARS] = config.muteBars
+        }
+    }
+
+    override val keepScreenAwake: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[KEEP_SCREEN_AWAKE] ?: true
+        }
+
+    override suspend fun saveKeepScreenAwake(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[KEEP_SCREEN_AWAKE] = enabled
         }
     }
 }

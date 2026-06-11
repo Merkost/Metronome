@@ -27,6 +27,8 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
     val hapticEnabled = appDatastore.hapticEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val keepScreenAwake = appDatastore.keepScreenAwake
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -43,6 +45,12 @@ class SettingsViewModel(
     fun onHapticChanged(enabled: Boolean) {
         viewModelScope.launch {
             appDatastore.saveHapticEnabled(enabled)
+        }
+    }
+
+    fun onKeepScreenAwakeChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            appDatastore.saveKeepScreenAwake(enabled)
         }
     }
 
