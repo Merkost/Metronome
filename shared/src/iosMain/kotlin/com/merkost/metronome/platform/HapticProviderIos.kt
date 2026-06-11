@@ -15,6 +15,7 @@ class HapticProviderIos : HapticProvider {
             when (beat) {
                 Beat.HIGH -> mediumGenerator.impactOccurred()
                 Beat.LOW -> lightGenerator.impactOccurred()
+                Beat.MUTE -> Unit
             }
         }
     }

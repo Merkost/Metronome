@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,8 +24,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Smartphone
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -83,6 +85,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
     val hapticEnabled by viewModel.hapticEnabled.collectAsState()
+    val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
@@ -90,6 +93,36 @@ fun SettingsScreen(upPress: () -> Unit) {
     var showBackgroundPlayPermission by remember { mutableStateOf(false) }
     if (showBackgroundPlayPermission) {
         BackgroundPlayPermissionCheck(true)
+    }
+
+    var showResetConfirmation by remember { mutableStateOf(false) }
+    if (showResetConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirmation = false },
+            title = { Text("Reset practice time?", fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    "This clears your total practice time of " +
+                        "${TimestampMillisecondsFormatter.formatHuman(totalTime)}. " +
+                        "This can't be undone."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.resetTotalTime()
+                        showResetConfirmation = false
+                    }
+                ) {
+                    Text("Reset", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -107,13 +140,14 @@ fun SettingsScreen(upPress: () -> Unit) {
         }
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().padding(it),
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
             contentAlignment = Alignment.TopCenter
         ) {
         Column(
             Modifier
                 .widthIn(max = maxContentWidth)
                 .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
                 .padding(horizontalPadding),
             verticalArrangement = Arrangement.spacedBy(spacingMedium)
         ) {
@@ -266,20 +300,27 @@ fun SettingsScreen(upPress: () -> Unit) {
                         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
+                        Icon(Icons.Rounded.Timer, Icons.Rounded.Timer.name)
                         Text(
-                            text = TimestampMillisecondsFormatter.format(totalTime),
+                            text = TimestampMillisecondsFormatter.formatHuman(totalTime),
                             maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
                         )
                     }
-                    TextButton(onClick = viewModel::resetTotalTime) {
+                    TextButton(onClick = { showResetConfirmation = true }) {
                         Text(text = "Reset")
                     }
                 }
             }
 
             SettingsSwitch("Color Flash", colorFlash, viewModel::onColorFlashChanged)
+
+            SettingsSwitch(
+                "Keep Screen Awake",
+                keepScreenAwake,
+                viewModel::onKeepScreenAwakeChanged,
+                subtitle = "While the metronome plays",
+            )
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 

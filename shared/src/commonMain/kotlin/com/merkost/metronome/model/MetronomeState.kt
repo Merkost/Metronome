@@ -14,6 +14,7 @@ data class MetronomeState(
     var rhythm: Int = 80,
     var stopWatchState: StopWatchState = StopWatchState(),
     val timeSignature: TimeSignature = TimeSignature.FOUR_FOUR,
+    val subdivision: Subdivision = Subdivision.QUARTER,
 ) {
 
     val interval: Int

@@ -28,6 +28,9 @@ internal val BlackNWhiteDarkColorScheme = darkColorScheme(
     primaryContainer = Color.DarkGray,
     surfaceVariant = Color.DarkGray,
     secondaryContainer = Color.DarkGray,
+    tertiary = Color.White,
+    onTertiary = Color.Black,
+    tertiaryContainer = Color.DarkGray,
 )
 
 internal val BlackNWhiteLightColorScheme = lightColorScheme(
@@ -38,6 +41,9 @@ internal val BlackNWhiteLightColorScheme = lightColorScheme(
     primaryContainer = Color.LightGray.copy(0.5f),
     surfaceVariant = Color.LightGray.copy(0.5f),
     secondaryContainer = Color.LightGray.copy(0.5f),
+    tertiary = Color.Black,
+    onTertiary = Color.White,
+    tertiaryContainer = Color.LightGray.copy(0.5f),
 )
 
 internal val PurpleDarkColorScheme = darkColorScheme(
@@ -58,7 +64,10 @@ internal val PeriwinkleLightColorScheme = lightColorScheme(
     background = Color.White,
     surface = Color.White,
     primaryContainer = Periwinkle.copy(alpha = 0.3f),
-    surfaceVariant = Periwinkle.copy(alpha = 0.4f)
+    surfaceVariant = Periwinkle.copy(alpha = 0.4f),
+    tertiary = PeriwinkleDark,
+    onTertiary = Color.White,
+    tertiaryContainer = Periwinkle.copy(alpha = 0.3f),
 )
 
 internal val PeriwinkleDarkColorScheme = darkColorScheme(
@@ -67,7 +76,10 @@ internal val PeriwinkleDarkColorScheme = darkColorScheme(
     background = Color.Black,
     surface = Color.Black,
     primaryContainer = PeriwinkleDark.copy(alpha = 0.5f),
-    surfaceVariant = PeriwinkleDark.copy(alpha = 0.4f)
+    surfaceVariant = PeriwinkleDark.copy(alpha = 0.4f),
+    tertiary = Periwinkle,
+    onTertiary = Color.Black,
+    tertiaryContainer = PeriwinkleDark.copy(alpha = 0.5f),
 )
 
 internal val MintGreenLightColorScheme = lightColorScheme(
@@ -76,7 +88,10 @@ internal val MintGreenLightColorScheme = lightColorScheme(
     background = Color.White,
     surface = Color.White,
     primaryContainer = MintGreen.copy(alpha = 0.3f),
-    surfaceVariant = MintGreen.copy(alpha = 0.4f)
+    surfaceVariant = MintGreen.copy(alpha = 0.4f),
+    tertiary = MintGreenDark,
+    onTertiary = Color.White,
+    tertiaryContainer = MintGreen.copy(alpha = 0.3f),
 )
 
 internal val MintGreenDarkColorScheme = darkColorScheme(
@@ -85,7 +100,10 @@ internal val MintGreenDarkColorScheme = darkColorScheme(
     background = Color.Black,
     surface = Color.Black,
     primaryContainer = MintGreenDark.copy(alpha = 0.5f),
-    surfaceVariant = MintGreenDark.copy(alpha = 0.4f)
+    surfaceVariant = MintGreenDark.copy(alpha = 0.4f),
+    tertiary = MintGreen,
+    onTertiary = Color.Black,
+    tertiaryContainer = MintGreenDark.copy(alpha = 0.5f),
 )
 
 internal val PinkLaceLightColorScheme = lightColorScheme(
@@ -94,7 +112,10 @@ internal val PinkLaceLightColorScheme = lightColorScheme(
     background = Color.White,
     surface = Color.White,
     primaryContainer = PinkLace.copy(alpha = 0.3f),
-    surfaceVariant = PinkLace.copy(alpha = 0.4f)
+    surfaceVariant = PinkLace.copy(alpha = 0.4f),
+    tertiary = PinkLaceDark,
+    onTertiary = Color.White,
+    tertiaryContainer = PinkLace.copy(alpha = 0.3f),
 )
 
 internal val PinkLaceDarkColorScheme = darkColorScheme(
@@ -103,5 +124,8 @@ internal val PinkLaceDarkColorScheme = darkColorScheme(
     background = Color.Black,
     surface = Color.Black,
     primaryContainer = PinkLaceDark.copy(alpha = 0.5f),
-    surfaceVariant = PinkLaceDark.copy(alpha = 0.4f)
+    surfaceVariant = PinkLaceDark.copy(alpha = 0.4f),
+    tertiary = PinkLace,
+    onTertiary = Color.Black,
+    tertiaryContainer = PinkLaceDark.copy(alpha = 0.5f),
 )

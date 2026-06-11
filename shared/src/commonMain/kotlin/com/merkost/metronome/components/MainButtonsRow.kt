@@ -9,25 +9,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.model.StopWatchState
-import com.merkost.metronome.ui.defaultPlayButtonSize
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.spacingSmall
 
@@ -36,6 +28,8 @@ fun MainButtonsRow(
     modifier: Modifier,
     isPlaying: Boolean,
     stopWatchState: StopWatchState,
+    timerGoal: Long?,
+    timerRemaining: Long,
     onPlayPause: (isPlaying: Boolean) -> Unit,
     onTempoTap: () -> Unit,
     onTimerClick: () -> Unit,
@@ -45,30 +39,14 @@ fun MainButtonsRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        var secondaryButtonSize by remember { mutableStateOf(IntSize.Zero) }
-        val density = LocalDensity.current
-
-        MySecondaryButton(
+        TimerChip(
+            modifier = Modifier.weight(1f),
+            stopWatchElapsed = stopWatchState.elapsedTime,
+            timerGoal = timerGoal,
+            timerRemaining = timerRemaining,
+            isPlaying = isPlaying,
             onClick = onTimerClick,
-            shape = RoundedCornerShape(30),
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(density.run { secondaryButtonSize.height.toDp() }, defaultPlayButtonSize)
-                    .padding(16.dp)
-            ) {
-                Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
-                Text(
-                    text = TimestampMillisecondsFormatter.format(stopWatchState.elapsedTime),
-                    maxLines = 2,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
-                )
-            }
-        }
+        )
 
         Spacer(modifier = Modifier.size(horizontalPadding))
         PlayButton(
@@ -80,24 +58,23 @@ fun MainButtonsRow(
 
         MySecondaryButton(
             onClick = onTempoTap,
-            shape = RoundedCornerShape(30),
-            modifier = Modifier
-                .onSizeChanged { secondaryButtonSize = it }
-                .weight(1f)
-                .fillMaxWidth()
+            shape = RoundedCornerShape(50),
+            modifier = Modifier.weight(1f)
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 24.dp)
                     .padding(16.dp)
-                    .heightIn(max = defaultPlayButtonSize)
             ) {
                 Icon(Icons.Rounded.TouchApp, Icons.Rounded.TouchApp.name)
                 Text(
-                    text = "Tap\nTempo",
+                    text = "Tap Tempo",
                     maxLines = 2,
-                    style = MaterialTheme.typography.bodyLarge
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
                 )
             }
         }
