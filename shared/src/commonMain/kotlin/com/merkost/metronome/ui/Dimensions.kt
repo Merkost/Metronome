@@ -24,6 +24,13 @@ val spacingLarge = 32.dp
 val cornerRadiusSmall = 10.dp
 val cornerRadiusMedium = 12.dp
 val cornerRadiusLarge = 16.dp
+val cornerRadiusXLarge = 28.dp
+
+val statusStripHeight = 44.dp
+val sheetButtonHeight = 52.dp
+val stepperButtonSize = 40.dp
+val progressRingSize = 22.dp
+val progressRingStroke = 2.5.dp
 
 // Elevation
 val elevationSmall = 1.dp

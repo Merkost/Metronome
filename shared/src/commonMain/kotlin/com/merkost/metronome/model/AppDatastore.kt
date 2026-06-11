@@ -30,4 +30,15 @@ interface AppDatastore {
     val timeSignature: Flow<TimeSignature>
     suspend fun saveTimeSignature(timeSignature: TimeSignature)
 
+    val lastTrainerConfig: Flow<GradualTempoConfig?>
+    suspend fun saveLastTrainerConfig(config: GradualTempoConfig)
+
+    val lastTimerMinutes: Flow<Int>
+    suspend fun saveLastTimerMinutes(minutes: Int)
+
+    val subdivision: Flow<Subdivision>
+    suspend fun saveSubdivision(subdivision: Subdivision)
+
+    val lastGapConfig: Flow<GapTrainerConfig?>
+    suspend fun saveLastGapConfig(config: GapTrainerConfig)
 }

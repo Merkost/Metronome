@@ -9,7 +9,6 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatastore {
@@ -24,6 +23,14 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val HAPTIC_ENABLED = booleanPreferencesKey("HAPTIC_ENABLED")
         private val ONBOARDING_COMPLETE = booleanPreferencesKey("ONBOARDING_COMPLETE")
         private val TIME_SIGNATURE = stringPreferencesKey("TIME_SIGNATURE")
+        private val TRAINER_START_BPM = intPreferencesKey("TRAINER_START_BPM")
+        private val TRAINER_END_BPM = intPreferencesKey("TRAINER_END_BPM")
+        private val TRAINER_INCREMENT = intPreferencesKey("TRAINER_INCREMENT")
+        private val TRAINER_BARS_PER_STEP = intPreferencesKey("TRAINER_BARS_PER_STEP")
+        private val LAST_TIMER_MINUTES = intPreferencesKey("LAST_TIMER_MINUTES")
+        private val SUBDIVISION = stringPreferencesKey("SUBDIVISION")
+        private val GAP_PLAY_BARS = intPreferencesKey("GAP_PLAY_BARS")
+        private val GAP_MUTE_BARS = intPreferencesKey("GAP_MUTE_BARS")
     }
 
     override val colorScheme: Flow<AppColorScheme> = dataStore.data
@@ -82,7 +89,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
 
     override suspend fun addTotalTime(elapsedTime: Long) {
         dataStore.edit { preferences ->
-            preferences[TOTAL_TIME] = totalTime.first() + elapsedTime
+            preferences[TOTAL_TIME] = (preferences[TOTAL_TIME] ?: 0L) + elapsedTime
         }
     }
 
@@ -137,6 +144,68 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     override suspend fun saveTimeSignature(timeSignature: TimeSignature) {
         dataStore.edit { preferences ->
             preferences[TIME_SIGNATURE] = timeSignature.name
+        }
+    }
+
+    override val lastTrainerConfig: Flow<GradualTempoConfig?> = dataStore.data
+        .map { preferences ->
+            val start = preferences[TRAINER_START_BPM] ?: return@map null
+            val end = preferences[TRAINER_END_BPM] ?: return@map null
+            GradualTempoConfig(
+                startBpm = start.coerceIn(MIN_BPM, MAX_BPM),
+                endBpm = end.coerceIn(MIN_BPM, MAX_BPM),
+                increment = (preferences[TRAINER_INCREMENT] ?: 2).coerceAtLeast(1),
+                barsPerStep = (preferences[TRAINER_BARS_PER_STEP] ?: 4).coerceAtLeast(1),
+            )
+        }
+
+    override suspend fun saveLastTrainerConfig(config: GradualTempoConfig) {
+        dataStore.edit { preferences ->
+            preferences[TRAINER_START_BPM] = config.startBpm
+            preferences[TRAINER_END_BPM] = config.endBpm
+            preferences[TRAINER_INCREMENT] = config.increment
+            preferences[TRAINER_BARS_PER_STEP] = config.barsPerStep
+        }
+    }
+
+    override val lastTimerMinutes: Flow<Int> = dataStore.data
+        .map { preferences ->
+            (preferences[LAST_TIMER_MINUTES] ?: 15).coerceIn(1, 120)
+        }
+
+    override suspend fun saveLastTimerMinutes(minutes: Int) {
+        dataStore.edit { preferences ->
+            preferences[LAST_TIMER_MINUTES] = minutes
+        }
+    }
+
+    override val subdivision: Flow<Subdivision> = dataStore.data
+        .map { preferences ->
+            kotlin.runCatching {
+                Subdivision.valueOf(preferences[SUBDIVISION] ?: Subdivision.QUARTER.name)
+            }.getOrDefault(Subdivision.QUARTER)
+        }
+
+    override suspend fun saveSubdivision(subdivision: Subdivision) {
+        dataStore.edit { preferences ->
+            preferences[SUBDIVISION] = subdivision.name
+        }
+    }
+
+    override val lastGapConfig: Flow<GapTrainerConfig?> = dataStore.data
+        .map { preferences ->
+            val playBars = preferences[GAP_PLAY_BARS] ?: return@map null
+            val muteBars = preferences[GAP_MUTE_BARS] ?: return@map null
+            GapTrainerConfig(
+                playBars = playBars.coerceAtLeast(1),
+                muteBars = muteBars.coerceAtLeast(1),
+            )
+        }
+
+    override suspend fun saveLastGapConfig(config: GapTrainerConfig) {
+        dataStore.edit { preferences ->
+            preferences[GAP_PLAY_BARS] = config.playBars
+            preferences[GAP_MUTE_BARS] = config.muteBars
         }
     }
 }
