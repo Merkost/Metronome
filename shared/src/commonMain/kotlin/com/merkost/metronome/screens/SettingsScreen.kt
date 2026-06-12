@@ -58,9 +58,11 @@ import com.composables.icons.lucide.Mail
 import com.composables.icons.lucide.Smartphone
 import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Timer
+import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
+import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.ui.cornerRadiusMedium
@@ -91,6 +93,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val countInEnabled by viewModel.countInEnabled.collectAsState()
     val practiceStreak by viewModel.practiceStreak.collectAsState()
+    val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
@@ -324,6 +327,18 @@ fun SettingsScreen(upPress: () -> Unit) {
                 viewModel::onCountInChanged,
                 subtitle = "One bar before playback starts",
             )
+
+            SettingsRow(title = "Beat Display") {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                    BeatDisplayStyle.entries.forEach { style ->
+                        AppChip(
+                            selected = beatDisplayStyle == style,
+                            onClick = { viewModel.onBeatDisplayStyleChanged(style) },
+                            label = style.label,
+                        )
+                    }
+                }
+            }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 

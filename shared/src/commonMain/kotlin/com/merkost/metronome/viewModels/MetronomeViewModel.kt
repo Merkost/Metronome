@@ -6,6 +6,7 @@ import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.GapTrainerConfig
 import com.merkost.metronome.model.GradualTempoConfig
@@ -50,6 +51,9 @@ class MetronomeViewModel(
 
     val countInEnabled = appDatastore.countInEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val beatDisplayStyle = appDatastore.beatDisplayStyle
+        .stateIn(viewModelScope, SharingStarted.Eagerly, BeatDisplayStyle.DOTS)
 
     private val _countInRemaining = MutableStateFlow(0)
     val countInRemaining: StateFlow<Int> = _countInRemaining

@@ -65,9 +65,11 @@ import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
+import com.merkost.metronome.components.Pendulum
 import com.merkost.metronome.components.PillChip
 import com.merkost.metronome.components.StatusStrip
 import androidx.compose.ui.keepScreenOn
+import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
@@ -242,28 +244,47 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                         verticalArrangement = Arrangement.spacedBy(spacingLarge)
                     ) {
 
-                        val compactBalls = beats.size > 5
-                        val ballSpacing = if (compactBalls) spacingSmall else spacingLarge
-                        val ballSize = if (compactBalls) BallSizeCompact else BallSize
-                        val indicatorSize = minOf(CircleSize, ballSize + ballSpacing)
-
-                        MetronomeBalls(
+                        val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
+                        AnimatedContent(
+                            targetState = beatDisplayStyle,
+                            transitionSpec = { AppAnimations.fadeScaleTransform },
+                            label = "beatDisplay",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = horizontalPadding)
                                 .padding(bottom = spacingLarge)
                                 .onGloballyPositioned { coordinates ->
                                     beatBallsBounds = coordinates.boundsInRoot()
                                 },
-                            selectedIndex = selectedIndex.coerceIn(beats.indices),
-                            beats = beats,
-                            isPlaying = isPlaying,
-                            animSpec = springSpec,
-                            arrangementSpacing = ballSpacing,
-                            indicatorSize = indicatorSize,
-                            ballSize = ballSize,
-                            onBallClicked = viewModel::onBallClicked,
-                        )
+                        ) { style ->
+                            when (style) {
+                                BeatDisplayStyle.PENDULUM -> Pendulum(
+                                    selectedIndex = selectedIndex,
+                                    beats = beats,
+                                    isPlaying = isPlaying,
+                                    intervalMs = metronomeState.interval,
+                                )
+
+                                BeatDisplayStyle.DOTS -> {
+                                    val compactBalls = beats.size > 5
+                                    val ballSpacing = if (compactBalls) spacingSmall else spacingLarge
+                                    val ballSize = if (compactBalls) BallSizeCompact else BallSize
+                                    val indicatorSize = minOf(CircleSize, ballSize + ballSpacing)
+                                    MetronomeBalls(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = horizontalPadding),
+                                        selectedIndex = selectedIndex.coerceIn(beats.indices),
+                                        beats = beats,
+                                        isPlaying = isPlaying,
+                                        animSpec = springSpec,
+                                        arrangementSpacing = ballSpacing,
+                                        indicatorSize = indicatorSize,
+                                        ballSize = ballSize,
+                                        onBallClicked = viewModel::onBallClicked,
+                                    )
+                                }
+                            }
+                        }
 
                         Column(
                             modifier = Modifier
@@ -458,10 +479,11 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 140.dp)
                 .drawBehind {
+                    val flashBottom = bottomControlsBounds?.top ?: size.height
                     drawRect(
-                        primaryColor,
+                        color = primaryColor,
+                        size = size.copy(height = flashBottom.coerceIn(0f, size.height)),
                         alpha = boxColorAnimation.value.coerceIn(0f, 0.5f)
                     )
                 }

@@ -36,6 +36,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val GAP_MUTE_BARS = intPreferencesKey("GAP_MUTE_BARS")
         private val KEEP_SCREEN_AWAKE = booleanPreferencesKey("KEEP_SCREEN_AWAKE")
         private val COUNT_IN_ENABLED = booleanPreferencesKey("COUNT_IN_ENABLED")
+        private val BEAT_DISPLAY_STYLE = stringPreferencesKey("BEAT_DISPLAY_STYLE")
         private val SAVED_TEMPOS = stringPreferencesKey("SAVED_TEMPOS")
         private val TODAY_TIME = longPreferencesKey("TODAY_TIME")
         private val TODAY_DAY = longPreferencesKey("TODAY_DAY")
@@ -305,6 +306,19 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     override suspend fun saveCountInEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[COUNT_IN_ENABLED] = enabled
+        }
+    }
+
+    override val beatDisplayStyle: Flow<BeatDisplayStyle> = dataStore.data
+        .map { preferences ->
+            kotlin.runCatching {
+                BeatDisplayStyle.valueOf(preferences[BEAT_DISPLAY_STYLE] ?: BeatDisplayStyle.DOTS.name)
+            }.getOrDefault(BeatDisplayStyle.DOTS)
+        }
+
+    override suspend fun saveBeatDisplayStyle(style: BeatDisplayStyle) {
+        dataStore.edit { preferences ->
+            preferences[BEAT_DISPLAY_STYLE] = style.name
         }
     }
 }

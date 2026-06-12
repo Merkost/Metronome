@@ -3,6 +3,7 @@ package com.merkost.metronome.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.model.AppDatastore
+import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,6 +34,8 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val practiceStreak = appDatastore.practiceStreak
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    val beatDisplayStyle = appDatastore.beatDisplayStyle
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BeatDisplayStyle.DOTS)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -61,6 +64,12 @@ class SettingsViewModel(
     fun onCountInChanged(enabled: Boolean) {
         viewModelScope.launch {
             appDatastore.saveCountInEnabled(enabled)
+        }
+    }
+
+    fun onBeatDisplayStyleChanged(style: BeatDisplayStyle) {
+        viewModelScope.launch {
+            appDatastore.saveBeatDisplayStyle(style)
         }
     }
 

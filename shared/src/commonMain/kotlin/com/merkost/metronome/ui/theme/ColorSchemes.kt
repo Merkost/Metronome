@@ -71,15 +71,39 @@ internal val BlackNWhiteLightColorScheme = lightColorScheme(
 )
 
 internal val PurpleDarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Melrose,
+    onPrimary = Color.Black,
+    background = Color.Black,
+    surface = Color.Black,
+    primaryContainer = MelroseDark.copy(alpha = 0.5f),
+    surfaceVariant = MelroseDark.copy(alpha = 0.4f),
+    tertiary = Melrose,
+    onTertiary = Color.Black,
+    tertiaryContainer = MelroseDark.copy(alpha = 0.5f),
+    surfaceTint = Melrose,
+    surfaceContainerLowest = DarkContainerLowest,
+    surfaceContainerLow = DarkContainerLow,
+    surfaceContainer = DarkContainer,
+    surfaceContainerHigh = DarkContainerHigh,
+    surfaceContainerHighest = DarkContainerHighest,
 )
 
 internal val PurpleLightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = MelroseDark,
+    onPrimary = Color.White,
+    background = Color.White,
+    surface = Color.White,
+    primaryContainer = Melrose.copy(alpha = 0.3f),
+    surfaceVariant = Melrose.copy(alpha = 0.4f),
+    tertiary = MelroseDark,
+    onTertiary = Color.White,
+    tertiaryContainer = Melrose.copy(alpha = 0.3f),
+    surfaceTint = MelroseDark,
+    surfaceContainerLowest = LightContainerLowest,
+    surfaceContainerLow = LightContainerLow,
+    surfaceContainer = LightContainer,
+    surfaceContainerHigh = LightContainerHigh,
+    surfaceContainerHighest = LightContainerHighest,
 )
 
 internal val PeriwinkleLightColorScheme = lightColorScheme(

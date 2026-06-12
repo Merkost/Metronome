@@ -28,6 +28,7 @@ val cornerRadiusLarge = 16.dp
 val cornerRadiusXLarge = 28.dp
 
 val statusStripHeight = 44.dp
+val pendulumHeight = 132.dp
 val sheetButtonHeight = 52.dp
 val stepperButtonSize = 40.dp
 val progressRingSize = 22.dp

@@ -48,6 +48,9 @@ interface AppDatastore {
     val countInEnabled: Flow<Boolean>
     suspend fun saveCountInEnabled(enabled: Boolean)
 
+    val beatDisplayStyle: Flow<BeatDisplayStyle>
+    suspend fun saveBeatDisplayStyle(style: BeatDisplayStyle)
+
     val savedTempos: Flow<List<SavedTempo>>
     suspend fun addSavedTempo(tempo: SavedTempo)
     suspend fun removeSavedTempo(tempo: SavedTempo)
