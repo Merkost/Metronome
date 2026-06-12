@@ -28,8 +28,8 @@ class IosPlatformActions : PlatformActions {
 
     override fun rateApp() {
         openUrl(
-            urlString = "itms-apps://itunes.apple.com/app/id6480380648?action=write-review",
-            fallbackUrlString = "https://apps.apple.com/app/id6480380648?action=write-review"
+            urlString = "itms-apps://itunes.apple.com/app/id6761737690?action=write-review",
+            fallbackUrlString = "https://apps.apple.com/app/id6761737690?action=write-review"
         )
     }
 
