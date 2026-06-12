@@ -6,6 +6,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -56,9 +57,10 @@ fun PillChip(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .animateContentSize(spring(stiffness = 600f, dampingRatio = 0.8f))
-                .padding(start = 12.dp, end = if (showDropdownIcon) 6.dp else 12.dp, top = 6.dp, bottom = 6.dp)
+                .padding(start = 14.dp, end = if (showDropdownIcon) 8.dp else 14.dp, top = 8.dp, bottom = 8.dp)
         ) {
             content()
             if (showDropdownIcon) {
@@ -66,7 +68,7 @@ fun PillChip(
                     imageVector = Lucide.ChevronDown,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
