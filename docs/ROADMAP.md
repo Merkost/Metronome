@@ -17,19 +17,13 @@ Last updated: 2026-06-12. Lanes are ordered by priority; items move up as they'r
 - Design system: AppChip, PillChip, AppBottomSheet, AppDialog, StatusStrip, ExpandableSection, ValueStepper, ProgressRing, micro-animation kit in AppAnimations
 - Lucide icons everywhere (Material icons removed); container/tint slots defined in all color schemes; Melrose uses its namesake palette
 - Keep screen awake (Modifier.keepScreenOn + toggle), count-in toggle, edge-to-edge settings, confirmed stat reset, UI haptics
+- iOS settings parity: Volume row via system `MPVolumeView` (`UIKitView` interop, tinted, route button hidden); native `UISwitch` toggles via `expect/actual PlatformSwitch`; background-play confirmed (`audio` mode + `playback` session already present, permission-check actual a no-op). No common changes. Builds green; on-device QA pending. KVO on `AVAudioSession.outputVolume` is not expressible in Kotlin/Native, so the numeric volume caption was dropped in favour of the slider's own live visual.
 
 ## Now
 
-### iOS settings parity (committed next)
-Settings must work fully on iOS; today `VolumeSlider` and `BackgroundPlayPermissionCheck` have empty iOS actuals, so iOS users silently lose the Volume row and the background-play permission flow.
-
-Plan:
-1. **Volume row on iOS**: iOS forbids setting system volume directly via API; the supported path is `MPVolumeView`. Wrap it with `UIKitView` inside the existing `VolumeSlider` iOS actual (interop in `iosMain`, no common changes). Style it to match the Android row (caption + slider height); read `AVAudioSession.outputVolume` (KVO) for the "n / max" caption.
-2. **Background play on iOS**: the audio session category is already `playback`; verify background audio works with the toggle and add the `audio` background mode to `Info.plist` if missing. The permission-check actual becomes a no-op explanation row (iOS needs no runtime permission).
-3. **QA pass on device**: stereo pan slider, haptic toggle (Core Haptics availability), color scheme picker, sheet insets with the home indicator.
-
 ### Pre-merge quality gate
 - Full multi-agent review of PR #5 once usage limits allow; on-device audio pass (sub-click volume, count-in feel, gap cycle)
+- iOS settings on-device QA: `MPVolumeView` drag changes system volume; native switches persist and tint to the active scheme; audio survives backgrounding / screen lock; stereo pan slider, haptic toggle (Core Haptics availability), color scheme picker, sheet insets with the home indicator
 
 ## Next
 
