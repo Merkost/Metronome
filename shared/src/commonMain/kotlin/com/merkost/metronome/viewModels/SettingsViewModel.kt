@@ -36,6 +36,8 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
     val beatDisplayStyle = appDatastore.beatDisplayStyle
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BeatDisplayStyle.DOTS)
+    val liveActivityEnabled = appDatastore.liveActivityEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -64,6 +66,12 @@ class SettingsViewModel(
     fun onCountInChanged(enabled: Boolean) {
         viewModelScope.launch {
             appDatastore.saveCountInEnabled(enabled)
+        }
+    }
+
+    fun onLiveActivityChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            appDatastore.saveLiveActivityEnabled(enabled)
         }
     }
 

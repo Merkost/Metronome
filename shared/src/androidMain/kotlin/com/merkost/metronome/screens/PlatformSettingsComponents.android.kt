@@ -72,3 +72,7 @@ actual fun BackgroundPlayPermissionCheck(backgroundPlayEnabled: Boolean) {
 actual fun PlatformSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Switch(checked = checked, onCheckedChange = onCheckedChange)
 }
+
+@Composable
+actual fun LiveActivitySettingsRow(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+}

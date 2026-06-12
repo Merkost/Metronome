@@ -210,6 +210,16 @@ private fun hiddenNativeViewProperties() = UIKitInteropProperties(
 actual fun BackgroundPlayPermissionCheck(backgroundPlayEnabled: Boolean) {
 }
 
+@Composable
+actual fun LiveActivitySettingsRow(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    SettingsSwitch(
+        "Live Activity",
+        checked,
+        onCheckedChange,
+        subtitle = "Tempo and timer on the Lock Screen",
+    )
+}
+
 private fun createVolumeBridge() = MPVolumeView().apply {
     refreshVolumeBridge()
 }

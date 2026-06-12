@@ -1,5 +1,6 @@
 package com.merkost.metronome.di
 
+import com.merkost.metronome.engine.LiveActivityObserver
 import com.merkost.metronome.engine.MetronomeEngine
 import com.merkost.metronome.logging.CedarSetup
 import com.merkost.metronome.model.AppDatastore
@@ -17,5 +18,6 @@ val commonModule = module {
         CedarSetup.initialize(isDebug())
         MetronomeEngine(get(), get(), get()).also { it.start() }
     }
+    single { LiveActivityObserver(get(), get(), get()) }
     viewModel { SettingsViewModel(get()) }
 }

@@ -57,4 +57,7 @@ interface AppDatastore {
 
     val todayPracticeTime: Flow<Long>
     val practiceStreak: Flow<Int>
+
+    val liveActivityEnabled: Flow<Boolean>
+    suspend fun saveLiveActivityEnabled(enabled: Boolean)
 }

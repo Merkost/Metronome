@@ -91,6 +91,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val hapticEnabled by viewModel.hapticEnabled.collectAsState()
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val countInEnabled by viewModel.countInEnabled.collectAsState()
+    val liveActivityEnabled by viewModel.liveActivityEnabled.collectAsState()
     val practiceStreak by viewModel.practiceStreak.collectAsState()
     val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
@@ -349,6 +350,8 @@ fun SettingsScreen(upPress: () -> Unit) {
                     if (enabled) showBackgroundPlayPermission = true
                 }
             )
+
+            LiveActivitySettingsRow(liveActivityEnabled, viewModel::onLiveActivityChanged)
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 

@@ -42,6 +42,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val TODAY_DAY = longPreferencesKey("TODAY_DAY")
         private val STREAK_DAYS = intPreferencesKey("STREAK_DAYS")
         private val LAST_PRACTICE_DAY = longPreferencesKey("LAST_PRACTICE_DAY")
+        private val LIVE_ACTIVITY_ENABLED = booleanPreferencesKey("live_activity_enabled")
         private const val STREAK_MIN_MS = 60_000L
     }
 
@@ -319,6 +320,17 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     override suspend fun saveBeatDisplayStyle(style: BeatDisplayStyle) {
         dataStore.edit { preferences ->
             preferences[BEAT_DISPLAY_STYLE] = style.name
+        }
+    }
+
+    override val liveActivityEnabled: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[LIVE_ACTIVITY_ENABLED] ?: true
+        }
+
+    override suspend fun saveLiveActivityEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[LIVE_ACTIVITY_ENABLED] = enabled
         }
     }
 }

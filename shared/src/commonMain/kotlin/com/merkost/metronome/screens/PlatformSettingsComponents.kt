@@ -63,3 +63,6 @@ expect fun BackgroundPlayPermissionCheck(backgroundPlayEnabled: Boolean)
 
 @Composable
 expect fun PlatformSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit)
+
+@Composable
+expect fun LiveActivitySettingsRow(checked: Boolean, onCheckedChange: (Boolean) -> Unit)
