@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -37,15 +38,21 @@ fun Pendulum(
     modifier: Modifier = Modifier,
 ) {
     val angle = remember { Animatable(0f) }
+    val direction = remember { mutableStateOf(1f) }
+    val lastBeatIndex = remember { mutableStateOf(-1) }
 
     LaunchedEffect(selectedIndex, isPlaying) {
         if (isPlaying && selectedIndex >= 0) {
-            val target = if (selectedIndex % 2 == 0) SWING_DEGREES else -SWING_DEGREES
+            if (selectedIndex != lastBeatIndex.value) {
+                direction.value = -direction.value
+                lastBeatIndex.value = selectedIndex
+            }
             angle.animateTo(
-                targetValue = target,
+                targetValue = direction.value * SWING_DEGREES,
                 animationSpec = tween(durationMillis = intervalMs, easing = FastOutSlowInEasing)
             )
         } else {
+            lastBeatIndex.value = -1
             angle.animateTo(0f, AppAnimations.Gentle)
         }
     }
