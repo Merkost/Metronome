@@ -6,13 +6,17 @@ import com.merkost.metronome.di.iosModule
 import com.merkost.metronome.navigation.AppNavigation
 import com.merkost.metronome.ui.theme.MetronomeTheme
 import org.koin.compose.KoinApplication
+import org.koin.dsl.koinConfiguration
 
 fun MainViewController() = ComposeUIViewController {
-    KoinApplication(application = {
-        modules(commonModule, iosModule)
-    }) {
+    KoinApplication(configuration = koinConfiguration(declaration = {
+        modules(
+            commonModule,
+            iosModule
+        )
+    }), content = {
         MetronomeTheme {
             AppNavigation()
         }
-    }
+    })
 }

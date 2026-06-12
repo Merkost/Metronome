@@ -1,0 +1,26 @@
+Hi App Review Team,
+
+Thank you for the feedback on submission e6227f30-cf63-4738-865c-6e1569ca331c.
+
+Metronome is a practice tool for musicians, and the background audio capability is required so that the ticks continue playing while the user's screen is locked or while they switch to another app. This is a core part of the workflow — musicians frequently:
+
+- Practice with the device locked and placed on a music stand
+- Switch to a sheet music PDF, tuner, or recording app while the metronome keeps the tempo
+- Run long practice sessions where the screen would otherwise auto-lock and silence the click
+
+To locate and verify the background audio feature:
+
+1. Launch the Metronome app.
+2. Tap the large circular play button in the center of the main screen. The metronome will start playing audible ticks at the default tempo (120 BPM).
+3. Lock the device (or swipe up to send the app to the background, or switch to another app).
+4. The metronome ticks continue playing audibly in the background.
+5. Unlock the device or return to the app — the metronome is still running and can be stopped by tapping the play button again.
+
+Please ensure the device is not in silent mode and the volume is turned up during testing.
+
+Tested on iPhone 17 Pro Max running iOS 26 with build 1.0.0 (2). If you are still unable to hear background audio after following the steps above, please let me know which step fails and I will investigate further.
+
+Thank you for your time reviewing this submission.
+
+Best regards,
+Konstantin Merenkov

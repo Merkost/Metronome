@@ -124,6 +124,7 @@ fun TempoTrainerSheet(
                     dismissAnimated()
                 },
             )
+            Spacer(Modifier.height(spacingSmall))
             SavedTemposRow(
                 savedTempos = savedTempos,
                 current = SavedTempo(currentBpm, timeSignature, subdivision),
