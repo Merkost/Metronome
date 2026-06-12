@@ -65,6 +65,7 @@ import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
+import com.merkost.metronome.components.PillChip
 import com.merkost.metronome.components.StatusStrip
 import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.model.MetronomeState
@@ -144,6 +145,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     var tsExpanded by remember { mutableStateOf(false) }
 
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
+    val countInRemaining by viewModel.countInRemaining.collectAsState()
 
     val springSpec = AppAnimations.Bouncy
 
@@ -201,18 +203,15 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                 }
                             },
                             anchor = {
-                                Text(
-                                    text = "${metronomeState.timeSignature.label} ▾",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(50))
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                        .clickable { tsExpanded = true }
-                                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                                )
+                                PillChip(onClick = { tsExpanded = true }) {
+                                    Text(
+                                        text = metronomeState.timeSignature.label,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                }
                             }
                         )
                         IconButton(onClick = onSettingsClicked) {
@@ -281,22 +280,21 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             } else {
                                 "${metronomeState.tempoName} · ${metronomeState.subdivision.label}"
                             }
-                            AnimatedContent(targetState = tempoLabel) { label ->
-                                Text(
-                                    text = "$label ▾",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(50))
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                        .clickable {
-                                            tempoSheetSection = null
-                                            showTempoSheet = true
-                                        }
-                                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                                )
+                            PillChip(
+                                onClick = {
+                                    tempoSheetSection = null
+                                    showTempoSheet = true
+                                }
+                            ) {
+                                AnimatedContent(targetState = tempoLabel) { label ->
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
                             }
 
                             Row(
@@ -310,15 +308,21 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                     Icons.Default.Remove,
                                     onClick = viewModel::onSliderValueDecreased
                                 )
+                                val countingIn = countInRemaining > 0
                                 AnimatedNumberText(
-                                    value = metronomeState.rhythm,
+                                    value = if (countingIn) countInRemaining else metronomeState.rhythm,
                                     style = MaterialTheme.typography.displayLarge.copy(
                                         fontWeight = FontWeight.ExtraBold,
                                         fontSize = tempoDisplaySize
                                     ),
+                                    color = if (countingIn) {
+                                        MaterialTheme.colorScheme.tertiary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    },
                                     modifier = Modifier.weight(1f).pulseOnChange(
-                                        metronomeState.rhythm,
-                                        peakScale = 1.02f
+                                        if (countingIn) countInRemaining else metronomeState.rhythm,
+                                        peakScale = if (countingIn) 1.08f else 1.02f
                                     ),
                                 )
                                 MyIconButton(

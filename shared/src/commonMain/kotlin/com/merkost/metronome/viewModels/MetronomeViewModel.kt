@@ -48,6 +48,16 @@ class MetronomeViewModel(
     val keepScreenAwake = appDatastore.keepScreenAwake
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    val countInEnabled = appDatastore.countInEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    private val _countInRemaining = MutableStateFlow(0)
+    val countInRemaining: StateFlow<Int> = _countInRemaining
+
+    fun onCountInTick(remaining: Int) {
+        _countInRemaining.value = remaining
+    }
+
     private val metronomeMinimum = MIN_BPM
     private val metronomeMaximum = MAX_BPM
 

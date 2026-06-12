@@ -35,6 +35,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val GAP_PLAY_BARS = intPreferencesKey("GAP_PLAY_BARS")
         private val GAP_MUTE_BARS = intPreferencesKey("GAP_MUTE_BARS")
         private val KEEP_SCREEN_AWAKE = booleanPreferencesKey("KEEP_SCREEN_AWAKE")
+        private val COUNT_IN_ENABLED = booleanPreferencesKey("COUNT_IN_ENABLED")
         private val SAVED_TEMPOS = stringPreferencesKey("SAVED_TEMPOS")
         private val TODAY_TIME = longPreferencesKey("TODAY_TIME")
         private val TODAY_DAY = longPreferencesKey("TODAY_DAY")
@@ -293,6 +294,17 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     override suspend fun saveKeepScreenAwake(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[KEEP_SCREEN_AWAKE] = enabled
+        }
+    }
+
+    override val countInEnabled: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[COUNT_IN_ENABLED] ?: false
+        }
+
+    override suspend fun saveCountInEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[COUNT_IN_ENABLED] = enabled
         }
     }
 }

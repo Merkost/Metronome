@@ -29,6 +29,10 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val keepScreenAwake = appDatastore.keepScreenAwake
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
+    val countInEnabled = appDatastore.countInEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val practiceStreak = appDatastore.practiceStreak
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -51,6 +55,12 @@ class SettingsViewModel(
     fun onKeepScreenAwakeChanged(enabled: Boolean) {
         viewModelScope.launch {
             appDatastore.saveKeepScreenAwake(enabled)
+        }
+    }
+
+    fun onCountInChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            appDatastore.saveCountInEnabled(enabled)
         }
     }
 

@@ -49,8 +49,20 @@ class MetronomeEngine(
                             beatCount = 0
                             barNumber = 0
                             viewModel.onBarReset()
+                            viewModel.onCountInTick(0)
                             if (resumeWithDelay) {
                                 delay(viewModel.metronomeState.value.interval.toLong())
+                            } else if (viewModel.countInEnabled.value) {
+                                for (remaining in beatsCount downTo 1) {
+                                    viewModel.onCountInTick(remaining)
+                                    val stereo = viewModel.currentStereo.value
+                                    player.play(Beat.HIGH, stereo.first, stereo.second)
+                                    if (viewModel.hapticEnabled.value) {
+                                        hapticProvider.playBeatHaptic(Beat.HIGH)
+                                    }
+                                    delay(viewModel.metronomeState.value.interval.toLong())
+                                }
+                                viewModel.onCountInTick(0)
                             }
                             resumeWithDelay = true
                             createBeatsSequence(beatsCount).collect { index ->
@@ -90,6 +102,7 @@ class MetronomeEngine(
                 } else {
                     player.stop()
                     viewModel.index.update { -1 }
+                    viewModel.onCountInTick(0)
                 }
             }
         }

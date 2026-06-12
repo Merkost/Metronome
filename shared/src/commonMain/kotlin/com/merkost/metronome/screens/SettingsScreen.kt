@@ -86,6 +86,8 @@ fun SettingsScreen(upPress: () -> Unit) {
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
     val hapticEnabled by viewModel.hapticEnabled.collectAsState()
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
+    val countInEnabled by viewModel.countInEnabled.collectAsState()
+    val practiceStreak by viewModel.practiceStreak.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
@@ -302,7 +304,12 @@ fun SettingsScreen(upPress: () -> Unit) {
                     ) {
                         Icon(Icons.Rounded.Timer, Icons.Rounded.Timer.name)
                         Text(
-                            text = TimestampMillisecondsFormatter.formatHuman(totalTime),
+                            text = buildString {
+                                append(TimestampMillisecondsFormatter.formatHuman(totalTime))
+                                if (practiceStreak > 0) {
+                                    append(" · $practiceStreak-day streak")
+                                }
+                            },
                             maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
                         )
@@ -320,6 +327,13 @@ fun SettingsScreen(upPress: () -> Unit) {
                 keepScreenAwake,
                 viewModel::onKeepScreenAwakeChanged,
                 subtitle = "While the metronome plays",
+            )
+
+            SettingsSwitch(
+                "Count-in",
+                countInEnabled,
+                viewModel::onCountInChanged,
+                subtitle = "One bar before playback starts",
             )
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))

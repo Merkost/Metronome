@@ -16,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,8 +58,12 @@ fun MainButtonsRow(
         )
         Spacer(modifier = Modifier.size(horizontalPadding))
 
+        val haptics = LocalHapticFeedback.current
         MySecondaryButton(
-            onClick = onTempoTap,
+            onClick = {
+                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                onTempoTap()
+            },
             shape = RoundedCornerShape(50),
             modifier = Modifier.weight(1f)
         ) {
