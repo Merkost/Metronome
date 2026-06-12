@@ -18,14 +18,13 @@ Last updated: 2026-06-12. Lanes are ordered by priority; items move up as they'r
 - Lucide icons everywhere (Material icons removed); container/tint slots defined in all color schemes; Melrose uses its namesake palette
 - Keep screen awake (Modifier.keepScreenOn + toggle), count-in toggle, edge-to-edge settings, confirmed stat reset, UI haptics
 - iOS settings parity: Volume row via system `MPVolumeView` (`UIKitView` interop, tinted, route button hidden); native `UISwitch` toggles via `expect/actual PlatformSwitch`; background-play confirmed (`audio` mode + `playback` session already present, permission-check actual a no-op). No common changes. Builds green; on-device QA pending. KVO on `AVAudioSession.outputVolume` is not expressible in Kotlin/Native, so the numeric volume caption was dropped in favour of the slider's own live visual.
-- iOS Live Activity + Dynamic Island (iOS 17+): BPM/tempo-name/time-signature, adaptive compact island (timer when a practice timer is active, BPM otherwise), self-ticking practice timer via `timerInterval` views, play/pause via `AudioPlaybackIntent`, "Session ended" stale UI, Settings toggle (default on). Kotlin `LiveActivityController` seam + `LiveActivityObserver` (debounced snapshots, wall-clock anchors); iOS Koin moved to global `startKoin` from `iOSApp.swift`; pure-Swift `MetronomeWidgets` extension target. Device QA pending. A future Android Glance widget can reuse the same snapshot seam.
+- iOS Live Activity + Dynamic Island (iOS 17+): BPM/tempo-name/time-signature, adaptive compact island (timer when a practice timer is active, BPM otherwise), self-ticking practice timer via `timerInterval` views, play/pause via `AudioPlaybackIntent`, "Session ended" stale UI, Settings toggle (default on). Kotlin `LiveActivityController` seam + `LiveActivityObserver` (debounced snapshots, wall-clock anchors); iOS Koin moved to global `startKoin` from `iOSApp.swift`; pure-Swift `MetronomeWidgets` extension target. Device QA passed 2026-06-13. A future Android Glance widget can reuse the same snapshot seam.
 
 ## Now
 
 ### Pre-merge quality gate
 - Full multi-agent review of PR #5 once usage limits allow; on-device audio pass (sub-click volume, count-in feel, gap cycle)
 - iOS settings on-device QA: `MPVolumeView` drag changes system volume; native switches persist and tint to the active scheme; audio survives backgrounding / screen lock; stereo pan slider, haptic toggle (Core Haptics availability), color scheme picker, sheet insets with the home indicator
-- Live Activity on-device QA (Pro-class iPhone for the island): appears on play / ends on stop; timer ticks while locked; play/pause from the island toggles audio and flips state; force-kill shows "Session ended" within ~3 min and relaunch sweeps orphans; settings toggle off ends it; StandBy legible; Android settings unchanged
 
 ## Next
 
