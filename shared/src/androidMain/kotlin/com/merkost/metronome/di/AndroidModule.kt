@@ -7,6 +7,8 @@ import com.merkost.metronome.platform.AndroidPlatformActions
 import com.merkost.metronome.platform.AppVersionProvider
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.platform.HapticProviderAndroid
+import com.merkost.metronome.platform.LiveActivityController
+import com.merkost.metronome.platform.NoopLiveActivityController
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.createDataStore
 import org.koin.android.ext.koin.androidContext
@@ -18,4 +20,5 @@ val androidModule = module {
     single<PlatformActions> { AndroidPlatformActions(androidContext()) }
     single<AppVersionProvider> { AndroidAppVersionProvider(androidContext()) }
     single<HapticProvider> { HapticProviderAndroid(androidContext()) }
+    single<LiveActivityController> { NoopLiveActivityController() }
 }
