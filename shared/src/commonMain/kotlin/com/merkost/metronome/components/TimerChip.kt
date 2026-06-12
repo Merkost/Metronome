@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.composables.icons.lucide.Check
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Timer
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.progressRingSize
 import com.merkost.metronome.ui.pulseOnAppear
@@ -65,7 +65,7 @@ fun TimerChip(
             ) {
                 when (current) {
                     is TimerChipMode.Stopwatch -> {
-                        Icon(Icons.Rounded.Timer, Icons.Rounded.Timer.name)
+                        Icon(Lucide.Timer, Lucide.Timer.name)
                         Text(
                             text = TimestampMillisecondsFormatter.format(current.elapsed),
                             maxLines = 1,
@@ -99,8 +99,8 @@ fun TimerChip(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                Icons.Rounded.Check,
-                                Icons.Rounded.Check.name,
+                                Lucide.Check,
+                                Lucide.Check.name,
                                 tint = MaterialTheme.colorScheme.primary,
                             )
                         }

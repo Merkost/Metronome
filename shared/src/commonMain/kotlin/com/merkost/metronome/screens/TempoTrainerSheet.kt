@@ -2,7 +2,6 @@ package com.merkost.metronome.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -14,19 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.TrendingDown
-import androidx.compose.material.icons.automirrored.rounded.TrendingUp
-import androidx.compose.material.icons.automirrored.rounded.VolumeOff
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,7 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Music
+import com.composables.icons.lucide.Plus
+import com.composables.icons.lucide.Star
+import com.composables.icons.lucide.TrendingDown
+import com.composables.icons.lucide.TrendingUp
+import com.composables.icons.lucide.VolumeX
 import com.merkost.metronome.components.AppBottomSheet
+import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.ExpandableSection
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.ValueStepper
@@ -142,7 +138,7 @@ fun TempoTrainerSheet(
             HorizontalDivider()
 
             ExpandableSection(
-                icon = { SectionIcon(Icons.Rounded.MusicNote, subdivision != Subdivision.QUARTER) },
+                icon = { SectionIcon(Lucide.Music, subdivision != Subdivision.QUARTER) },
                 title = "Subdivision",
                 summary = subdivision.label,
                 summaryActive = subdivision != Subdivision.QUARTER,
@@ -163,9 +159,9 @@ fun TempoTrainerSheet(
                 icon = {
                     SectionIcon(
                         if (activeConfig?.ascending == false) {
-                            Icons.AutoMirrored.Rounded.TrendingDown
+                            Lucide.TrendingDown
                         } else {
-                            Icons.AutoMirrored.Rounded.TrendingUp
+                            Lucide.TrendingUp
                         },
                         activeConfig != null,
                     )
@@ -216,7 +212,7 @@ fun TempoTrainerSheet(
             HorizontalDivider()
 
             ExpandableSection(
-                icon = { SectionIcon(Icons.AutoMirrored.Rounded.VolumeOff, activeGapConfig != null) },
+                icon = { SectionIcon(Lucide.VolumeX, activeGapConfig != null) },
                 title = "Gap Trainer",
                 summary = activeGapConfig?.let { "${it.playBars} + ${it.muteBars} bars" } ?: "Off",
                 summaryActive = activeGapConfig != null,
@@ -270,12 +266,15 @@ private fun <T> FlowRowChips(
     display: (T) -> String,
     onSelect: (T) -> Unit,
 ) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+        verticalArrangement = Arrangement.spacedBy(spacingSmall),
+    ) {
         options.forEach { option ->
-            FilterChip(
+            AppChip(
                 selected = selected == option,
                 onClick = { onSelect(option) },
-                label = { Text(display(option)) }
+                label = display(option),
             )
         }
     }
@@ -293,42 +292,24 @@ private fun SavedTemposRow(
     val currentSaved = savedTempos.contains(current)
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+        verticalArrangement = Arrangement.spacedBy(spacingSmall),
         modifier = Modifier.fillMaxWidth()
     ) {
         savedTempos.forEach { tempo ->
-            InputChip(
+            AppChip(
                 selected = tempo == current,
                 onClick = { onApply(tempo) },
-                label = { Text(tempo.label) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Star,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp)
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Close,
-                        contentDescription = "Remove",
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clickable { onDelete(tempo) }
-                    )
-                },
+                label = tempo.label,
+                leadingIcon = Lucide.Star,
+                onTrailingClose = { onDelete(tempo) },
             )
         }
         AnimatedVisibility(visible = !currentSaved && savedTempos.size < SavedTempo.MAX_SAVED) {
-            AssistChip(
+            AppChip(
+                selected = false,
                 onClick = onSave,
-                label = { Text("Save ${current.label}") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                },
+                label = "Save ${current.label}",
+                leadingIcon = Lucide.Plus,
             )
         }
     }
@@ -337,12 +318,15 @@ private fun SavedTemposRow(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FlowRowPresets(currentBpm: Int, onPresetSelected: (Int) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+        verticalArrangement = Arrangement.spacedBy(spacingSmall),
+    ) {
         TEMPO_PRESETS.forEach { (name, bpm) ->
-            FilterChip(
+            AppChip(
                 selected = currentBpm == bpm,
                 onClick = { onPresetSelected(bpm) },
-                label = { Text("$name $bpm") }
+                label = "$name $bpm",
             )
         }
     }

@@ -53,7 +53,7 @@ class MetronomeEngine(
                             if (resumeWithDelay) {
                                 delay(viewModel.metronomeState.value.interval.toLong())
                             } else if (viewModel.countInEnabled.value) {
-                                for (remaining in beatsCount downTo 1) {
+                                for (remaining in beatsCount + 1 downTo 1) {
                                     viewModel.onCountInTick(remaining)
                                     val stereo = viewModel.currentStereo.value
                                     player.play(Beat.HIGH, stereo.first, stereo.second)

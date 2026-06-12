@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +19,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Pointer
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.spacingSmall
@@ -75,7 +75,7 @@ fun MainButtonsRow(
                     .heightIn(min = 24.dp)
                     .padding(16.dp)
             ) {
-                Icon(Icons.Rounded.TouchApp, Icons.Rounded.TouchApp.name)
+                Icon(Lucide.Pointer, Lucide.Pointer.name)
                 Text(
                     text = "Tap Tempo",
                     maxLines = 2,

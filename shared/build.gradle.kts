@@ -31,7 +31,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
-            implementation(compose.materialIconsExtended)
+            implementation(libs.icons.lucide)
             implementation(compose.components.resources)
 
             implementation(libs.lifecycle.viewmodel.compose)

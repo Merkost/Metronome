@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,6 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Minus
+import com.composables.icons.lucide.Plus
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingSmall
@@ -59,7 +59,7 @@ fun ValueStepper(
             horizontalArrangement = Arrangement.spacedBy(spacingSmall)
         ) {
             RepeatingStepButton(
-                icon = Icons.Rounded.Remove,
+                icon = Lucide.Minus,
                 enabled = value > range.first,
                 onStep = { step -> onValueChange((value - step).coerceIn(range)) }
             )
@@ -69,7 +69,7 @@ fun ValueStepper(
                 modifier = Modifier.widthIn(min = 52.dp),
             )
             RepeatingStepButton(
-                icon = Icons.Rounded.Add,
+                icon = Lucide.Plus,
                 enabled = value < range.last,
                 onStep = { step -> onValueChange((value + step).coerceIn(range)) }
             )

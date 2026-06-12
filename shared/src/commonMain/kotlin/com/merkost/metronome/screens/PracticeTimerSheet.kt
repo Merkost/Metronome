@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -28,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.components.AppBottomSheet
+import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.pulseOnChange
@@ -117,10 +117,10 @@ private fun ConfigTimerContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             DURATION_PRESETS.forEach { preset ->
-                FilterChip(
+                AppChip(
                     selected = minutes == preset,
                     onClick = { minutes = preset },
-                    label = { Text("$preset") }
+                    label = "$preset",
                 )
             }
         }

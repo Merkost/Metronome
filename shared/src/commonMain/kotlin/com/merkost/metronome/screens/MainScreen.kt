@@ -21,14 +21,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.TrendingDown
-import androidx.compose.material.icons.automirrored.rounded.TrendingUp
-import androidx.compose.material.icons.automirrored.rounded.VolumeOff
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -59,6 +51,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Minus
+import com.composables.icons.lucide.Plus
+import com.composables.icons.lucide.Settings
+import com.composables.icons.lucide.TrendingDown
+import com.composables.icons.lucide.TrendingUp
+import com.composables.icons.lucide.Volume2
+import com.composables.icons.lucide.VolumeX
 import com.merkost.metronome.components.CoachMarksOverlay
 import com.merkost.metronome.components.DropdownSelector
 import com.merkost.metronome.components.MainButtonsRow
@@ -215,7 +215,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                             }
                         )
                         IconButton(onClick = onSettingsClicked) {
-                            Icon(Icons.Default.Settings, Icons.Default.Settings.name)
+                            Icon(Lucide.Settings, Lucide.Settings.name)
                         }
                     }
                 )
@@ -305,7 +305,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 MyIconButton(
-                                    Icons.Default.Remove,
+                                    Lucide.Minus,
                                     onClick = viewModel::onSliderValueDecreased
                                 )
                                 val countingIn = countInRemaining > 0
@@ -316,17 +316,17 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                         fontSize = tempoDisplaySize
                                     ),
                                     color = if (countingIn) {
-                                        MaterialTheme.colorScheme.tertiary
+                                        MaterialTheme.colorScheme.onSurfaceVariant
                                     } else {
                                         MaterialTheme.colorScheme.onSurface
                                     },
                                     modifier = Modifier.weight(1f).pulseOnChange(
                                         if (countingIn) countInRemaining else metronomeState.rhythm,
-                                        peakScale = if (countingIn) 1.08f else 1.02f
+                                        peakScale = if (countingIn) 1.04f else 1.02f
                                     ),
                                 )
                                 MyIconButton(
-                                    Icons.Default.Add,
+                                    Lucide.Plus,
                                     onClick = viewModel::onSliderValueIncreased
                                 )
                             }
@@ -374,9 +374,9 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                 val complete = config.isComplete(metronomeState.rhythm)
                                 StatusStrip(
                                     icon = if (config.ascending) {
-                                        Icons.AutoMirrored.Rounded.TrendingUp
+                                        Lucide.TrendingUp
                                     } else {
-                                        Icons.AutoMirrored.Rounded.TrendingDown
+                                        Lucide.TrendingDown
                                     },
                                     title = if (complete) {
                                         "${config.endBpm} BPM reached"
@@ -412,9 +412,9 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                 val muted = config.isMuted(gapBar)
                                 StatusStrip(
                                     icon = if (muted) {
-                                        Icons.AutoMirrored.Rounded.VolumeOff
+                                        Lucide.VolumeX
                                     } else {
-                                        Icons.AutoMirrored.Rounded.VolumeUp
+                                        Lucide.Volume2
                                     },
                                     title = when {
                                         !isPlaying -> "Gap trainer"

@@ -17,9 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -42,6 +39,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Pause
+import com.composables.icons.lucide.Play
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.defaultIconButtonSize
 import com.merkost.metronome.ui.defaultPlayButtonSize
@@ -210,7 +210,7 @@ fun PlayButton(
         ) { playing ->
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                    imageVector = if (playing) Lucide.Pause else Lucide.Play,
                     contentDescription = null,
                     modifier = Modifier.size(playButtonIconSize)
                 )

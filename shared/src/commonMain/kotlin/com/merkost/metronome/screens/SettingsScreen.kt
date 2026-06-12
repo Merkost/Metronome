@@ -22,11 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Smartphone
-import androidx.compose.material.icons.rounded.Timer
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -56,6 +51,14 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.composables.icons.lucide.ArrowLeft
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Mail
+import com.composables.icons.lucide.Smartphone
+import com.composables.icons.lucide.Star
+import com.composables.icons.lucide.Timer
+import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.ClickSound
@@ -99,31 +102,17 @@ fun SettingsScreen(upPress: () -> Unit) {
 
     var showResetConfirmation by remember { mutableStateOf(false) }
     if (showResetConfirmation) {
-        AlertDialog(
-            onDismissRequest = { showResetConfirmation = false },
-            title = { Text("Reset practice time?", fontWeight = FontWeight.Bold) },
-            text = {
-                Text(
-                    "This clears your total practice time of " +
-                        "${TimestampMillisecondsFormatter.formatHuman(totalTime)}. " +
-                        "This can't be undone."
-                )
+        AppDialog(
+            title = "Reset practice time?",
+            text = "This clears your total practice time of " +
+                "${TimestampMillisecondsFormatter.formatHuman(totalTime)} " +
+                "and your streak. This can't be undone.",
+            confirmLabel = "Reset",
+            onConfirm = {
+                viewModel.resetTotalTime()
+                showResetConfirmation = false
             },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.resetTotalTime()
-                        showResetConfirmation = false
-                    }
-                ) {
-                    Text("Reset", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showResetConfirmation = false }) {
-                    Text("Cancel")
-                }
-            }
+            onDismiss = { showResetConfirmation = false },
         )
     }
 
@@ -136,7 +125,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                 )
             }, navigationIcon = {
                 IconButton(onClick = upPress) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                    Icon(Lucide.ArrowLeft, "Back")
                 }
             })
         }
@@ -254,8 +243,8 @@ fun SettingsScreen(upPress: () -> Unit) {
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
-                                            Icons.Rounded.Smartphone,
-                                            Icons.Rounded.Smartphone.name
+                                            Lucide.Smartphone,
+                                            Lucide.Smartphone.name
                                         )
                                     }
                                 },
@@ -302,7 +291,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Rounded.Timer, Icons.Rounded.Timer.name)
+                        Icon(Lucide.Timer, Lucide.Timer.name)
                         Text(
                             text = buildString {
                                 append(TimestampMillisecondsFormatter.formatHuman(totalTime))
@@ -352,10 +341,10 @@ fun SettingsScreen(upPress: () -> Unit) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(spacingSmall)
             ) {
-                SettingsBigButton("Contact support") {
+                SettingsBigButton("Contact support", icon = Lucide.Mail) {
                     platformActions.contactSupport()
                 }
-                SettingsBigButton("Rate the App") {
+                SettingsBigButton("Rate the App", icon = Lucide.Star) {
                     platformActions.rateApp()
                 }
             }
@@ -365,14 +354,29 @@ fun SettingsScreen(upPress: () -> Unit) {
 }
 
 @Composable
-fun SettingsBigButton(text: String, onClick: () -> Unit) {
+fun SettingsBigButton(
+    text: String,
+    icon: ImageVector? = null,
+    onClick: () -> Unit,
+) {
     Button(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         shape = CircleShape
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            Text(modifier = Modifier.padding(8.dp), text = text)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Text(text = text, fontWeight = FontWeight.Bold)
         }
     }
 }

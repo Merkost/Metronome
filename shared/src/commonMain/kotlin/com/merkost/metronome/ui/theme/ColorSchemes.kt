@@ -20,6 +20,18 @@ enum class AppColorScheme(val lightColor: ColorScheme, val darkColor: ColorSchem
     }
 }
 
+private val DarkContainerLowest = Color(0xFF0A0A0A)
+private val DarkContainerLow = Color(0xFF121212)
+private val DarkContainer = Color(0xFF1A1A1A)
+private val DarkContainerHigh = Color(0xFF222222)
+private val DarkContainerHighest = Color(0xFF2B2B2B)
+
+private val LightContainerLowest = Color.White
+private val LightContainerLow = Color(0xFFF7F7F7)
+private val LightContainer = Color(0xFFF2F2F2)
+private val LightContainerHigh = Color(0xFFECECEC)
+private val LightContainerHighest = Color(0xFFE6E6E6)
+
 internal val BlackNWhiteDarkColorScheme = darkColorScheme(
     primary = Color.White,
     onPrimary = Color.Black,
@@ -31,6 +43,12 @@ internal val BlackNWhiteDarkColorScheme = darkColorScheme(
     tertiary = Color.White,
     onTertiary = Color.Black,
     tertiaryContainer = Color.DarkGray,
+    surfaceTint = Color.White,
+    surfaceContainerLowest = DarkContainerLowest,
+    surfaceContainerLow = DarkContainerLow,
+    surfaceContainer = DarkContainer,
+    surfaceContainerHigh = DarkContainerHigh,
+    surfaceContainerHighest = DarkContainerHighest,
 )
 
 internal val BlackNWhiteLightColorScheme = lightColorScheme(
@@ -44,6 +62,12 @@ internal val BlackNWhiteLightColorScheme = lightColorScheme(
     tertiary = Color.Black,
     onTertiary = Color.White,
     tertiaryContainer = Color.LightGray.copy(0.5f),
+    surfaceTint = Color.Black,
+    surfaceContainerLowest = LightContainerLowest,
+    surfaceContainerLow = LightContainerLow,
+    surfaceContainer = LightContainer,
+    surfaceContainerHigh = LightContainerHigh,
+    surfaceContainerHighest = LightContainerHighest,
 )
 
 internal val PurpleDarkColorScheme = darkColorScheme(
@@ -68,6 +92,12 @@ internal val PeriwinkleLightColorScheme = lightColorScheme(
     tertiary = PeriwinkleDark,
     onTertiary = Color.White,
     tertiaryContainer = Periwinkle.copy(alpha = 0.3f),
+    surfaceTint = PeriwinkleDark,
+    surfaceContainerLowest = LightContainerLowest,
+    surfaceContainerLow = LightContainerLow,
+    surfaceContainer = LightContainer,
+    surfaceContainerHigh = LightContainerHigh,
+    surfaceContainerHighest = LightContainerHighest,
 )
 
 internal val PeriwinkleDarkColorScheme = darkColorScheme(
@@ -80,6 +110,12 @@ internal val PeriwinkleDarkColorScheme = darkColorScheme(
     tertiary = Periwinkle,
     onTertiary = Color.Black,
     tertiaryContainer = PeriwinkleDark.copy(alpha = 0.5f),
+    surfaceTint = Periwinkle,
+    surfaceContainerLowest = DarkContainerLowest,
+    surfaceContainerLow = DarkContainerLow,
+    surfaceContainer = DarkContainer,
+    surfaceContainerHigh = DarkContainerHigh,
+    surfaceContainerHighest = DarkContainerHighest,
 )
 
 internal val MintGreenLightColorScheme = lightColorScheme(
@@ -92,6 +128,12 @@ internal val MintGreenLightColorScheme = lightColorScheme(
     tertiary = MintGreenDark,
     onTertiary = Color.White,
     tertiaryContainer = MintGreen.copy(alpha = 0.3f),
+    surfaceTint = MintGreenDark,
+    surfaceContainerLowest = LightContainerLowest,
+    surfaceContainerLow = LightContainerLow,
+    surfaceContainer = LightContainer,
+    surfaceContainerHigh = LightContainerHigh,
+    surfaceContainerHighest = LightContainerHighest,
 )
 
 internal val MintGreenDarkColorScheme = darkColorScheme(
@@ -104,6 +146,12 @@ internal val MintGreenDarkColorScheme = darkColorScheme(
     tertiary = MintGreen,
     onTertiary = Color.Black,
     tertiaryContainer = MintGreenDark.copy(alpha = 0.5f),
+    surfaceTint = MintGreen,
+    surfaceContainerLowest = DarkContainerLowest,
+    surfaceContainerLow = DarkContainerLow,
+    surfaceContainer = DarkContainer,
+    surfaceContainerHigh = DarkContainerHigh,
+    surfaceContainerHighest = DarkContainerHighest,
 )
 
 internal val PinkLaceLightColorScheme = lightColorScheme(
@@ -116,6 +164,12 @@ internal val PinkLaceLightColorScheme = lightColorScheme(
     tertiary = PinkLaceDark,
     onTertiary = Color.White,
     tertiaryContainer = PinkLace.copy(alpha = 0.3f),
+    surfaceTint = PinkLaceDark,
+    surfaceContainerLowest = LightContainerLowest,
+    surfaceContainerLow = LightContainerLow,
+    surfaceContainer = LightContainer,
+    surfaceContainerHigh = LightContainerHigh,
+    surfaceContainerHighest = LightContainerHighest,
 )
 
 internal val PinkLaceDarkColorScheme = darkColorScheme(
@@ -128,4 +182,10 @@ internal val PinkLaceDarkColorScheme = darkColorScheme(
     tertiary = PinkLace,
     onTertiary = Color.Black,
     tertiaryContainer = PinkLaceDark.copy(alpha = 0.5f),
+    surfaceTint = PinkLace,
+    surfaceContainerLowest = DarkContainerLowest,
+    surfaceContainerLow = DarkContainerLow,
+    surfaceContainer = DarkContainer,
+    surfaceContainerHigh = DarkContainerHigh,
+    surfaceContainerHighest = DarkContainerHighest,
 )

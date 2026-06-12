@@ -50,6 +50,7 @@ iosApp/                 — Xcode project (Swift entry point, resources)
 - **Spacing**: Follow `Dimensions.kt` constants — `horizontalPadding = 18.dp`, `BallSize = 40.dp`, `defaultPlayButtonSize = 85.dp`.
 - **Colors**: Always use `MaterialTheme.colorScheme.*` — never hardcode hex values for UI elements. The app supports both light and dark themes across multiple color schemes.
 - **Typography**: Use Material3 type styles from `Type.kt`. No custom fonts.
+- **Icons**: Use Lucide icons only (`com.composables:icons-lucide`, referenced as `Lucide.*`) — never Material icons.
 - **Components**: Prefer reusable composables. Existing patterns: `MySecondaryButton`, `MyIconButton`, `PlayButton`. New components should follow the same parameter conventions (content slot, onClick, modifier).
 - **New platform features**: Use interface + Koin DI pattern (matching `MetronomePlayer`, `PlatformActions`, `AppVersionProvider`). Reserve `expect/actual` for composable-only differences.
 
