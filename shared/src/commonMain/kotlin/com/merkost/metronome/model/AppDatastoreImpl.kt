@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,6 +20,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     companion object {
         private val TOTAL_TIME = longPreferencesKey("TOTAL_TIME")
         private val STEREO = intPreferencesKey("STEREO")
+        private val CLICK_VOLUME = floatPreferencesKey("CLICK_VOLUME")
         private val COLOR_SCHEME = intPreferencesKey("COLOR_SCHEME")
         private val COLOR_FLASH = booleanPreferencesKey("COLOR_FLASH")
         private val BACKGROUND_PLAY = booleanPreferencesKey("BACKGROUND_PLAY")
@@ -72,6 +74,17 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         }
     override val stereoSettings = dataStore.data.map { preferences ->
         (preferences[STEREO] ?: 0).coerceIn(-5..5)
+    }
+
+    override val clickVolume = dataStore.data
+        .map { preferences ->
+            (preferences[CLICK_VOLUME] ?: 1f).coerceIn(0f, 1f)
+        }
+
+    override suspend fun saveClickVolume(volume: Float) {
+        dataStore.edit { preferences ->
+            preferences[CLICK_VOLUME] = volume.coerceIn(0f, 1f)
+        }
     }
 
     override val totalTime = dataStore.data

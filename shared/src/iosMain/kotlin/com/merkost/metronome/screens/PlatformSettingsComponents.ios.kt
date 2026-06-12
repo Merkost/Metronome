@@ -1,22 +1,9 @@
 package com.merkost.metronome.screens
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,77 +15,13 @@ import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCAction
 import kotlinx.cinterop.useContents
-import kotlinx.coroutines.delay
-import kotlin.math.roundToInt
-import platform.AVFAudio.AVAudioSession
-import platform.AVFAudio.outputVolume
 import platform.CoreGraphics.CGPointMake
 import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSSelectorFromString
-import platform.MediaPlayer.MPVolumeView
 import platform.UIKit.UIColor
 import platform.UIKit.UIControlEventValueChanged
-import platform.UIKit.UISlider
 import platform.UIKit.UISwitch
 import platform.UIKit.UIView
-import platform.darwin.DISPATCH_TIME_NOW
-import platform.darwin.dispatch_after
-import platform.darwin.dispatch_get_main_queue
-import platform.darwin.dispatch_time
-
-@OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
-@Composable
-actual fun VolumeSlider() {
-    val volumeBridge = remember { createVolumeBridge() }
-    var currentVolume by remember {
-        mutableFloatStateOf(AVAudioSession.sharedInstance().outputVolume)
-    }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isDragged by interactionSource.collectIsDraggedAsState()
-    var volumeTouched by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(isDragged, volumeTouched) {
-        if (isDragged) return@LaunchedEffect
-        delay(1500)
-        while (true) {
-            currentVolume = AVAudioSession.sharedInstance().outputVolume
-            delay(500)
-        }
-    }
-
-    SettingsRow(title = "Volume") {
-        Text(
-            text = "${(currentVolume * 100).roundToInt()}%",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Slider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(16.dp),
-            value = currentVolume,
-            onValueChange = { value ->
-                currentVolume = value.coerceIn(0f, 1f)
-                volumeTouched += 1
-                volumeBridge.setVolume(currentVolume)
-            },
-            valueRange = 0f..1f,
-            interactionSource = interactionSource,
-            colors = SliderDefaults.colors(
-                inactiveTickColor = Color.Transparent
-            )
-        )
-        UIKitView(
-            factory = { volumeBridge },
-            modifier = Modifier
-                .size(1.dp),
-            update = { view ->
-                view.refreshVolumeBridge()
-            },
-            properties = hiddenNativeViewProperties()
-        )
-    }
-}
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -199,13 +122,6 @@ private fun nativeSwitchProperties() = UIKitInteropProperties(
     placedAsOverlay = true
 )
 
-@OptIn(ExperimentalComposeUiApi::class)
-private fun hiddenNativeViewProperties() = UIKitInteropProperties(
-    interactionMode = null,
-    isNativeAccessibilityEnabled = false,
-    placedAsOverlay = true
-)
-
 @Composable
 actual fun BackgroundPlayPermissionCheck(backgroundPlayEnabled: Boolean) {
 }
@@ -220,31 +136,6 @@ actual fun LiveActivitySettingsRow(checked: Boolean, onCheckedChange: (Boolean) 
     )
 }
 
-private fun createVolumeBridge() = MPVolumeView().apply {
-    refreshVolumeBridge()
-}
-
-private fun MPVolumeView.refreshVolumeBridge() {
-    alpha = 0.01
-    clipsToBounds = true
-    setShowsVolumeSlider(true)
-    layoutIfNeeded()
-}
-
-private fun MPVolumeView.setVolume(value: Float) {
-    refreshVolumeBridge()
-    val slider = systemSlider() ?: return
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, 10_000_000L),
-        dispatch_get_main_queue()
-    ) {
-        slider.setValue(value.coerceIn(0f, 1f), animated = false)
-        slider.sendActionsForControlEvents(UIControlEventValueChanged)
-    }
-}
-
-private fun MPVolumeView.systemSlider(): UISlider? =
-    subviews.firstNotNullOfOrNull { it as? UISlider }
 
 private fun Color.toUIColor(): UIColor = UIColor(
     red = red.toDouble(),

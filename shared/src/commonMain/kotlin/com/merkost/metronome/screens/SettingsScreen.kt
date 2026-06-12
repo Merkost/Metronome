@@ -77,6 +77,7 @@ import metronome.shared.generated.resources.settings
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.roundToInt
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,6 +97,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
+    val clickVolume by viewModel.clickVolume.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
 
     var showBackgroundPlayPermission by remember { mutableStateOf(false) }
@@ -199,7 +201,24 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             }
 
-            VolumeSlider()
+            SettingsRow(title = "Volume") {
+                Text(
+                    text = "${(clickVolume * 100).roundToInt()}%",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Slider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp),
+                    value = clickVolume,
+                    onValueChange = viewModel::onClickVolumeChanged,
+                    valueRange = 0f..1f,
+                    colors = SliderDefaults.colors(
+                        inactiveTickColor = Color.Transparent
+                    )
+                )
+            }
 
             SettingsRow(title = "Stereo Panning") {
                 val stereoLabel = when {

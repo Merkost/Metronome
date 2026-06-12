@@ -56,9 +56,6 @@ fun AppInfoCard() {
 }
 
 @Composable
-expect fun VolumeSlider()
-
-@Composable
 expect fun BackgroundPlayPermissionCheck(backgroundPlayEnabled: Boolean)
 
 @Composable

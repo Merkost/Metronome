@@ -8,6 +8,8 @@ interface AppDatastore {
     val backgroundPlay: Flow<Boolean>
     val stereo: Flow<Pair<Float, Float>>
     val stereoSettings: Flow<Int>
+    val clickVolume: Flow<Float>
+    suspend fun saveClickVolume(volume: Float)
     val totalTime: Flow<Long>
     val colorScheme: Flow<AppColorScheme>
 

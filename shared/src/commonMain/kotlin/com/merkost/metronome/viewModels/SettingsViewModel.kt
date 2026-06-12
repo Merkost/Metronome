@@ -24,6 +24,8 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
     val currentStereo = appDatastore.stereoSettings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    val clickVolume = appDatastore.clickVolume
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 1f)
     val selectedSound = appDatastore.selectedSound
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
     val hapticEnabled = appDatastore.hapticEnabled
@@ -90,6 +92,12 @@ class SettingsViewModel(
     fun onSoundChanged(sound: ClickSound) {
         viewModelScope.launch {
             appDatastore.saveSelectedSound(sound)
+        }
+    }
+
+    fun onClickVolumeChanged(volume: Float) {
+        viewModelScope.launch {
+            appDatastore.saveClickVolume(volume.coerceIn(0f, 1f))
         }
     }
 

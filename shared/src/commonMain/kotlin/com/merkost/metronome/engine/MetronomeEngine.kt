@@ -56,7 +56,8 @@ class MetronomeEngine(
                                 for (remaining in beatsCount + 1 downTo 1) {
                                     viewModel.onCountInTick(remaining)
                                     val stereo = viewModel.currentStereo.value
-                                    player.play(Beat.HIGH, stereo.first, stereo.second)
+                                    val volume = viewModel.clickVolume.value
+                                    player.play(Beat.HIGH, stereo.first * volume, stereo.second * volume)
                                     if (viewModel.hapticEnabled.value) {
                                         hapticProvider.playBeatHaptic(Beat.HIGH)
                                     }
@@ -69,11 +70,12 @@ class MetronomeEngine(
                                 val state = viewModel.metronomeState.value
                                 val beat = state.beats[index]
                                 val stereo = viewModel.currentStereo.value
+                                val volume = viewModel.clickVolume.value
                                 val gapBar = (barNumber - viewModel.gapTrainerStartBar.value).coerceAtLeast(0)
                                 val muted = viewModel.gapTrainerConfig.value?.isMuted(gapBar) == true
                                 viewModel.index.update { index }
                                 if (!muted && beat != Beat.MUTE) {
-                                    player.play(beat, stereo.first, stereo.second)
+                                    player.play(beat, stereo.first * volume, stereo.second * volume)
                                     if (viewModel.hapticEnabled.value) {
                                         hapticProvider.playBeatHaptic(beat)
                                     }
@@ -85,8 +87,8 @@ class MetronomeEngine(
                                     if (!muted) {
                                         player.play(
                                             Beat.LOW,
-                                            stereo.first * SUB_CLICK_VOLUME,
-                                            stereo.second * SUB_CLICK_VOLUME,
+                                            stereo.first * SUB_CLICK_VOLUME * volume,
+                                            stereo.second * SUB_CLICK_VOLUME * volume,
                                         )
                                     }
                                 }
