@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,4 +66,9 @@ actual fun BackgroundPlayPermissionCheck(backgroundPlayEnabled: Boolean) {
             context = context
         )
     }
+}
+
+@Composable
+actual fun PlatformSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Switch(checked = checked, onCheckedChange = onCheckedChange)
 }

@@ -60,3 +60,6 @@ expect fun VolumeSlider()
 
 @Composable
 expect fun BackgroundPlayPermissionCheck(backgroundPlayEnabled: Boolean)
+
+@Composable
+expect fun PlatformSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit)
