@@ -1,6 +1,7 @@
 package com.merkost.metronome.components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
@@ -108,6 +109,14 @@ fun MyIconButton(
         animationSpec = AppAnimations.Interactive,
         label = "iconButtonScale"
     )
+    val containerColor by animateColorAsState(
+        targetValue = if (isPressed) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+        } else {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.07f)
+        },
+        label = "iconButtonContainer"
+    )
 
     Card(
         modifier = Modifier
@@ -118,7 +127,8 @@ fun MyIconButton(
             }
             .then(modifier),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = containerColor,
+            contentColor = MaterialTheme.colorScheme.primary
         ),
         onClick = onClick,
         shape = CircleShape,

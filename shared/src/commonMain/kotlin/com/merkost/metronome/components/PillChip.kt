@@ -36,9 +36,9 @@ fun PillChip(
     val isPressed by interactionSource.collectIsPressedAsState()
     val containerColor by animateColorAsState(
         targetValue = if (isPressed) {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
         } else {
-            MaterialTheme.colorScheme.surfaceVariant
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.055f)
         },
         label = "pillChipContainer"
     )
