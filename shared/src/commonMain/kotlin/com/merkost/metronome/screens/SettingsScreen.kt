@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,10 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -35,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -54,8 +50,18 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.composables.icons.lucide.ArrowLeft
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Mail
+import com.composables.icons.lucide.Smartphone
+import com.composables.icons.lucide.Star
+import com.composables.icons.lucide.Timer
+import com.merkost.metronome.components.AppChip
+import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
+import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.ui.cornerRadiusMedium
@@ -71,6 +77,7 @@ import metronome.shared.generated.resources.settings
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.roundToInt
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,13 +90,35 @@ fun SettingsScreen(upPress: () -> Unit) {
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
     val hapticEnabled by viewModel.hapticEnabled.collectAsState()
+    val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
+    val countInEnabled by viewModel.countInEnabled.collectAsState()
+    val liveActivityEnabled by viewModel.liveActivityEnabled.collectAsState()
+    val practiceStreak by viewModel.practiceStreak.collectAsState()
+    val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
+    val clickVolume by viewModel.clickVolume.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
 
     var showBackgroundPlayPermission by remember { mutableStateOf(false) }
     if (showBackgroundPlayPermission) {
         BackgroundPlayPermissionCheck(true)
+    }
+
+    var showResetConfirmation by remember { mutableStateOf(false) }
+    if (showResetConfirmation) {
+        AppDialog(
+            title = "Reset practice time?",
+            text = "This clears your total practice time of " +
+                "${TimestampMillisecondsFormatter.formatHuman(totalTime)} " +
+                "and your streak. This can't be undone.",
+            confirmLabel = "Reset",
+            onConfirm = {
+                viewModel.resetTotalTime()
+                showResetConfirmation = false
+            },
+            onDismiss = { showResetConfirmation = false },
+        )
     }
 
     Scaffold(
@@ -101,19 +130,20 @@ fun SettingsScreen(upPress: () -> Unit) {
                 )
             }, navigationIcon = {
                 IconButton(onClick = upPress) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                    Icon(Lucide.ArrowLeft, "Back")
                 }
             })
         }
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().padding(it),
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
             contentAlignment = Alignment.TopCenter
         ) {
         Column(
             Modifier
                 .widthIn(max = maxContentWidth)
                 .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
                 .padding(horizontalPadding),
             verticalArrangement = Arrangement.spacedBy(spacingMedium)
         ) {
@@ -171,7 +201,24 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             }
 
-            VolumeSlider()
+            SettingsRow(title = "Volume") {
+                Text(
+                    text = "${(clickVolume * 100).roundToInt()}%",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Slider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp),
+                    value = clickVolume,
+                    onValueChange = viewModel::onClickVolumeChanged,
+                    valueRange = 0f..1f,
+                    colors = SliderDefaults.colors(
+                        inactiveTickColor = Color.Transparent
+                    )
+                )
+            }
 
             SettingsRow(title = "Stereo Panning") {
                 val stereoLabel = when {
@@ -218,8 +265,8 @@ fun SettingsScreen(upPress: () -> Unit) {
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
-                                            Icons.Rounded.Smartphone,
-                                            Icons.Rounded.Smartphone.name
+                                            Lucide.Smartphone,
+                                            Lucide.Smartphone.name
                                         )
                                     }
                                 },
@@ -266,20 +313,51 @@ fun SettingsScreen(upPress: () -> Unit) {
                         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Rounded.Alarm, Icons.Rounded.Alarm.name)
+                        Icon(Lucide.Timer, Lucide.Timer.name)
                         Text(
-                            text = TimestampMillisecondsFormatter.format(totalTime),
+                            text = buildString {
+                                append(TimestampMillisecondsFormatter.formatHuman(totalTime))
+                                if (practiceStreak > 0) {
+                                    append(" · $practiceStreak-day streak")
+                                }
+                            },
                             maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
                         )
                     }
-                    TextButton(onClick = viewModel::resetTotalTime) {
+                    TextButton(onClick = { showResetConfirmation = true }) {
                         Text(text = "Reset")
                     }
                 }
             }
 
             SettingsSwitch("Color Flash", colorFlash, viewModel::onColorFlashChanged)
+
+            SettingsSwitch(
+                "Keep Screen Awake",
+                keepScreenAwake,
+                viewModel::onKeepScreenAwakeChanged,
+                subtitle = "While the metronome plays",
+            )
+
+            SettingsSwitch(
+                "Count-in",
+                countInEnabled,
+                viewModel::onCountInChanged,
+                subtitle = "One bar before playback starts",
+            )
+
+            SettingsRow(title = "Beat Display") {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                    BeatDisplayStyle.entries.forEach { style ->
+                        AppChip(
+                            selected = beatDisplayStyle == style,
+                            onClick = { viewModel.onBeatDisplayStyleChanged(style) },
+                            label = style.label,
+                        )
+                    }
+                }
+            }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
@@ -292,15 +370,17 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             )
 
+            LiveActivitySettingsRow(liveActivityEnabled, viewModel::onLiveActivityChanged)
+
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(spacingSmall)
             ) {
-                SettingsBigButton("Contact support") {
+                SettingsBigButton("Contact support", icon = Lucide.Mail) {
                     platformActions.contactSupport()
                 }
-                SettingsBigButton("Rate the App") {
+                SettingsBigButton("Rate the App", icon = Lucide.Star) {
                     platformActions.rateApp()
                 }
             }
@@ -310,14 +390,29 @@ fun SettingsScreen(upPress: () -> Unit) {
 }
 
 @Composable
-fun SettingsBigButton(text: String, onClick: () -> Unit) {
+fun SettingsBigButton(
+    text: String,
+    icon: ImageVector? = null,
+    onClick: () -> Unit,
+) {
     Button(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         shape = CircleShape
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            Text(modifier = Modifier.padding(8.dp), text = text)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Text(text = text, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -381,6 +476,6 @@ fun SettingsSwitch(
                 )
             }
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        PlatformSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }

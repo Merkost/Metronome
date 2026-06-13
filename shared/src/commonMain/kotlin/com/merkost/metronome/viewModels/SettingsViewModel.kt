@@ -3,6 +3,7 @@ package com.merkost.metronome.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.model.AppDatastore
+import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,10 +24,22 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
     val currentStereo = appDatastore.stereoSettings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    val clickVolume = appDatastore.clickVolume
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 1f)
     val selectedSound = appDatastore.selectedSound
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
     val hapticEnabled = appDatastore.hapticEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val keepScreenAwake = appDatastore.keepScreenAwake
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
+    val countInEnabled = appDatastore.countInEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val practiceStreak = appDatastore.practiceStreak
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    val beatDisplayStyle = appDatastore.beatDisplayStyle
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BeatDisplayStyle.DOTS)
+    val liveActivityEnabled = appDatastore.liveActivityEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
     fun onColorFlashChanged(b: Boolean) {
         viewModelScope.launch {
@@ -46,6 +59,30 @@ class SettingsViewModel(
         }
     }
 
+    fun onKeepScreenAwakeChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            appDatastore.saveKeepScreenAwake(enabled)
+        }
+    }
+
+    fun onCountInChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            appDatastore.saveCountInEnabled(enabled)
+        }
+    }
+
+    fun onLiveActivityChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            appDatastore.saveLiveActivityEnabled(enabled)
+        }
+    }
+
+    fun onBeatDisplayStyleChanged(style: BeatDisplayStyle) {
+        viewModelScope.launch {
+            appDatastore.saveBeatDisplayStyle(style)
+        }
+    }
+
     fun onColorSchemeChanged(it: AppColorScheme) {
         viewModelScope.launch {
             appDatastore.saveColorScheme(it)
@@ -55,6 +92,12 @@ class SettingsViewModel(
     fun onSoundChanged(sound: ClickSound) {
         viewModelScope.launch {
             appDatastore.saveSelectedSound(sound)
+        }
+    }
+
+    fun onClickVolumeChanged(volume: Float) {
+        viewModelScope.launch {
+            appDatastore.saveClickVolume(volume.coerceIn(0f, 1f))
         }
     }
 

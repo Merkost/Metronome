@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.sp
 
 // Beat balls
 val BallSize = 40.dp
+val BallSizeCompact = 32.dp
 val CircleSize = BallSize + 32.dp
 val CircleWeight = 5.dp
 
@@ -24,6 +25,14 @@ val spacingLarge = 32.dp
 val cornerRadiusSmall = 10.dp
 val cornerRadiusMedium = 12.dp
 val cornerRadiusLarge = 16.dp
+val cornerRadiusXLarge = 28.dp
+
+val statusStripHeight = 44.dp
+val pendulumHeight = 132.dp
+val sheetButtonHeight = 52.dp
+val stepperButtonSize = 40.dp
+val progressRingSize = 22.dp
+val progressRingStroke = 2.5.dp
 
 // Elevation
 val elevationSmall = 1.dp

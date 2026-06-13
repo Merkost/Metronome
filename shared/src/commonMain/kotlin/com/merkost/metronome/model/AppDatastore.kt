@@ -8,6 +8,8 @@ interface AppDatastore {
     val backgroundPlay: Flow<Boolean>
     val stereo: Flow<Pair<Float, Float>>
     val stereoSettings: Flow<Int>
+    val clickVolume: Flow<Float>
+    suspend fun saveClickVolume(volume: Float)
     val totalTime: Flow<Long>
     val colorScheme: Flow<AppColorScheme>
 
@@ -30,4 +32,34 @@ interface AppDatastore {
     val timeSignature: Flow<TimeSignature>
     suspend fun saveTimeSignature(timeSignature: TimeSignature)
 
+    val lastTrainerConfig: Flow<GradualTempoConfig?>
+    suspend fun saveLastTrainerConfig(config: GradualTempoConfig)
+
+    val lastTimerMinutes: Flow<Int>
+    suspend fun saveLastTimerMinutes(minutes: Int)
+
+    val subdivision: Flow<Subdivision>
+    suspend fun saveSubdivision(subdivision: Subdivision)
+
+    val lastGapConfig: Flow<GapTrainerConfig?>
+    suspend fun saveLastGapConfig(config: GapTrainerConfig)
+
+    val keepScreenAwake: Flow<Boolean>
+    suspend fun saveKeepScreenAwake(enabled: Boolean)
+
+    val countInEnabled: Flow<Boolean>
+    suspend fun saveCountInEnabled(enabled: Boolean)
+
+    val beatDisplayStyle: Flow<BeatDisplayStyle>
+    suspend fun saveBeatDisplayStyle(style: BeatDisplayStyle)
+
+    val savedTempos: Flow<List<SavedTempo>>
+    suspend fun addSavedTempo(tempo: SavedTempo)
+    suspend fun removeSavedTempo(tempo: SavedTempo)
+
+    val todayPracticeTime: Flow<Long>
+    val practiceStreak: Flow<Int>
+
+    val liveActivityEnabled: Flow<Boolean>
+    suspend fun saveLiveActivityEnabled(enabled: Boolean)
 }

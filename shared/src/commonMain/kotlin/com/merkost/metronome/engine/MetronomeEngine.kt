@@ -9,15 +9,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private const val SUB_CLICK_VOLUME = 0.35f
 
 class MetronomeEngine(
     private val player: MetronomePlayer,
@@ -27,8 +26,6 @@ class MetronomeEngine(
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
 
-    private val _barCompleted = MutableSharedFlow<Int>(extraBufferCapacity = 1)
-    val barCompleted: SharedFlow<Int> = _barCompleted
     private var beatCount = 0
     private var barNumber = 0
 
@@ -43,7 +40,7 @@ class MetronomeEngine(
             }
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
-                    // React to beat-list changes (time signature) while playing
+                    var resumeWithDelay = false
                     viewModel.metronomeState
                         .map { it.beats.size }
                         .distinctUntilChanged()
@@ -51,36 +48,63 @@ class MetronomeEngine(
                             viewModel.index.update { -1 }
                             beatCount = 0
                             barNumber = 0
-                            var interval = viewModel.metronomeState.value.interval.toLong()
-                            createBeatsSequence(beatsCount)
-                                .onEach { delay(interval) }
-                                .collectLatest { index ->
-                                    val beat = viewModel.metronomeState.value.beats[index]
-                                    viewModel.index.update { index }
-                                    interval =
-                                        viewModel.metronomeState.value.interval.toLong()
+                            viewModel.onBarReset()
+                            viewModel.onCountInTick(0)
+                            if (resumeWithDelay) {
+                                delay(viewModel.metronomeState.value.interval.toLong())
+                            } else if (viewModel.countInEnabled.value) {
+                                for (remaining in beatsCount + 1 downTo 1) {
+                                    viewModel.onCountInTick(remaining)
                                     val stereo = viewModel.currentStereo.value
-                                    player.play(beat, stereo.first, stereo.second)
+                                    val volume = viewModel.clickVolume.value
+                                    player.play(Beat.HIGH, stereo.first * volume, stereo.second * volume)
+                                    if (viewModel.hapticEnabled.value) {
+                                        hapticProvider.playBeatHaptic(Beat.HIGH)
+                                    }
+                                    delay(viewModel.metronomeState.value.interval.toLong())
+                                }
+                                viewModel.onCountInTick(0)
+                            }
+                            resumeWithDelay = true
+                            createBeatsSequence(beatsCount).collect { index ->
+                                val state = viewModel.metronomeState.value
+                                val beat = state.beats[index]
+                                val stereo = viewModel.currentStereo.value
+                                val volume = viewModel.clickVolume.value
+                                val gapBar = (barNumber - viewModel.gapTrainerStartBar.value).coerceAtLeast(0)
+                                val muted = viewModel.gapTrainerConfig.value?.isMuted(gapBar) == true
+                                viewModel.index.update { index }
+                                if (!muted && beat != Beat.MUTE) {
+                                    player.play(beat, stereo.first * volume, stereo.second * volume)
                                     if (viewModel.hapticEnabled.value) {
                                         hapticProvider.playBeatHaptic(beat)
                                     }
-                                    // Bar counting for gradual tempo
-                                    beatCount++
-                                    val beatsPerBar = beatsCount
-                                    if (beatCount >= beatsPerBar) {
-                                        beatCount = 0
-                                        barNumber++
-                                        _barCompleted.tryEmit(barNumber)
-                                        val config = viewModel.gradualTempoConfig.value
-                                        if (config != null) {
-                                            viewModel.incrementGradualTempo()
-                                        }
+                                }
+                                val interval = state.interval
+                                val clicks = state.subdivision.clicksPerBeat
+                                for (click in 1 until clicks) {
+                                    delay((click * interval / clicks - (click - 1) * interval / clicks).toLong())
+                                    if (!muted) {
+                                        player.play(
+                                            Beat.LOW,
+                                            stereo.first * SUB_CLICK_VOLUME * volume,
+                                            stereo.second * SUB_CLICK_VOLUME * volume,
+                                        )
                                     }
                                 }
+                                delay((interval - (clicks - 1) * interval / clicks).toLong())
+                                beatCount++
+                                if (beatCount >= beatsCount) {
+                                    beatCount = 0
+                                    barNumber++
+                                    viewModel.onBarCompleted(barNumber)
+                                }
+                            }
                         }
                 } else {
                     player.stop()
                     viewModel.index.update { -1 }
+                    viewModel.onCountInTick(0)
                 }
             }
         }

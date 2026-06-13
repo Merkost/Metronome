@@ -1,11 +1,16 @@
 package com.merkost.metronome.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -14,29 +19,34 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -44,23 +54,26 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.cornerRadiusLarge
+import com.merkost.metronome.ui.spacingMedium
+import com.merkost.metronome.ui.spacingSmall
 
 private data class CoachStep(val title: String, val description: String, val tooltipBelow: Boolean)
 
 private val coachSteps = listOf(
     CoachStep(
-        "Customize your beat",
-        "Tap any circle to toggle accent beats. The first beat is accented by default \u2014 creating a strong downbeat.",
+        "Shape your beat",
+        "Tap any circle to cycle accented, normal, and muted beats.",
         true
     ),
     CoachStep(
         "Set your tempo",
-        "Drag the slider, use \u00B1 buttons, or tap the tempo name above for quick presets like Allegro or Presto.",
+        "Drag the slider or use the buttons. The tempo name opens presets, subdivisions, and trainers.",
         true
     ),
     CoachStep(
-        "Ready to play!",
-        "Hit play to start. Use Tap Tempo to match any song\u2019s beat. The timer tracks your practice.",
+        "Ready to play",
+        "Hit play to start. Tap Tempo matches any song, and the timer tracks your practice.",
         false
     ),
 )
@@ -83,20 +96,19 @@ fun CoachMarksOverlay(
     val target = targetBounds[step]
     val density = LocalDensity.current
     val spotlightPaddingPx = with(density) { SpotlightPadding.toPx() }
-    val cornerRadiusPx = with(density) { 16.dp.toPx() }
+    val cornerRadiusPx = with(density) { cornerRadiusLarge.toPx() }
 
-    // Animate spotlight position smoothly between steps
     val spotLeft by animateFloatAsState(
-        target.left - spotlightPaddingPx, AppAnimations.Bouncy, label = "spotL"
+        target.left - spotlightPaddingPx, AppAnimations.Gentle, label = "spotL"
     )
     val spotTop by animateFloatAsState(
-        target.top - spotlightPaddingPx, AppAnimations.Bouncy, label = "spotT"
+        target.top - spotlightPaddingPx, AppAnimations.Gentle, label = "spotT"
     )
     val spotRight by animateFloatAsState(
-        target.right + spotlightPaddingPx, AppAnimations.Bouncy, label = "spotR"
+        target.right + spotlightPaddingPx, AppAnimations.Gentle, label = "spotR"
     )
     val spotBottom by animateFloatAsState(
-        target.bottom + spotlightPaddingPx, AppAnimations.Bouncy, label = "spotB"
+        target.bottom + spotlightPaddingPx, AppAnimations.Gentle, label = "spotB"
     )
     val spotlightRect = Rect(spotLeft, spotTop, spotRight, spotBottom)
 
@@ -112,9 +124,8 @@ fun CoachMarksOverlay(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
-            ) { /* consume taps on overlay */ }
+            ) { }
     ) {
-        // Semi-transparent overlay with animated spotlight cutout
         val scrimColor = MaterialTheme.colorScheme.scrim
         Canvas(modifier = Modifier.fillMaxSize()) {
             val overlayPath = Path().apply {
@@ -133,7 +144,6 @@ fun CoachMarksOverlay(
             )
         }
 
-        // Skip button at top-right
         Text(
             text = "Skip",
             color = Color.White.copy(alpha = 0.8f),
@@ -144,22 +154,26 @@ fun CoachMarksOverlay(
                 .clickable { onDismiss() }
         )
 
-        // Tooltip card with animated position
         val tooltipMarginPx = with(density) { TooltipMargin.toPx() }
         var cardHeightPx by remember { mutableStateOf(0) }
 
         val targetY = if (currentStep.tooltipBelow) {
-            if (containerHeight > 0f) {
-                (containerHeight - cardHeightPx - tooltipMarginPx * 2)
-            } else {
-                spotlightRect.bottom + tooltipMarginPx
-            }
+            containerHeight - cardHeightPx - tooltipMarginPx * 2
         } else {
-            spotlightRect.top - tooltipMarginPx - cardHeightPx
+            target.top - spotlightPaddingPx - tooltipMarginPx - cardHeightPx
         }
-        val tooltipYOffset by animateFloatAsState(
-            targetY, AppAnimations.Bouncy, label = "tooltipY"
-        )
+        val positioned = containerHeight > 0f && cardHeightPx > 0
+        val tooltipY = remember { Animatable(0f) }
+        var snapped by remember { mutableStateOf(false) }
+        LaunchedEffect(targetY, positioned) {
+            if (!positioned) return@LaunchedEffect
+            if (snapped) {
+                tooltipY.animateTo(targetY, AppAnimations.Gentle)
+            } else {
+                tooltipY.snapTo(targetY)
+                snapped = true
+            }
+        }
 
         Card(
             modifier = Modifier
@@ -168,12 +182,12 @@ fun CoachMarksOverlay(
                 .onGloballyPositioned { coordinates ->
                     cardHeightPx = coordinates.size.height
                 }
-                .offset { IntOffset(0, tooltipYOffset.toInt()) },
-            shape = RoundedCornerShape(14.dp),
+                .offset { IntOffset(0, tooltipY.value.toInt()) }
+                .graphicsLayer { alpha = if (snapped) 1f else 0f },
+            shape = RoundedCornerShape(cornerRadiusLarge),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            // Crossfade between step contents
             AnimatedContent(
                 targetState = step,
                 transitionSpec = { fadeIn() togetherWith fadeOut() },
@@ -205,7 +219,7 @@ private fun TooltipContent(
 ) {
     Column(
         modifier = Modifier.padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(spacingMedium)
     ) {
         Text(
             text = currentStep.title,
@@ -222,45 +236,60 @@ private fun TooltipContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "${step + 1} / $totalSteps",
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            StepDots(count = totalSteps, current = step)
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (step > 0) {
+                AnimatedVisibility(visible = step > 0, enter = fadeIn(), exit = fadeOut()) {
                     TextButton(onClick = onBack) {
                         Text(
-                            text = "\u2190 Back",
+                            text = "Back",
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
-                if (step < totalSteps - 1) {
-                    Button(
-                        onClick = onNext,
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(text = "Next \u2192")
-                    }
-                } else {
-                    Button(
-                        onClick = onDismiss,
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(text = "Got it \u2713")
-                    }
+                val isLast = step == totalSteps - 1
+                Button(
+                    onClick = if (isLast) onDismiss else onNext,
+                    shape = CircleShape,
+                ) {
+                    Text(
+                        text = if (isLast) "Got it" else "Next",
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun StepDots(count: Int, current: Int) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(count) { index ->
+            val active = index == current
+            val dotWidth by animateDpAsState(
+                targetValue = if (active) 18.dp else 7.dp,
+                animationSpec = spring(stiffness = 600f, dampingRatio = 0.8f),
+                label = "dotWidth"
+            )
+            Box(
+                modifier = Modifier
+                    .height(7.dp)
+                    .width(dotWidth)
+                    .clip(CircleShape)
+                    .background(
+                        if (active) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        }
+                    )
+            )
         }
     }
 }

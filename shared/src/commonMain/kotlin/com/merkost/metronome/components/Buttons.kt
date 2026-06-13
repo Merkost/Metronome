@@ -1,6 +1,7 @@
 package com.merkost.metronome.components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
@@ -17,9 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -36,10 +34,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Pause
+import com.composables.icons.lucide.Play
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.defaultIconButtonSize
 import com.merkost.metronome.ui.defaultPlayButtonSize
@@ -106,6 +109,14 @@ fun MyIconButton(
         animationSpec = AppAnimations.Interactive,
         label = "iconButtonScale"
     )
+    val containerColor by animateColorAsState(
+        targetValue = if (isPressed) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+        } else {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.07f)
+        },
+        label = "iconButtonContainer"
+    )
 
     Card(
         modifier = Modifier
@@ -116,7 +127,8 @@ fun MyIconButton(
             }
             .then(modifier),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = containerColor,
+            contentColor = MaterialTheme.colorScheme.primary
         ),
         onClick = onClick,
         shape = CircleShape,
@@ -135,6 +147,7 @@ fun PlayButton(
     size: Dp = defaultPlayButtonSize,
     onClick: () -> Unit
 ) {
+    val haptics = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressScale by animateFloatAsState(
@@ -192,7 +205,10 @@ fun PlayButton(
                 scaleY = pressScale
             }
             .then(modifier),
-        onClick = onClick,
+        onClick = {
+            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+            onClick()
+        },
         shape = RoundedCornerShape(cornerRadius),
         interactionSource = interactionSource
     ) {
@@ -204,7 +220,7 @@ fun PlayButton(
         ) { playing ->
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                    imageVector = if (playing) Lucide.Pause else Lucide.Play,
                     contentDescription = null,
                     modifier = Modifier.size(playButtonIconSize)
                 )
