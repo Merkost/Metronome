@@ -3,6 +3,8 @@ package com.merkost.metronome.di
 import com.merkost.metronome.engine.MetronomePlayer
 import com.merkost.metronome.engine.MetronomePlayerIos
 import com.merkost.metronome.platform.AppVersionProvider
+import com.merkost.metronome.platform.AudioFocusController
+import com.merkost.metronome.platform.NoopAudioFocusController
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.platform.HapticProviderIos
 import com.merkost.metronome.platform.IosAppVersionProvider
@@ -17,4 +19,5 @@ val iosModule = module {
     single<PlatformActions> { IosPlatformActions() }
     single<AppVersionProvider> { IosAppVersionProvider() }
     single<HapticProvider> { HapticProviderIos() }
+    single<AudioFocusController> { NoopAudioFocusController() }
 }
