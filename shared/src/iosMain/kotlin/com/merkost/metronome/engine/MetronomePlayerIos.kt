@@ -3,6 +3,11 @@ package com.merkost.metronome.engine
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,10 +20,12 @@ import platform.AVFAudio.AVAudioPCMBuffer
 import platform.AVFAudio.AVAudioPlayerNode
 import platform.AVFAudio.AVAudioPlayerNodeBufferInterrupts
 import platform.AVFAudio.AVAudioSession
+import platform.AVFAudio.AVAudioSessionCategoryOptionMixWithOthers
 import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.AVAudioUnitVarispeed
 import platform.AVFAudio.setActive
 import platform.Foundation.NSBundle
+import platform.Foundation.NSError
 import kotlin.math.max
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalCoroutinesApi::class)
@@ -62,8 +69,24 @@ class MetronomePlayerIos : MetronomePlayer {
 
     private fun initializeInternal(initialSound: ClickSound) {
         requestedSound = initialSound
-        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error = null)
-        AVAudioSession.sharedInstance().setActive(true, error = null)
+        val session = AVAudioSession.sharedInstance()
+        memScoped {
+            val err = alloc<ObjCObjectVar<NSError?>>()
+            val ok = session.setCategory(
+                AVAudioSessionCategoryPlayback,
+                withOptions = AVAudioSessionCategoryOptionMixWithOthers,
+                error = err.ptr,
+            )
+            if (!ok) {
+                Cedar.tag("MetronomePlayerIos").e("setCategory failed: ${describe(err.value)}")
+            }
+        }
+        memScoped {
+            val err = alloc<ObjCObjectVar<NSError?>>()
+            if (!session.setActive(true, error = err.ptr)) {
+                Cedar.tag("MetronomePlayerIos").e("setActive failed: ${describe(err.value)}")
+            }
+        }
 
         val (name, ext) = soundFileInfo(initialSound)
         val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext)
@@ -92,9 +115,13 @@ class MetronomePlayerIos : MetronomePlayer {
         engine.connect(player, varispeed, format)
         engine.connect(varispeed, engine.mainMixerNode, format)
 
-        if (!engine.startAndReturnError(null)) {
-            Cedar.tag("MetronomePlayerIos").e("Failed to start audio engine")
-            return
+        engine.prepare()
+        memScoped {
+            val err = alloc<ObjCObjectVar<NSError?>>()
+            if (!engine.startAndReturnError(err.ptr)) {
+                Cedar.tag("MetronomePlayerIos").e("Failed to start audio engine: ${describe(err.value)}")
+                return
+            }
         }
         player.play()
 
@@ -163,13 +190,20 @@ class MetronomePlayerIos : MetronomePlayer {
         audioBuffer = buffer
 
         if (wasRunning) {
-            if (!engine.startAndReturnError(null)) {
-                Cedar.tag("MetronomePlayerIos").e("Failed to restart audio engine after sound switch")
-                return
+            memScoped {
+                val err = alloc<ObjCObjectVar<NSError?>>()
+                if (!engine.startAndReturnError(err.ptr)) {
+                    Cedar.tag("MetronomePlayerIos")
+                        .e("Failed to restart audio engine after sound switch: ${describe(err.value)}")
+                    return
+                }
             }
             player.play()
         }
     }
+
+    private fun describe(error: NSError?): String =
+        if (error == null) "unknown error" else "${error.localizedDescription} [${error.domain}:${error.code}]"
 
     private fun soundFileInfo(sound: ClickSound): Pair<String, String> = when (sound) {
         ClickSound.WOOD -> "wood" to "mp3"
