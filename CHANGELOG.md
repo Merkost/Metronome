@@ -27,8 +27,9 @@ _2026-06-15 · Android versionCode 7_
 ```
 What's new in 1.2.1
 
-• Tighter, more accurate timing — a rebuilt beat engine that stays rock-steady at any tempo.
-• Smoother sound switching, and the click now steps aside cleanly for calls and other audio.
+• More accurate, rock-steady timing
+• Reliable audio on iPhone and iPad
+• Smoother sound switching
 ```
 
 ---
