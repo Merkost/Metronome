@@ -1,7 +1,6 @@
 package com.merkost.metronome.engine
 
 import com.merkost.metronome.model.Beat
-import com.merkost.metronome.model.subClickOffsets
 import com.merkost.metronome.platform.AudioFocusController
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.viewModels.MetronomeViewModel
@@ -86,25 +85,25 @@ class MetronomeEngine(
                                 val volume = viewModel.clickVolume.value
                                 val gapBar = (barNumber - viewModel.gapTrainerStartBar.value).coerceAtLeast(0)
                                 val muted = viewModel.gapTrainerConfig.value?.isMuted(gapBar) == true
+                                val interval = state.beatDuration
                                 viewModel.index.update { index }
-                                if (!muted && beat != Beat.MUTE) {
-                                    player.play(beat, stereo.first * volume, stereo.second * volume)
-                                    if (viewModel.hapticEnabled.value) {
-                                        hapticProvider.playBeatHaptic(beat)
-                                    }
+                                if (!muted && beat != Beat.MUTE && viewModel.hapticEnabled.value) {
+                                    hapticProvider.playBeatHaptic(beat)
                                 }
 
-                                val interval = state.beatDuration
-                                val clicks = state.subdivision.clicksPerBeat
-                                for (offset in subClickOffsets(interval, clicks)) {
-                                    delayUntil(beatStart + offset)
-                                    if (!muted) {
-                                        player.play(
-                                            Beat.LOW,
-                                            stereo.first * SUB_CLICK_VOLUME * volume,
-                                            stereo.second * SUB_CLICK_VOLUME * volume,
-                                        )
-                                    }
+                                val events = beatEvents(
+                                    beat = beat,
+                                    interval = interval,
+                                    clicksPerBeat = state.subdivision.clicksPerBeat,
+                                    muted = muted,
+                                    stereoLeft = stereo.first,
+                                    stereoRight = stereo.second,
+                                    volume = volume,
+                                    subClickVolume = SUB_CLICK_VOLUME,
+                                )
+                                for (event in events) {
+                                    delayUntil(beatStart + event.offset)
+                                    player.play(event.beat, event.leftVolume, event.rightVolume)
                                 }
 
                                 nextBeat = beatStart + interval
