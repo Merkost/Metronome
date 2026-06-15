@@ -57,6 +57,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+
         iosMain.dependencies {
         }
     }

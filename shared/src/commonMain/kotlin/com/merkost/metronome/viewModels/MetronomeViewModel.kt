@@ -6,6 +6,7 @@ import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.bpmFromTapIntervals
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.GapTrainerConfig
@@ -200,16 +201,8 @@ class MetronomeViewModel(
     }
 
     private fun updateBpmFromMedian() {
-        if (tapIntervals.isNotEmpty()) {
-            val sortedIntervals = tapIntervals.sorted()
-            val medianInterval = if (sortedIntervals.size % 2 == 1) {
-                sortedIntervals[sortedIntervals.size / 2]
-            } else {
-                (sortedIntervals[sortedIntervals.size / 2 - 1] + sortedIntervals[sortedIntervals.size / 2]) / 2
-            }
-            val medianBpm = (60000 / medianInterval).toInt().coerceIn(metronomeMinimum, metronomeMaximum)
-            _metronomeState.update { it.copy(rhythm = medianBpm) }
-        }
+        val medianBpm = bpmFromTapIntervals(tapIntervals) ?: return
+        _metronomeState.update { it.copy(rhythm = medianBpm) }
     }
 
     fun onBallClicked(index: Int, beat: Beat) {
@@ -394,24 +387,22 @@ class MetronomeViewModel(
     }
 
     fun incrementGradualTempo() {
-        viewModelScope.launch {
-            val config = _gradualTempoConfig.value ?: return@launch
-            _gradualTempoCurrentBar.update { it + 1 }
-            val currentBar = _gradualTempoCurrentBar.value
-            if (currentBar > 0 && currentBar % config.barsPerStep == 0) {
-                val newBpm = config.nextBpmFrom(_metronomeState.value.rhythm)
-                _metronomeState.update { it.copy(rhythm = newBpm) }
-                if (config.isComplete(newBpm) && gradualTempoDismissJob == null) {
-                    if (hapticEnabled.value) {
-                        hapticProvider.playConfirmHaptic()
-                    }
-                    gradualTempoDismissJob = viewModelScope.launch {
-                        delay(5000)
-                        if (tempoSheetVisible) {
-                            trainerAutoDismissPending = true
-                        } else {
-                            stopGradualTempo()
-                        }
+        val config = _gradualTempoConfig.value ?: return
+        _gradualTempoCurrentBar.update { it + 1 }
+        val currentBar = _gradualTempoCurrentBar.value
+        if (currentBar > 0 && currentBar % config.barsPerStep == 0) {
+            val newBpm = config.nextBpmFrom(_metronomeState.value.rhythm)
+            _metronomeState.update { it.copy(rhythm = newBpm) }
+            if (config.isComplete(newBpm) && gradualTempoDismissJob == null) {
+                if (hapticEnabled.value) {
+                    hapticProvider.playConfirmHaptic()
+                }
+                gradualTempoDismissJob = viewModelScope.launch {
+                    delay(5000)
+                    if (tempoSheetVisible) {
+                        trainerAutoDismissPending = true
+                    } else {
+                        stopGradualTempo()
                     }
                 }
             }
