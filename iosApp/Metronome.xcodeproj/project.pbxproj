@@ -100,7 +100,6 @@
 				39F5B1DB43F59DA18267798F /* TogglePlaybackIntent.swift */,
 				AD04B47EF44FC631F290B988 /* MetronomeLiveActivityManager.swift */,
 			);
-			name = LiveActivity;
 			path = LiveActivity;
 			sourceTree = "<group>";
 		};
@@ -154,7 +153,6 @@
 				DC15D45B80072E131120A44B /* MetronomeLiveActivityWidget.swift */,
 				B8802066377C48C0993287A7 /* Info.plist */,
 			);
-			name = MetronomeWidgets;
 			path = MetronomeWidgets;
 			sourceTree = "<group>";
 		};
@@ -247,7 +245,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 7555FF76242A565900829871 /* Build configuration list for PBXProject "iosApp" */;
+			buildConfigurationList = 7555FF76242A565900829871 /* Build configuration list for PBXProject "Metronome" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -552,7 +550,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7555FF76242A565900829871 /* Build configuration list for PBXProject "iosApp" */ = {
+		7555FF76242A565900829871 /* Build configuration list for PBXProject "Metronome" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7555FFA3242A565B00829871 /* Debug */,
