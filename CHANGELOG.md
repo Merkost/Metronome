@@ -7,6 +7,32 @@ limit. Newest first.
 
 ---
 
+## 1.2.1 — Tighter timing
+_2026-06-15 · Android versionCode 7_
+
+**Fixes**
+- **More accurate, drift-free timing.** The beat scheduler is now anchored to a
+  monotonic clock with exact fractional tempo, replacing the old delay loop that
+  accumulated drift and quantized BPM. Tap tempo rounds instead of truncating.
+- **Audio robustness.** iOS serializes all audio-engine access (no more
+  sound-switch glitch or crash), Android no longer drops a click when switching
+  sounds, and the metronome stops cleanly on a phone call or when another app
+  takes over audio.
+
+**Under the hood**
+- First unit tests in the repo: 26 tests covering the tempo math and the per-beat
+  click schedule (subdivisions, accents, mute, per-channel volume).
+
+**Store message**
+```
+What's new in 1.2.1
+
+• Tighter, more accurate timing — a rebuilt beat engine that stays rock-steady at any tempo.
+• Smoother sound switching, and the click now steps aside cleanly for calls and other audio.
+```
+
+---
+
 ## 1.2.0 — Live Activities & Dynamic Island
 _2026-06-13 · Android versionCode 6 · iOS build 1_
 

@@ -1,6 +1,7 @@
 package com.merkost.metronome.engine
 
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.platform.AudioFocusController
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.repeat
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.TimeSource
 
 private const val SUB_CLICK_VOLUME = 0.35f
 
@@ -22,9 +25,11 @@ class MetronomeEngine(
     private val player: MetronomePlayer,
     private val viewModel: MetronomeViewModel,
     private val hapticProvider: HapticProvider,
+    private val audioFocus: AudioFocusController,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
+    private val timeSource = TimeSource.Monotonic
 
     private var beatCount = 0
     private var barNumber = 0
@@ -32,6 +37,7 @@ class MetronomeEngine(
     fun start() {
         val initialSound = viewModel.selectedSound.value
         player.initialize(initialSound)
+        audioFocus.setOnFocusLost { viewModel.onStopClicked() }
         job = coroutineScope.launch {
             launch {
                 viewModel.selectedSound.collectLatest { sound ->
@@ -40,7 +46,8 @@ class MetronomeEngine(
             }
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
-                    var resumeWithDelay = false
+                    audioFocus.requestFocus()
+                    var isRestart = false
                     viewModel.metronomeState
                         .map { it.beats.size }
                         .distinctUntilChanged()
@@ -50,10 +57,12 @@ class MetronomeEngine(
                             barNumber = 0
                             viewModel.onBarReset()
                             viewModel.onCountInTick(0)
-                            if (resumeWithDelay) {
-                                delay(viewModel.metronomeState.value.interval.toLong())
-                            } else if (viewModel.countInEnabled.value) {
-                                for (remaining in beatsCount + 1 downTo 1) {
+
+                            var nextBeat = timeSource.markNow()
+
+                            if (!isRestart && viewModel.countInEnabled.value) {
+                                for (remaining in beatsCount downTo 1) {
+                                    delayUntil(nextBeat)
                                     viewModel.onCountInTick(remaining)
                                     val stereo = viewModel.currentStereo.value
                                     val volume = viewModel.clickVolume.value
@@ -61,38 +70,47 @@ class MetronomeEngine(
                                     if (viewModel.hapticEnabled.value) {
                                         hapticProvider.playBeatHaptic(Beat.HIGH)
                                     }
-                                    delay(viewModel.metronomeState.value.interval.toLong())
+                                    nextBeat += viewModel.metronomeState.value.beatDuration
                                 }
                                 viewModel.onCountInTick(0)
                             }
-                            resumeWithDelay = true
+                            isRestart = true
+
                             createBeatsSequence(beatsCount).collect { index ->
+                                delayUntil(nextBeat)
+                                val beatStart = nextBeat
                                 val state = viewModel.metronomeState.value
                                 val beat = state.beats[index]
                                 val stereo = viewModel.currentStereo.value
                                 val volume = viewModel.clickVolume.value
                                 val gapBar = (barNumber - viewModel.gapTrainerStartBar.value).coerceAtLeast(0)
                                 val muted = viewModel.gapTrainerConfig.value?.isMuted(gapBar) == true
+                                val interval = state.beatDuration
                                 viewModel.index.update { index }
-                                if (!muted && beat != Beat.MUTE) {
-                                    player.play(beat, stereo.first * volume, stereo.second * volume)
-                                    if (viewModel.hapticEnabled.value) {
-                                        hapticProvider.playBeatHaptic(beat)
-                                    }
+                                if (!muted && beat != Beat.MUTE && viewModel.hapticEnabled.value) {
+                                    hapticProvider.playBeatHaptic(beat)
                                 }
-                                val interval = state.interval
-                                val clicks = state.subdivision.clicksPerBeat
-                                for (click in 1 until clicks) {
-                                    delay((click * interval / clicks - (click - 1) * interval / clicks).toLong())
-                                    if (!muted) {
-                                        player.play(
-                                            Beat.LOW,
-                                            stereo.first * SUB_CLICK_VOLUME * volume,
-                                            stereo.second * SUB_CLICK_VOLUME * volume,
-                                        )
-                                    }
+
+                                val events = beatEvents(
+                                    beat = beat,
+                                    interval = interval,
+                                    clicksPerBeat = state.subdivision.clicksPerBeat,
+                                    muted = muted,
+                                    stereoLeft = stereo.first,
+                                    stereoRight = stereo.second,
+                                    volume = volume,
+                                    subClickVolume = SUB_CLICK_VOLUME,
+                                )
+                                for (event in events) {
+                                    delayUntil(beatStart + event.offset)
+                                    player.play(event.beat, event.leftVolume, event.rightVolume)
                                 }
-                                delay((interval - (clicks - 1) * interval / clicks).toLong())
+
+                                nextBeat = beatStart + interval
+                                if (nextBeat.elapsedNow() > interval) {
+                                    nextBeat = timeSource.markNow()
+                                }
+
                                 beatCount++
                                 if (beatCount >= beatsCount) {
                                     beatCount = 0
@@ -102,12 +120,18 @@ class MetronomeEngine(
                             }
                         }
                 } else {
+                    audioFocus.abandonFocus()
                     player.stop()
                     viewModel.index.update { -1 }
                     viewModel.onCountInTick(0)
                 }
             }
         }
+    }
+
+    private suspend fun delayUntil(target: TimeSource.Monotonic.ValueTimeMark) {
+        val remaining = -target.elapsedNow()
+        if (remaining > Duration.ZERO) delay(remaining)
     }
 
     fun stop() {

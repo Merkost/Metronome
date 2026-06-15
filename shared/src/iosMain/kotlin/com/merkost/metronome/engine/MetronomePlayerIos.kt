@@ -3,6 +3,11 @@ package com.merkost.metronome.engine
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.kimplify.cedar.logging.Cedar
 import platform.AVFAudio.AVAudioEngine
 import platform.AVFAudio.AVAudioFile
@@ -14,21 +19,49 @@ import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.AVAudioUnitVarispeed
 import platform.AVFAudio.setActive
 import platform.Foundation.NSBundle
-import kotlin.concurrent.Volatile
 import kotlin.math.max
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalCoroutinesApi::class)
 class MetronomePlayerIos : MetronomePlayer {
-    @Volatile
+    private val audioDispatcher = Dispatchers.Default.limitedParallelism(1)
+    private val scope = CoroutineScope(audioDispatcher + SupervisorJob())
+
     private var audioEngine: AVAudioEngine? = null
-    @Volatile
     private var playerNode: AVAudioPlayerNode? = null
-    @Volatile
     private var varispeedNode: AVAudioUnitVarispeed? = null
-    @Volatile
     private var audioBuffer: AVAudioPCMBuffer? = null
+    private var requestedSound: ClickSound? = null
 
     override fun initialize(initialSound: ClickSound) {
+        scope.launch { initializeInternal(initialSound) }
+    }
+
+    override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) {
+        scope.launch { playInternal(beat, stereoLeft, stereoRight) }
+    }
+
+    override fun stop() {
+        scope.launch { playerNode?.stop() }
+    }
+
+    override fun switchSound(sound: ClickSound) {
+        scope.launch { switchSoundInternal(sound) }
+    }
+
+    override fun release() {
+        scope.launch {
+            playerNode?.stop()
+            audioEngine?.stop()
+            audioEngine = null
+            playerNode = null
+            varispeedNode = null
+            audioBuffer = null
+            requestedSound = null
+        }
+    }
+
+    private fun initializeInternal(initialSound: ClickSound) {
+        requestedSound = initialSound
         AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error = null)
         AVAudioSession.sharedInstance().setActive(true, error = null)
 
@@ -70,7 +103,7 @@ class MetronomePlayerIos : MetronomePlayer {
         varispeedNode = varispeed
     }
 
-    override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) {
+    private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float) {
         val buffer = audioBuffer ?: return
         val player = playerNode ?: return
 
@@ -98,26 +131,10 @@ class MetronomePlayerIos : MetronomePlayer {
         )
     }
 
-    override fun stop() {
-        playerNode?.stop()
-    }
+    private fun switchSoundInternal(sound: ClickSound) {
+        if (sound == requestedSound) return
+        requestedSound = sound
 
-    override fun release() {
-        playerNode?.stop()
-        audioEngine?.stop()
-        audioEngine = null
-        playerNode = null
-        varispeedNode = null
-        audioBuffer = null
-    }
-
-    private fun soundFileInfo(sound: ClickSound): Pair<String, String> = when (sound) {
-        ClickSound.WOOD -> "wood" to "mp3"
-        ClickSound.CLICK -> "click" to "mp3"
-        ClickSound.CLASSIC -> "metronome" to "wav"
-    }
-
-    override fun switchSound(sound: ClickSound) {
         val (name, ext) = soundFileInfo(sound)
         val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext)
         if (url == null) {
@@ -152,5 +169,11 @@ class MetronomePlayerIos : MetronomePlayer {
             }
             player.play()
         }
+    }
+
+    private fun soundFileInfo(sound: ClickSound): Pair<String, String> = when (sound) {
+        ClickSound.WOOD -> "wood" to "mp3"
+        ClickSound.CLICK -> "click" to "mp3"
+        ClickSound.CLASSIC -> "metronome" to "wav"
     }
 }

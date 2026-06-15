@@ -16,7 +16,7 @@ val commonModule = module {
     single { MetronomeViewModel(get(), get()) }
     single {
         CedarSetup.initialize(isDebug())
-        MetronomeEngine(get(), get(), get()).also { it.start() }
+        MetronomeEngine(get(), get(), get(), get()).also { it.start() }
     }
     single { LiveActivityObserver(get(), get(), get()) }
     viewModel { SettingsViewModel(get()) }

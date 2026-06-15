@@ -1,7 +1,11 @@
 package com.merkost.metronome.model
 
+import kotlin.math.roundToInt
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+
 private val Int.interval: Int
-    get() = 60000 / this
+    get() = (60_000.0 / this).roundToInt()
 
 data class MetronomeState(
     val beats: List<Beat> = listOf(
@@ -19,6 +23,9 @@ data class MetronomeState(
 
     val interval: Int
         get() = rhythm.interval
+
+    val beatDuration: Duration
+        get() = (60_000.0 / rhythm).milliseconds
 
     fun updateRhythm(newRhythm: Int): MetronomeState {
         return this.copy(
