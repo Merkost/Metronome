@@ -16,6 +16,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -40,6 +41,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pause
 import com.composables.icons.lucide.Play
@@ -58,7 +60,9 @@ fun MySecondaryTextButton(text: String, onClick: () -> Unit) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
                 text,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(12.sp, 24.sp),
             )
         }
     }
@@ -119,13 +123,12 @@ fun MyIconButton(
     )
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .size(size)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
-            }
-            .then(modifier),
+            },
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
             contentColor = MaterialTheme.colorScheme.primary
@@ -198,13 +201,13 @@ fun PlayButton(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        modifier = glowModifier
+        modifier = modifier
             .size(size)
+            .then(glowModifier)
             .graphicsLayer {
                 scaleX = pressScale
                 scaleY = pressScale
-            }
-            .then(modifier),
+            },
         onClick = {
             haptics.performHapticFeedback(HapticFeedbackType.Confirm)
             onClick()
@@ -221,7 +224,7 @@ fun PlayButton(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = if (playing) Lucide.Pause else Lucide.Play,
-                    contentDescription = null,
+                    contentDescription = if (playing) "Pause metronome" else "Start metronome",
                     modifier = Modifier.size(playButtonIconSize)
                 )
             }

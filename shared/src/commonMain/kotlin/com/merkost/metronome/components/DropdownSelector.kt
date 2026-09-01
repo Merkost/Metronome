@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -12,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.merkost.metronome.ui.cornerRadiusLarge
+import com.merkost.metronome.ui.cornerRadiusMedium
+import com.merkost.metronome.ui.minimumTouchTargetSize
 
 @Composable
 fun <T> DropdownSelector(
@@ -25,7 +29,7 @@ fun <T> DropdownSelector(
     footer: (@Composable () -> Unit)? = null,
     anchor: @Composable () -> Unit,
 ) {
-    val dropdownShape = RoundedCornerShape(16.dp)
+    val dropdownShape = RoundedCornerShape(cornerRadiusLarge)
 
     Box(modifier = modifier) {
         anchor()
@@ -49,9 +53,10 @@ fun <T> DropdownSelector(
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 6.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(cornerRadiusMedium))
                             .background(itemBackground)
                             .clickable { onSelect(item) }
+                            .heightIn(min = minimumTouchTargetSize)
                             .padding(PaddingValues(horizontal = 14.dp, vertical = 12.dp))
                     ) {
                         itemContent(item, isSelected)

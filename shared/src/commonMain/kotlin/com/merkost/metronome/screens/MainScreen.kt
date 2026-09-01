@@ -17,24 +17,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,12 +49,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Minus
 import com.composables.icons.lucide.Plus
@@ -63,6 +65,8 @@ import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.VolumeX
 import com.merkost.metronome.components.CoachMarksOverlay
+import com.merkost.metronome.components.AppDialog
+import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.DropdownSelector
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
@@ -71,11 +75,17 @@ import com.merkost.metronome.components.MySecondaryTextButton
 import com.merkost.metronome.components.Pendulum
 import com.merkost.metronome.components.PillChip
 import com.merkost.metronome.components.StatusStrip
+import com.merkost.metronome.components.PresetNameDialog
+import com.merkost.metronome.components.PresetSaveChoiceDialog
+import com.merkost.metronome.components.PracticeSessionStrip
 import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.presets.PracticePreset
+import com.merkost.metronome.presets.PracticePresetDraft
+import com.merkost.metronome.practiceSets.PracticeSessionStartResult
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.BallSize
@@ -89,15 +99,47 @@ import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.tempoDisplaySize
 import com.merkost.metronome.viewModels.MetronomeViewModel
+import com.merkost.metronome.viewModels.PracticeCompletionEvent
+import com.merkost.metronome.viewModels.PracticePresetsViewModel
+import com.merkost.metronome.viewModels.PresetUiEvent
 import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.applies_next_bar
 import metronome.shared.generated.resources.app_name
+import metronome.shared.generated.resources.choose_save_action
+import metronome.shared.generated.resources.create_preset
+import metronome.shared.generated.resources.edited
+import metronome.shared.generated.resources.preset_deleted
+import metronome.shared.generated.resources.preset_duplicated
+import metronome.shared.generated.resources.preset_invalid
+import metronome.shared.generated.resources.preset_in_use
+import metronome.shared.generated.resources.preset_limit_reached
+import metronome.shared.generated.resources.preset_saved
+import metronome.shared.generated.resources.preset_storage_failed
+import metronome.shared.generated.resources.preset_updated
+import metronome.shared.generated.resources.cancel
+import metronome.shared.generated.resources.practice_session_storage_warning
+import metronome.shared.generated.resources.practice_completion_storage_failed
+import metronome.shared.generated.resources.practice_set_start_invalid
+import metronome.shared.generated.resources.practice_set_start_missing
+import metronome.shared.generated.resources.practice_set_start_storage_failed
+import metronome.shared.generated.resources.retry
+import metronome.shared.generated.resources.structured_practice_replace_body
+import metronome.shared.generated.resources.structured_practice_replace_confirm
+import metronome.shared.generated.resources.structured_practice_replace_title
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onSettingsClicked: () -> Unit) {
+fun MainScreen(
+    onSettingsClicked: () -> Unit,
+    onPresetsClicked: () -> Unit,
+    onPracticeSetsClicked: () -> Unit,
+) {
     val viewModel: MetronomeViewModel = koinInject()
+    val presetsViewModel: PracticePresetsViewModel = koinViewModel()
     koinInject<com.merkost.metronome.engine.MetronomeEngine>()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val metronomeState: MetronomeState by viewModel.metronomeState.collectAsState()
@@ -105,6 +147,8 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
         derivedStateOf { metronomeState.beats }
     }
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val practiceSessionState by viewModel.practiceSessionState.collectAsState()
+    val recentPracticeSet by viewModel.recentPracticeSet.collectAsState()
     val selectedIndex by viewModel.index.collectAsState()
 
     val onboardingStep by viewModel.onboardingStep.collectAsState()
@@ -121,8 +165,15 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
     val totalPracticeTime by viewModel.totalPracticeTime.collectAsState()
     val todayPracticeTime by viewModel.todayPracticeTime.collectAsState()
     val practiceStreak by viewModel.practiceStreak.collectAsState()
-    val savedTempos by viewModel.savedTempos.collectAsState()
     var showTimerSheet by remember { mutableStateOf(false) }
+    var showPracticeSessionSheet by remember { mutableStateOf(false) }
+    var pendingStructuredAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    val presetsUiState by presetsViewModel.uiState.collectAsState()
+    val activePresetState by viewModel.activePresetState.collectAsState()
+    val countInEnabled by viewModel.countInEnabled.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var presetEditorDraft by remember { mutableStateOf<PracticePresetDraft?>(null) }
+    var showPresetSaveChoice by remember { mutableStateOf(false) }
 
     val gradualTempoConfig by viewModel.gradualTempoConfig.collectAsState()
     val gradualTempoCurrentBar by viewModel.gradualTempoCurrentBar.collectAsState()
@@ -146,6 +197,70 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
 
     LaunchedEffect(showTimerSheet) { viewModel.setTimerSheetVisible(showTimerSheet) }
     LaunchedEffect(showTempoSheet) { viewModel.setTempoSheetVisible(showTempoSheet) }
+    LaunchedEffect(Unit) {
+        presetsViewModel.events.collect { event ->
+            val message = when (event) {
+                is PresetUiEvent.Saved -> {
+                    viewModel.onPresetStored(event.preset)
+                    getString(Res.string.preset_saved, event.preset.name)
+                }
+                is PresetUiEvent.Updated -> {
+                    viewModel.onPresetStored(event.preset)
+                    getString(Res.string.preset_updated, event.preset.name)
+                }
+                is PresetUiEvent.Duplicated -> getString(Res.string.preset_duplicated, event.preset.name)
+                is PresetUiEvent.Deleted -> {
+                    viewModel.onPresetDeleted(event.id)
+                    getString(Res.string.preset_deleted, event.name)
+                }
+                is PresetUiEvent.InUse -> getString(Res.string.preset_in_use)
+                PresetUiEvent.LimitReached -> getString(Res.string.preset_limit_reached)
+                is PresetUiEvent.Invalid -> getString(Res.string.preset_invalid)
+                PresetUiEvent.StorageFailure -> getString(Res.string.preset_storage_failed)
+            }
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    LaunchedEffect(practiceSessionState.persistenceWarning) {
+        if (practiceSessionState.persistenceWarning) {
+            val result = snackbarHostState.showSnackbar(
+                message = getString(Res.string.practice_session_storage_warning),
+                actionLabel = getString(Res.string.retry),
+                withDismissAction = true,
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                viewModel.retryPracticeSessionPersistence()
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.practiceSessionStartResults.collect { result ->
+            when (result) {
+                is PracticeSessionStartResult.Started -> Unit
+                is PracticeSessionStartResult.MissingPreset -> snackbarHostState.showSnackbar(
+                    getString(Res.string.practice_set_start_missing),
+                )
+                PracticeSessionStartResult.InvalidSet -> snackbarHostState.showSnackbar(
+                    getString(Res.string.practice_set_start_invalid),
+                )
+                PracticeSessionStartResult.PersistenceFailed -> snackbarHostState.showSnackbar(
+                    getString(Res.string.practice_set_start_storage_failed),
+                )
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.practiceCompletionEvents.collect { event ->
+            when (event) {
+                PracticeCompletionEvent.StorageFailure -> snackbarHostState.showSnackbar(
+                    getString(Res.string.practice_completion_storage_failed),
+                )
+            }
+        }
+    }
 
     var tsExpanded by remember { mutableStateOf(false) }
 
@@ -174,51 +289,23 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             .then(if (isPlaying && keepScreenAwake) Modifier.keepScreenOn() else Modifier)
     ) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
-                CenterAlignedTopAppBar(
+                TopAppBar(
                     title = {
                         Text(
                             text = stringResource(Res.string.app_name),
-                            style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.widthIn(max = 260.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            autoSize = TextAutoSize.StepBased(
+                                minFontSize = 8.sp,
+                                maxFontSize = 22.sp,
+                            ),
                         )
                     },
                     actions = {
-                        DropdownSelector(
-                            expanded = tsExpanded,
-                            onDismiss = { tsExpanded = false },
-                            items = TimeSignature.entries.toList(),
-                            selectedItem = metronomeState.timeSignature,
-                            onSelect = {
-                                viewModel.onTimeSignatureChanged(it)
-                                tsExpanded = false
-                            },
-                            itemContent = { ts, _ ->
-                                Column {
-                                    Text(
-                                        text = ts.label,
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    )
-                                    Text(
-                                        text = "${ts.defaultBeats.size} beats",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            },
-                            anchor = {
-                                PillChip(onClick = { tsExpanded = true }) {
-                                    Text(
-                                        text = metronomeState.timeSignature.label,
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                    )
-                                }
-                            }
-                        )
                         IconButton(onClick = onSettingsClicked) {
                             Icon(Lucide.Settings, Lucide.Settings.name)
                         }
@@ -246,6 +333,13 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(spacingLarge)
                     ) {
+
+                        TimeSignatureSelector(
+                            expanded = tsExpanded,
+                            selected = metronomeState.timeSignature,
+                            onExpandedChange = { tsExpanded = it },
+                            onSelect = viewModel::onTimeSignatureChanged,
+                        )
 
                         val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
                         AnimatedContent(
@@ -324,6 +418,36 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                             fontWeight = FontWeight.Bold
                                         ),
                                         textAlign = TextAlign.Center,
+                                        maxLines = 2,
+                                        autoSize = TextAutoSize.StepBased(
+                                            minFontSize = 10.sp,
+                                            maxFontSize = 18.sp,
+                                        ),
+                                    )
+                                }
+                            }
+
+                            val presetStatus = activePresetState.pending?.let {
+                                "${it.name} · ${stringResource(Res.string.applies_next_bar)}"
+                            } ?: activePresetState.active?.let {
+                                if (activePresetState.isEdited) {
+                                    "${it.name} · ${stringResource(Res.string.edited)}"
+                                } else {
+                                    it.name
+                                }
+                            }
+                            AnimatedVisibility(visible = presetStatus != null) {
+                                TextButton(
+                                    onClick = {
+                                        tempoSheetSection = null
+                                        showTempoSheet = true
+                                    }
+                                ) {
+                                    Text(
+                                        text = presetStatus.orEmpty(),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             }
@@ -355,6 +479,7 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                         if (countingIn) countInRemaining else metronomeState.rhythm,
                                         peakScale = if (countingIn) 1.04f else 1.02f
                                     ),
+                                    autoSize = TextAutoSize.StepBased(30.sp, tempoDisplaySize),
                                 )
                                 MyIconButton(
                                     Lucide.Plus,
@@ -362,16 +487,13 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
                                 )
                             }
                         }
-                        Slider(
-                            modifier = Modifier.padding(horizontal = horizontalPadding).height(20.dp),
+                        AppSlider(
+                            modifier = Modifier.padding(horizontal = horizontalPadding),
                             value = metronomeState.rhythm.toFloat(),
                             onValueChange = viewModel::onSliderValueChanged,
                             valueRange = viewModel.metronomeRange,
                             steps = viewModel.steps,
-                            colors = SliderDefaults.colors(
-                                activeTickColor = Color.Transparent,
-                                inactiveTickColor = Color.Transparent,
-                            )
+                            accessibilityLabel = "Tempo, ${metronomeState.rhythm} BPM",
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
@@ -471,6 +593,24 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
 
                         HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
+                        AnimatedVisibility(
+                            visible = practiceSessionState.session != null,
+                            enter = AppAnimations.expandEnter,
+                            exit = AppAnimations.shrinkExit,
+                            modifier = Modifier.padding(horizontal = horizontalPadding),
+                        ) {
+                            practiceSessionState.session?.let { session ->
+                                PracticeSessionStrip(
+                                    session = session,
+                                    isRecovered = practiceSessionState.isRecovered,
+                                    onPrevious = viewModel::previousPracticeStep,
+                                    onTogglePlayback = viewModel::togglePracticeSessionPlayback,
+                                    onNext = viewModel::nextPracticeStep,
+                                    onOpen = { showPracticeSessionSheet = true },
+                                )
+                            }
+                        }
+
                         MainButtonsRow(
                             Modifier.padding(horizontal = horizontalPadding),
                             isPlaying = isPlaying,
@@ -523,7 +663,13 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             todayPracticeTime = todayPracticeTime,
             practiceStreak = practiceStreak,
             totalPracticeTime = totalPracticeTime,
-            onStart = viewModel::startPracticeTimer,
+            onStart = { minutes ->
+                if (practiceSessionState.session != null) {
+                    pendingStructuredAction = { viewModel.replacePracticeSessionWithTimer(minutes) }
+                } else {
+                    viewModel.startPracticeTimer(minutes)
+                }
+            },
             onExtend = viewModel::extendPracticeTimer,
             onRestart = viewModel::restartPracticeTimer,
             onStop = viewModel::dismissPracticeTimer,
@@ -537,8 +683,10 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             beatsPerBar = beats.size,
             isPlaying = isPlaying,
             subdivision = metronomeState.subdivision,
-            timeSignature = metronomeState.timeSignature,
-            savedTempos = savedTempos,
+            favouritePresets = presetsUiState.favourites,
+            recentPresets = presetsUiState.recents,
+            recentPracticeSet = recentPracticeSet,
+            activePresetState = activePresetState,
             activeConfig = gradualTempoConfig,
             currentBar = gradualTempoCurrentBar,
             lastConfig = lastTrainerConfig,
@@ -546,16 +694,166 @@ fun MainScreen(onSettingsClicked: () -> Unit) {
             lastGapConfig = lastGapConfig,
             initialSection = tempoSheetSection,
             onPresetSelected = { viewModel.onSliderValueChanged(it.toFloat()) },
-            onApplySavedTempo = viewModel::applySavedTempo,
-            onSaveCurrentTempo = viewModel::saveCurrentTempo,
-            onDeleteSavedTempo = viewModel::deleteSavedTempo,
+            onApplyPracticePreset = viewModel::applyPracticePreset,
+            onSaveCurrentSetup = {
+                val state = viewModel.metronomeState.value
+                val defaultName = "${state.rhythm} BPM · ${state.timeSignature.label}"
+                val draft = PracticePresetDraft(
+                    name = defaultName,
+                    bpm = state.rhythm,
+                    timeSignature = state.timeSignature,
+                    subdivision = state.subdivision,
+                    beats = state.beats,
+                    countInEnabled = countInEnabled,
+                )
+                if (activePresetState.active != null && activePresetState.isEdited) {
+                    presetEditorDraft = draft
+                    showPresetSaveChoice = true
+                } else {
+                    presetEditorDraft = draft
+                }
+            },
+            onManagePresets = onPresetsClicked,
+            onManagePracticeSets = onPracticeSetsClicked,
+            onPracticeAgain = { practiceSet ->
+                if (viewModel.hasStructuredPracticeConflict()) {
+                    pendingStructuredAction = { viewModel.startPracticeSet(practiceSet) }
+                } else {
+                    viewModel.startPracticeSet(practiceSet)
+                }
+            },
             onSubdivisionChanged = viewModel::onSubdivisionChanged,
-            onStartTrainer = viewModel::startGradualTempo,
+            onStartTrainer = { config ->
+                if (practiceSessionState.session != null) {
+                    pendingStructuredAction = { viewModel.replacePracticeSessionWithTempoTrainer(config) }
+                } else {
+                    viewModel.startGradualTempo(config)
+                }
+            },
             onStopTrainer = viewModel::stopGradualTempo,
-            onStartGapTrainer = viewModel::startGapTrainer,
+            onStartGapTrainer = { config ->
+                if (practiceSessionState.session != null) {
+                    pendingStructuredAction = { viewModel.replacePracticeSessionWithGapTrainer(config) }
+                } else {
+                    viewModel.startGapTrainer(config)
+                }
+            },
             onUpdateGapTrainer = viewModel::updateGapTrainer,
             onStopGapTrainer = viewModel::stopGapTrainer,
             onDismiss = { showTempoSheet = false },
         )
     }
+
+    if (showPracticeSessionSheet) {
+        practiceSessionState.session?.let { session ->
+            PracticeSessionSheet(
+                session = session,
+                isRecovered = practiceSessionState.isRecovered,
+                onPrevious = viewModel::previousPracticeStep,
+                onTogglePlayback = viewModel::togglePracticeSessionPlayback,
+                onNext = viewModel::nextPracticeStep,
+                onRestart = viewModel::restartPracticeStep,
+                onFinish = viewModel::finishPracticeSession,
+                onDismiss = { showPracticeSessionSheet = false },
+            )
+        }
+    }
+
+    pendingStructuredAction?.let { action ->
+        AppDialog(
+            title = stringResource(Res.string.structured_practice_replace_title),
+            text = stringResource(Res.string.structured_practice_replace_body),
+            confirmLabel = stringResource(Res.string.structured_practice_replace_confirm),
+            dismissLabel = stringResource(Res.string.cancel),
+            onConfirm = {
+                pendingStructuredAction = null
+                action()
+            },
+            onDismiss = { pendingStructuredAction = null },
+        )
+    }
+
+    if (showPresetSaveChoice) {
+        val active = activePresetState.active
+        val draft = presetEditorDraft
+        if (active != null && draft != null) {
+            PresetSaveChoiceDialog(
+                presetName = active.name,
+                message = stringResource(Res.string.choose_save_action),
+                onUpdate = {
+                    presetsViewModel.update(active.id, draft.copy(name = active.name))
+                    showPresetSaveChoice = false
+                    presetEditorDraft = null
+                },
+                onSaveAsNew = {
+                    showPresetSaveChoice = false
+                    presetEditorDraft = draft.copy(name = "${draft.bpm} BPM · ${draft.timeSignature.label}")
+                },
+                onDismiss = {
+                    showPresetSaveChoice = false
+                    presetEditorDraft = null
+                },
+            )
+        }
+    } else {
+        presetEditorDraft?.let { draft ->
+            PresetNameDialog(
+                title = stringResource(Res.string.create_preset),
+                initialName = draft.name,
+                summary = draft.run { "$bpm BPM · ${timeSignature.label} · ${subdivision.label}" },
+                error = null,
+                onConfirm = { name ->
+                    presetsViewModel.create(draft.copy(name = name))
+                    presetEditorDraft = null
+                },
+                onDismiss = { presetEditorDraft = null },
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimeSignatureSelector(
+    expanded: Boolean,
+    selected: TimeSignature,
+    onExpandedChange: (Boolean) -> Unit,
+    onSelect: (TimeSignature) -> Unit,
+) {
+    DropdownSelector(
+        expanded = expanded,
+        onDismiss = { onExpandedChange(false) },
+        items = TimeSignature.entries.toList(),
+        selectedItem = selected,
+        onSelect = {
+            onSelect(it)
+            onExpandedChange(false)
+        },
+        itemContent = { timeSignature, _ ->
+            Column {
+                Text(
+                    text = timeSignature.label,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                )
+                Text(
+                    text = "${timeSignature.defaultBeats.size} beats",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        anchor = {
+            PillChip(onClick = { onExpandedChange(true) }) {
+                Text(
+                    text = selected.label,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 10.sp,
+                        maxFontSize = 16.sp,
+                    ),
+                )
+            }
+        },
+    )
 }

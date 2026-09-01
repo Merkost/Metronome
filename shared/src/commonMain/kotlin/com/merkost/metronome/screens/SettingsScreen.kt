@@ -21,8 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,8 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -51,6 +49,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Mail
@@ -59,6 +60,7 @@ import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Timer
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppDialog
+import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.BeatDisplayStyle
@@ -207,16 +209,12 @@ fun SettingsScreen(upPress: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Slider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp),
+                AppSlider(
+                    modifier = Modifier.fillMaxWidth(),
                     value = clickVolume,
                     onValueChange = viewModel::onClickVolumeChanged,
                     valueRange = 0f..1f,
-                    colors = SliderDefaults.colors(
-                        inactiveTickColor = Color.Transparent
-                    )
+                    accessibilityLabel = "Click volume, ${(clickVolume * 100).roundToInt()} percent",
                 )
             }
 
@@ -231,17 +229,14 @@ fun SettingsScreen(upPress: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Slider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp),
+                AppSlider(
+                    modifier = Modifier.fillMaxWidth(),
                     value = currentStereo.toFloat(),
                     onValueChange = viewModel::onStereoChanged,
                     valueRange = -5f..5f,
                     steps = 9,
-                    colors = SliderDefaults.colors(
-                        inactiveTickColor = Color.Transparent
-                    )
+                    showActiveTicks = true,
+                    accessibilityLabel = "Stereo panning, $stereoLabel",
                 )
             }
 
@@ -256,6 +251,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                     if (platformActions.isDynamicColorSupported()) {
                         item {
                             ColorSecondaryButton(
+                                label = "System color scheme",
                                 content = {
                                     Box(
                                         modifier = Modifier
@@ -266,7 +262,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                                     ) {
                                         Icon(
                                             Lucide.Smartphone,
-                                            Lucide.Smartphone.name
+                                            contentDescription = null
                                         )
                                     }
                                 },
@@ -277,6 +273,7 @@ fun SettingsScreen(upPress: () -> Unit) {
 
                     items(AppColorScheme.defaultValues()) { colorScheme ->
                         ColorSecondaryButton(
+                            label = colorScheme.displayName,
                             content = {
                                 Box(
                                     modifier = Modifier
@@ -310,10 +307,11 @@ fun SettingsScreen(upPress: () -> Unit) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Lucide.Timer, Lucide.Timer.name)
+                        Icon(Lucide.Timer, contentDescription = null)
                         Text(
                             text = buildString {
                                 append(TimestampMillisecondsFormatter.formatHuman(totalTime))
@@ -321,7 +319,6 @@ fun SettingsScreen(upPress: () -> Unit) {
                                     append(" · $practiceStreak-day streak")
                                 }
                             },
-                            maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
                         )
                     }
@@ -395,7 +392,7 @@ fun SettingsBigButton(
     icon: ImageVector? = null,
     onClick: () -> Unit,
 ) {
-    Button(
+    MySecondaryButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         shape = CircleShape
@@ -412,13 +409,19 @@ fun SettingsBigButton(
                     modifier = Modifier.size(18.dp)
                 )
             }
-            Text(text = text, fontWeight = FontWeight.Bold)
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(10.sp, 16.sp),
+            )
         }
     }
 }
 
 @Composable
 fun ColorSecondaryButton(
+    label: String,
     content: @Composable () -> Unit,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -426,6 +429,10 @@ fun ColorSecondaryButton(
     val borderDp by animateDpAsState(targetValue = if (isSelected) 6.dp else 1.dp)
 
     MySecondaryButton(
+        modifier = Modifier.semantics {
+            contentDescription = label
+            selected = isSelected
+        },
         onClick = onClick,
         border = BorderStroke(borderDp, MaterialTheme.colorScheme.primary)
     ) {
@@ -459,7 +466,9 @@ fun SettingsSwitch(
     subtitle: String? = null,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {},
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -479,3 +488,13 @@ fun SettingsSwitch(
         PlatformSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
+
+private val AppColorScheme.displayName: String
+    get() = when (this) {
+        AppColorScheme.MATERIAL3 -> "System"
+        AppColorScheme.BLACKNWHITE -> "Monochrome"
+        AppColorScheme.MELROSE -> "Melrose"
+        AppColorScheme.PERIWINKLE -> "Periwinkle"
+        AppColorScheme.MINT_GREEN -> "Mint green"
+        AppColorScheme.PINK_LACE -> "Pink lace"
+    }

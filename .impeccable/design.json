@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T13:15:33Z",
+  "title": "Design System: Metronome",
+  "extensions": {
+    "colorMeta": {
+      "instrument-ink": {
+        "role": "primary",
+        "displayName": "Instrument Ink",
+        "canonical": "#000000",
+        "tonalRamp": ["#000000", "#0A0A0A", "#121212", "#1A1A1A", "#2B2B2B", "#E6E6E6", "#F2F2F2", "#FFFFFF"]
+      },
+      "clean-paper": {
+        "role": "neutral",
+        "displayName": "Clean Paper",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#000000", "#0A0A0A", "#121212", "#1A1A1A", "#2B2B2B", "#E6E6E6", "#F2F2F2", "#FFFFFF"]
+      },
+      "surface-light": {
+        "role": "neutral",
+        "displayName": "Soft Light Surface",
+        "canonical": "#F2F2F2",
+        "tonalRamp": ["#000000", "#0A0A0A", "#121212", "#1A1A1A", "#2B2B2B", "#E6E6E6", "#F2F2F2", "#FFFFFF"]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Deep Dark Surface",
+        "canonical": "#1A1A1A",
+        "tonalRamp": ["#000000", "#0A0A0A", "#121212", "#1A1A1A", "#2B2B2B", "#E6E6E6", "#F2F2F2", "#FFFFFF"]
+      },
+      "melrose-violet": {
+        "role": "secondary",
+        "displayName": "Melrose Violet",
+        "canonical": "#B89FFF",
+        "tonalRamp": ["color-mix(in oklch, #B89FFF 30%, black)", "color-mix(in oklch, #B89FFF 50%, black)", "color-mix(in oklch, #B89FFF 70%, black)", "#B89FFF", "color-mix(in oklch, #B89FFF 80%, white)", "color-mix(in oklch, #B89FFF 60%, white)", "color-mix(in oklch, #B89FFF 40%, white)", "color-mix(in oklch, #B89FFF 20%, white)"]
+      },
+      "melrose-violet-deep": {
+        "role": "secondary",
+        "displayName": "Deep Melrose Violet",
+        "canonical": "#6F55C8",
+        "tonalRamp": ["color-mix(in oklch, #6F55C8 30%, black)", "color-mix(in oklch, #6F55C8 50%, black)", "color-mix(in oklch, #6F55C8 70%, black)", "#6F55C8", "color-mix(in oklch, #6F55C8 80%, white)", "color-mix(in oklch, #6F55C8 60%, white)", "color-mix(in oklch, #6F55C8 40%, white)", "color-mix(in oklch, #6F55C8 20%, white)"]
+      },
+      "periwinkle-blue": {
+        "role": "secondary",
+        "displayName": "Periwinkle Blue",
+        "canonical": "#C9D5FE",
+        "tonalRamp": ["color-mix(in oklch, #C9D5FE 30%, black)", "color-mix(in oklch, #C9D5FE 50%, black)", "color-mix(in oklch, #C9D5FE 70%, black)", "#C9D5FE", "color-mix(in oklch, #C9D5FE 80%, white)", "color-mix(in oklch, #C9D5FE 60%, white)", "color-mix(in oklch, #C9D5FE 40%, white)", "color-mix(in oklch, #C9D5FE 20%, white)"]
+      },
+      "periwinkle-blue-deep": {
+        "role": "secondary",
+        "displayName": "Deep Periwinkle Blue",
+        "canonical": "#5B6ABF",
+        "tonalRamp": ["color-mix(in oklch, #5B6ABF 30%, black)", "color-mix(in oklch, #5B6ABF 50%, black)", "color-mix(in oklch, #5B6ABF 70%, black)", "#5B6ABF", "color-mix(in oklch, #5B6ABF 80%, white)", "color-mix(in oklch, #5B6ABF 60%, white)", "color-mix(in oklch, #5B6ABF 40%, white)", "color-mix(in oklch, #5B6ABF 20%, white)"]
+      },
+      "mint-pulse": {
+        "role": "secondary",
+        "displayName": "Mint Pulse",
+        "canonical": "#9EFFAE",
+        "tonalRamp": ["color-mix(in oklch, #9EFFAE 30%, black)", "color-mix(in oklch, #9EFFAE 50%, black)", "color-mix(in oklch, #9EFFAE 70%, black)", "#9EFFAE", "color-mix(in oklch, #9EFFAE 80%, white)", "color-mix(in oklch, #9EFFAE 60%, white)", "color-mix(in oklch, #9EFFAE 40%, white)", "color-mix(in oklch, #9EFFAE 20%, white)"]
+      },
+      "mint-pulse-deep": {
+        "role": "secondary",
+        "displayName": "Deep Mint Pulse",
+        "canonical": "#1A8A2E",
+        "tonalRamp": ["color-mix(in oklch, #1A8A2E 30%, black)", "color-mix(in oklch, #1A8A2E 50%, black)", "color-mix(in oklch, #1A8A2E 70%, black)", "#1A8A2E", "color-mix(in oklch, #1A8A2E 80%, white)", "color-mix(in oklch, #1A8A2E 60%, white)", "color-mix(in oklch, #1A8A2E 40%, white)", "color-mix(in oklch, #1A8A2E 20%, white)"]
+      },
+      "pink-lace": {
+        "role": "secondary",
+        "displayName": "Pink Lace",
+        "canonical": "#FFCAEA",
+        "tonalRamp": ["color-mix(in oklch, #FFCAEA 30%, black)", "color-mix(in oklch, #FFCAEA 50%, black)", "color-mix(in oklch, #FFCAEA 70%, black)", "#FFCAEA", "color-mix(in oklch, #FFCAEA 80%, white)", "color-mix(in oklch, #FFCAEA 60%, white)", "color-mix(in oklch, #FFCAEA 40%, white)", "color-mix(in oklch, #FFCAEA 20%, white)"]
+      },
+      "pink-lace-deep": {
+        "role": "secondary",
+        "displayName": "Deep Pink Lace",
+        "canonical": "#C4547E",
+        "tonalRamp": ["color-mix(in oklch, #C4547E 30%, black)", "color-mix(in oklch, #C4547E 50%, black)", "color-mix(in oklch, #C4547E 70%, black)", "#C4547E", "color-mix(in oklch, #C4547E 80%, white)", "color-mix(in oklch, #C4547E 60%, white)", "color-mix(in oklch, #C4547E 40%, white)", "color-mix(in oklch, #C4547E 20%, white)"]
+      }
+    },
+    "typographyMeta": {
+      "tempo-display": { "displayName": "Tempo Display", "purpose": "The singular BPM readout on the main instrument." },
+      "data-display": { "displayName": "Data Display", "purpose": "Timer values and active trainer BPM." },
+      "title-large": { "displayName": "Title Large", "purpose": "Sheet titles and focused configuration headings." },
+      "body-large": { "displayName": "Body Large", "purpose": "Primary labels and settings headings." },
+      "body-medium": { "displayName": "Body Medium", "purpose": "Supporting explanations and section summaries." },
+      "label-large": { "displayName": "Label Large", "purpose": "Chips, status controls and compact actions." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "interactive", "value": "spring(StiffnessMedium, DampingRatioMediumBouncy)", "purpose": "Default direct-manipulation and press feedback." },
+      { "name": "bouncy", "value": "spring(stiffness=600, dampingRatio=0.8)", "purpose": "Chip colour, size and expandable-content transitions." },
+      { "name": "gentle", "value": "spring(StiffnessLow, DampingRatioNoBouncy)", "purpose": "Progress that should settle without overshoot." },
+      { "name": "snappy", "value": "spring(stiffness=1000, dampingRatio=0.3)", "purpose": "The first half of brief numeric pulse feedback." },
+      { "name": "ambient-playback", "value": "2000ms FastOutSlowIn, reverse repeat", "purpose": "Low-alpha play-button glow while playback is active." }
+    ],
+    "breakpoints": [
+      { "name": "compact-content-max", "value": "480px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Play Button",
+      "kind": "button",
+      "refersTo": "play-button",
+      "description": "The singular primary playback control, translated from the 85dp Compose card.",
+      "html": "<button class=\"ds-play\" aria-label=\"Start metronome\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8 5v14l11-7z\"/></svg></button>",
+      "css": ".ds-play{display:grid;place-items:center;width:85px;height:85px;border:0;border-radius:9999px;background:#000;color:#fff;transition:transform 180ms cubic-bezier(.2,.8,.2,1),border-radius 250ms}.ds-play svg{width:50px;height:50px;fill:currentColor}.ds-play:hover{transform:scale(1.02)}.ds-play:active{transform:scale(.92)}.ds-play:focus-visible{outline:3px solid #5B6ABF;outline-offset:3px}"
+    },
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "primary-action",
+      "description": "A rare full-width action for starting or stopping a focused practice mode.",
+      "html": "<button class=\"ds-primary\">Start timer &amp; play</button>",
+      "css": ".ds-primary{min-height:52px;padding:0 24px;border:0;border-radius:9999px;background:#000;color:#fff;font:700 16px/24px system-ui,sans-serif;transition:transform 180ms cubic-bezier(.2,.8,.2,1)}.ds-primary:hover{transform:scale(1.01)}.ds-primary:active{transform:scale(.96)}.ds-primary:focus-visible{outline:3px solid #5B6ABF;outline-offset:3px}"
+    },
+    {
+      "name": "Secondary Action",
+      "kind": "button",
+      "refersTo": "secondary-action",
+      "description": "A restrained outlined utility action used for support, rating and non-primary choices.",
+      "html": "<button class=\"ds-secondary\">Contact support</button>",
+      "css": ".ds-secondary{min-height:48px;padding:0 20px;border:1px solid rgb(0 0 0/.5);border-radius:9999px;background:#fff;color:#000;font:700 16px/24px system-ui,sans-serif;transition:transform 180ms cubic-bezier(.2,.8,.2,1),background 180ms}.ds-secondary:hover{background:#F2F2F2}.ds-secondary:active{transform:scale(.96)}.ds-secondary:focus-visible{outline:3px solid #5B6ABF;outline-offset:3px}"
+    },
+    {
+      "name": "Selection Chip",
+      "kind": "chip",
+      "refersTo": "chip-selected",
+      "description": "The selected state of AppChip; the unselected state reverses to a quiet tonal container.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">15</button>",
+      "css": ".ds-chip{min-height:48px;padding:0 16px;border:0;border-radius:9999px;background:#000;color:#fff;font:700 14px/20px system-ui,sans-serif;letter-spacing:.1px;transition:transform 180ms cubic-bezier(.2,.8,.2,1),background 180ms}.ds-chip:hover{transform:scale(1.02)}.ds-chip:active{transform:scale(.94)}.ds-chip:focus-visible{outline:3px solid #5B6ABF;outline-offset:3px}.ds-chip[aria-pressed=\"false\"]{background:#F2F2F2;color:#000;font-weight:500}"
+    },
+    {
+      "name": "App Slider",
+      "kind": "input",
+      "refersTo": "slider",
+      "description": "The sole numeric slider, with a 48dp interaction envelope and minimal ticks.",
+      "html": "<label class=\"ds-slider-wrap\"><span>Tempo</span><input class=\"ds-slider\" type=\"range\" min=\"20\" max=\"240\" value=\"80\"></label>",
+      "css": ".ds-slider-wrap{display:grid;gap:8px;color:#000;font:500 14px/20px system-ui,sans-serif}.ds-slider{width:100%;min-height:48px;accent-color:#000}.ds-slider:focus-visible{outline:3px solid #5B6ABF;outline-offset:2px;border-radius:9999px}"
+    },
+    {
+      "name": "Beat Indicator",
+      "kind": "custom",
+      "refersTo": "beat-indicator",
+      "description": "A 40dp visible beat nested inside a 48dp interaction target, with accented, normal and mute states.",
+      "html": "<button class=\"ds-beat\" aria-label=\"Beat 1: accented\"><span></span></button>",
+      "css": ".ds-beat{display:grid;place-items:center;width:48px;height:48px;padding:0;border:0;border-radius:9999px;background:transparent}.ds-beat span{box-sizing:border-box;width:40px;height:40px;border:3px solid #000;border-radius:9999px;background:#000;box-shadow:0 0 0 5px #fff inset;transition:transform 180ms cubic-bezier(.2,.8,.2,1)}.ds-beat:hover span{transform:scale(1.04)}.ds-beat:active span{transform:scale(.92)}.ds-beat:focus-visible{outline:3px solid #5B6ABF;outline-offset:2px}"
+    },
+    {
+      "name": "Status Strip",
+      "kind": "custom",
+      "refersTo": "status-strip",
+      "description": "A quiet 48dp active-mode strip with low-alpha accent progress.",
+      "html": "<button class=\"ds-status\"><span class=\"ds-status-progress\"></span><strong>Tempo Trainer</strong><small>4 / 12 bars</small></button>",
+      "css": ".ds-status{position:relative;isolation:isolate;display:flex;align-items:center;gap:8px;width:100%;height:48px;padding:0 16px;border:0;border-radius:9999px;overflow:hidden;background:rgb(111 85 200/.10);color:#6F55C8;font:500 14px/20px system-ui,sans-serif;text-align:left;transition:transform 180ms cubic-bezier(.2,.8,.2,1)}.ds-status-progress{position:absolute;z-index:-1;inset:0 55% 0 0;background:rgb(111 85 200/.16)}.ds-status strong{font-weight:700}.ds-status small{margin-left:auto;color:#444}.ds-status:active{transform:scale(.97)}.ds-status:focus-visible{outline:3px solid #5B6ABF;outline-offset:3px}"
+    },
+    {
+      "name": "Bottom Sheet",
+      "kind": "card",
+      "refersTo": "bottom-sheet",
+      "description": "A focused, scrollable modal surface capped at the shared 480dp content width.",
+      "html": "<section class=\"ds-sheet\"><span class=\"ds-sheet-handle\"></span><h2>Practice Timer</h2><p>Counts down while the metronome plays.</p></section>",
+      "css": ".ds-sheet{box-sizing:border-box;width:min(100%,480px);padding:12px 18px 32px;border-radius:28px 28px 0 0;background:#fff;color:#000;font:400 16px/24px system-ui,sans-serif}.ds-sheet-handle{display:block;width:36px;height:4px;margin:0 auto 24px;border-radius:9999px;background:#444}.ds-sheet h2{margin:0 0 16px;font:700 22px/28px system-ui,sans-serif}.ds-sheet p{margin:0;color:#444}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Precision Instrument",
+    "overview": "Metronome should feel like a beautifully machined studio instrument: immediate, calm and exact. The interface is predominantly monochrome, with a single dominant tempo readout, tactile circular controls and quiet supporting surfaces. Its visual confidence comes from proportion, spacing and state clarity rather than decoration.\n\nThe basic pulse must remain obvious to a first-time musician while serious practice tools unfold progressively for experienced users. Motion is brief and physical, colour is a signal, and platform-specific behavior appears only where native conventions or capabilities make the product better. The system rejects flashy effects, gamified celebration, dashboard density and ornamental complexity.",
+    "keyCharacteristics": [
+      "Instrument-like hierarchy led by BPM, beat state and playback.",
+      "Restrained monochrome foundation with optional focused accent schemes.",
+      "Circular primary controls, pill-shaped choices and softly rounded sheets.",
+      "Spacious single-column composition capped at a compact content width.",
+      "Subtle spring feedback that communicates state without demanding attention.",
+      "Shared Android and iOS identity with native behavior where it matters."
+    ],
+    "rules": [
+      { "name": "The Signal, Not Decoration Rule", "body": "Accent colour marks selection, active playback, progress or a chosen theme; it does not fill screens or create visual novelty.", "section": "colors" },
+      { "name": "The Semantic Reversal Rule", "body": "Light and dark appearances reverse semantic foreground and background roles while preserving hierarchy and contrast.", "section": "colors" },
+      { "name": "The Tempo Owns the Room Rule", "body": "Only the current BPM receives the largest type on the main surface; secondary values must not compete with it.", "section": "typography" },
+      { "name": "The Native Voice Rule", "body": "Use Material 3 typography with the platform system font and dynamic text scaling. Do not introduce custom fonts or uppercase display styling.", "section": "typography" },
+      { "name": "The Flat Instrument Rule", "body": "Controls rest on the surface without decorative shadow; depth appears only when containment, modality or interaction state requires it.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep BPM, beat state and playback visually dominant.",
+      "Do reuse `PlayButton`, `MySecondaryButton`, `MyIconButton`, `AppChip`, `PillChip`, `AppSlider`, `ValueStepper`, `StatusStrip` and `AppBottomSheet` before creating another control.",
+      "Do use `MaterialTheme.colorScheme` roles so every colour scheme works in light and dark appearance.",
+      "Do preserve 48dp minimum interaction targets even when the visible indicator is smaller.",
+      "Do use the shared spring vocabulary for interactive feedback and reserve infinite motion for ambient active state.",
+      "Do keep serious practice tools progressively disclosed and available offline."
+    ],
+    "donts": [
+      "Don't make Tempo Trainer, Gap Trainer or practice statistics compete with the core metronome on the main surface.",
+      "Don't add gradients, glass effects, ornamental shadows, decorative cards or multiple competing accent colours.",
+      "Don't use hard-coded UI colours, Material icons or custom fonts.",
+      "Don't introduce playful celebration, gamified rewards or persistent motion into a focused practice session.",
+      "Don't shrink, truncate or overlap essential controls to accommodate text scaling; reflow or use bounded auto-sizing instead.",
+      "Don't stretch the compact instrument composition across tablet width without evidence that a wider practice layout is needed."
+    ]
+  }
+}

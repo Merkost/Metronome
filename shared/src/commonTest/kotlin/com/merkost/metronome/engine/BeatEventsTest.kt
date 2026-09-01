@@ -7,6 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class BeatEventsTest {
 
@@ -79,5 +80,31 @@ class BeatEventsTest {
         val subClick = list[1]
         assertEquals(0.8f * sub * 0.5f, subClick.leftVolume, 1e-6f)
         assertEquals(0.4f * sub * 0.5f, subClick.rightVolume, 1e-6f)
+    }
+
+    @Test
+    fun everySubdivisionProducesStrictlyOrderedOffsetsWithinOneBeat() {
+        Subdivision.entries.forEach { subdivision ->
+            listOf(200.milliseconds, 3.seconds).forEach { interval ->
+                val events = events(subdivision = subdivision, interval = interval)
+                val offsets = events.map { it.offset }
+
+                assertEquals(subdivision.clicksPerBeat, events.size)
+                assertEquals(offsets.sorted(), offsets)
+                assertEquals(offsets.distinct(), offsets)
+                assertTrue(offsets.all { it >= Duration.ZERO && it < interval })
+            }
+        }
+    }
+
+    @Test
+    fun mutedGapProducesNoAudioEventsAtTheFastestSupportedBeat() {
+        assertTrue(
+            events(
+                subdivision = Subdivision.SIXTEENTH,
+                muted = true,
+                interval = 200.milliseconds,
+            ).isEmpty(),
+        )
     }
 }

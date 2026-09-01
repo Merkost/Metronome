@@ -102,7 +102,7 @@ fun StatusStrip(
             )
             if (onStop != null) {
                 Spacer(Modifier.width(spacingSmall / 2))
-                IconButton(onClick = onStop, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = onStop) {
                     Icon(
                         imageVector = Lucide.X,
                         contentDescription = "Stop",

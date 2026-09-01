@@ -6,7 +6,10 @@ import ComposeApp
 struct iOSApp: App {
     init() {
         FirebaseApp.configure()
-        InitKoinKt.doInitKoin(liveActivityController: MetronomeLiveActivityManager())
+        InitKoinKt.doInitKoin(
+            liveActivityController: MetronomeLiveActivityManager(),
+            inAppReviewRequester: IosInAppReviewRequester()
+        )
     }
 
     var body: some Scene {

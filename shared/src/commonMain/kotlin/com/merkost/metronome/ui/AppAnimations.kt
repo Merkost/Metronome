@@ -18,11 +18,14 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,17 +37,24 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object AppAnimations {
+    fun <T> bouncy(): SpringSpec<T> = SpringSpec(
+        stiffness = 600f,
+        dampingRatio = 0.8f
+    )
+
     val Interactive = SpringSpec<Float>(
         stiffness = Spring.StiffnessMedium,
         dampingRatio = Spring.DampingRatioMediumBouncy
     )
 
-    val Bouncy = SpringSpec<Float>(
-        stiffness = 600f,
-        dampingRatio = 0.8f
-    )
+    val Bouncy = bouncy<Float>()
 
     val Gentle = SpringSpec<Float>(
         stiffness = Spring.StiffnessLow,
@@ -134,25 +144,42 @@ fun AnimatedNumberText(
     style: TextStyle,
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
+    autoSize: TextAutoSize? = null,
 ) {
-    Row(
+    AnimatedContent(
+        targetState = value,
+        transitionSpec = { AppAnimations.slideDigitTransform(targetState >= initialState) },
+        contentKey = { it },
+        label = "number",
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        value.toString().indices.forEach { index ->
-            AnimatedContent(
-                targetState = value,
-                transitionSpec = { AppAnimations.slideDigitTransform(targetState >= initialState) },
-                contentKey = { it.toString().getOrNull(index) ?: ' ' },
-                label = "digit$index"
-            ) { target ->
-                Text(
-                    text = target.toString().getOrNull(index)?.toString().orEmpty(),
-                    style = style,
-                    color = color,
-                )
-            }
+        contentAlignment = Alignment.Center,
+    ) { target ->
+        Text(
+            text = target.toString(),
+            style = style,
+            color = color,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            autoSize = autoSize,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AnimatedNumberTextPreview() {
+    MaterialTheme {
+        Box(Modifier.width(220.dp)) {
+            AnimatedNumberText(
+                value = 120,
+                style = MaterialTheme.typography.displayLarge.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 62.sp,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                autoSize = TextAutoSize.StepBased(30.sp, 62.sp),
+            )
         }
     }
 }

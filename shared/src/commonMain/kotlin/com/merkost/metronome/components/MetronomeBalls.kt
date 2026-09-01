@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -28,6 +29,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.model.Beat
@@ -35,6 +40,7 @@ import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.BallSize
 import com.merkost.metronome.ui.CircleSize
 import com.merkost.metronome.ui.CircleWeight
+import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.pressScale
 import kotlin.math.ceil
 
@@ -76,6 +82,7 @@ fun MetronomeBalls(
             beats.forEachIndexed { index, beat ->
                 Box(Modifier.layoutId("ball")) {
                     Ball(
+                        index = index,
                         beat = beat,
                         isActive = isPlaying && index == selectedIndex,
                         ballSize = ballSize,
@@ -86,7 +93,7 @@ fun MetronomeBalls(
             Spacer(
                 modifier = Modifier
                     .layoutId("indicator")
-                    .size(indicatorSize)
+                    .size(maxOf(indicatorSize, minimumTouchTargetSize))
                     .graphicsLayer { alpha = indicatorAlpha }
                     .border(CircleWeight, primaryColor, CircleShape)
             )
@@ -164,6 +171,7 @@ fun MetronomeBalls(
 
 @Composable
 private fun Ball(
+    index: Int,
     beat: Beat,
     isActive: Boolean = false,
     ballSize: Dp = BallSize,
@@ -200,42 +208,58 @@ private fun Ball(
     )
 
     val interactionSource = remember { MutableInteractionSource() }
+    val beatDescription = when (beat) {
+        Beat.HIGH -> "accented"
+        Beat.LOW -> "normal"
+        Beat.MUTE -> "muted"
+    }
 
     Box(
         modifier = Modifier
-            .size(ballSize)
-            .graphicsLayer {
-                scaleX = beatScale
-                scaleY = beatScale
-            }
+            .size(maxOf(ballSize, minimumTouchTargetSize))
             .pressScale(interactionSource)
-            .drawBehind {
-                if (glowAlpha > 0f) {
-                    val center = Offset(size.width / 2f, size.height / 2f)
-                    val radius = size.maxDimension / 2f * 1.15f
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                primaryColor.copy(alpha = glowAlpha),
-                                primaryColor.copy(alpha = 0f)
-                            ),
-                            center = center,
-                            radius = radius
-                        ),
-                        radius = radius,
-                        center = center
-                    )
-                }
-            }
-            .padding(2.dp)
             .clip(CircleShape)
-            .background(color)
-            .border(1.5.dp, outlineColor.copy(alpha = outlineAlpha * 0.5f), CircleShape)
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple(bounded = true)
             ) { onClick() }
-    )
+            .semantics {
+                contentDescription = "Beat ${index + 1}: $beatDescription"
+                role = Role.Button
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(ballSize)
+                .graphicsLayer {
+                    scaleX = beatScale
+                    scaleY = beatScale
+                }
+                .drawBehind {
+                    if (glowAlpha > 0f) {
+                        val center = Offset(size.width / 2f, size.height / 2f)
+                        val radius = size.maxDimension / 2f * 1.15f
+                        drawCircle(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    primaryColor.copy(alpha = glowAlpha),
+                                    primaryColor.copy(alpha = 0f)
+                                ),
+                                center = center,
+                                radius = radius
+                            ),
+                            radius = radius,
+                            center = center
+                        )
+                    }
+                }
+                .padding(2.dp)
+                .clip(CircleShape)
+                .background(color)
+                .border(1.5.dp, outlineColor.copy(alpha = outlineAlpha * 0.5f), CircleShape)
+        )
+    }
 }
 
 @Composable

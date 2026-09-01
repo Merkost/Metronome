@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Minus
 import com.composables.icons.lucide.Plus
@@ -66,7 +68,8 @@ fun ValueStepper(
             AnimatedNumberText(
                 value = value,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-                modifier = Modifier.widthIn(min = 52.dp),
+                modifier = Modifier.width(60.dp),
+                autoSize = TextAutoSize.StepBased(12.sp, 24.sp),
             )
             RepeatingStepButton(
                 icon = Lucide.Plus,
@@ -126,7 +129,7 @@ private fun RepeatingStepButton(
         interactionSource = interactionSource
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Icon(icon, icon.name, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = if (icon == Lucide.Minus) "Decrease" else "Increase", modifier = Modifier.size(20.dp))
         }
     }
 }
