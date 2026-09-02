@@ -115,7 +115,7 @@ fun PracticePresetRow(
         targetValue = if (isActive) {
             MaterialTheme.colorScheme.primaryContainer
         } else {
-            MaterialTheme.colorScheme.surface
+            MaterialTheme.colorScheme.surfaceContainerLow
         },
         animationSpec = AppAnimations.standard(),
         label = "presetRowSurface",
@@ -134,7 +134,7 @@ fun PracticePresetRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = spacingSmall, vertical = spacingSmall),
+                .padding(spacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(

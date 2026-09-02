@@ -3,6 +3,10 @@ package com.merkost.metronome.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -61,7 +66,9 @@ import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.PressedScaleSubtle
+import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.PressedScaleSurface
+import com.merkost.metronome.ui.setPlayButtonSize
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -138,6 +145,63 @@ fun PracticeAgainRow(
 }
 
 @Composable
+private fun StepDots(
+    count: Int,
+    modifier: Modifier = Modifier,
+    activeIndex: Int = -1,
+    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(count.coerceAtMost(MAX_VISIBLE_STEP_DOTS)) { index ->
+            val active = index == activeIndex
+            Box(
+                modifier = Modifier
+                    .size(if (active) 8.dp else 6.dp)
+                    .clip(CircleShape)
+                    .background(tint.copy(alpha = if (active) 1f else 0.32f))
+            )
+        }
+        if (count > MAX_VISIBLE_STEP_DOTS) {
+            Text(
+                text = "+${count - MAX_VISIBLE_STEP_DOTS}",
+                style = MaterialTheme.typography.labelSmall,
+                color = tint.copy(alpha = 0.7f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun SetPlayButton(
+    onClick: () -> Unit,
+    description: String,
+    modifier: Modifier = Modifier,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Surface(
+        onClick = onClick,
+        interactionSource = interactionSource,
+        modifier = modifier
+            .size(setPlayButtonSize)
+            .pressScale(interactionSource, PressedScaleControl)
+            .semantics { contentDescription = description },
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(Lucide.Play, contentDescription = null, modifier = Modifier.size(20.dp))
+        }
+    }
+}
+
+private const val MAX_VISIBLE_STEP_DOTS = 6
+
+@Composable
 fun PracticeSetRow(
     practiceSet: PracticeSet,
     missingPresetCount: Int,
@@ -159,7 +223,7 @@ fun PracticeSetRow(
         targetValue = if (isActive) {
             MaterialTheme.colorScheme.primaryContainer
         } else {
-            MaterialTheme.colorScheme.surface
+            MaterialTheme.colorScheme.surfaceContainerLow
         },
         animationSpec = AppAnimations.standard(),
         label = "practiceSetRowSurface",
@@ -177,7 +241,7 @@ fun PracticeSetRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacingSmall),
+                .padding(spacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
@@ -199,24 +263,40 @@ fun PracticeSetRow(
                 Text(
                     text = practiceSet.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
-                val detail = when {
-                    missingPresetCount > 0 -> stringResource(Res.string.practice_step_missing)
-                    isActive -> stringResource(Res.string.practice_set_active)
-                    else -> stringResource(Res.string.practice_set_step_count, practiceSet.steps.size)
+                Spacer(Modifier.height(spacingSmall / 2))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+                ) {
+                    StepDots(
+                        count = practiceSet.steps.size,
+                        tint = if (isActive) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    )
+                    val detail = when {
+                        missingPresetCount > 0 -> stringResource(Res.string.practice_step_missing)
+                        isActive -> stringResource(Res.string.practice_set_active)
+                        else -> stringResource(Res.string.practice_set_step_count, practiceSet.steps.size)
+                    }
+                    Text(
+                        text = detail,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (missingPresetCount > 0) {
+                            MaterialTheme.colorScheme.error
+                        } else if (isActive) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    )
                 }
-                Text(
-                    text = detail,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (missingPresetCount > 0) {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                )
             }
             AnimatedContent(
                 targetState = isReordering,
@@ -239,13 +319,13 @@ fun PracticeSetRow(
                         )
                     } else {
                         if (missingPresetCount == 0) {
-                            SetIconButton(
-                                icon = Lucide.Play,
+                            SetPlayButton(
+                                onClick = if (isActive) onResume else onStart,
                                 description = stringResource(
                                     if (isActive) Res.string.practice_set_resume else Res.string.practice_set_start,
                                 ),
-                                onClick = if (isActive) onResume else onStart,
                             )
+                            Spacer(Modifier.width(spacingSmall / 2))
                         }
                         Box {
                             SetIconButton(

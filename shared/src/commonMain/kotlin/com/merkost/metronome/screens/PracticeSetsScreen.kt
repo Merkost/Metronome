@@ -13,6 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,6 +66,8 @@ import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
+import com.merkost.metronome.ui.emptyStateBadgeSize
+import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.viewModels.PracticeSetEditorState
 import com.merkost.metronome.viewModels.PracticeSetUiEvent
@@ -565,35 +574,60 @@ private fun PracticeSetEditor(
 @Composable
 private fun PracticeSetsEmptyState(onCreate: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(vertical = spacingLarge),
+        modifier = modifier.fillMaxWidth().padding(top = spacingLarge * 2, bottom = spacingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
-        Icon(Lucide.Plus, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Box(
+            modifier = Modifier
+                .size(emptyStateBadgeSize)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                repeat(3) { index ->
+                    Box(
+                        modifier = Modifier
+                            .size(if (index == 0) 12.dp else 9.dp)
+                            .clip(CircleShape)
+                            .background(
+                                MaterialTheme.colorScheme.onSurface
+                                    .copy(alpha = if (index == 0) 1f else 0.3f)
+                            )
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(spacingLarge))
         Text(
             stringResource(Res.string.practice_set_empty_title),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
         )
+        Spacer(Modifier.height(spacingSmall))
         Text(
             stringResource(Res.string.practice_set_empty_body),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
         )
-        Button(onClick = onCreate) {
-            Icon(Lucide.Plus, contentDescription = null)
-            Spacer(Modifier.width(spacingSmall))
-            Text(stringResource(Res.string.practice_set_create))
-        }
+        Spacer(Modifier.height(spacingLarge))
+        CreateSetButton(enabled = true, onClick = onCreate)
     }
 }
 
 @Composable
 private fun CreateSetButton(enabled: Boolean, onClick: () -> Unit) {
-    Button(onClick = onClick, enabled = enabled) {
-        Icon(Lucide.Plus, contentDescription = null)
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = CircleShape,
+        modifier = Modifier.height(sheetButtonHeight),
+    ) {
+        Icon(Lucide.Plus, contentDescription = null, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(spacingSmall))
-        Text(stringResource(Res.string.practice_set_create))
+        Text(stringResource(Res.string.practice_set_create), fontWeight = FontWeight.Bold)
     }
 }
 
