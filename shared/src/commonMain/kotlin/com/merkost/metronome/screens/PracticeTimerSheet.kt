@@ -31,6 +31,7 @@ import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.pulseOnAppear
 import com.merkost.metronome.ui.pulseOnChange
 import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.spacingMedium
@@ -199,19 +200,32 @@ private fun ActiveTimerContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = if (done) "Time's up" else TimestampMillisecondsFormatter.format(timerRemaining),
-                style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold),
-            )
-            Text(
-                text = when {
-                    done -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced"
-                    isPlaying -> "of ${TimestampMillisecondsFormatter.format(timerGoal)}"
-                    else -> "paused — counts down while playing"
-                },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            AnimatedContent(
+                targetState = done,
+                transitionSpec = { AppAnimations.fadeScaleTransform },
+                label = "timerHeadline",
+            ) { finished ->
+                Text(
+                    text = if (finished) "Time's up" else TimestampMillisecondsFormatter.format(timerRemaining),
+                    style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold),
+                    modifier = if (finished) Modifier.pulseOnAppear(peakScale = 1.06f) else Modifier,
+                )
+            }
+            AnimatedContent(
+                targetState = done to isPlaying,
+                transitionSpec = { AppAnimations.fadeThrough },
+                label = "timerCaption",
+            ) { (finished, playing) ->
+                Text(
+                    text = when {
+                        finished -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced"
+                        playing -> "of ${TimestampMillisecondsFormatter.format(timerGoal)}"
+                        else -> "paused — counts down while playing"
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
 
         Row(
@@ -231,7 +245,13 @@ private fun ActiveTimerContent(
             shape = CircleShape,
             modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
         ) {
-            Text(text = if (done) "Done" else "Stop timer", fontWeight = FontWeight.Bold)
+            AnimatedContent(
+                targetState = done,
+                transitionSpec = { AppAnimations.fadeThrough },
+                label = "timerStopLabel",
+            ) { finished ->
+                Text(text = if (finished) "Done" else "Stop timer", fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

@@ -18,6 +18,8 @@ import com.merkost.metronome.ui.rememberAppHaptics
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+private const val CONTINUOUS_DETENTS = 100
+
 @Composable
 fun AppSlider(
     value: Float,
@@ -29,15 +31,20 @@ fun AppSlider(
     showActiveTicks: Boolean = false,
 ) {
     val haptics = rememberAppHaptics()
-    var lastTickedValue by remember { mutableStateOf(value.roundToInt()) }
+    val span = valueRange.endInclusive - valueRange.start
+    val detentCount = if (steps > 0) steps + 1 else CONTINUOUS_DETENTS
+    val detentOf: (Float) -> Int = { raw ->
+        if (span <= 0f) 0 else ((raw - valueRange.start) / span * detentCount).roundToInt()
+    }
+    var lastDetent by remember { mutableStateOf(detentOf(value)) }
 
     Slider(
         value = value,
         onValueChange = { newValue ->
-            val rounded = newValue.roundToInt()
-            if (rounded != lastTickedValue) {
-                if (abs(rounded - lastTickedValue) == 1) haptics.tick()
-                lastTickedValue = rounded
+            val detent = detentOf(newValue)
+            if (detent != lastDetent) {
+                if (abs(detent - lastDetent) == 1) haptics.tick()
+                lastDetent = detent
             }
             onValueChange(newValue)
         },
