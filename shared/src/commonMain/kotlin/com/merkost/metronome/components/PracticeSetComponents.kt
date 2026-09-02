@@ -60,6 +60,7 @@ import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.PressedScaleSubtle
 import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -456,7 +457,7 @@ fun PracticeSessionStrip(
     ) {
         Column(
             modifier = Modifier
-                .pressableSurface(onClick = onOpen)
+                .pressableSurface(onClick = onOpen, pressedScale = PressedScaleSubtle)
                 .padding(spacingMedium),
             verticalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {

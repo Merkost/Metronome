@@ -126,12 +126,6 @@ object AppAnimations {
     val concealExit: ExitTransition =
         shrinkHorizontally(EmphasizedSize) + fadeOut(Quick)
 
-    val riseEnter: EnterTransition =
-        slideInVertically(EmphasizedOffset) { it / 6 } + fadeIn(Standard)
-
-    val sinkExit: ExitTransition =
-        slideOutVertically(QuickOffset) { it / 6 } + fadeOut(Quick)
-
     val fadeThrough: ContentTransform =
         fadeIn(Standard).togetherWith(fadeOut(Quick))
 

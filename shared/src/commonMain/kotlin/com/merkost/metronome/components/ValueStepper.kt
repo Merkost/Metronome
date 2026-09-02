@@ -31,6 +31,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Minus
 import com.composables.icons.lucide.Plus
 import com.merkost.metronome.ui.AnimatedNumberText
+import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.spacingSmall
@@ -112,7 +113,7 @@ private fun RepeatingStepButton(
     Card(
         modifier = Modifier
             .size(stepperButtonSize)
-            .pressScale(interactionSource, pressedScale = 0.9f),
+            .pressScale(interactionSource, pressedScale = PressedScaleControl),
         colors = CardDefaults.cardColors(
             containerColor = if (enabled) {
                 MaterialTheme.colorScheme.primaryContainer

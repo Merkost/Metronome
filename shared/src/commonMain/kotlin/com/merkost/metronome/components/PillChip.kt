@@ -25,6 +25,7 @@ import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.Lucide
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.pressScale
 
 @Composable
@@ -50,7 +51,7 @@ fun PillChip(
         shape = RoundedCornerShape(50),
         color = containerColor,
         modifier = modifier
-            .pressScale(interactionSource, pressedScale = 0.94f)
+            .pressScale(interactionSource, pressedScale = PressedScaleControl)
             .clip(RoundedCornerShape(50))
             .clickable(
                 interactionSource = interactionSource,

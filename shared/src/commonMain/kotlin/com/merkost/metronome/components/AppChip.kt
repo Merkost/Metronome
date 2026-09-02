@@ -27,6 +27,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.X
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.rememberAppHaptics
 
@@ -64,7 +65,7 @@ fun AppChip(
         shape = RoundedCornerShape(50),
         color = containerColor,
         modifier = modifier
-            .pressScale(interactionSource, pressedScale = 0.94f)
+            .pressScale(interactionSource, pressedScale = PressedScaleControl)
             .clip(RoundedCornerShape(50))
             .clickable(
                 interactionSource = interactionSource,

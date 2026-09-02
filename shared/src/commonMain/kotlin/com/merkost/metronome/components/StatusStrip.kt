@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.X
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.PressedScaleSurface
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -60,7 +61,7 @@ fun StatusStrip(
         modifier = modifier
             .fillMaxWidth()
             .height(statusStripHeight)
-            .pressScale(interactionSource, pressedScale = 0.97f)
+            .pressScale(interactionSource, pressedScale = PressedScaleSurface)
             .clip(RoundedCornerShape(50))
             .drawBehind {
                 drawRect(
