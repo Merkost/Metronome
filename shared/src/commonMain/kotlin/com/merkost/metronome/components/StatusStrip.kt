@@ -1,5 +1,6 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -95,11 +96,17 @@ fun StatusStrip(
                 modifier = titleModifier,
             )
             Spacer(Modifier.weight(1f))
-            Text(
-                text = caption,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            AnimatedContent(
+                targetState = caption,
+                transitionSpec = { AppAnimations.fadeThrough },
+                label = "stripCaption",
+            ) { text ->
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             if (onStop != null) {
                 Spacer(Modifier.width(spacingSmall / 2))
                 AppIconButton(onClick = onStop) {

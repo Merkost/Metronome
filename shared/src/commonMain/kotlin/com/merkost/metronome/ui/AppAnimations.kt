@@ -156,8 +156,8 @@ object AppAnimations {
 
     fun slideDigitTransform(towardsUp: Boolean): ContentTransform {
         val direction = if (towardsUp) -1 else 1
-        return (slideInVertically(EmphasizedOffset) { it * -direction / 2 } + fadeIn(Standard))
-            .togetherWith(slideOutVertically(EmphasizedOffset) { it * direction / 2 } + fadeOut(Quick))
+        return (slideInVertically(StandardOffset) { it * -direction / 2 } + fadeIn(Standard))
+            .togetherWith(slideOutVertically(QuickOffset) { it * direction / 2 } + fadeOut(Quick))
     }
 
     fun slideStepTransform(towardsNext: Boolean): ContentTransform {
@@ -221,6 +221,19 @@ fun Modifier.pressableSurface(
             role = role,
             onClick = onClick,
         )
+}
+
+fun Modifier.appearScale(
+    initialScale: Float = 0.72f,
+): Modifier = composed {
+    val scale = remember { Animatable(initialScale) }
+    LaunchedEffect(Unit) {
+        scale.animateTo(1f, AppAnimations.standard())
+    }
+    this.graphicsLayer {
+        scaleX = scale.value
+        scaleY = scale.value
+    }
 }
 
 fun Modifier.pulseOnChange(

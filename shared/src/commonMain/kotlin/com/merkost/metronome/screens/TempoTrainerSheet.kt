@@ -391,6 +391,17 @@ private fun SectionCaption(text: String) {
     )
 }
 
+@Composable
+private fun AnimatedSectionCaption(text: String) {
+    AnimatedContent(
+        targetState = text,
+        transitionSpec = { AppAnimations.fadeThrough },
+        label = "sectionCaption",
+    ) { caption ->
+        SectionCaption(caption)
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun <T> FlowRowChips(
@@ -554,19 +565,15 @@ private fun ActiveTrainerContent(
                 )
             }
             val direction = if (config.ascending) "+" else "−"
-            Text(
-                text = "${config.startBpm} → ${config.endBpm} · $direction${config.increment} every ${config.barsPerStep} bars",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            SectionCaption(
+                "${config.startBpm} → ${config.endBpm} · $direction${config.increment} every ${config.barsPerStep} bars",
             )
-            Text(
-                text = when {
+            AnimatedSectionCaption(
+                when {
                     config.isComplete(currentBpm) -> "Target reached"
                     isPlaying -> "Bar ${currentBar.coerceAtMost(config.totalBars)} of ${config.totalBars}"
                     else -> "Paused — advances while playing"
                 },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 

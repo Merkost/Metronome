@@ -102,7 +102,7 @@ private fun RepeatingStepButton(
             holdConsumed[0] = true
             var repeats = 0
             while (currentEnabled) {
-                haptics.tick()
+                if (repeats % 3 == 0) haptics.tick()
                 currentOnStep(if (repeats >= 10) 5 else 1)
                 repeats++
                 delay(90L)

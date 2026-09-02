@@ -1,6 +1,7 @@
 package com.merkost.metronome.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
@@ -367,6 +368,7 @@ fun MainScreen(
                                     MetronomeBalls(
                                         modifier = Modifier
                                             .fillMaxWidth()
+                                            .animateContentSize(AppAnimations.emphasized())
                                             .padding(horizontal = horizontalPadding),
                                         selectedIndex = selectedIndex.coerceIn(beats.indices),
                                         beats = beats,

@@ -15,6 +15,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.rememberAppHaptics
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
@@ -35,8 +36,8 @@ fun AppSlider(
         onValueChange = { newValue ->
             val rounded = newValue.roundToInt()
             if (rounded != lastTickedValue) {
+                if (abs(rounded - lastTickedValue) == 1) haptics.tick()
                 lastTickedValue = rounded
-                haptics.tick()
             }
             onValueChange(newValue)
         },
