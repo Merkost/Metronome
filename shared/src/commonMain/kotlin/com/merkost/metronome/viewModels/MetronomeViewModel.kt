@@ -32,6 +32,7 @@ import com.merkost.metronome.practiceSets.PracticeSetRepository
 import com.merkost.metronome.practiceSets.practiceAgainSet
 import com.merkost.metronome.practiceSets.recordPracticeCompletion
 import com.merkost.metronome.review.ReviewPromptCoordinator
+import com.merkost.metronome.whatsnew.WhatsNewCoordinator
 import com.merkost.metronome.review.ReviewPromptSnapshot
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -62,6 +63,7 @@ class MetronomeViewModel(
     private val practicePresetRepository: PracticePresetRepository,
     private val practiceSessionController: PracticeSessionController? = null,
     private val practiceSetRepository: PracticeSetRepository? = null,
+    private val whatsNewCoordinator: WhatsNewCoordinator? = null,
 ) : ViewModel() {
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
@@ -130,6 +132,8 @@ class MetronomeViewModel(
 
     val onboardingStep = MutableStateFlow(-1)
 
+    val whatsNewVersion = MutableStateFlow<String?>(null)
+
     init {
         viewModelScope.launch {
             val ts = appDatastore.timeSignature.first()
@@ -143,6 +147,13 @@ class MetronomeViewModel(
             appDatastore.onboardingComplete.first().let { complete ->
                 if (!complete) {
                     onboardingStep.value = 0
+                }
+            }
+        }
+        viewModelScope.launch {
+            whatsNewCoordinator?.let { coordinator ->
+                if (coordinator.shouldShow()) {
+                    whatsNewVersion.value = coordinator.currentVersion()
                 }
             }
         }
@@ -173,6 +184,11 @@ class MetronomeViewModel(
 
     fun onOnboardingBack() {
         onboardingStep.update { if (it > 0) it - 1 else it }
+    }
+
+    fun onWhatsNewDismissed() {
+        whatsNewVersion.value = null
+        viewModelScope.launch { whatsNewCoordinator?.markSeen() }
     }
 
     fun onOnboardingDismiss() {

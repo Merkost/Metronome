@@ -1,6 +1,6 @@
 # Metronome Roadmap
 
-Last updated: 2026-09-01. Work is ordered by user value and technical dependency.
+Last updated: 2026-09-03. Work is ordered by user value and technical dependency.
 
 ## Product priority
 
@@ -44,7 +44,7 @@ P0 is a continuous release gate. P1 is the current product investment. P2 builds
 
 The designs are recorded in `docs/superpowers/specs/2026-09-01-practice-presets-foundation-design.md` and `docs/superpowers/specs/2026-09-01-practice-sets-design.md`.
 
-Implementation status: implemented in the working tree on 2026-09-01. Shared tests, Android debug packaging, the iOS simulator framework, the full Xcode simulator app build, and normal plus maximum accessibility-size iPhone simulator rendering pass. Interactive Practice Set flows, live transition and predictive-gesture checks, physical-device audio, TalkBack, and VoiceOver remain verification-pending release gates.
+Implementation status: released in 1.3.0. Shared tests, Android debug packaging, the iOS simulator framework, the full Xcode simulator app build, and normal plus maximum accessibility-size iPhone simulator rendering pass. Physical-device audio, TalkBack, and VoiceOver remain verification-pending release gates.
 
 ## Now
 

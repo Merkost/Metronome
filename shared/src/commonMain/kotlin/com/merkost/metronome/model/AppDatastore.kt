@@ -29,6 +29,9 @@ interface AppDatastore {
     val onboardingComplete: Flow<Boolean>
     suspend fun saveOnboardingComplete(complete: Boolean)
 
+    val lastSeenReleaseVersion: Flow<String?>
+    suspend fun saveLastSeenReleaseVersion(version: String)
+
     val timeSignature: Flow<TimeSignature>
     suspend fun saveTimeSignature(timeSignature: TimeSignature)
 

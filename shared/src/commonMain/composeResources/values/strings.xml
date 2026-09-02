@@ -129,4 +129,17 @@
     <string name="structured_practice_replace_title">Start another practice tool?</string>
     <string name="structured_practice_replace_body">This will finish the current timer, trainer or practice set and keep the metronome ready.</string>
     <string name="structured_practice_replace_confirm">Finish and start</string>
+    <string name="whats_new_title">What&apos;s new</string>
+    <string name="whats_new_subtitle">Version %1$s</string>
+    <string name="whats_new_dismiss">Got it</string>
+    <string name="whats_new_full_notes">Full release notes</string>
+    <string name="whats_new_presets_title">Practice Presets</string>
+    <string name="whats_new_presets_body">Save a full setup — tempo, meter, subdivision, accents and count-in — and return to it in one tap.</string>
+    <string name="whats_new_sets_title">Practice Sets</string>
+    <string name="whats_new_sets_body">Line presets up into a sequence and give any step a time or bar goal. An interrupted session picks up where you left it.</string>
+    <string name="whats_new_again_title">Practice Again</string>
+    <string name="whats_new_again_body">Repeat the set you last finished, straight from the tempo sheet.</string>
+    <string name="whats_new_motion_title">A calmer feel</string>
+    <string name="whats_new_motion_body">Consistent motion throughout, smoother screen transitions, and steadier feedback under your thumb.</string>
+    <string name="settings_whats_new">What&apos;s new in this version</string>
 </resources>

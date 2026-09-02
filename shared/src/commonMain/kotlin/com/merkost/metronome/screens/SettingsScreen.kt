@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -52,7 +53,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import com.composables.icons.lucide.ArrowLeft
+import com.composables.icons.lucide.ChevronRight
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Sparkles
 import com.composables.icons.lucide.Mail
 import com.composables.icons.lucide.Smartphone
 import com.composables.icons.lucide.Star
@@ -66,7 +69,10 @@ import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.platform.PlatformActions
+import com.merkost.metronome.platform.AppVersionProvider
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.cornerRadiusMedium
 import com.merkost.metronome.ui.emojiSize
 import com.merkost.metronome.ui.horizontalPadding
@@ -77,6 +83,7 @@ import com.merkost.metronome.ui.theme.AppColorScheme
 import com.merkost.metronome.viewModels.SettingsViewModel
 import metronome.shared.generated.resources.Res
 import metronome.shared.generated.resources.settings
+import metronome.shared.generated.resources.settings_whats_new
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -106,6 +113,15 @@ fun SettingsScreen(upPress: () -> Unit) {
     var showBackgroundPlayPermission by remember { mutableStateOf(false) }
     if (showBackgroundPlayPermission) {
         BackgroundPlayPermissionCheck(true)
+    }
+
+    val appVersionProvider: AppVersionProvider = koinInject()
+    var showWhatsNew by remember { mutableStateOf(false) }
+    if (showWhatsNew) {
+        WhatsNewSheet(
+            version = appVersionProvider.getAppVersion()?.versionName.orEmpty(),
+            onDismiss = { showWhatsNew = false },
+        )
     }
 
     var showResetConfirmation by remember { mutableStateOf(false) }
@@ -152,6 +168,29 @@ fun SettingsScreen(upPress: () -> Unit) {
         ) {
 
             AppInfoCard()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(cornerRadiusMedium))
+                    .pressableSurface(onClick = { showWhatsNew = true })
+                    .heightIn(min = minimumTouchTargetSize)
+                    .padding(vertical = spacingSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+            ) {
+                Icon(Lucide.Sparkles, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Text(
+                    text = stringResource(Res.string.settings_whats_new),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    Lucide.ChevronRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 

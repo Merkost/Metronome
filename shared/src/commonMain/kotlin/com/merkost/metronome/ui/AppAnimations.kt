@@ -48,8 +48,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object AppAnimations {
@@ -259,6 +261,21 @@ fun Modifier.appearScale(
     this.graphicsLayer {
         scaleX = scale.value
         scaleY = scale.value
+    }
+}
+
+fun Modifier.appearIn(
+    delayMillis: Int = 0,
+    riseDistance: Dp = 12.dp,
+): Modifier = composed {
+    val progress = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        delay(delayMillis.toLong())
+        progress.animateTo(1f, AppAnimations.emphasized())
+    }
+    this.graphicsLayer {
+        alpha = progress.value
+        translationY = (1f - progress.value) * riseDistance.toPx()
     }
 }
 

@@ -7,6 +7,64 @@ limit. Newest first.
 
 ---
 
+## 1.3.0 — Structured practice
+_2026-09-03 · Android versionCode 8 · iOS build 1_
+
+**Highlights**
+- **Practice Presets.** Named, editable setups that capture BPM, time signature,
+  subdivision, per-beat accents and mutes, and count-in state. Favourite,
+  reorder, rename, duplicate, and apply them in one tap. Existing saved tempos
+  migrate across without loss.
+- **Practice Sets.** Order presets into a sequence and give any step an optional
+  duration or bar target. Move back and forward through steps, pause and resume,
+  and finish the set — an interrupted session is recovered when you return.
+- **Practice Again.** Repeat the set you last completed straight from the tempo
+  sheet.
+- **Active practice strip.** One restrained strip on the main screen shows the
+  running set, its progress, and previous/pause/next without leaving the
+  instrument.
+- **What's new in the app.** Release highlights appear once after an update, and
+  stay available from Settings. New installs go straight to the app.
+
+**Motion and interaction**
+- A single motion system across the app: every animation now runs on one set of
+  calm spring tokens, tuned for near-zero bounce rather than the springier mix
+  that preceded it.
+- Screen transitions are a parallax push — the incoming screen travels the full
+  width while the one behind it recedes — used for navigation and for in-screen
+  route changes alike.
+- Lists animate when practice sets and presets are added, removed, or reordered,
+  and reorder mode cross-fades in place of switching instantly.
+- Consistent press feedback on every control, and haptics on the tempo cluster,
+  steppers, chips, beat balls, and sliders, with slider detents derived from each
+  slider's own range.
+- Expanding a section in a sheet now scrolls it into view.
+
+**Fixes**
+- Playback stops predictably on iOS when a call or another app takes over audio,
+  through a dedicated audio-focus controller matching the Android behaviour.
+- A pressed practice row now scales as one card instead of shrinking its contents
+  inside a card that stayed put.
+
+**Under the hood**
+- The review prompt appears only after a qualifying practice pause, and is
+  suppressed while a timer, trainer, preset editor, or Practice Set is active.
+- 139 unit tests, up from 26 in 1.2.1, covering preset and set storage, session
+  control and recovery, review- and release-note prompt policy, navigation, and
+  the audio-focus and sound-loading state machines.
+
+**Store message**
+```
+What's new in 1.3.0
+
+• Practice Presets — save a full setup and return to it in one tap
+• Practice Sets — line up presets into a sequence with time or bar goals
+• Practice Again — repeat your last finished set instantly
+• A calmer, more consistent feel throughout, with smoother screen transitions
+```
+
+---
+
 ## 1.2.1 — Tighter timing
 _2026-06-15 · Android versionCode 7_
 

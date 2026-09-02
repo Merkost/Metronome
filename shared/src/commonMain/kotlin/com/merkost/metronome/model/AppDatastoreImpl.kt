@@ -27,6 +27,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val SELECTED_SOUND = stringPreferencesKey("SELECTED_SOUND")
         private val HAPTIC_ENABLED = booleanPreferencesKey("HAPTIC_ENABLED")
         private val ONBOARDING_COMPLETE = booleanPreferencesKey("ONBOARDING_COMPLETE")
+        private val LAST_SEEN_RELEASE_VERSION = stringPreferencesKey("LAST_SEEN_RELEASE_VERSION")
         private val TIME_SIGNATURE = stringPreferencesKey("TIME_SIGNATURE")
         private val TRAINER_START_BPM = intPreferencesKey("TRAINER_START_BPM")
         private val TRAINER_END_BPM = intPreferencesKey("TRAINER_END_BPM")
@@ -223,6 +224,17 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     override suspend fun saveOnboardingComplete(complete: Boolean) {
         dataStore.edit { preferences ->
             preferences[ONBOARDING_COMPLETE] = complete
+        }
+    }
+
+    override val lastSeenReleaseVersion: Flow<String?> = dataStore.data
+        .map { preferences ->
+            preferences[LAST_SEEN_RELEASE_VERSION]
+        }
+
+    override suspend fun saveLastSeenReleaseVersion(version: String) {
+        dataStore.edit { preferences ->
+            preferences[LAST_SEEN_RELEASE_VERSION] = version
         }
     }
 

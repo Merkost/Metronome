@@ -145,6 +145,7 @@ fun MainScreen(
     val selectedIndex by viewModel.index.collectAsState()
 
     val onboardingStep by viewModel.onboardingStep.collectAsState()
+    val whatsNewVersion by viewModel.whatsNewVersion.collectAsState()
     var beatBallsBounds by remember { mutableStateOf<Rect?>(null) }
     var tempoSectionBounds by remember { mutableStateOf<Rect?>(null) }
     var bottomControlsBounds by remember { mutableStateOf<Rect?>(null) }
@@ -647,6 +648,13 @@ fun MainScreen(
                 onDismiss = viewModel::onOnboardingDismiss,
             )
         }
+    }
+
+    whatsNewVersion?.let { version ->
+        WhatsNewSheet(
+            version = version,
+            onDismiss = viewModel::onWhatsNewDismissed,
+        )
     }
 
     if (showTimerSheet) {

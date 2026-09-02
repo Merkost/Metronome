@@ -18,6 +18,7 @@ import com.merkost.metronome.review.DataStoreReviewPromptStore
 import com.merkost.metronome.review.ReviewPromptCoordinator
 import com.merkost.metronome.review.ReviewPromptStore
 import com.merkost.metronome.viewModels.MetronomeViewModel
+import com.merkost.metronome.whatsnew.WhatsNewCoordinator
 import com.merkost.metronome.viewModels.PracticePresetsViewModel
 import com.merkost.metronome.viewModels.PracticeSetsViewModel
 import com.merkost.metronome.viewModels.SettingsViewModel
@@ -57,7 +58,8 @@ val commonModule = module {
     }
     single<ReviewPromptStore> { DataStoreReviewPromptStore(get()) }
     single { ReviewPromptCoordinator(get(), get(), get()) }
-    single { MetronomeViewModel(get(), get(), get(), get(), get(), get()) }
+    single { WhatsNewCoordinator(get(), get()) }
+    single { MetronomeViewModel(get(), get(), get(), get(), get(), get(), get()) }
     single {
         CedarSetup.initialize(isDebug())
         MetronomeEngine(get(), get(), get(), get()).also { it.start() }
