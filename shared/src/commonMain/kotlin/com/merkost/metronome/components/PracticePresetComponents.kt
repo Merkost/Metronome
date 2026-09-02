@@ -188,57 +188,57 @@ fun PracticePresetRow(
                 transitionSpec = { AppAnimations.fadeThrough },
                 label = "presetRowActions",
             ) { reordering ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-            if (reordering) {
-                PresetActionIcon(
-                    icon = Lucide.ChevronUp,
-                    description = stringResource(Res.string.move_up, preset.name),
-                    enabled = canMoveUp,
-                    onClick = onMoveUp,
-                )
-                PresetActionIcon(
-                    icon = Lucide.ChevronDown,
-                    description = stringResource(Res.string.move_down, preset.name),
-                    enabled = canMoveDown,
-                    onClick = onMoveDown,
-                )
-            } else {
-                PresetActionIcon(
-                    icon = Lucide.Star,
-                    description = stringResource(
-                        if (preset.isFavourite) Res.string.unfavourite_preset else Res.string.favourite_preset,
-                        preset.name,
-                    ),
-                    tint = if (preset.isFavourite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    onClick = onToggleFavourite,
-                )
-                Box {
-                    PresetActionIcon(
-                        icon = Lucide.EllipsisVertical,
-                        description = stringResource(Res.string.preset_actions, preset.name),
-                        onClick = { actionsExpanded = true },
-                    )
-                    DropdownMenu(
-                        expanded = actionsExpanded,
-                        onDismissRequest = { actionsExpanded = false },
-                    ) {
-                        PresetMenuItem(Lucide.Pencil, Res.string.rename) {
-                            actionsExpanded = false
-                            onRename()
-                        }
-                        PresetMenuItem(Lucide.Copy, Res.string.duplicate) {
-                            actionsExpanded = false
-                            onDuplicate()
-                        }
-                        HorizontalDivider()
-                        PresetMenuItem(Lucide.Trash2, Res.string.delete) {
-                            actionsExpanded = false
-                            onDelete()
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (reordering) {
+                        PresetActionIcon(
+                            icon = Lucide.ChevronUp,
+                            description = stringResource(Res.string.move_up, preset.name),
+                            enabled = canMoveUp,
+                            onClick = onMoveUp,
+                        )
+                        PresetActionIcon(
+                            icon = Lucide.ChevronDown,
+                            description = stringResource(Res.string.move_down, preset.name),
+                            enabled = canMoveDown,
+                            onClick = onMoveDown,
+                        )
+                    } else {
+                        PresetActionIcon(
+                            icon = Lucide.Star,
+                            description = stringResource(
+                                if (preset.isFavourite) Res.string.unfavourite_preset else Res.string.favourite_preset,
+                                preset.name,
+                            ),
+                            tint = if (preset.isFavourite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            onClick = onToggleFavourite,
+                        )
+                        Box {
+                            PresetActionIcon(
+                                icon = Lucide.EllipsisVertical,
+                                description = stringResource(Res.string.preset_actions, preset.name),
+                                onClick = { actionsExpanded = true },
+                            )
+                            DropdownMenu(
+                                expanded = actionsExpanded,
+                                onDismissRequest = { actionsExpanded = false },
+                            ) {
+                                PresetMenuItem(Lucide.Pencil, Res.string.rename) {
+                                    actionsExpanded = false
+                                    onRename()
+                                }
+                                PresetMenuItem(Lucide.Copy, Res.string.duplicate) {
+                                    actionsExpanded = false
+                                    onDuplicate()
+                                }
+                                HorizontalDivider()
+                                PresetMenuItem(Lucide.Trash2, Res.string.delete) {
+                                    actionsExpanded = false
+                                    onDelete()
+                                }
+                            }
                         }
                     }
                 }
-            }
-            }
             }
         }
     }

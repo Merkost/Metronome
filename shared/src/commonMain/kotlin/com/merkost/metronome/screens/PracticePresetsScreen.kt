@@ -330,135 +330,135 @@ private fun PracticePresetsContent(
                 transitionSpec = { AppAnimations.fadeThroughRoute },
                 label = "presetsLibraryState",
             ) { isEmpty ->
-            if (isEmpty) {
-                PracticePresetsEmptyState(
-                    onCreate = onCreate,
-                    modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.widthIn(max = maxContentWidth).fillMaxWidth(),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                        start = horizontalPadding,
-                        end = horizontalPadding,
-                        top = spacingSmall,
-                        bottom = spacingLarge,
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(spacingSmall),
-                ) {
-                    if (uiState.migrationFailed) {
-                        item(key = "migration") {
-                            Column(
-                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
-                                verticalArrangement = Arrangement.spacedBy(spacingSmall),
-                            ) {
-                                Text(
-                                    stringResource(Res.string.preset_migration_failed),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.error,
-                                )
-                                TextButton(onClick = onRetryMigration) {
-                                    Text(stringResource(Res.string.retry))
-                                }
-                            }
-                        }
-                    }
-                    item(key = "summary") {
-                        if (useStackedSummary) {
-                            Column(
-                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
-                                verticalArrangement = Arrangement.spacedBy(spacingSmall),
-                            ) {
-                                Text(
-                                    stringResource(Res.string.preset_count, uiState.presets.size),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                if (!uiState.isReordering) {
-                                    Button(
-                                        onClick = onCreate,
-                                        enabled = uiState.presets.size < PracticePreset.MAX_PRESETS,
-                                        modifier = Modifier.fillMaxWidth(),
-                                    ) {
-                                        Icon(Lucide.Plus, contentDescription = null)
-                                        Spacer(Modifier.width(spacingSmall))
-                                        Text(stringResource(Res.string.save_current_setup))
-                                    }
-                                }
-                            }
-                        } else {
-                            Row(
-                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    stringResource(Res.string.preset_count, uiState.presets.size),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.weight(1f),
-                                )
-                                if (!uiState.isReordering) {
-                                    Button(onClick = onCreate, enabled = uiState.presets.size < PracticePreset.MAX_PRESETS) {
-                                        Icon(Lucide.Plus, contentDescription = null)
-                                        Spacer(Modifier.width(spacingSmall))
-                                        Text(stringResource(Res.string.save_current_setup))
+                if (isEmpty) {
+                    PracticePresetsEmptyState(
+                        onCreate = onCreate,
+                        modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.widthIn(max = maxContentWidth).fillMaxWidth(),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                            start = horizontalPadding,
+                            end = horizontalPadding,
+                            top = spacingSmall,
+                            bottom = spacingLarge,
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(spacingSmall),
+                    ) {
+                        if (uiState.migrationFailed) {
+                            item(key = "migration") {
+                                Column(
+                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    verticalArrangement = Arrangement.spacedBy(spacingSmall),
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.preset_migration_failed),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
+                                    TextButton(onClick = onRetryMigration) {
+                                        Text(stringResource(Res.string.retry))
                                     }
                                 }
                             }
                         }
-                    }
-                    if (uiState.presets.size >= PracticePreset.MAX_PRESETS) {
-                        item(key = "limit") {
-                            Text(
-                                text = stringResource(Res.string.preset_limit_reached),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.animateItem().padding(bottom = spacingSmall),
+                        item(key = "summary") {
+                            if (useStackedSummary) {
+                                Column(
+                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    verticalArrangement = Arrangement.spacedBy(spacingSmall),
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.preset_count, uiState.presets.size),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                    if (!uiState.isReordering) {
+                                        Button(
+                                            onClick = onCreate,
+                                            enabled = uiState.presets.size < PracticePreset.MAX_PRESETS,
+                                            modifier = Modifier.fillMaxWidth(),
+                                        ) {
+                                            Icon(Lucide.Plus, contentDescription = null)
+                                            Spacer(Modifier.width(spacingSmall))
+                                            Text(stringResource(Res.string.save_current_setup))
+                                        }
+                                    }
+                                }
+                            } else {
+                                Row(
+                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.preset_count, uiState.presets.size),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    if (!uiState.isReordering) {
+                                        Button(onClick = onCreate, enabled = uiState.presets.size < PracticePreset.MAX_PRESETS) {
+                                            Icon(Lucide.Plus, contentDescription = null)
+                                            Spacer(Modifier.width(spacingSmall))
+                                            Text(stringResource(Res.string.save_current_setup))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (uiState.presets.size >= PracticePreset.MAX_PRESETS) {
+                            item(key = "limit") {
+                                Text(
+                                    text = stringResource(Res.string.preset_limit_reached),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.animateItem().padding(bottom = spacingSmall),
+                                )
+                            }
+                        }
+                        itemsIndexed(uiState.presets, key = { _, preset -> preset.id }) { index, preset ->
+                            val dragThreshold = with(LocalDensity.current) { 44.dp.toPx() }
+                            var accumulatedDrag by remember(preset.id) { mutableFloatStateOf(0f) }
+                            PracticePresetRow(
+                                preset = preset,
+                                isActive = activeState.active?.id == preset.id,
+                                isEdited = activeState.active?.id == preset.id && activeState.isEdited,
+                                isReordering = uiState.isReordering,
+                                canMoveUp = index > 0 && uiState.presets[index - 1].isFavourite == preset.isFavourite,
+                                canMoveDown = index < uiState.presets.lastIndex && uiState.presets[index + 1].isFavourite == preset.isFavourite,
+                                onApply = { onApply(preset) },
+                                onToggleFavourite = { onToggleFavourite(preset.id) },
+                                onRename = { onRename(preset) },
+                                onDuplicate = { onDuplicate(preset) },
+                                onDelete = { onDelete(preset) },
+                                onMoveUp = { onMove(preset.id, index - 1) },
+                                onMoveDown = { onMove(preset.id, index + 1) },
+                                modifier = Modifier.animateItem().pointerInput(uiState.isReordering, preset.id, index) {
+                                    if (!uiState.isReordering) return@pointerInput
+                                    detectDragGesturesAfterLongPress(
+                                        onDragEnd = { accumulatedDrag = 0f },
+                                        onDragCancel = { accumulatedDrag = 0f },
+                                        onDrag = { change, dragAmount ->
+                                            change.consume()
+                                            accumulatedDrag += dragAmount.y
+                                            if (abs(accumulatedDrag) >= dragThreshold) {
+                                                val destination = if (accumulatedDrag < 0f) index - 1 else index + 1
+                                                if (
+                                                    destination in uiState.presets.indices &&
+                                                    uiState.presets[destination].isFavourite == preset.isFavourite
+                                                ) {
+                                                    onMove(preset.id, destination)
+                                                }
+                                                accumulatedDrag = 0f
+                                            }
+                                        },
+                                    )
+                                },
                             )
                         }
                     }
-                    itemsIndexed(uiState.presets, key = { _, preset -> preset.id }) { index, preset ->
-                        val dragThreshold = with(LocalDensity.current) { 44.dp.toPx() }
-                        var accumulatedDrag by remember(preset.id) { mutableFloatStateOf(0f) }
-                        PracticePresetRow(
-                            preset = preset,
-                            isActive = activeState.active?.id == preset.id,
-                            isEdited = activeState.active?.id == preset.id && activeState.isEdited,
-                            isReordering = uiState.isReordering,
-                            canMoveUp = index > 0 && uiState.presets[index - 1].isFavourite == preset.isFavourite,
-                            canMoveDown = index < uiState.presets.lastIndex && uiState.presets[index + 1].isFavourite == preset.isFavourite,
-                            onApply = { onApply(preset) },
-                            onToggleFavourite = { onToggleFavourite(preset.id) },
-                            onRename = { onRename(preset) },
-                            onDuplicate = { onDuplicate(preset) },
-                            onDelete = { onDelete(preset) },
-                            onMoveUp = { onMove(preset.id, index - 1) },
-                            onMoveDown = { onMove(preset.id, index + 1) },
-                            modifier = Modifier.animateItem().pointerInput(uiState.isReordering, preset.id, index) {
-                                if (!uiState.isReordering) return@pointerInput
-                                detectDragGesturesAfterLongPress(
-                                    onDragEnd = { accumulatedDrag = 0f },
-                                    onDragCancel = { accumulatedDrag = 0f },
-                                    onDrag = { change, dragAmount ->
-                                        change.consume()
-                                        accumulatedDrag += dragAmount.y
-                                        if (abs(accumulatedDrag) >= dragThreshold) {
-                                            val destination = if (accumulatedDrag < 0f) index - 1 else index + 1
-                                            if (
-                                                destination in uiState.presets.indices &&
-                                                uiState.presets[destination].isFavourite == preset.isFavourite
-                                            ) {
-                                                onMove(preset.id, destination)
-                                            }
-                                            accumulatedDrag = 0f
-                                        }
-                                    },
-                                )
-                            },
-                        )
-                    }
                 }
-            }
             }
         }
     }

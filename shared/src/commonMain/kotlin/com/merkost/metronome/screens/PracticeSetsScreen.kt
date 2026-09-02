@@ -348,100 +348,100 @@ private fun PracticeSetsLibrary(
                 transitionSpec = { AppAnimations.fadeThroughRoute },
                 label = "practiceSetsLibraryState",
             ) { isEmpty ->
-            if (isEmpty) {
-                PracticeSetsEmptyState(
-                    onCreate = onCreate,
-                    modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.widthIn(max = maxContentWidth).fillMaxWidth(),
-                    contentPadding = PaddingValues(
-                        start = horizontalPadding,
-                        end = horizontalPadding,
-                        top = spacingSmall,
-                        bottom = spacingLarge,
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(spacingSmall),
-                ) {
-                    if (persistenceWarning) {
-                        item(key = "persistence-warning") {
-                            Surface(
-                                modifier = Modifier.animateItem(),
-                                shape = RoundedCornerShape(cornerRadiusLarge),
-                                color = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            ) {
-                                Column(
-                                    modifier = Modifier.fillMaxWidth().padding(spacingMedium),
-                                    verticalArrangement = Arrangement.spacedBy(spacingSmall),
+                if (isEmpty) {
+                    PracticeSetsEmptyState(
+                        onCreate = onCreate,
+                        modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.widthIn(max = maxContentWidth).fillMaxWidth(),
+                        contentPadding = PaddingValues(
+                            start = horizontalPadding,
+                            end = horizontalPadding,
+                            top = spacingSmall,
+                            bottom = spacingLarge,
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(spacingSmall),
+                    ) {
+                        if (persistenceWarning) {
+                            item(key = "persistence-warning") {
+                                Surface(
+                                    modifier = Modifier.animateItem(),
+                                    shape = RoundedCornerShape(cornerRadiusLarge),
+                                    color = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
                                 ) {
-                                    Text(
-                                        text = stringResource(Res.string.practice_session_storage_warning),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                    TextButton(
-                                        onClick = onRetryPersistence,
-                                        modifier = Modifier.align(Alignment.End),
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth().padding(spacingMedium),
+                                        verticalArrangement = Arrangement.spacedBy(spacingSmall),
                                     ) {
-                                        Text(stringResource(Res.string.retry))
+                                        Text(
+                                            text = stringResource(Res.string.practice_session_storage_warning),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                        )
+                                        TextButton(
+                                            onClick = onRetryPersistence,
+                                            modifier = Modifier.align(Alignment.End),
+                                        ) {
+                                            Text(stringResource(Res.string.retry))
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    item(key = "summary") {
-                        if (stacked) {
-                            Column(
-                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
-                                verticalArrangement = Arrangement.spacedBy(spacingSmall),
-                            ) {
-                                Text(
-                                    stringResource(Res.string.practice_set_count, uiState.sets.size),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                if (!uiState.isReordering) {
-                                    CreateSetButton(uiState.sets.size < PracticeSet.MAX_SETS, onCreate)
+                        item(key = "summary") {
+                            if (stacked) {
+                                Column(
+                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    verticalArrangement = Arrangement.spacedBy(spacingSmall),
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.practice_set_count, uiState.sets.size),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                    if (!uiState.isReordering) {
+                                        CreateSetButton(uiState.sets.size < PracticeSet.MAX_SETS, onCreate)
+                                    }
                                 }
-                            }
-                        } else {
-                            Row(
-                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    stringResource(Res.string.practice_set_count, uiState.sets.size),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.weight(1f),
-                                )
-                                if (!uiState.isReordering) {
-                                    CreateSetButton(uiState.sets.size < PracticeSet.MAX_SETS, onCreate)
+                            } else {
+                                Row(
+                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.practice_set_count, uiState.sets.size),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    if (!uiState.isReordering) {
+                                        CreateSetButton(uiState.sets.size < PracticeSet.MAX_SETS, onCreate)
+                                    }
                                 }
                             }
                         }
-                    }
-                    itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
-                        val presetIds = uiState.presets.mapTo(mutableSetOf()) { it.id }
-                        PracticeSetRow(
-                            modifier = Modifier.animateItem(),
-                            practiceSet = set,
-                            missingPresetCount = set.steps.count { it.presetId !in presetIds },
-                            isActive = set.id == uiState.activeSourceSetId,
-                            isReordering = uiState.isReordering,
-                            canMoveUp = index > 0,
-                            canMoveDown = index < uiState.sets.lastIndex,
-                            onStart = { onStart(set) },
-                            onResume = onResume,
-                            onEdit = { onEdit(set.id) },
-                            onDelete = { onDelete(set) },
-                            onMoveUp = { onMove(set.id, index - 1) },
-                            onMoveDown = { onMove(set.id, index + 1) },
-                        )
+                        itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
+                            val presetIds = uiState.presets.mapTo(mutableSetOf()) { it.id }
+                            PracticeSetRow(
+                                modifier = Modifier.animateItem(),
+                                practiceSet = set,
+                                missingPresetCount = set.steps.count { it.presetId !in presetIds },
+                                isActive = set.id == uiState.activeSourceSetId,
+                                isReordering = uiState.isReordering,
+                                canMoveUp = index > 0,
+                                canMoveDown = index < uiState.sets.lastIndex,
+                                onStart = { onStart(set) },
+                                onResume = onResume,
+                                onEdit = { onEdit(set.id) },
+                                onDelete = { onDelete(set) },
+                                onMoveUp = { onMove(set.id, index - 1) },
+                                onMoveDown = { onMove(set.id, index + 1) },
+                            )
+                        }
                     }
                 }
-            }
             }
         }
     }

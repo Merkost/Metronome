@@ -1,7 +1,7 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.heightIn
@@ -10,10 +10,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.PressedScaleSurface
 import com.merkost.metronome.ui.cornerRadiusLarge
+import com.merkost.metronome.ui.pressableSurface
+import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.cornerRadiusMedium
 import com.merkost.metronome.ui.minimumTouchTargetSize
 
@@ -30,6 +35,7 @@ fun <T> DropdownSelector(
     anchor: @Composable () -> Unit,
 ) {
     val dropdownShape = RoundedCornerShape(cornerRadiusLarge)
+    val haptics = rememberAppHaptics()
 
     Box(modifier = modifier) {
         anchor()
@@ -44,18 +50,28 @@ fun <T> DropdownSelector(
             ) {
                 items.forEach { item ->
                     val isSelected = item == selectedItem
-                    val itemBackground = if (isSelected) {
-                        MaterialTheme.colorScheme.surfaceVariant
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    }
+                    val itemBackground by animateColorAsState(
+                        targetValue = if (isSelected) {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.surface
+                        },
+                        animationSpec = AppAnimations.standard(),
+                        label = "dropdownItemBackground",
+                    )
 
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 6.dp)
                             .clip(RoundedCornerShape(cornerRadiusMedium))
                             .background(itemBackground)
-                            .clickable { onSelect(item) }
+                            .pressableSurface(
+                                onClick = {
+                                    haptics.select()
+                                    onSelect(item)
+                                },
+                                pressedScale = PressedScaleSurface,
+                            )
                             .heightIn(min = minimumTouchTargetSize)
                             .padding(PaddingValues(horizontal = 14.dp, vertical = 12.dp))
                     ) {

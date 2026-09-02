@@ -55,7 +55,14 @@ import com.merkost.metronome.ui.playButtonIconSize
 
 @Composable
 fun MySecondaryTextButton(text: String, onClick: () -> Unit) {
-    MySecondaryButton(onClick = onClick, modifier = Modifier.size(defaultSecondaryIconButtonSize)) {
+    val haptics = rememberAppHaptics()
+    MySecondaryButton(
+        onClick = {
+            haptics.tick()
+            onClick()
+        },
+        modifier = Modifier.size(defaultSecondaryIconButtonSize),
+    ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
                 text,
@@ -114,6 +121,7 @@ fun MyIconButton(
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val haptics = rememberAppHaptics()
     val isPressed by interactionSource.collectIsPressedAsState()
     val containerColor by animateColorAsState(
         targetValue = if (isPressed) {
@@ -133,7 +141,10 @@ fun MyIconButton(
             containerColor = containerColor,
             contentColor = MaterialTheme.colorScheme.primary
         ),
-        onClick = onClick,
+        onClick = {
+            haptics.tick()
+            onClick()
+        },
         shape = CircleShape,
         interactionSource = interactionSource
     ) {

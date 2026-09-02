@@ -215,58 +215,58 @@ fun PracticeSetRow(
                 transitionSpec = { AppAnimations.fadeThrough },
                 label = "practiceSetRowActions",
             ) { reordering ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-            if (reordering) {
-                SetIconButton(
-                    icon = Lucide.ChevronUp,
-                    description = stringResource(Res.string.move_up, practiceSet.name),
-                    enabled = canMoveUp,
-                    onClick = onMoveUp,
-                )
-                SetIconButton(
-                    icon = Lucide.ChevronDown,
-                    description = stringResource(Res.string.move_down, practiceSet.name),
-                    enabled = canMoveDown,
-                    onClick = onMoveDown,
-                )
-            } else {
-                if (missingPresetCount == 0) {
-                    SetIconButton(
-                        icon = Lucide.Play,
-                        description = stringResource(
-                            if (isActive) Res.string.practice_set_resume else Res.string.practice_set_start,
-                        ),
-                        onClick = if (isActive) onResume else onStart,
-                    )
-                }
-                Box {
-                    SetIconButton(
-                        icon = Lucide.EllipsisVertical,
-                        description = stringResource(Res.string.practice_set_actions, practiceSet.name),
-                        onClick = { actionsExpanded = true },
-                    )
-                    DropdownMenu(expanded = actionsExpanded, onDismissRequest = { actionsExpanded = false }) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.practice_set_edit)) },
-                            onClick = {
-                                actionsExpanded = false
-                                onEdit()
-                            },
-                            leadingIcon = { Icon(Lucide.Pencil, contentDescription = null) },
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (reordering) {
+                        SetIconButton(
+                            icon = Lucide.ChevronUp,
+                            description = stringResource(Res.string.move_up, practiceSet.name),
+                            enabled = canMoveUp,
+                            onClick = onMoveUp,
                         )
-                        HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.delete)) },
-                            onClick = {
-                                actionsExpanded = false
-                                onDelete()
-                            },
-                            leadingIcon = { Icon(Lucide.Trash2, contentDescription = null) },
+                        SetIconButton(
+                            icon = Lucide.ChevronDown,
+                            description = stringResource(Res.string.move_down, practiceSet.name),
+                            enabled = canMoveDown,
+                            onClick = onMoveDown,
                         )
+                    } else {
+                        if (missingPresetCount == 0) {
+                            SetIconButton(
+                                icon = Lucide.Play,
+                                description = stringResource(
+                                    if (isActive) Res.string.practice_set_resume else Res.string.practice_set_start,
+                                ),
+                                onClick = if (isActive) onResume else onStart,
+                            )
+                        }
+                        Box {
+                            SetIconButton(
+                                icon = Lucide.EllipsisVertical,
+                                description = stringResource(Res.string.practice_set_actions, practiceSet.name),
+                                onClick = { actionsExpanded = true },
+                            )
+                            DropdownMenu(expanded = actionsExpanded, onDismissRequest = { actionsExpanded = false }) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.practice_set_edit)) },
+                                    onClick = {
+                                        actionsExpanded = false
+                                        onEdit()
+                                    },
+                                    leadingIcon = { Icon(Lucide.Pencil, contentDescription = null) },
+                                )
+                                HorizontalDivider()
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.delete)) },
+                                    onClick = {
+                                        actionsExpanded = false
+                                        onDelete()
+                                    },
+                                    leadingIcon = { Icon(Lucide.Trash2, contentDescription = null) },
+                                )
+                            }
+                        }
                     }
                 }
-            }
-            }
             }
         }
     }
