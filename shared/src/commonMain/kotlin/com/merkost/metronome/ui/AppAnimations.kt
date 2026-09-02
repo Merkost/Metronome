@@ -60,6 +60,7 @@ object AppAnimations {
     private const val EmphasizedStiffness = 340f
     private const val CalmStiffness = 190f
     private const val ExpressiveStiffness = 520f
+    private const val NavigationStiffness = 400f
 
     private const val Flat = 1f
     private const val NearlyFlat = 0.94f
@@ -133,26 +134,51 @@ object AppAnimations {
         (fadeIn(Standard) + scaleIn(initialScale = 0.96f, animationSpec = Emphasized))
             .togetherWith(fadeOut(Quick) + scaleOut(targetScale = 0.98f, animationSpec = Quick))
 
-    val forwardNavigation: ContentTransform =
-        (slideInHorizontally(EmphasizedOffset) { it / 8 } + fadeIn(Standard))
-            .togetherWith(slideOutHorizontally(EmphasizedOffset) { -it / 12 } + fadeOut(Quick))
-
-    val backwardNavigation: ContentTransform =
-        (slideInHorizontally(EmphasizedOffset) { -it / 12 } + fadeIn(Standard))
-            .togetherWith(slideOutHorizontally(EmphasizedOffset) { it / 8 } + fadeOut(Quick))
-
-    private fun ContentTransform.unclipped(): ContentTransform = ContentTransform(
-        targetContentEnter,
-        initialContentExit,
-        targetContentZIndex,
-        SizeTransform(clip = false),
+    private val NavigationOffset = SpringSpec(
+        dampingRatio = Flat,
+        stiffness = NavigationStiffness,
+        visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    val forwardRoute: ContentTransform = forwardNavigation.unclipped()
+    private val NavigationFloat = SpringSpec<Float>(
+        dampingRatio = Flat,
+        stiffness = NavigationStiffness,
+    )
 
-    val backwardRoute: ContentTransform = backwardNavigation.unclipped()
+    private const val RestingScreenAlpha = 0.82f
+    private const val ParallaxDivisor = 4
 
-    val fadeThroughRoute: ContentTransform = fadeThrough.unclipped()
+    fun forwardNavigation(sizeTransform: SizeTransform? = SizeTransform()): ContentTransform =
+        ContentTransform(
+            targetContentEnter = slideInHorizontally(NavigationOffset) { it },
+            initialContentExit = slideOutHorizontally(NavigationOffset) { -it / ParallaxDivisor } +
+                fadeOut(NavigationFloat, targetAlpha = RestingScreenAlpha),
+            targetContentZIndex = 1f,
+            sizeTransform = sizeTransform,
+        )
+
+    fun backwardNavigation(sizeTransform: SizeTransform? = SizeTransform()): ContentTransform =
+        ContentTransform(
+            targetContentEnter = slideInHorizontally(NavigationOffset) { -it / ParallaxDivisor } +
+                fadeIn(NavigationFloat, initialAlpha = RestingScreenAlpha),
+            initialContentExit = slideOutHorizontally(NavigationOffset) { it },
+            targetContentZIndex = 0f,
+            sizeTransform = sizeTransform,
+        )
+
+    private val Unclipped = SizeTransform(clip = false)
+
+    val forwardRoute: ContentTransform get() = forwardNavigation(Unclipped)
+
+    val backwardRoute: ContentTransform get() = backwardNavigation(Unclipped)
+
+    val fadeThroughRoute: ContentTransform
+        get() = ContentTransform(
+            fadeThrough.targetContentEnter,
+            fadeThrough.initialContentExit,
+            fadeThrough.targetContentZIndex,
+            Unclipped,
+        )
 
     fun slideDigitTransform(towardsUp: Boolean): ContentTransform {
         val direction = if (towardsUp) -1 else 1

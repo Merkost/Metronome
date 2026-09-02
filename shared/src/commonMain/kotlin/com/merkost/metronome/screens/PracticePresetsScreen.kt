@@ -18,7 +18,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -56,7 +55,6 @@ import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.spacingLarge
-import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.PracticePresetsUiState
@@ -77,7 +75,6 @@ import metronome.shared.generated.resources.preset_copy_name
 import metronome.shared.generated.resources.preset_deleted
 import metronome.shared.generated.resources.preset_duplicated
 import metronome.shared.generated.resources.preset_invalid
-import metronome.shared.generated.resources.preset_in_use
 import metronome.shared.generated.resources.preset_in_use_sets
 import metronome.shared.generated.resources.preset_in_use_sets_more
 import metronome.shared.generated.resources.preset_in_use_title

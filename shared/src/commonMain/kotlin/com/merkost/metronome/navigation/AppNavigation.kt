@@ -39,9 +39,9 @@ fun AppNavigation() {
     NavDisplay(
         backStack = backStack,
         onBack = { navigator.goBack() },
-        transitionSpec = { AppAnimations.forwardNavigation },
-        popTransitionSpec = { AppAnimations.backwardNavigation },
-        predictivePopTransitionSpec = { AppAnimations.backwardNavigation },
+        transitionSpec = { AppAnimations.forwardNavigation() },
+        popTransitionSpec = { AppAnimations.backwardNavigation() },
+        predictivePopTransitionSpec = { AppAnimations.backwardNavigation() },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
