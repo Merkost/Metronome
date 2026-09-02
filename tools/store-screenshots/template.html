@@ -9,6 +9,8 @@
     --bg: __BACKGROUND__;
     --title: __TITLE_COLOR__;
     --subtitle: __SUBTITLE_COLOR__;
+    --crop-top: __CROP_TOP__;
+    --crop-bottom: __CROP_BOTTOM__;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: var(--w); height: var(--h); }
@@ -65,6 +67,7 @@
     padding-top: calc(var(--h) * 0.035);
   }
   .phone {
+    --shot-h: calc(var(--w) * 0.72 * __SHOT_RATIO__);
     width: calc(var(--w) * 0.72);
     border-radius: calc(var(--w) * 0.075);
     background: #0b0b0d;
@@ -77,8 +80,20 @@
     overflow: hidden;
     background: #fff;
     display: block;
+    position: relative;
   }
-  .phone img { width: 100%; display: block; }
+  /* crop-top / crop-bottom trim platform chrome (status bar, gesture bar) so the
+     same source screenshot works for both stores */
+  .phone .glass .clip {
+    overflow: hidden;
+    display: block;
+    height: calc(var(--shot-h) * (1 - var(--crop-top) - var(--crop-bottom)));
+  }
+  .phone img {
+    width: 100%;
+    display: block;
+    margin-top: calc(var(--shot-h) * var(--crop-top) * -1);
+  }
 </style>
 </head>
 <body>
@@ -88,7 +103,7 @@
     __BADGES__
   </div>
   <div class="stage">
-    <div class="phone"><div class="glass"><img src="__SCREENSHOT__"></div></div>
+    <div class="phone"><div class="glass"><span class="clip"><img src="__SCREENSHOT__"></span></div></div>
   </div>
 </body>
 </html>

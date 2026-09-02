@@ -41,6 +41,11 @@ for (const [deviceId, device] of devices) {
       ? `<div class="badges">${frame.badges.map(b => `<span>${esc(b)}</span>`).join('')}</div>`
       : ''
 
+    // intrinsic ratio of the source screenshot, so the crop maths is exact
+    const png = readFileSync(shot)
+    const shotW = png.readUInt32BE(16)
+    const shotH = png.readUInt32BE(20)
+
     const html = template
       .replaceAll('__WIDTH__', device.width)
       .replaceAll('__HEIGHT__', device.height)
@@ -50,6 +55,9 @@ for (const [deviceId, device] of devices) {
       .replaceAll('__TITLE__', esc(frame.title))
       .replaceAll('__SUBTITLE__', esc(frame.subtitle))
       .replaceAll('__BADGES__', badges)
+      .replaceAll('__SHOT_RATIO__', (shotH / shotW).toFixed(6))
+      .replaceAll('__CROP_TOP__', String(frame.cropTop ?? config.defaults.cropTop ?? 0))
+      .replaceAll('__CROP_BOTTOM__', String(frame.cropBottom ?? config.defaults.cropBottom ?? 0))
       .replaceAll('__SCREENSHOT__', pathToFileURL(shot).href)
 
     const page = join(tmp, `${deviceId}-${frame.id}.html`)

@@ -1,12 +1,22 @@
 {
   "devices": {
-    "iphone-6.9": { "width": 1290, "height": 2796, "label": "App Store 6.9\" iPhone" },
-    "android-phone": { "width": 1080, "height": 1920, "label": "Google Play phone" }
+    "iphone-6.9": {
+      "width": 1290,
+      "height": 2796,
+      "label": "App Store 6.9\" iPhone"
+    },
+    "android-phone": {
+      "width": 1080,
+      "height": 1920,
+      "label": "Google Play phone"
+    }
   },
   "defaults": {
     "background": "#f4f4f5",
     "titleColor": "#111113",
-    "subtitleColor": "#6b6b70"
+    "subtitleColor": "#6b6b70",
+    "cropTop": 0.038,
+    "cropBottom": 0.022
   },
   "frames": [
     {
@@ -47,16 +57,21 @@
     },
     {
       "id": "keep-going",
-      "title": "Keep practising\nwith the screen off",
-      "subtitle": "Background playback, Live Activities on iPhone",
-      "screenshot": "raw/background.png"
+      "title": "Move through it\nstep by step",
+      "subtitle": "Pause, resume, and pick up where you left off",
+      "screenshot": "raw/session.png"
     },
     {
       "id": "no-nonsense",
       "title": "No ads.\nNo account.",
       "subtitle": "Core practice tools work offline, for free",
       "screenshot": "raw/settings.png",
-      "badges": ["No ads", "No account", "Works offline", "Free"]
+      "badges": [
+        "No ads",
+        "No account",
+        "Works offline",
+        "Free"
+      ]
     }
   ]
 }
