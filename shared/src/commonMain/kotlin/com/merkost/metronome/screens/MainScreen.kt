@@ -61,6 +61,7 @@ import com.composables.icons.lucide.TrendingDown
 import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.VolumeX
+import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.CoachMarksOverlay
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.AppSlider
@@ -303,7 +304,7 @@ fun MainScreen(
                         )
                     },
                     actions = {
-                        IconButton(onClick = onSettingsClicked) {
+                        AppIconButton(onClick = onSettingsClicked) {
                             Icon(Lucide.Settings, Lucide.Settings.name)
                         }
                     }

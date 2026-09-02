@@ -1,9 +1,13 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -21,14 +25,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.Lucide
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.cornerRadiusMedium
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 
@@ -48,12 +56,33 @@ fun ExpandableSection(
         label = "sectionChevron"
     )
     val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val highlight by animateColorAsState(
+        targetValue = if (isPressed) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.06f)
+        } else {
+            Color.Transparent
+        },
+        animationSpec = AppAnimations.standard(),
+        label = "sectionHighlight"
+    )
+    val summaryColor by animateColorAsState(
+        targetValue = if (summaryActive) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = AppAnimations.standard(),
+        label = "sectionSummaryColor"
+    )
 
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(cornerRadiusMedium))
+                .background(highlight)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
@@ -62,7 +91,7 @@ fun ExpandableSection(
                 .semantics {
                     stateDescription = if (expanded) "Expanded" else "Collapsed"
                 }
-                .padding(vertical = spacingMedium)
+                .padding(vertical = spacingMedium, horizontal = spacingSmall / 2)
         ) {
             icon()
             Spacer(Modifier.width(spacingSmall))
@@ -71,17 +100,19 @@ fun ExpandableSection(
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
             Spacer(Modifier.weight(1f))
-            Text(
-                text = summary,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = if (summaryActive) FontWeight.Bold else FontWeight.Normal
-                ),
-                color = if (summaryActive) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            )
+            AnimatedContent(
+                targetState = summary,
+                transitionSpec = { AppAnimations.slideLabelTransform(towardsUp = true) },
+                label = "sectionSummary"
+            ) { text ->
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = if (summaryActive) FontWeight.Bold else FontWeight.Normal
+                    ),
+                    color = summaryColor,
+                )
+            }
             Spacer(Modifier.width(spacingSmall))
             Icon(
                 imageVector = Lucide.ChevronDown,

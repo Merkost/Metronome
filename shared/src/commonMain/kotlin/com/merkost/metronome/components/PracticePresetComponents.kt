@@ -1,5 +1,8 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +58,7 @@ import com.composables.icons.lucide.Plus
 import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Trash2
 import com.merkost.metronome.presets.PracticePreset
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.cornerRadiusXLarge
@@ -106,11 +110,15 @@ fun PracticePresetRow(
     modifier: Modifier = Modifier,
 ) {
     var actionsExpanded by remember { mutableStateOf(false) }
-    val surfaceColor = if (isActive) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
+    val surfaceColor by animateColorAsState(
+        targetValue = if (isActive) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        animationSpec = AppAnimations.standard(),
+        label = "presetRowSurface",
+    )
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(cornerRadiusLarge),
@@ -123,7 +131,11 @@ fun PracticePresetRow(
                 .padding(horizontal = spacingSmall, vertical = spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (isReordering) {
+            AnimatedVisibility(
+                visible = isReordering,
+                enter = AppAnimations.revealEnter,
+                exit = AppAnimations.concealExit,
+            ) {
                 Icon(
                     imageVector = Lucide.GripVertical,
                     contentDescription = null,
@@ -144,17 +156,23 @@ fun PracticePresetRow(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
                     )
-                    if (isActive) {
-                        Spacer(Modifier.width(spacingSmall))
-                        Text(
-                            text = if (isEdited) {
-                                "${stringResource(Res.string.active)} · ${stringResource(Res.string.edited)}"
-                            } else {
-                                stringResource(Res.string.active)
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
+                    AnimatedVisibility(
+                        visible = isActive,
+                        enter = AppAnimations.revealEnter,
+                        exit = AppAnimations.concealExit,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Spacer(Modifier.width(spacingSmall))
+                            Text(
+                                text = if (isEdited) {
+                                    "${stringResource(Res.string.active)} · ${stringResource(Res.string.edited)}"
+                                } else {
+                                    stringResource(Res.string.active)
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                     }
                 }
                 Text(
@@ -165,7 +183,13 @@ fun PracticePresetRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            if (isReordering) {
+            AnimatedContent(
+                targetState = isReordering,
+                transitionSpec = { AppAnimations.fadeThrough },
+                label = "presetRowActions",
+            ) { reordering ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+            if (reordering) {
                 PresetActionIcon(
                     icon = Lucide.ChevronUp,
                     description = stringResource(Res.string.move_up, preset.name),
@@ -213,6 +237,8 @@ fun PracticePresetRow(
                         }
                     }
                 }
+            }
+            }
             }
         }
     }
@@ -358,7 +384,7 @@ private fun PresetActionIcon(
     enabled: Boolean = true,
     tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
-    IconButton(
+    AppIconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier.size(minimumTouchTargetSize).semantics { contentDescription = description },

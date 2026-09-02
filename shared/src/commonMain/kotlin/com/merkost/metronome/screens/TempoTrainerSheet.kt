@@ -2,6 +2,7 @@ package com.merkost.metronome.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -364,14 +365,19 @@ private fun PresetChipRow(
 
 @Composable
 private fun SectionIcon(icon: ImageVector, active: Boolean) {
-    Icon(
-        imageVector = icon,
-        contentDescription = null,
-        tint = if (active) {
+    val tint by animateColorAsState(
+        targetValue = if (active) {
             MaterialTheme.colorScheme.primary
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
+        animationSpec = AppAnimations.standard(),
+        label = "sectionIconTint",
+    )
+    Icon(
+        imageVector = icon,
+        contentDescription = null,
+        tint = tint,
         modifier = Modifier.size(20.dp)
     )
 }

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Plus
+import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.PracticePresetRow
 import com.merkost.metronome.components.PracticePresetsEmptyState
@@ -306,7 +307,7 @@ private fun PracticePresetsContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    AppIconButton(onClick = onBack) {
                         Icon(Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
                     }
                 },

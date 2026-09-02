@@ -9,11 +9,13 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -118,6 +120,12 @@ object AppAnimations {
     val shrinkExit: ExitTransition =
         shrinkVertically(EmphasizedSize) + fadeOut(Quick)
 
+    val revealEnter: EnterTransition =
+        expandHorizontally(EmphasizedSize) + fadeIn(Standard)
+
+    val concealExit: ExitTransition =
+        shrinkHorizontally(EmphasizedSize) + fadeOut(Quick)
+
     val riseEnter: EnterTransition =
         slideInVertically(EmphasizedOffset) { it / 6 } + fadeIn(Standard)
 
@@ -156,6 +164,12 @@ object AppAnimations {
         val direction = if (towardsUp) -1 else 1
         return (slideInVertically(EmphasizedOffset) { it * -direction / 2 } + fadeIn(Standard))
             .togetherWith(slideOutVertically(EmphasizedOffset) { it * direction / 2 } + fadeOut(Quick))
+    }
+
+    fun slideStepTransform(towardsNext: Boolean): ContentTransform {
+        val direction = if (towardsNext) 1 else -1
+        return (slideInHorizontally(EmphasizedOffset) { it * direction / 4 } + fadeIn(Standard))
+            .togetherWith(slideOutHorizontally(EmphasizedOffset) { it * -direction / 4 } + fadeOut(Quick))
     }
 
     fun slideLabelTransform(towardsUp: Boolean): ContentTransform {

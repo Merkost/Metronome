@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Plus
+import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.PracticeSetRow
@@ -324,7 +325,7 @@ private fun PracticeSetsLibrary(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    AppIconButton(onClick = onBack) {
                         Icon(Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
                     }
                 },
@@ -475,7 +476,7 @@ private fun PracticeSetEditor(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    AppIconButton(onClick = onBack) {
                         Icon(Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
                     }
                 },

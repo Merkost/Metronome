@@ -1,5 +1,7 @@
 package com.merkost.metronome.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +43,7 @@ import com.merkost.metronome.practiceSets.PracticePlaybackIntent
 import com.merkost.metronome.practiceSets.PracticeStepTarget
 import com.merkost.metronome.practiceSets.ResolvedPracticeStep
 import com.merkost.metronome.presets.PracticePreset
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -65,7 +68,11 @@ fun PracticeSessionSheet(
         onDismiss = onDismiss,
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-            if (isRecovered) {
+            AnimatedVisibility(
+                visible = isRecovered,
+                enter = AppAnimations.expandEnter,
+                exit = AppAnimations.shrinkExit,
+            ) {
                 Text(
                     stringResource(Res.string.practice_session_recovered),
                     style = MaterialTheme.typography.labelLarge,
@@ -82,31 +89,46 @@ fun PracticeSessionSheet(
                     modifier = Modifier.padding(spacingMedium),
                     verticalArrangement = Arrangement.spacedBy(spacingSmall),
                 ) {
-                    Text(
-                        stringResource(
-                            Res.string.practice_session_step,
-                            session.currentStepIndex + 1,
-                            session.steps.size,
-                        ),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(
-                        session.currentStep.preset.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        session.currentStep.preset.rhythmSummary,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
+                    AnimatedContent(
+                        targetState = session.currentStepIndex,
+                        transitionSpec = {
+                            AppAnimations.slideStepTransform(towardsNext = targetState >= initialState)
+                        },
+                        label = "practiceSessionStep",
+                    ) { stepIndex ->
+                        val step = session.steps.getOrNull(stepIndex) ?: session.currentStep
+                        Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                            Text(
+                                stringResource(
+                                    Res.string.practice_session_step,
+                                    stepIndex + 1,
+                                    session.steps.size,
+                                ),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Text(
+                                step.preset.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Text(
+                                step.preset.rhythmSummary,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            )
+                        }
+                    }
                     Text(
                         sessionProgressLabel(session),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    if (session.currentStepEdited) {
+                    AnimatedVisibility(
+                        visible = session.currentStepEdited,
+                        enter = AppAnimations.expandEnter,
+                        exit = AppAnimations.shrinkExit,
+                    ) {
                         FilledTonalButton(onClick = onRestart, modifier = Modifier.fillMaxWidth()) {
                             Icon(Lucide.RotateCcw, contentDescription = null)
                             Spacer(Modifier.width(spacingSmall))

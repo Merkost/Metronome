@@ -98,7 +98,7 @@ fun AppChip(
                 color = contentColor,
             )
             if (onTrailingClose != null) {
-                IconButton(onClick = onTrailingClose) {
+                AppIconButton(onClick = onTrailingClose) {
                     Icon(
                         imageVector = Lucide.X,
                         contentDescription = "Remove $label",

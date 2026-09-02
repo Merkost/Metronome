@@ -58,6 +58,7 @@ import com.composables.icons.lucide.Mail
 import com.composables.icons.lucide.Smartphone
 import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Timer
+import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.AppSlider
@@ -132,7 +133,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                     style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
                 )
             }, navigationIcon = {
-                IconButton(onClick = upPress) {
+                AppIconButton(onClick = upPress) {
                     Icon(Lucide.ArrowLeft, "Back")
                 }
             })

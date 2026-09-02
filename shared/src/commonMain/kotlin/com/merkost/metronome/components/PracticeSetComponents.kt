@@ -1,5 +1,8 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +59,7 @@ import com.merkost.metronome.practiceSets.PracticeStepTarget
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -147,7 +151,15 @@ fun PracticeSetRow(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(cornerRadiusLarge),
-        color = if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        color = animateColorAsState(
+            targetValue = if (isActive) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
+            animationSpec = AppAnimations.standard(),
+            label = "practiceSetRowSurface",
+        ).value,
     ) {
         Row(
             modifier = Modifier
@@ -159,7 +171,11 @@ fun PracticeSetRow(
                 .padding(spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (isReordering) {
+            AnimatedVisibility(
+                visible = isReordering,
+                enter = AppAnimations.revealEnter,
+                exit = AppAnimations.concealExit,
+            ) {
                 Icon(
                     imageVector = Lucide.GripVertical,
                     contentDescription = null,
@@ -193,7 +209,13 @@ fun PracticeSetRow(
                     },
                 )
             }
-            if (isReordering) {
+            AnimatedContent(
+                targetState = isReordering,
+                transitionSpec = { AppAnimations.fadeThrough },
+                label = "practiceSetRowActions",
+            ) { reordering ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+            if (reordering) {
                 SetIconButton(
                     icon = Lucide.ChevronUp,
                     description = stringResource(Res.string.move_up, practiceSet.name),
@@ -243,6 +265,8 @@ fun PracticeSetRow(
                     }
                 }
             }
+            }
+            }
         }
     }
 }
@@ -271,9 +295,15 @@ fun PracticeSetStepRow(
             verticalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (isReordering) {
-                    Icon(Lucide.GripVertical, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(Modifier.width(spacingSmall))
+                AnimatedVisibility(
+                    visible = isReordering,
+                    enter = AppAnimations.revealEnter,
+                    exit = AppAnimations.concealExit,
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Lucide.GripVertical, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(Modifier.width(spacingSmall))
+                    }
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -292,31 +322,43 @@ fun PracticeSetStepRow(
                         color = if (preset == null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                if (isReordering) {
-                    SetIconButton(
-                        icon = Lucide.ChevronUp,
-                        description = stringResource(Res.string.move_up, preset?.name.orEmpty()),
-                        enabled = canMoveUp,
-                        onClick = onMoveUp,
-                    )
-                    SetIconButton(
-                        icon = Lucide.ChevronDown,
-                        description = stringResource(Res.string.move_down, preset?.name.orEmpty()),
-                        enabled = canMoveDown,
-                        onClick = onMoveDown,
-                    )
-                } else {
-                    SetIconButton(
-                        icon = Lucide.Trash2,
-                        description = stringResource(
-                            Res.string.practice_step_remove,
-                            preset?.name ?: stringResource(Res.string.practice_step_number, index + 1),
-                        ),
-                        onClick = onRemove,
-                    )
+                AnimatedContent(
+                    targetState = isReordering,
+                    transitionSpec = { AppAnimations.fadeThrough },
+                    label = "practiceStepRowActions",
+                ) { reordering ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (reordering) {
+                            SetIconButton(
+                                icon = Lucide.ChevronUp,
+                                description = stringResource(Res.string.move_up, preset?.name.orEmpty()),
+                                enabled = canMoveUp,
+                                onClick = onMoveUp,
+                            )
+                            SetIconButton(
+                                icon = Lucide.ChevronDown,
+                                description = stringResource(Res.string.move_down, preset?.name.orEmpty()),
+                                enabled = canMoveDown,
+                                onClick = onMoveDown,
+                            )
+                        } else {
+                            SetIconButton(
+                                icon = Lucide.Trash2,
+                                description = stringResource(
+                                    Res.string.practice_step_remove,
+                                    preset?.name ?: stringResource(Res.string.practice_step_number, index + 1),
+                                ),
+                                onClick = onRemove,
+                            )
+                        }
+                    }
                 }
             }
-            if (!isReordering) {
+            AnimatedVisibility(
+                visible = !isReordering,
+                enter = AppAnimations.expandEnter,
+                exit = AppAnimations.shrinkExit,
+            ) {
                 PracticeTargetEditor(target = step.target, onTargetChange = onTargetChange)
             }
         }
@@ -427,14 +469,22 @@ fun PracticeSessionStrip(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(
-                        text = stringResource(
-                            Res.string.practice_session_step,
-                            session.currentStepIndex + 1,
-                            session.steps.size,
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
+                    AnimatedContent(
+                        targetState = session.currentStepIndex,
+                        transitionSpec = {
+                            AppAnimations.slideLabelTransform(towardsUp = targetState >= initialState)
+                        },
+                        label = "practiceStripStep",
+                    ) { stepIndex ->
+                        Text(
+                            text = stringResource(
+                                Res.string.practice_session_step,
+                                stepIndex + 1,
+                                session.steps.size,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
                 }
                 Text(
                     text = sessionProgressLabel(session),
@@ -531,7 +581,7 @@ private fun SetIconButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
 ) {
-    IconButton(
+    AppIconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier
