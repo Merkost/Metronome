@@ -2,8 +2,10 @@
 
 All notable releases of **Metronome: Feel the Beat!** Each entry includes a
 short, paste-ready **store message** for the App Store ("What's New") and Google
-Play ("What's new"). Store messages are kept under 500 characters to fit Play's
-limit. Newest first.
+Play ("What's new"). Play's field is capped at 500 characters, so from 1.3.0
+each release carries a separate message per store rather than one shared text —
+the App Store copy has room to explain, and platform-specific fixes only appear
+in the store they apply to. Newest first.
 
 ---
 
@@ -53,14 +55,34 @@ _2026-09-03 · Android versionCode 8 · iOS build 1_
   control and recovery, review- and release-note prompt policy, navigation, and
   the audio-focus and sound-loading state machines.
 
-**Store message**
+**Store message — Google Play** (426 of 500 characters)
 ```
 What's new in 1.3.0
 
-• Practice Presets — save a full setup and return to it in one tap
-• Practice Sets — line up presets into a sequence with time or bar goals
-• Practice Again — repeat your last finished set instantly
+Practice Presets — save a complete setup (tempo, time signature, subdivision, accents and count-in) and return to it in one tap.
+
+Practice Sets — line your presets up into a sequence and give each step a time or bar goal. Move through it at your own pace; an interrupted session resumes where you left it.
+
+Practice Again repeats the set you last finished.
+
+Plus a calmer, more consistent feel throughout.
+```
+
+**Store message — App Store** (977 of 4000 characters)
+```
+Structured practice
+
+Save a complete setup as a Practice Preset — tempo, time signature, subdivision, per-beat accents and mutes, and count-in — then return to it in one tap. Favourite the ones you reach for most, rename or duplicate any of them, and keep them in the order you practise. Your existing saved tempos carry across.
+
+Build a Practice Set from those presets and give any step a time or bar goal. Move forward and back at your own pace, pause and resume, and finish when you are done. If practice is interrupted, the session picks up where you left it.
+
+Practice Again repeats the set you last finished, straight from the tempo sheet.
+
+ALSO IN THIS VERSION
 • A calmer, more consistent feel throughout, with smoother screen transitions
+• Steadier feedback under your thumb across the tempo controls and sliders
+• Playback now stops reliably when a call or another app takes over audio
+• A short summary of what changed appears after each update, and stays in Settings
 ```
 
 ---

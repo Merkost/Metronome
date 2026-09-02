@@ -1,6 +1,6 @@
 # Metronome ASO and Store Strategy
 
-Last updated: 2026-08-31
+Last updated: 2026-09-03
 
 ## Product Position
 
@@ -20,9 +20,9 @@ Metronome is a precise, distraction-free metronome with serious practice tools f
 - Subtitle, 29 of 30 characters: **Precise Timing & Rhythm Tools**
 - Primary category: **Music**
 - Secondary category: **Utilities**
-- Promotional text, 136 of 170 characters:
+- Promotional text, 138 of 170 characters:
 
-> Train with precise timing, tempo ramps, silent-bar challenges, subdivisions, saved tempos, and practice stats—without ads or an account.
+> Train with precise timing, saved practice presets, practice sets, tempo ramps, silent-bar challenges, and stats—without ads or an account.
 
 - Keyword field, 94 of 100 characters:
 
@@ -52,7 +52,8 @@ PRACTICE WITH PURPOSE
 • Gap Trainer to alternate audible and silent bars
 • Countdown timer and stopwatch
 • One-bar count-in
-• Saved tempos with time signature and subdivision
+• Practice Presets that save tempo, time signature, subdivision, accents and count-in
+• Practice Sets that run your presets in order, with optional time or bar goals
 • Daily practice time, total time and streaks stored on your device
 
 STAY IN THE FLOW
@@ -100,7 +101,8 @@ SERIOUS PRACTICE TOOLS
 • Gap Trainer for alternating audible and silent bars
 • Countdown timer and stopwatch
 • One-bar count-in
-• Saved tempos with their time signature and subdivision
+• Practice Presets that save tempo, time signature, subdivision, accents and count-in
+• Practice Sets that run your presets in order, with optional time or bar goals
 • Daily practice time, total time and streaks
 
 MADE TO STAY OUT OF THE WAY
@@ -187,7 +189,7 @@ Replace the current three version-1.0-era screenshots with this eight-frame sequ
 3. **Train your inner clock** — Gap Trainer audible and silent phases.
 4. **Hear every subdivision** — eighths, triplets and sixteenths.
 5. **Shape every beat** — accent and mute controls.
-6. **Save tempos. Track progress.** — saved tempos, practice time and streak.
+6. **Save setups. Practise in order.** — Practice Presets and a Practice Set with step goals.
 7. **Keep practising from the Lock Screen** — iOS Live Activity and Dynamic Island; use background playback and notification controls on Android.
 8. **No ads. No account. Core tools offline.** — restrained closing proof frame.
 
@@ -208,7 +210,7 @@ Avoid text, excessive detail and marks that can be mistaken for a letter. Apple 
 - H1: **A precise metronome built for better practice**
 - Meta description:
 
-> Practice with precise BPM control, tempo and gap trainers, subdivisions, timers and saved tempos. Free, ad-free metronome for iPhone and Android.
+> Practice with precise BPM control, practice presets and sets, tempo and gap trainers, subdivisions and timers. Free, ad-free metronome for iPhone and Android.
 
 The website should also add a canonical URL, Open Graph metadata, a social preview image, `SoftwareApplication` structured data, current feature copy, descriptive screenshot alternative text, the correct App Store URL and a concise FAQ covering gap training and gradual tempo practice.
 
