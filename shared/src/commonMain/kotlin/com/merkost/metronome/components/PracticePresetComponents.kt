@@ -3,6 +3,7 @@ package com.merkost.metronome.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +60,8 @@ import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Trash2
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.ui.AppAnimations
-import com.merkost.metronome.ui.pressableSurface
+import com.merkost.metronome.ui.PressedScaleSurface
+import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.cornerRadiusXLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
@@ -119,15 +121,20 @@ fun PracticePresetRow(
         animationSpec = AppAnimations.standard(),
         label = "presetRowSurface",
     )
+    val interactionSource = remember { MutableInteractionSource() }
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        onClick = onApply,
+        enabled = !isReordering,
+        interactionSource = interactionSource,
+        modifier = modifier
+            .fillMaxWidth()
+            .pressScale(interactionSource, PressedScaleSurface),
         shape = RoundedCornerShape(cornerRadiusLarge),
         color = surfaceColor,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .pressableSurface(onClick = onApply, enabled = !isReordering)
                 .padding(horizontal = spacingSmall, vertical = spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {

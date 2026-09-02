@@ -3,6 +3,7 @@ package com.merkost.metronome.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,7 +62,8 @@ import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.PressedScaleSubtle
-import com.merkost.metronome.ui.pressableSurface
+import com.merkost.metronome.ui.PressedScaleSurface
+import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import metronome.shared.generated.resources.*
@@ -79,8 +81,14 @@ fun PracticeAgainRow(
         practiceSet.name,
         practiceSet.steps.size,
     )
+    val interactionSource = remember { MutableInteractionSource() }
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        interactionSource = interactionSource,
+        modifier = modifier
+            .fillMaxWidth()
+            .pressScale(interactionSource, PressedScaleSurface)
+            .semantics(mergeDescendants = true) { contentDescription = description },
         shape = RoundedCornerShape(cornerRadiusLarge),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
@@ -88,8 +96,6 @@ fun PracticeAgainRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minimumTouchTargetSize)
-                .pressableSurface(onClick = onClick)
-                .semantics(mergeDescendants = true) { contentDescription = description }
                 .padding(spacingMedium),
             horizontalArrangement = Arrangement.spacedBy(spacingMedium),
             verticalAlignment = Alignment.CenterVertically,
@@ -149,26 +155,29 @@ fun PracticeSetRow(
     modifier: Modifier = Modifier,
 ) {
     var actionsExpanded by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val surfaceColor by animateColorAsState(
+        targetValue = if (isActive) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        animationSpec = AppAnimations.standard(),
+        label = "practiceSetRowSurface",
+    )
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        onClick = if (isActive) onResume else onStart,
+        enabled = !isReordering && missingPresetCount == 0,
+        interactionSource = interactionSource,
+        modifier = modifier
+            .fillMaxWidth()
+            .pressScale(interactionSource, PressedScaleSurface),
         shape = RoundedCornerShape(cornerRadiusLarge),
-        color = animateColorAsState(
-            targetValue = if (isActive) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surface
-            },
-            animationSpec = AppAnimations.standard(),
-            label = "practiceSetRowSurface",
-        ).value,
+        color = surfaceColor,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .pressableSurface(
-                    onClick = if (isActive) onResume else onStart,
-                    enabled = !isReordering && missingPresetCount == 0,
-                )
                 .padding(spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -449,16 +458,19 @@ fun PracticeSessionStrip(
     onOpen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        onClick = onOpen,
+        interactionSource = interactionSource,
+        modifier = modifier
+            .fillMaxWidth()
+            .pressScale(interactionSource, PressedScaleSubtle),
         shape = RoundedCornerShape(cornerRadiusLarge),
         color = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
     ) {
         Column(
-            modifier = Modifier
-                .pressableSurface(onClick = onOpen, pressedScale = PressedScaleSubtle)
-                .padding(spacingMedium),
+            modifier = Modifier.padding(spacingMedium),
             verticalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
