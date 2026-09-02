@@ -53,14 +53,14 @@ fun Pendulum(
             )
         } else {
             lastBeatIndex.value = -1
-            angle.animateTo(0f, AppAnimations.Gentle)
+            angle.animateTo(0f, AppAnimations.Calm)
         }
     }
 
     val bpm = (60_000f / intervalMs).coerceIn(MIN_BPM, MAX_BPM)
     val weightFraction by animateFloatAsState(
         targetValue = 0.72f - 0.34f * ((bpm - MIN_BPM) / (MAX_BPM - MIN_BPM)),
-        animationSpec = AppAnimations.Gentle,
+        animationSpec = AppAnimations.Calm,
         label = "pendulumWeight"
     )
 

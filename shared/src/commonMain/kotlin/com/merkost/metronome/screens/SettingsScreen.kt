@@ -66,6 +66,7 @@ import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.platform.PlatformActions
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusMedium
 import com.merkost.metronome.ui.emojiSize
 import com.merkost.metronome.ui.horizontalPadding
@@ -162,15 +163,21 @@ fun SettingsScreen(upPress: () -> Unit) {
                     ClickSound.entries.forEach { sound ->
                         val isSelected = sound == selectedSound
                         val borderWidth by animateDpAsState(
-                            targetValue = if (isSelected) 2.5.dp else 0.dp
+                            targetValue = if (isSelected) 2.5.dp else 0.dp,
+                            animationSpec = AppAnimations.emphasized(),
+                            label = "soundBorderWidth",
                         )
                         val borderColor by animateColorAsState(
                             targetValue = if (isSelected) MaterialTheme.colorScheme.primary
-                            else Color.Transparent
+                            else Color.Transparent,
+                            animationSpec = AppAnimations.standard(),
+                            label = "soundBorderColor",
                         )
                         val containerColor by animateColorAsState(
                             targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
-                            else Color.Transparent
+                            else Color.Transparent,
+                            animationSpec = AppAnimations.standard(),
+                            label = "soundContainer",
                         )
                         MySecondaryButton(
                             onClick = { viewModel.onSoundChanged(sound) },
@@ -426,7 +433,11 @@ fun ColorSecondaryButton(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderDp by animateDpAsState(targetValue = if (isSelected) 6.dp else 1.dp)
+    val borderDp by animateDpAsState(
+        targetValue = if (isSelected) 6.dp else 1.dp,
+        animationSpec = AppAnimations.emphasized(),
+        label = "colorSchemeBorder",
+    )
 
     MySecondaryButton(
         modifier = Modifier.semantics {

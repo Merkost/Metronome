@@ -5,10 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -103,16 +99,16 @@ fun CoachMarksOverlay(
     val cornerRadiusPx = with(density) { cornerRadiusLarge.toPx() }
 
     val spotLeft by animateFloatAsState(
-        target.left - spotlightPaddingPx, AppAnimations.Gentle, label = "spotL"
+        target.left - spotlightPaddingPx, AppAnimations.Emphasized, label = "spotL"
     )
     val spotTop by animateFloatAsState(
-        target.top - spotlightPaddingPx, AppAnimations.Gentle, label = "spotT"
+        target.top - spotlightPaddingPx, AppAnimations.Emphasized, label = "spotT"
     )
     val spotRight by animateFloatAsState(
-        target.right + spotlightPaddingPx, AppAnimations.Gentle, label = "spotR"
+        target.right + spotlightPaddingPx, AppAnimations.Emphasized, label = "spotR"
     )
     val spotBottom by animateFloatAsState(
-        target.bottom + spotlightPaddingPx, AppAnimations.Gentle, label = "spotB"
+        target.bottom + spotlightPaddingPx, AppAnimations.Emphasized, label = "spotB"
     )
     val spotlightRect = Rect(spotLeft, spotTop, spotRight, spotBottom)
 
@@ -179,7 +175,7 @@ fun CoachMarksOverlay(
         LaunchedEffect(targetY, positioned) {
             if (!positioned) return@LaunchedEffect
             if (snapped) {
-                tooltipY.animateTo(targetY, AppAnimations.Gentle)
+                tooltipY.animateTo(targetY, AppAnimations.Emphasized)
             } else {
                 tooltipY.snapTo(targetY)
                 snapped = true
@@ -203,7 +199,7 @@ fun CoachMarksOverlay(
         ) {
             AnimatedContent(
                 targetState = step,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                transitionSpec = { AppAnimations.fadeThrough },
                 label = "tooltipContent"
             ) { animatedStep ->
                 if (animatedStep in coachSteps.indices) {
@@ -254,7 +250,11 @@ private fun TooltipContent(
                 horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AnimatedVisibility(visible = step > 0, enter = fadeIn(), exit = fadeOut()) {
+                AnimatedVisibility(
+                    visible = step > 0,
+                    enter = AppAnimations.expandEnter,
+                    exit = AppAnimations.shrinkExit,
+                ) {
                     TextButton(onClick = onBack) {
                         Text(
                             text = "Back",
@@ -287,7 +287,7 @@ private fun StepDots(count: Int, current: Int) {
             val active = index == current
             val dotWidth by animateDpAsState(
                 targetValue = if (active) 18.dp else 7.dp,
-                animationSpec = spring(stiffness = 600f, dampingRatio = 0.8f),
+                animationSpec = AppAnimations.emphasized(),
                 label = "dotWidth"
             )
             Box(

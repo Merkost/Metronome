@@ -1,12 +1,11 @@
 package com.merkost.metronome.components
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -33,11 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -46,13 +42,15 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pause
 import com.composables.icons.lucide.Play
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.PressedScaleControl
+import com.merkost.metronome.ui.PressedScaleSurface
+import com.merkost.metronome.ui.pressScale
+import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.defaultIconButtonSize
 import com.merkost.metronome.ui.defaultPlayButtonSize
 import com.merkost.metronome.ui.defaultSecondaryIconButtonSize
 import com.merkost.metronome.ui.playButtonIconSize
 
-private const val BUTTON_PRESS_SCALE = 0.96f
-private const val PLAY_PRESS_SCALE = 0.92f
 
 @Composable
 fun MySecondaryTextButton(text: String, onClick: () -> Unit) {
@@ -77,20 +75,11 @@ fun MySecondaryButton(
     content: @Composable () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) BUTTON_PRESS_SCALE else 1f,
-        animationSpec = AppAnimations.Interactive,
-        label = "secondaryButtonScale"
-    )
 
     OutlinedCard(
         border = border,
         colors = CardDefaults.outlinedCardColors(),
-        modifier = modifier.graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-        },
+        modifier = modifier.pressScale(interactionSource, PressedScaleSurface),
         onClick = onClick,
         shape = shape,
         interactionSource = interactionSource
@@ -108,27 +97,20 @@ fun MyIconButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) BUTTON_PRESS_SCALE else 1f,
-        animationSpec = AppAnimations.Interactive,
-        label = "iconButtonScale"
-    )
     val containerColor by animateColorAsState(
         targetValue = if (isPressed) {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
         } else {
             MaterialTheme.colorScheme.primary.copy(alpha = 0.07f)
         },
+        animationSpec = AppAnimations.standard(),
         label = "iconButtonContainer"
     )
 
     Card(
         modifier = modifier
             .size(size)
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            },
+            .pressScale(interactionSource, PressedScaleControl),
         colors = CardDefaults.cardColors(
             containerColor = containerColor,
             contentColor = MaterialTheme.colorScheme.primary
@@ -150,19 +132,13 @@ fun PlayButton(
     size: Dp = defaultPlayButtonSize,
     onClick: () -> Unit
 ) {
-    val haptics = LocalHapticFeedback.current
+    val haptics = rememberAppHaptics()
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val pressScale by animateFloatAsState(
-        targetValue = if (isPressed) PLAY_PRESS_SCALE else 1f,
-        animationSpec = AppAnimations.Interactive,
-        label = "playButtonPressScale"
-    )
 
     val cornerRadius by animateDpAsState(
         targetValue = if (isPlaying) size / 4 else size,
         label = "playButtonCorners",
-        animationSpec = tween(250)
+        animationSpec = AppAnimations.emphasized()
     )
 
     val glowColor = MaterialTheme.colorScheme.primary
@@ -172,10 +148,10 @@ fun PlayButton(
     val glowModifier = if (isPlaying) {
         val infiniteTransition = rememberInfiniteTransition(label = "playButtonGlow")
         val glowAlpha by infiniteTransition.animateFloat(
-            initialValue = 0.06f,
-            targetValue = 0.18f,
+            initialValue = 0.05f,
+            targetValue = 0.14f,
             animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 2000, easing = FastOutSlowInEasing),
+                animation = tween(durationMillis = 2600, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse
             ),
             label = "playButtonGlowAlpha"
@@ -204,22 +180,19 @@ fun PlayButton(
         modifier = modifier
             .size(size)
             .then(glowModifier)
-            .graphicsLayer {
-                scaleX = pressScale
-                scaleY = pressScale
-            },
+            .pressScale(interactionSource, PressedScaleControl),
         onClick = {
-            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+            haptics.confirm()
             onClick()
         },
         shape = RoundedCornerShape(cornerRadius),
         interactionSource = interactionSource
     ) {
-        Crossfade(
-            isPlaying,
+        AnimatedContent(
+            targetState = isPlaying,
             label = "playButtonIcon",
             modifier = Modifier.fillMaxSize(),
-            animationSpec = tween(250)
+            transitionSpec = { AppAnimations.fadeScaleTransform }
         ) { playing ->
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(

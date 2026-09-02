@@ -16,8 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +24,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pointer
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.spacingSmall
 
 @Composable
@@ -61,10 +60,10 @@ fun MainButtonsRow(
         )
         Spacer(modifier = Modifier.size(horizontalPadding))
 
-        val haptics = LocalHapticFeedback.current
+        val haptics = rememberAppHaptics()
         MySecondaryButton(
             onClick = {
-                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                haptics.tick()
                 onTempoTap()
             },
             shape = RoundedCornerShape(50),

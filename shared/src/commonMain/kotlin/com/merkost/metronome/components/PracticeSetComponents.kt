@@ -1,6 +1,5 @@
 package com.merkost.metronome.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.semantics.contentDescription
@@ -58,6 +56,7 @@ import com.merkost.metronome.practiceSets.PracticeStepTarget
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import metronome.shared.generated.resources.*
@@ -84,7 +83,7 @@ fun PracticeAgainRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minimumTouchTargetSize)
-                .clickable(role = Role.Button, onClick = onClick)
+                .pressableSurface(onClick = onClick)
                 .semantics(mergeDescendants = true) { contentDescription = description }
                 .padding(spacingMedium),
             horizontalArrangement = Arrangement.spacedBy(spacingMedium),
@@ -153,10 +152,9 @@ fun PracticeSetRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(
-                    enabled = !isReordering && missingPresetCount == 0,
-                    role = Role.Button,
+                .pressableSurface(
                     onClick = if (isActive) onResume else onStart,
+                    enabled = !isReordering && missingPresetCount == 0,
                 )
                 .padding(spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
@@ -416,7 +414,7 @@ fun PracticeSessionStrip(
     ) {
         Column(
             modifier = Modifier
-                .clickable(role = Role.Button, onClick = onOpen)
+                .pressableSurface(onClick = onOpen)
                 .padding(spacingMedium),
             verticalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {

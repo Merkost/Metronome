@@ -28,6 +28,7 @@ import com.composables.icons.lucide.X
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.pressScale
+import com.merkost.metronome.ui.rememberAppHaptics
 
 @Composable
 fun AppChip(
@@ -39,13 +40,14 @@ fun AppChip(
     onTrailingClose: (() -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val haptics = rememberAppHaptics()
     val containerColor by animateColorAsState(
         targetValue = if (selected) {
             MaterialTheme.colorScheme.primary
         } else {
             MaterialTheme.colorScheme.surfaceVariant
         },
-        animationSpec = AppAnimations.bouncy(),
+        animationSpec = AppAnimations.standard(),
         label = "chipContainer"
     )
     val contentColor by animateColorAsState(
@@ -54,7 +56,7 @@ fun AppChip(
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
-        animationSpec = AppAnimations.bouncy(),
+        animationSpec = AppAnimations.standard(),
         label = "chipContent"
     )
 
@@ -67,7 +69,10 @@ fun AppChip(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onClick
+                onClick = {
+                    haptics.select()
+                    onClick()
+                }
             ),
     ) {
         Row(

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,6 +53,7 @@ import com.merkost.metronome.practiceSets.PracticeSessionStartResult
 import com.merkost.metronome.practiceSets.PracticeSet
 import com.merkost.metronome.practiceSets.PracticeSetValidationError
 import com.merkost.metronome.presets.PracticePreset
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
@@ -251,36 +253,45 @@ private fun PracticeSetsContent(
     onTargetChange: (String, com.merkost.metronome.practiceSets.PracticeStepTarget) -> Unit,
     onEditorReorderingChanged: (Boolean) -> Unit,
 ) {
-    val editor = uiState.editor
-    if (editor == null) {
-        PracticeSetsLibrary(
-            uiState = uiState,
-            persistenceWarning = persistenceWarning,
-            snackbarHostState = snackbarHostState,
-            onBack = onBack,
-            onCreate = onCreate,
-            onStart = onStart,
-            onResume = onResume,
-            onRetryPersistence = onRetryPersistence,
-            onEdit = onEdit,
-            onDelete = onDelete,
-            onMove = onMove,
-            onReorderingChanged = onReorderingChanged,
-        )
-    } else {
-        PracticeSetEditor(
-            editor = editor,
-            presets = uiState.presets,
-            snackbarHostState = snackbarHostState,
-            onBack = onBack,
-            onNameChanged = onNameChanged,
-            onSave = onSave,
-            onAddPreset = onAddPreset,
-            onRemoveStep = onRemoveStep,
-            onMoveStep = onMoveStep,
-            onTargetChange = onTargetChange,
-            onReorderingChanged = onEditorReorderingChanged,
-        )
+    AnimatedContent(
+        targetState = uiState.editor,
+        contentKey = { it != null },
+        transitionSpec = {
+            if (targetState != null) AppAnimations.forwardRoute else AppAnimations.backwardRoute
+        },
+        label = "practiceSetsRoute",
+        modifier = Modifier.fillMaxSize(),
+    ) { editor ->
+        if (editor == null) {
+            PracticeSetsLibrary(
+                uiState = uiState,
+                persistenceWarning = persistenceWarning,
+                snackbarHostState = snackbarHostState,
+                onBack = onBack,
+                onCreate = onCreate,
+                onStart = onStart,
+                onResume = onResume,
+                onRetryPersistence = onRetryPersistence,
+                onEdit = onEdit,
+                onDelete = onDelete,
+                onMove = onMove,
+                onReorderingChanged = onReorderingChanged,
+            )
+        } else {
+            PracticeSetEditor(
+                editor = editor,
+                presets = uiState.presets,
+                snackbarHostState = snackbarHostState,
+                onBack = onBack,
+                onNameChanged = onNameChanged,
+                onSave = onSave,
+                onAddPreset = onAddPreset,
+                onRemoveStep = onRemoveStep,
+                onMoveStep = onMoveStep,
+                onTargetChange = onTargetChange,
+                onReorderingChanged = onEditorReorderingChanged,
+            )
+        }
     }
 }
 
@@ -331,7 +342,12 @@ private fun PracticeSetsLibrary(
             modifier = Modifier.fillMaxSize().padding(contentPadding),
             contentAlignment = Alignment.TopCenter,
         ) {
-            if (uiState.sets.isEmpty()) {
+            AnimatedContent(
+                targetState = uiState.sets.isEmpty(),
+                transitionSpec = { AppAnimations.fadeThroughRoute },
+                label = "practiceSetsLibraryState",
+            ) { isEmpty ->
+            if (isEmpty) {
                 PracticeSetsEmptyState(
                     onCreate = onCreate,
                     modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
@@ -350,6 +366,7 @@ private fun PracticeSetsLibrary(
                     if (persistenceWarning) {
                         item(key = "persistence-warning") {
                             Surface(
+                                modifier = Modifier.animateItem(),
                                 shape = RoundedCornerShape(cornerRadiusLarge),
                                 color = MaterialTheme.colorScheme.errorContainer,
                                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
@@ -375,7 +392,7 @@ private fun PracticeSetsLibrary(
                     item(key = "summary") {
                         if (stacked) {
                             Column(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
+                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
                                 verticalArrangement = Arrangement.spacedBy(spacingSmall),
                             ) {
                                 Text(
@@ -389,7 +406,7 @@ private fun PracticeSetsLibrary(
                             }
                         } else {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
+                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
@@ -407,6 +424,7 @@ private fun PracticeSetsLibrary(
                     itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
                         val presetIds = uiState.presets.mapTo(mutableSetOf()) { it.id }
                         PracticeSetRow(
+                            modifier = Modifier.animateItem(),
                             practiceSet = set,
                             missingPresetCount = set.steps.count { it.presetId !in presetIds },
                             isActive = set.id == uiState.activeSourceSetId,
@@ -422,6 +440,7 @@ private fun PracticeSetsLibrary(
                         )
                     }
                 }
+            }
             }
         }
     }
@@ -484,9 +503,9 @@ private fun PracticeSetEditor(
             ) {
                 item(key = "name") {
                     OutlinedTextField(
+                        modifier = Modifier.animateItem().fillMaxWidth(),
                         value = editor.name,
                         onValueChange = { if (it.length <= PracticeSet.MAX_NAME_LENGTH + 1) onNameChanged(it) },
-                        modifier = Modifier.fillMaxWidth(),
                         label = { Text(stringResource(Res.string.practice_set_name)) },
                         supportingText = { Text("${editor.name.length}/${PracticeSet.MAX_NAME_LENGTH}") },
                         singleLine = true,
@@ -494,7 +513,10 @@ private fun PracticeSetEditor(
                 }
                 if (editor.steps.isNotEmpty()) {
                     item(key = "step-actions") {
-                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.animateItem().fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
                             Text(
                                 stringResource(Res.string.practice_set_step_count, editor.steps.size),
                                 style = MaterialTheme.typography.labelLarge,
@@ -509,6 +531,7 @@ private fun PracticeSetEditor(
                 }
                 itemsIndexed(editor.steps, key = { _, step -> step.id }) { index, step ->
                     PracticeSetStepRow(
+                        modifier = Modifier.animateItem(),
                         index = index,
                         step = step,
                         preset = presets.firstOrNull { it.id == step.presetId },
@@ -526,7 +549,7 @@ private fun PracticeSetEditor(
                         FilledTonalButton(
                             onClick = onAddPreset,
                             enabled = editor.steps.size < PracticeSet.MAX_STEPS,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.animateItem().fillMaxWidth(),
                         ) {
                             Icon(Lucide.Plus, contentDescription = null)
                             Spacer(Modifier.width(spacingSmall))

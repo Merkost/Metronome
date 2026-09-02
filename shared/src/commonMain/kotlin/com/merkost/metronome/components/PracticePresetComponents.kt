@@ -1,6 +1,5 @@
 package com.merkost.metronome.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
@@ -57,6 +55,7 @@ import com.composables.icons.lucide.Plus
 import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Trash2
 import com.merkost.metronome.presets.PracticePreset
+import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.cornerRadiusXLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
@@ -120,7 +119,7 @@ fun PracticePresetRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(enabled = !isReordering, role = Role.Button, onClick = onApply)
+                .pressableSurface(onClick = onApply, enabled = !isReordering)
                 .padding(horizontal = spacingSmall, vertical = spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {

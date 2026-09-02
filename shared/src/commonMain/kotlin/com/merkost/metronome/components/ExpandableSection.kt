@@ -44,7 +44,7 @@ fun ExpandableSection(
 ) {
     val chevronRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
-        animationSpec = AppAnimations.Bouncy,
+        animationSpec = AppAnimations.Emphasized,
         label = "sectionChevron"
     )
     val interactionSource = remember { MutableInteractionSource() }

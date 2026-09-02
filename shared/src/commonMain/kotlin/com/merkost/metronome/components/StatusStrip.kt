@@ -3,7 +3,6 @@ package com.merkost.metronome.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,7 +50,7 @@ fun StatusStrip(
     val interactionSource = remember { MutableInteractionSource() }
     val animatedProgress by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = AppAnimations.Gentle,
+        animationSpec = AppAnimations.Calm,
         label = "stripProgress"
     )
 

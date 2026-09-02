@@ -1,13 +1,5 @@
 package com.merkost.metronome.navigation
 
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -20,6 +12,7 @@ import com.merkost.metronome.screens.MainScreen
 import com.merkost.metronome.screens.PracticePresetsScreen
 import com.merkost.metronome.screens.PracticeSetsScreen
 import com.merkost.metronome.screens.SettingsScreen
+import com.merkost.metronome.ui.AppAnimations
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -35,64 +28,6 @@ internal val mainNavigationSavedStateConfiguration = SavedStateConfiguration {
     }
 }
 
-private fun forwardNavigationTransition(): ContentTransform =
-    (
-        slideInHorizontally(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-            initialOffsetX = { it / 3 },
-        ) + fadeIn(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-        )
-    ) togetherWith (
-        slideOutHorizontally(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-            targetOffsetX = { -it / 5 },
-        ) + fadeOut(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-        )
-    )
-
-private fun backwardNavigationTransition(): ContentTransform =
-    (
-        slideInHorizontally(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-            initialOffsetX = { -it / 5 },
-        ) + fadeIn(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-        )
-    ) togetherWith (
-        slideOutHorizontally(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-            targetOffsetX = { it / 3 },
-        ) + fadeOut(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-        )
-    )
-
 @Composable
 fun AppNavigation() {
     val backStack = rememberNavBackStack(
@@ -104,9 +39,9 @@ fun AppNavigation() {
     NavDisplay(
         backStack = backStack,
         onBack = { navigator.goBack() },
-        transitionSpec = { forwardNavigationTransition() },
-        popTransitionSpec = { backwardNavigationTransition() },
-        predictivePopTransitionSpec = { backwardNavigationTransition() },
+        transitionSpec = { AppAnimations.forwardNavigation },
+        popTransitionSpec = { AppAnimations.backwardNavigation },
+        predictivePopTransitionSpec = { AppAnimations.backwardNavigation },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),

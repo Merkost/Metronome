@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
@@ -50,6 +51,7 @@ import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.presets.ActivePresetState
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.presets.PracticePresetDraft
+import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.spacingLarge
@@ -322,7 +324,12 @@ private fun PracticePresetsContent(
             modifier = Modifier.fillMaxSize().padding(contentPadding),
             contentAlignment = Alignment.TopCenter,
         ) {
-            if (uiState.presets.isEmpty() && !uiState.migrationFailed) {
+            AnimatedContent(
+                targetState = uiState.presets.isEmpty() && !uiState.migrationFailed,
+                transitionSpec = { AppAnimations.fadeThroughRoute },
+                label = "presetsLibraryState",
+            ) { isEmpty ->
+            if (isEmpty) {
                 PracticePresetsEmptyState(
                     onCreate = onCreate,
                     modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
@@ -341,7 +348,7 @@ private fun PracticePresetsContent(
                     if (uiState.migrationFailed) {
                         item(key = "migration") {
                             Column(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
+                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
                                 verticalArrangement = Arrangement.spacedBy(spacingSmall),
                             ) {
                                 Text(
@@ -358,7 +365,7 @@ private fun PracticePresetsContent(
                     item(key = "summary") {
                         if (useStackedSummary) {
                             Column(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
+                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
                                 verticalArrangement = Arrangement.spacedBy(spacingSmall),
                             ) {
                                 Text(
@@ -380,7 +387,7 @@ private fun PracticePresetsContent(
                             }
                         } else {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
+                                modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
@@ -405,7 +412,7 @@ private fun PracticePresetsContent(
                                 text = stringResource(Res.string.preset_limit_reached),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(bottom = spacingSmall),
+                                modifier = Modifier.animateItem().padding(bottom = spacingSmall),
                             )
                         }
                     }
@@ -426,7 +433,7 @@ private fun PracticePresetsContent(
                             onDelete = { onDelete(preset) },
                             onMoveUp = { onMove(preset.id, index - 1) },
                             onMoveDown = { onMove(preset.id, index + 1) },
-                            modifier = Modifier.pointerInput(uiState.isReordering, preset.id, index) {
+                            modifier = Modifier.animateItem().pointerInput(uiState.isReordering, preset.id, index) {
                                 if (!uiState.isReordering) return@pointerInput
                                 detectDragGesturesAfterLongPress(
                                     onDragEnd = { accumulatedDrag = 0f },
@@ -450,6 +457,7 @@ private fun PracticePresetsContent(
                         )
                     }
                 }
+            }
             }
         }
     }

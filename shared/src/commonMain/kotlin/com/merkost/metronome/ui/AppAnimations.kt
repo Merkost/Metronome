@@ -4,26 +4,30 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,67 +40,144 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object AppAnimations {
-    fun <T> bouncy(): SpringSpec<T> = SpringSpec(
-        stiffness = 600f,
-        dampingRatio = 0.8f
+
+    private const val PressStiffness = 1600f
+    private const val QuickStiffness = 1100f
+    private const val StandardStiffness = 700f
+    private const val EmphasizedStiffness = 340f
+    private const val CalmStiffness = 190f
+    private const val ExpressiveStiffness = 520f
+
+    private const val Flat = 1f
+    private const val NearlyFlat = 0.94f
+    private const val Lively = 0.66f
+
+    fun <T> press(): SpringSpec<T> =
+        SpringSpec(dampingRatio = Flat, stiffness = PressStiffness)
+
+    fun <T> quick(): SpringSpec<T> =
+        SpringSpec(dampingRatio = Flat, stiffness = QuickStiffness)
+
+    fun <T> standard(): SpringSpec<T> =
+        SpringSpec(dampingRatio = Flat, stiffness = StandardStiffness)
+
+    fun <T> emphasized(): SpringSpec<T> =
+        SpringSpec(dampingRatio = NearlyFlat, stiffness = EmphasizedStiffness)
+
+    fun <T> calm(): SpringSpec<T> =
+        SpringSpec(dampingRatio = Flat, stiffness = CalmStiffness)
+
+    fun <T> expressive(): SpringSpec<T> =
+        SpringSpec(dampingRatio = Lively, stiffness = ExpressiveStiffness)
+
+    val Press = press<Float>()
+    val Quick = quick<Float>()
+    val Standard = standard<Float>()
+    val Emphasized = emphasized<Float>()
+    val Calm = calm<Float>()
+    val Expressive = expressive<Float>()
+
+    private val StandardOffset = SpringSpec(
+        dampingRatio = Flat,
+        stiffness = StandardStiffness,
+        visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    val Interactive = SpringSpec<Float>(
-        stiffness = Spring.StiffnessMedium,
-        dampingRatio = Spring.DampingRatioMediumBouncy
+    private val QuickOffset = SpringSpec(
+        dampingRatio = Flat,
+        stiffness = QuickStiffness,
+        visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    val Bouncy = bouncy<Float>()
-
-    val Gentle = SpringSpec<Float>(
-        stiffness = Spring.StiffnessLow,
-        dampingRatio = Spring.DampingRatioNoBouncy
+    private val EmphasizedOffset = SpringSpec(
+        dampingRatio = NearlyFlat,
+        stiffness = EmphasizedStiffness,
+        visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    val Snappy = SpringSpec<Float>(
-        stiffness = 1000f,
-        dampingRatio = 0.3f
-    )
-
-    val Settle = SpringSpec<Float>(
-        stiffness = 600f,
-        dampingRatio = 0.6f
+    private val EmphasizedSize = SpringSpec(
+        dampingRatio = NearlyFlat,
+        stiffness = EmphasizedStiffness,
+        visibilityThreshold = IntSize.VisibilityThreshold,
     )
 
     val expandEnter: EnterTransition =
-        expandVertically(spring(stiffness = 600f, dampingRatio = 0.8f)) + fadeIn()
+        expandVertically(EmphasizedSize) + fadeIn(Standard)
 
     val shrinkExit: ExitTransition =
-        shrinkVertically(spring(stiffness = 600f, dampingRatio = 0.8f)) + fadeOut()
+        shrinkVertically(EmphasizedSize) + fadeOut(Quick)
+
+    val riseEnter: EnterTransition =
+        slideInVertically(EmphasizedOffset) { it / 6 } + fadeIn(Standard)
+
+    val sinkExit: ExitTransition =
+        slideOutVertically(QuickOffset) { it / 6 } + fadeOut(Quick)
+
+    val fadeThrough: ContentTransform =
+        fadeIn(Standard).togetherWith(fadeOut(Quick))
 
     val fadeScaleTransform: ContentTransform =
-        (fadeIn(spring(stiffness = 600f)) + scaleIn(initialScale = 0.85f, animationSpec = spring(stiffness = 600f)))
-            .togetherWith(fadeOut(spring(stiffness = 1000f)) + scaleOut(targetScale = 0.85f, animationSpec = spring(stiffness = 1000f)))
+        (fadeIn(Standard) + scaleIn(initialScale = 0.96f, animationSpec = Emphasized))
+            .togetherWith(fadeOut(Quick) + scaleOut(targetScale = 0.98f, animationSpec = Quick))
+
+    val forwardNavigation: ContentTransform =
+        (slideInHorizontally(EmphasizedOffset) { it / 8 } + fadeIn(Standard))
+            .togetherWith(slideOutHorizontally(EmphasizedOffset) { -it / 12 } + fadeOut(Quick))
+
+    val backwardNavigation: ContentTransform =
+        (slideInHorizontally(EmphasizedOffset) { -it / 12 } + fadeIn(Standard))
+            .togetherWith(slideOutHorizontally(EmphasizedOffset) { it / 8 } + fadeOut(Quick))
+
+    private fun ContentTransform.unclipped(): ContentTransform = ContentTransform(
+        targetContentEnter,
+        initialContentExit,
+        targetContentZIndex,
+        SizeTransform(clip = false),
+    )
+
+    val forwardRoute: ContentTransform = forwardNavigation.unclipped()
+
+    val backwardRoute: ContentTransform = backwardNavigation.unclipped()
+
+    val fadeThroughRoute: ContentTransform = fadeThrough.unclipped()
 
     fun slideDigitTransform(towardsUp: Boolean): ContentTransform {
         val direction = if (towardsUp) -1 else 1
-        return (slideInVertically(spring(stiffness = 600f, dampingRatio = 0.8f)) { it * -direction } + fadeIn())
-            .togetherWith(slideOutVertically(spring(stiffness = 600f, dampingRatio = 0.8f)) { it * direction } + fadeOut())
+        return (slideInVertically(EmphasizedOffset) { it * -direction / 2 } + fadeIn(Standard))
+            .togetherWith(slideOutVertically(EmphasizedOffset) { it * direction / 2 } + fadeOut(Quick))
+    }
+
+    fun slideLabelTransform(towardsUp: Boolean): ContentTransform {
+        val direction = if (towardsUp) -1 else 1
+        return (slideInVertically(StandardOffset) { it * -direction / 3 } + fadeIn(Standard))
+            .togetherWith(slideOutVertically(QuickOffset) { it * direction / 3 } + fadeOut(Quick))
     }
 }
+
+const val PressedScaleSubtle = 0.985f
+const val PressedScaleSurface = 0.975f
+const val PressedScaleControl = 0.94f
 
 @Composable
 fun Modifier.pressScale(
     interactionSource: MutableInteractionSource,
-    pressedScale: Float = 0.85f,
+    pressedScale: Float = PressedScaleControl,
 ): Modifier {
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) pressedScale else 1.0f,
-        animationSpec = AppAnimations.Interactive,
+        targetValue = if (isPressed) pressedScale else 1f,
+        animationSpec = AppAnimations.Press,
         label = "pressScale"
     )
     return this.graphicsLayer {
@@ -105,17 +186,46 @@ fun Modifier.pressScale(
     }
 }
 
+fun Modifier.pressableSurface(
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    pressedScale: Float = PressedScaleSurface,
+    role: Role = Role.Button,
+    rippled: Boolean = true,
+): Modifier = composed {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && enabled) pressedScale else 1f,
+        animationSpec = AppAnimations.Press,
+        label = "surfacePressScale"
+    )
+    val indication = if (rippled) LocalIndication.current else null
+    this
+        .graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        }
+        .clickable(
+            interactionSource = interactionSource,
+            indication = indication,
+            enabled = enabled,
+            role = role,
+            onClick = onClick,
+        )
+}
+
 fun Modifier.pulseOnChange(
     trigger: Int,
-    peakScale: Float = 1.1f,
+    peakScale: Float = 1.04f,
 ): Modifier = composed {
     val scale = remember { Animatable(1f) }
     val last = remember { intArrayOf(trigger) }
     LaunchedEffect(trigger) {
         if (trigger != last[0]) {
             last[0] = trigger
-            scale.animateTo(peakScale, AppAnimations.Snappy)
-            scale.animateTo(1f, AppAnimations.Settle)
+            scale.animateTo(peakScale, AppAnimations.quick())
+            scale.animateTo(1f, AppAnimations.standard())
         }
     }
     this.graphicsLayer {
@@ -125,12 +235,12 @@ fun Modifier.pulseOnChange(
 }
 
 fun Modifier.pulseOnAppear(
-    peakScale: Float = 1.25f,
+    peakScale: Float = 1.12f,
 ): Modifier = composed {
-    val scale = remember { Animatable(1f) }
+    val scale = remember { Animatable(0.9f) }
     LaunchedEffect(Unit) {
-        scale.animateTo(peakScale, AppAnimations.Snappy)
-        scale.animateTo(1f, AppAnimations.Settle)
+        scale.animateTo(peakScale, AppAnimations.quick())
+        scale.animateTo(1f, AppAnimations.expressive())
     }
     this.graphicsLayer {
         scaleX = scale.value

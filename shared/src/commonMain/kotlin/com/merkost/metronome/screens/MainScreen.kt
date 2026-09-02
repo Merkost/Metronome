@@ -5,9 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -267,17 +264,17 @@ fun MainScreen(
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val countInRemaining by viewModel.countInRemaining.collectAsState()
 
-    val springSpec = AppAnimations.Bouncy
+    val beatIndicatorSpec = AppAnimations.Emphasized
 
     val boxColorAnimation = remember { Animatable(0f) }
 
     if (colorFlash) {
         LaunchedEffect(selectedIndex) {
             if (metronomeState.playing) {
-                boxColorAnimation.animateTo(0.35f, springSpec)
-                boxColorAnimation.animateTo(0f, springSpec)
+                boxColorAnimation.animateTo(0.28f, AppAnimations.quick())
+                boxColorAnimation.animateTo(0f, AppAnimations.standard())
             } else {
-                boxColorAnimation.animateTo(0f, springSpec)
+                boxColorAnimation.animateTo(0f, AppAnimations.standard())
             }
         }
     }
@@ -373,7 +370,7 @@ fun MainScreen(
                                         selectedIndex = selectedIndex.coerceIn(beats.indices),
                                         beats = beats,
                                         isPlaying = isPlaying,
-                                        animSpec = springSpec,
+                                        animSpec = beatIndicatorSpec,
                                         arrangementSpacing = ballSpacing,
                                         indicatorSize = indicatorSize,
                                         ballSize = ballSize,
@@ -406,10 +403,7 @@ fun MainScreen(
                             ) {
                                 AnimatedContent(
                                     targetState = tempoLabel,
-                                    transitionSpec = {
-                                        (slideInVertically { it / 2 } + fadeIn())
-                                            .togetherWith(slideOutVertically { -it / 2 } + fadeOut())
-                                    },
+                                    transitionSpec = { AppAnimations.slideLabelTransform(towardsUp = true) },
                                     label = "tempoLabel"
                                 ) { label ->
                                     Text(
@@ -436,7 +430,11 @@ fun MainScreen(
                                     it.name
                                 }
                             }
-                            AnimatedVisibility(visible = presetStatus != null) {
+                            AnimatedVisibility(
+                                visible = presetStatus != null,
+                                enter = AppAnimations.expandEnter,
+                                exit = AppAnimations.shrinkExit,
+                            ) {
                                 TextButton(
                                     onClick = {
                                         tempoSheetSection = null
@@ -641,8 +639,8 @@ fun MainScreen(
 
         AnimatedVisibility(
             visible = onboardingStep >= 0 && spotlightTargets.size == 3,
-            enter = fadeIn(),
-            exit = fadeOut()
+            enter = fadeIn(AppAnimations.standard()),
+            exit = fadeOut(AppAnimations.quick())
         ) {
             CoachMarksOverlay(
                 step = onboardingStep,

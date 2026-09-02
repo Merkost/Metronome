@@ -32,6 +32,7 @@ import com.composables.icons.lucide.Minus
 import com.composables.icons.lucide.Plus
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.pressScale
+import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.stepperButtonSize
 import kotlinx.coroutines.delay
@@ -88,6 +89,7 @@ private fun RepeatingStepButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val haptics = rememberAppHaptics()
     val currentOnStep by rememberUpdatedState(onStep)
     val currentEnabled by rememberUpdatedState(enabled)
     val holdConsumed = remember { booleanArrayOf(false) }
@@ -99,6 +101,7 @@ private fun RepeatingStepButton(
             holdConsumed[0] = true
             var repeats = 0
             while (currentEnabled) {
+                haptics.tick()
                 currentOnStep(if (repeats >= 10) 5 else 1)
                 repeats++
                 delay(90L)
@@ -121,6 +124,7 @@ private fun RepeatingStepButton(
             if (holdConsumed[0]) {
                 holdConsumed[0] = false
             } else {
+                haptics.tick()
                 onStep(1)
             }
         },

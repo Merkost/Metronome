@@ -42,6 +42,7 @@ fun PillChip(
         } else {
             MaterialTheme.colorScheme.primary.copy(alpha = 0.055f)
         },
+        animationSpec = AppAnimations.standard(),
         label = "pillChipContainer"
     )
 
@@ -61,7 +62,7 @@ fun PillChip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
-                .animateContentSize(AppAnimations.bouncy())
+                .animateContentSize(AppAnimations.standard())
                 .heightIn(min = minimumTouchTargetSize)
                 .padding(start = 14.dp, end = if (showDropdownIcon) 8.dp else 14.dp, top = 8.dp, bottom = 8.dp)
         ) {
