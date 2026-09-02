@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Metronome</string>
     <string name="settings">Settings</string>
-    <string name="app_full_name">Metronome: Feel the Beat!</string>
+    <string name="app_full_name">Metronome: Practice &amp; Tempo</string>
     <string name="practice_presets">Practice presets</string>
     <string name="save_setup">Save setup</string>
     <string name="save_current_setup">Save current setup</string>

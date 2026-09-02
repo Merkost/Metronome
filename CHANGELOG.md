@@ -1,11 +1,12 @@
 # Changelog
 
-All notable releases of **Metronome: Feel the Beat!** Each entry includes a
-short, paste-ready **store message** for the App Store ("What's New") and Google
-Play ("What's new"). Play's field is capped at 500 characters, so from 1.3.0
-each release carries a separate message per store rather than one shared text —
-the App Store copy has room to explain, and platform-specific fixes only appear
-in the store they apply to. Newest first.
+All notable releases of **Metronome: Practice & Tempo**, named "Metronome: Feel
+the Beat!" before 1.3.0. Each entry includes a short, paste-ready **store
+message** for the App Store ("What's New") and Google Play ("What's new").
+Play's field is capped at 500 characters, so from 1.3.0 each release carries a
+separate message per store rather than one shared text — the App Store copy has
+room to explain, and platform-specific fixes only appear in the store they apply
+to. Newest first.
 
 ---
 

@@ -10,13 +10,13 @@ Metronome is a precise, distraction-free metronome with serious practice tools f
 
 ### Shared product naming
 
-- Store name: **Metronome: BPM & Practice**
+- Store name: **Metronome: Practice & Tempo**
 - On-device display name: **Metronome**
 - Product tagline: **Precise timing. Better practice.**
 
 ### Apple App Store
 
-- Name, 25 of 30 characters: **Metronome: BPM & Practice**
+- Name, 27 of 30 characters: **Metronome: Practice & Tempo**
 - Subtitle, 29 of 30 characters: **Precise Timing & Rhythm Tools**
 - Primary category: **Music**
 - Secondary category: **Utilities**
@@ -73,7 +73,7 @@ Metronome is built for musicians at every level who want dependable timing and u
 
 ### Google Play
 
-- Name, 25 of 30 characters: **Metronome: BPM & Practice**
+- Name, 27 of 30 characters: **Metronome: Practice & Tempo**
 - Short description, 69 of 80 characters:
 
 > Practice with precise BPM, rhythm tools, timers and focused training.
