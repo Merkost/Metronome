@@ -2,6 +2,7 @@ package com.merkost.metronome.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,8 +31,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Music
 import com.composables.icons.lucide.Plus
@@ -41,19 +46,29 @@ import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.ExpandableSection
 import com.merkost.metronome.components.MySecondaryButton
+import com.merkost.metronome.components.PracticeAgainRow
 import com.merkost.metronome.components.ValueStepper
 import com.merkost.metronome.model.GapTrainerConfig
 import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
-import com.merkost.metronome.model.SavedTempo
 import com.merkost.metronome.model.Subdivision
-import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.presets.ActivePresetState
+import com.merkost.metronome.presets.PracticePreset
+import com.merkost.metronome.practiceSets.PracticeSet
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.applies_next_bar
+import metronome.shared.generated.resources.favourites
+import metronome.shared.generated.resources.manage_presets
+import metronome.shared.generated.resources.practice_sets
+import metronome.shared.generated.resources.recent
+import metronome.shared.generated.resources.save_current_setup
+import org.jetbrains.compose.resources.stringResource
 
 private val TEMPO_PRESETS = listOf(
     "Largo" to 50,
@@ -76,8 +91,10 @@ fun TempoTrainerSheet(
     beatsPerBar: Int,
     isPlaying: Boolean,
     subdivision: Subdivision,
-    timeSignature: TimeSignature,
-    savedTempos: List<SavedTempo>,
+    favouritePresets: List<PracticePreset>,
+    recentPresets: List<PracticePreset>,
+    recentPracticeSet: PracticeSet?,
+    activePresetState: ActivePresetState,
     activeConfig: GradualTempoConfig?,
     currentBar: Int,
     lastConfig: GradualTempoConfig?,
@@ -85,9 +102,11 @@ fun TempoTrainerSheet(
     lastGapConfig: GapTrainerConfig?,
     initialSection: TempoSheetSection?,
     onPresetSelected: (Int) -> Unit,
-    onApplySavedTempo: (SavedTempo) -> Unit,
-    onSaveCurrentTempo: () -> Unit,
-    onDeleteSavedTempo: (SavedTempo) -> Unit,
+    onApplyPracticePreset: (PracticePreset) -> Unit,
+    onSaveCurrentSetup: () -> Unit,
+    onManagePresets: () -> Unit,
+    onManagePracticeSets: () -> Unit,
+    onPracticeAgain: (PracticeSet) -> Unit,
     onSubdivisionChanged: (Subdivision) -> Unit,
     onStartTrainer: (GradualTempoConfig) -> Unit,
     onStopTrainer: (resetToStart: Boolean) -> Unit,
@@ -125,15 +144,31 @@ fun TempoTrainerSheet(
                 },
             )
             Spacer(Modifier.height(spacingSmall))
-            SavedTemposRow(
-                savedTempos = savedTempos,
-                current = SavedTempo(currentBpm, timeSignature, subdivision),
+            PracticePresetsQuickSection(
+                favourites = favouritePresets,
+                recents = recentPresets,
+                activeState = activePresetState,
+                recentPracticeSet = recentPracticeSet,
                 onApply = {
-                    onApplySavedTempo(it)
+                    onApplyPracticePreset(it)
                     dismissAnimated()
                 },
-                onSave = onSaveCurrentTempo,
-                onDelete = onDeleteSavedTempo,
+                onSave = {
+                    dismissAnimated()
+                    onSaveCurrentSetup()
+                },
+                onManage = {
+                    dismissAnimated()
+                    onManagePresets()
+                },
+                onManageSets = {
+                    dismissAnimated()
+                    onManagePracticeSets()
+                },
+                onPracticeAgain = {
+                    dismissAnimated()
+                    onPracticeAgain(it)
+                },
             )
             Spacer(Modifier.height(spacingSmall))
             HorizontalDivider()
@@ -236,16 +271,113 @@ fun TempoTrainerSheet(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PracticePresetsQuickSection(
+    favourites: List<PracticePreset>,
+    recents: List<PracticePreset>,
+    activeState: ActivePresetState,
+    recentPracticeSet: PracticeSet?,
+    onApply: (PracticePreset) -> Unit,
+    onSave: () -> Unit,
+    onManage: () -> Unit,
+    onManageSets: () -> Unit,
+    onPracticeAgain: (PracticeSet) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+        if (activeState.pending != null) {
+            SectionCaption("${activeState.pending.name} · ${stringResource(Res.string.applies_next_bar)}")
+        }
+        if (favourites.isNotEmpty()) {
+            SectionCaption(stringResource(Res.string.favourites))
+            PresetChipRow(favourites, activeState.active?.id, onApply)
+        }
+        val recentOnly = recents.filterNot { recent -> favourites.any { it.id == recent.id } }
+        if (recentOnly.isNotEmpty()) {
+            SectionCaption(stringResource(Res.string.recent))
+            PresetChipRow(recentOnly, activeState.active?.id, onApply)
+        }
+        val manageAction: @Composable (Modifier) -> Unit = { modifier ->
+            TextButton(onClick = onManage, modifier = modifier) {
+                Text(stringResource(Res.string.manage_presets))
+            }
+        }
+        val saveAction: @Composable (Modifier) -> Unit = { modifier ->
+            TextButton(onClick = onSave, modifier = modifier) {
+                Icon(Lucide.Plus, contentDescription = null)
+                Spacer(Modifier.width(spacingSmall))
+                Text(stringResource(Res.string.save_current_setup))
+            }
+        }
+        if (LocalDensity.current.fontScale >= 1.3f) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(spacingSmall),
+            ) {
+                manageAction(Modifier.fillMaxWidth())
+                saveAction(Modifier.fillMaxWidth())
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                manageAction(Modifier)
+                saveAction(Modifier)
+            }
+        }
+        recentPracticeSet?.let { practiceSet ->
+            PracticeAgainRow(
+                practiceSet = practiceSet,
+                onClick = { onPracticeAgain(practiceSet) },
+            )
+        }
+        FilledTonalButton(onClick = onManageSets, modifier = Modifier.fillMaxWidth()) {
+            Icon(Lucide.Music, contentDescription = null)
+            Spacer(Modifier.width(spacingSmall))
+            Text(stringResource(Res.string.practice_sets))
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PresetChipRow(
+    presets: List<PracticePreset>,
+    activeId: String?,
+    onApply: (PracticePreset) -> Unit,
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+        verticalArrangement = Arrangement.spacedBy(spacingSmall),
+    ) {
+        presets.forEach { preset ->
+            AppChip(
+                selected = preset.id == activeId,
+                onClick = { onApply(preset) },
+                label = preset.name,
+                leadingIcon = if (preset.isFavourite) Lucide.Star else null,
+            )
+        }
+    }
+}
+
 @Composable
 private fun SectionIcon(icon: ImageVector, active: Boolean) {
-    Icon(
-        imageVector = icon,
-        contentDescription = null,
-        tint = if (active) {
+    val tint by animateColorAsState(
+        targetValue = if (active) {
             MaterialTheme.colorScheme.primary
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
+        animationSpec = AppAnimations.standard(),
+        label = "sectionIconTint",
+    )
+    Icon(
+        imageVector = icon,
+        contentDescription = null,
+        tint = tint,
         modifier = Modifier.size(20.dp)
     )
 }
@@ -276,41 +408,6 @@ private fun <T> FlowRowChips(
                 selected = selected == option,
                 onClick = { onSelect(option) },
                 label = display(option),
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun SavedTemposRow(
-    savedTempos: List<SavedTempo>,
-    current: SavedTempo,
-    onApply: (SavedTempo) -> Unit,
-    onSave: () -> Unit,
-    onDelete: (SavedTempo) -> Unit,
-) {
-    val currentSaved = savedTempos.contains(current)
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-        verticalArrangement = Arrangement.spacedBy(spacingSmall),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        savedTempos.forEach { tempo ->
-            AppChip(
-                selected = tempo == current,
-                onClick = { onApply(tempo) },
-                label = tempo.label,
-                leadingIcon = Lucide.Star,
-                onTrailingClose = { onDelete(tempo) },
-            )
-        }
-        AnimatedVisibility(visible = !currentSaved && savedTempos.size < SavedTempo.MAX_SAVED) {
-            AppChip(
-                selected = false,
-                onClick = onSave,
-                label = "Save ${current.label}",
-                leadingIcon = Lucide.Plus,
             )
         }
     }
@@ -575,6 +672,7 @@ private fun SheetSecondaryLabel(text: String) {
             text = text,
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
             maxLines = 1,
+            autoSize = TextAutoSize.StepBased(8.sp, 16.sp),
         )
     }
 }

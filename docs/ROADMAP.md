@@ -25,49 +25,42 @@ P0 is a continuous release gate. P1 is the current product investment. P2 builds
 - Daily, streak, and total practice statistics stored locally
 - Count-in, pendulum display, keep-screen-awake option, UI haptics, and multiple colour schemes
 - Android background playback and iOS background playback
+- Android load-then-swap click switching, serialized iOS audio graphs, and predictable focus/interruption stops
 - iOS Live Activity and Dynamic Island controls
 - Shared Compose component and motion system
 - Native in-app review prompt after a qualifying practice pause
 - Accessibility semantics, 48dp targets, responsive typography, and adaptive 480dp content width
+- Typed Compose Navigation 3 back stack with saved state, entry-scoped ViewModels, and directional plus predictive-back transitions
+
+### Structured practice foundation
+
+- Stable, editable, named Practice Presets that capture BPM, meter, subdivision, beat accents and mutes, and count-in state
+- Lossless migration from saved tempos, with favourites, recents, reordering, rename, duplicate, apply, delete, and clear validation states
+- Ordered Practice Sets with optional duration or bar targets for every step
+- Previous, pause, resume, next, finish, recovery, and replacement-conflict handling
+- Safe preset changes at playback boundaries and one restrained active-practice strip on the main instrument
+- Practice Again for the most recently explicitly completed saved set, with replacement-safe persistence and accessible large-text layout
+- Review-prompt suppression while a timer, trainer, preset editor, or Practice Set is active
+
+The designs are recorded in `docs/superpowers/specs/2026-09-01-practice-presets-foundation-design.md` and `docs/superpowers/specs/2026-09-01-practice-sets-design.md`.
+
+Implementation status: implemented in the working tree on 2026-09-01. Shared tests, Android debug packaging, the iOS simulator framework, the full Xcode simulator app build, and normal plus maximum accessibility-size iPhone simulator rendering pass. Interactive Practice Set flows, live transition and predictive-gesture checks, physical-device audio, TalkBack, and VoiceOver remain verification-pending release gates.
 
 ## Now
 
 ### P0 — Release quality and precision
 
 - Complete on-device audio checks across high BPM values, subdivisions, click sounds, interruptions, Bluetooth routes, and background playback
-- Replace per-beat delay scheduling with cumulative monotonic target timestamps before adding polyrhythms
-- Resolve iOS audio graph serialization and Android load-then-swap/audio-focus behavior
+- Deterministic cumulative monotonic beat and subdivision scheduling is implemented and covered by common tests; physical-device output latency remains a release gate
+- Validate the implemented iOS build-then-swap graph serialization and Android load-then-swap/audio-focus behavior on physical devices
 - Complete VoiceOver and TalkBack traversal, text scaling, reduced-motion, and compact-screen checks
 - Move hardcoded English UI text into Compose resources, then add ES, DE, PT, and JA
 - Split the growing `MetronomeViewModel` into focused timer, trainer, session, and preset state holders as each area is changed
 
-### P1A — Practice Presets Foundation
-
-- Replace anonymous saved tempos with stable, editable, named Practice Presets
-- Capture BPM, time signature, subdivision, beat accents and mutes, and count-in state
-- Migrate every existing saved tempo without data loss and generate a useful default name
-- Create a focused preset library with search-free scanning, favourites, recents, reordering, rename, duplicate, apply, and delete
-- Keep instant preset recall in the tempo sheet while moving management into a dedicated full-screen flow
-- Add clear empty, maximum-capacity, name-validation, destructive-confirmation, and migration states
-- Preserve the main metronome as the dominant screen and show only concise preset context there
-- Add deterministic model, migration, repository, ViewModel, and Compose behavior tests
-
-The design is recorded for review in `docs/superpowers/specs/2026-09-01-practice-presets-foundation-design.md`.
-
 ## Next
-
-### P1B — Practice Sets
-
-- Combine presets into ordered Practice Sets for warmups, exercises, repertoire, rehearsals, and performance orders
-- Give each step an optional duration or bar target
-- Provide previous, pause, next, finish, and safe resume controls
-- Show one restrained active-practice strip on the main instrument
-- Keep manual progression as the default; add optional hands-free advancement only after the core flow proves reliable
 
 ### P2A — Faster recall
 
-- Add “Practice again” from the most recent completed set
-- Surface recent and favourite presets without opening the full library
 - Add deliberate long-press shortcuts where they do not conflict with accessibility
 - Extend the existing Live Activity snapshot seam to an Android home-screen widget
 

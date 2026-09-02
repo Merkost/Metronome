@@ -28,7 +28,7 @@ fun ProgressRing(
 ) {
     val animatedProgress by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = AppAnimations.Gentle,
+        animationSpec = AppAnimations.Calm,
         label = "ringProgress"
     )
 

@@ -13,6 +13,7 @@
 		721E3D530C4A0050AC27866F /* MetronomeWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01575CC13E3A1E3AD8708BE1 /* MetronomeWidgetsBundle.swift */; };
 		73274C484C26C38DD85E1411 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9587F905A9AE1187FC2B4DFE /* Foundation.framework */; };
 		7555FF7F242A565900829871 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* iOSApp.swift */; };
+		91A4C126A1F84D83B660C1D2 /* IosInAppReviewRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D15C1078E094F5D92B9B48B /* IosInAppReviewRequester.swift */; };
 		7555FF81242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* ContentView.swift */; };
 		7555FF83242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565B00829871 /* Assets.xcassets */; };
 		A1B2C3D4E5F60001AABBCCDD /* wood.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60002AABBCCDD /* wood.mp3 */; };
@@ -54,6 +55,7 @@
 /* Begin PBXFileReference section */
 		01575CC13E3A1E3AD8708BE1 /* MetronomeWidgetsBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetronomeWidgetsBundle.swift; sourceTree = "<group>"; };
 		2DF26192AEE8A64EBD0AB7EE /* MetronomeActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetronomeActivityAttributes.swift; sourceTree = "<group>"; };
+		2D15C1078E094F5D92B9B48B /* IosInAppReviewRequester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IosInAppReviewRequester.swift; sourceTree = "<group>"; };
 		34C4DEF8BFF81A4C51628B6A /* MetronomeWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MetronomeWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		39F5B1DB43F59DA18267798F /* TogglePlaybackIntent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TogglePlaybackIntent.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* Metronome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metronome.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				CDE04CA32F848C8800FBAFE7 /* Resources */,
+				2D15C1078E094F5D92B9B48B /* IosInAppReviewRequester.swift */,
 				7555FF7E242A565900829871 /* iOSApp.swift */,
 				7555FF80242A565900829871 /* ContentView.swift */,
 				7555FF82242A565B00829871 /* Assets.xcassets */,
@@ -317,6 +320,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7555FF81242A565900829871 /* ContentView.swift in Sources */,
+				91A4C126A1F84D83B660C1D2 /* IosInAppReviewRequester.swift in Sources */,
 				7555FF7F242A565900829871 /* iOSApp.swift in Sources */,
 				1800B61A39D9BBFFCF68702A /* MetronomeActivityAttributes.swift in Sources */,
 				BDAA9A83ADD0EF742C0F9944 /* TogglePlaybackIntent.swift in Sources */,

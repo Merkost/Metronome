@@ -41,7 +41,7 @@ fun AppInfoCard() {
                     .size(64.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 painter = painterResource(Res.drawable.ic_launcher),
-                contentDescription = "App icon",
+                contentDescription = null,
                 contentScale = ContentScale.Crop
             )
             Column {

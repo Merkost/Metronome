@@ -6,7 +6,7 @@ import org.kimplify.cedar.logging.LogPriority
 import org.kimplify.cedar.logging.LogTree
 
 class CrashlyticsTree : LogTree {
-    override fun log(priority: LogPriority, tag: String, message: String, throwable: Throwable?) {
+    override fun log(priority: LogPriority, tag: String?, message: String, throwable: Throwable?) {
         if (!priority.isAtLeast(LogPriority.WARNING)) return
         val crashlytics = Firebase.crashlytics
         crashlytics.log("${priority.name.first()}/$tag: $message")

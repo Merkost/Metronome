@@ -1,15 +1,16 @@
 package com.merkost.metronome.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,7 +26,10 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.X
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.pressScale
+import com.merkost.metronome.ui.rememberAppHaptics
 
 @Composable
 fun AppChip(
@@ -37,13 +41,14 @@ fun AppChip(
     onTrailingClose: (() -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val haptics = rememberAppHaptics()
     val containerColor by animateColorAsState(
         targetValue = if (selected) {
             MaterialTheme.colorScheme.primary
         } else {
             MaterialTheme.colorScheme.surfaceVariant
         },
-        animationSpec = spring(stiffness = 600f, dampingRatio = 0.8f),
+        animationSpec = AppAnimations.standard(),
         label = "chipContainer"
     )
     val contentColor by animateColorAsState(
@@ -52,7 +57,7 @@ fun AppChip(
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
-        animationSpec = spring(stiffness = 600f, dampingRatio = 0.8f),
+        animationSpec = AppAnimations.standard(),
         label = "chipContent"
     )
 
@@ -60,18 +65,23 @@ fun AppChip(
         shape = RoundedCornerShape(50),
         color = containerColor,
         modifier = modifier
-            .pressScale(interactionSource, pressedScale = 0.94f)
+            .pressScale(interactionSource, pressedScale = PressedScaleControl)
             .clip(RoundedCornerShape(50))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onClick
+                onClick = {
+                    haptics.select()
+                    onClick()
+                }
             ),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+            modifier = Modifier
+                .heightIn(min = minimumTouchTargetSize)
+                .padding(start = 16.dp, end = if (onTrailingClose == null) 16.dp else 4.dp)
         ) {
             if (leadingIcon != null) {
                 Icon(
@@ -89,14 +99,14 @@ fun AppChip(
                 color = contentColor,
             )
             if (onTrailingClose != null) {
-                Icon(
-                    imageVector = Lucide.X,
-                    contentDescription = "Remove",
-                    tint = contentColor,
-                    modifier = Modifier
-                        .size(14.dp)
-                        .clickable { onTrailingClose() }
-                )
+                AppIconButton(onClick = onTrailingClose) {
+                    Icon(
+                        imageVector = Lucide.X,
+                        contentDescription = "Remove $label",
+                        tint = contentColor,
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
             }
         }
     }

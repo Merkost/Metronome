@@ -5,10 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,15 +16,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,7 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.graphicsLayer
@@ -55,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
+import com.merkost.metronome.ui.maxContentWidth
+import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 
@@ -99,16 +99,16 @@ fun CoachMarksOverlay(
     val cornerRadiusPx = with(density) { cornerRadiusLarge.toPx() }
 
     val spotLeft by animateFloatAsState(
-        target.left - spotlightPaddingPx, AppAnimations.Gentle, label = "spotL"
+        target.left - spotlightPaddingPx, AppAnimations.Emphasized, label = "spotL"
     )
     val spotTop by animateFloatAsState(
-        target.top - spotlightPaddingPx, AppAnimations.Gentle, label = "spotT"
+        target.top - spotlightPaddingPx, AppAnimations.Emphasized, label = "spotT"
     )
     val spotRight by animateFloatAsState(
-        target.right + spotlightPaddingPx, AppAnimations.Gentle, label = "spotR"
+        target.right + spotlightPaddingPx, AppAnimations.Emphasized, label = "spotR"
     )
     val spotBottom by animateFloatAsState(
-        target.bottom + spotlightPaddingPx, AppAnimations.Gentle, label = "spotB"
+        target.bottom + spotlightPaddingPx, AppAnimations.Emphasized, label = "spotB"
     )
     val spotlightRect = Rect(spotLeft, spotTop, spotRight, spotBottom)
 
@@ -144,15 +144,22 @@ fun CoachMarksOverlay(
             )
         }
 
-        Text(
-            text = "Skip",
-            color = Color.White.copy(alpha = 0.8f),
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+        Surface(
+            onClick = onDismiss,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            shape = CircleShape,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 52.dp, end = 20.dp)
-                .clickable { onDismiss() }
-        )
+                .heightIn(min = minimumTouchTargetSize)
+        ) {
+            Text(
+                text = "Skip",
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                modifier = Modifier.padding(horizontal = spacingMedium, vertical = spacingSmall),
+            )
+        }
 
         val tooltipMarginPx = with(density) { TooltipMargin.toPx() }
         var cardHeightPx by remember { mutableStateOf(0) }
@@ -168,7 +175,7 @@ fun CoachMarksOverlay(
         LaunchedEffect(targetY, positioned) {
             if (!positioned) return@LaunchedEffect
             if (snapped) {
-                tooltipY.animateTo(targetY, AppAnimations.Gentle)
+                tooltipY.animateTo(targetY, AppAnimations.Emphasized)
             } else {
                 tooltipY.snapTo(targetY)
                 snapped = true
@@ -177,6 +184,8 @@ fun CoachMarksOverlay(
 
         Card(
             modifier = Modifier
+                .align(Alignment.TopCenter)
+                .widthIn(max = maxContentWidth)
                 .fillMaxWidth()
                 .padding(horizontal = TooltipHorizontalMargin)
                 .onGloballyPositioned { coordinates ->
@@ -190,7 +199,7 @@ fun CoachMarksOverlay(
         ) {
             AnimatedContent(
                 targetState = step,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                transitionSpec = { AppAnimations.fadeThrough },
                 label = "tooltipContent"
             ) { animatedStep ->
                 if (animatedStep in coachSteps.indices) {
@@ -241,7 +250,11 @@ private fun TooltipContent(
                 horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AnimatedVisibility(visible = step > 0, enter = fadeIn(), exit = fadeOut()) {
+                AnimatedVisibility(
+                    visible = step > 0,
+                    enter = AppAnimations.expandEnter,
+                    exit = AppAnimations.shrinkExit,
+                ) {
                     TextButton(onClick = onBack) {
                         Text(
                             text = "Back",
@@ -274,7 +287,7 @@ private fun StepDots(count: Int, current: Int) {
             val active = index == current
             val dotWidth by animateDpAsState(
                 targetValue = if (active) 18.dp else 7.dp,
-                animationSpec = spring(stiffness = 600f, dampingRatio = 0.8f),
+                animationSpec = AppAnimations.emphasized(),
                 label = "dotWidth"
             )
             Box(
