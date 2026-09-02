@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --w: __WIDTH__px;
+    --h: __HEIGHT__px;
+    --bg: __BACKGROUND__;
+    --title: __TITLE_COLOR__;
+    --subtitle: __SUBTITLE_COLOR__;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: var(--w); height: var(--h); }
+  body {
+    background: var(--bg);
+    font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+  .copy {
+    width: 100%;
+    padding: calc(var(--h) * 0.055) calc(var(--w) * 0.08) 0;
+    text-align: center;
+    flex: 0 0 auto;
+  }
+  h1 {
+    color: var(--title);
+    font-size: calc(var(--w) * 0.088);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: pre-line;
+  }
+  p.sub {
+    margin-top: calc(var(--h) * 0.014);
+    color: var(--subtitle);
+    font-size: calc(var(--w) * 0.036);
+    line-height: 1.35;
+    font-weight: 400;
+  }
+  .badges {
+    margin-top: calc(var(--h) * 0.022);
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--w) * 0.018);
+    justify-content: center;
+  }
+  .badges span {
+    border: 2px solid rgba(0,0,0,0.14);
+    color: var(--title);
+    border-radius: 999px;
+    padding: calc(var(--w) * 0.015) calc(var(--w) * 0.035);
+    font-size: calc(var(--w) * 0.029);
+    font-weight: 600;
+  }
+  .stage {
+    flex: 1 1 auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-top: calc(var(--h) * 0.035);
+  }
+  .phone {
+    width: calc(var(--w) * 0.72);
+    border-radius: calc(var(--w) * 0.075);
+    background: #0b0b0d;
+    padding: calc(var(--w) * 0.011);
+    box-shadow: 0 calc(var(--h) * 0.012) calc(var(--h) * 0.05) rgba(0,0,0,0.22);
+    overflow: hidden;
+  }
+  .phone .glass {
+    border-radius: calc(var(--w) * 0.065);
+    overflow: hidden;
+    background: #fff;
+    display: block;
+  }
+  .phone img { width: 100%; display: block; }
+</style>
+</head>
+<body>
+  <div class="copy">
+    <h1>__TITLE__</h1>
+    <p class="sub">__SUBTITLE__</p>
+    __BADGES__
+  </div>
+  <div class="stage">
+    <div class="phone"><div class="glass"><img src="__SCREENSHOT__"></div></div>
+  </div>
+</body>
+</html>
