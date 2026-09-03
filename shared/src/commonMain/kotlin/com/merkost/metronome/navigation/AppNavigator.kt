@@ -15,7 +15,7 @@ class AppNavigator(
 
     fun goBack(): Boolean {
         if (backStack.size <= 1) return false
-        backStack.removeLast()
+        backStack.removeAt(backStack.lastIndex)
         return true
     }
 
@@ -26,13 +26,13 @@ class AppNavigator(
             return
         }
         while (backStack.lastIndex > existingIndex) {
-            backStack.removeLast()
+            backStack.removeAt(backStack.lastIndex)
         }
     }
 
     fun returnToMain() {
         while (backStack.size > 1) {
-            backStack.removeLast()
+            backStack.removeAt(backStack.lastIndex)
         }
     }
 }
