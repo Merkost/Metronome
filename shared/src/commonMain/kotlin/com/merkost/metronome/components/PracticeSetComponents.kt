@@ -63,6 +63,7 @@ import com.merkost.metronome.practiceSets.PracticeSet
 import com.merkost.metronome.practiceSets.PracticeSetStep
 import com.merkost.metronome.practiceSets.PracticeStepTarget
 import com.merkost.metronome.presets.PracticePreset
+import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.AppAnimations
@@ -627,7 +628,7 @@ fun PracticeSessionStrip(
                     enabled = session.currentStepIndex > 0 && session.pendingStepIndex == null,
                     onClick = onPrevious,
                 )
-                FilledTonalButton(onClick = onTogglePlayback) {
+                FilledTonalButton(onClick = onTogglePlayback, shape = CircleShape) {
                     Icon(
                         if (session.playbackIntent == PracticePlaybackIntent.Running) Lucide.Pause else Lucide.Play,
                         contentDescription = null,

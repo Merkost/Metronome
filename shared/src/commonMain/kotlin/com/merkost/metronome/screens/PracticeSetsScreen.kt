@@ -29,7 +29,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -52,6 +51,7 @@ import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Plus
 import com.merkost.metronome.components.AppIconButton
+import com.merkost.metronome.components.AppTextField
 import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.PracticeSetRow
@@ -511,13 +511,12 @@ private fun PracticeSetEditor(
                 verticalArrangement = Arrangement.spacedBy(spacingMedium),
             ) {
                 item(key = "name") {
-                    OutlinedTextField(
+                    AppTextField(
                         modifier = Modifier.animateItem().fillMaxWidth(),
                         value = editor.name,
                         onValueChange = { if (it.length <= PracticeSet.MAX_NAME_LENGTH + 1) onNameChanged(it) },
-                        label = { Text(stringResource(Res.string.practice_set_name)) },
-                        supportingText = { Text("${editor.name.length}/${PracticeSet.MAX_NAME_LENGTH}") },
-                        singleLine = true,
+                        label = stringResource(Res.string.practice_set_name),
+                        supportingText = "${editor.name.length}/${PracticeSet.MAX_NAME_LENGTH}",
                     )
                 }
                 if (editor.steps.isNotEmpty()) {
@@ -558,7 +557,8 @@ private fun PracticeSetEditor(
                         FilledTonalButton(
                             onClick = onAddPreset,
                             enabled = editor.steps.size < PracticeSet.MAX_STEPS,
-                            modifier = Modifier.animateItem().fillMaxWidth(),
+                            shape = CircleShape,
+                            modifier = Modifier.animateItem().fillMaxWidth().height(sheetButtonHeight),
                         ) {
                             Icon(Lucide.Plus, contentDescription = null)
                             Spacer(Modifier.width(spacingSmall))
@@ -646,7 +646,11 @@ private fun PresetPickerSheet(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.padding(spacingSmall))
-            Button(onClick = onOpenPresets, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onOpenPresets,
+                shape = CircleShape,
+                modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+            ) {
                 Text(stringResource(Res.string.practice_presets))
             }
         } else {

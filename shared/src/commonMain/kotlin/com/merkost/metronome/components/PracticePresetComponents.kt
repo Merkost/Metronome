@@ -24,7 +24,6 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -286,7 +285,7 @@ fun PresetNameDialog(
         title = { Text(title, fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-                OutlinedTextField(
+                AppTextField(
                     value = name,
                     onValueChange = {
                         if (it.text.length <= PracticePreset.MAX_NAME_LENGTH + 1) {
@@ -294,12 +293,10 @@ fun PresetNameDialog(
                         }
                     },
                     modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                    label = { Text(stringResource(Res.string.preset_name)) },
-                    supportingText = {
-                        Text(validationMessage ?: "${name.text.length}/${PracticePreset.MAX_NAME_LENGTH}")
-                    },
+                    label = stringResource(Res.string.preset_name),
+                    supportingText = validationMessage
+                        ?: "${name.text.length}/${PracticePreset.MAX_NAME_LENGTH}",
                     isError = validationMessage != null,
-                    singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { if (canSave) onConfirm(name.text) }),
                 )

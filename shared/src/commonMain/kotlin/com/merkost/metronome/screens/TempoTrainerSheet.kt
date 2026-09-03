@@ -332,7 +332,11 @@ private fun PracticePresetsQuickSection(
                 onClick = { onPracticeAgain(practiceSet) },
             )
         }
-        FilledTonalButton(onClick = onManageSets, modifier = Modifier.fillMaxWidth()) {
+        FilledTonalButton(
+            onClick = onManageSets,
+            shape = CircleShape,
+            modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+        ) {
             Icon(Lucide.Music, contentDescription = null)
             Spacer(Modifier.width(spacingSmall))
             Text(stringResource(Res.string.practice_sets))

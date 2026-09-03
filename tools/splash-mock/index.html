@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0E0E10; color:#fff; font-family:-apple-system,'SF Pro Display',Helvetica,Arial,sans-serif;
+    padding:56px 40px; width:2200px;
+  }
+  h1 { font-size:34px; font-weight:800; letter-spacing:-0.02em; margin-bottom:6px; }
+  p.note { color:#9A9AA2; font-size:17px; margin-bottom:38px; }
+  .strip { display:flex; gap:22px; align-items:flex-start; }
+  .cell { text-align:center; }
+  .stage {
+    width:300px; height:620px; background:#fff; border-radius:34px;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    border:6px solid #17171b;
+  }
+  .cell span { display:block; margin-top:12px; color:#9A9AA2; font-size:15px; font-variant-numeric:tabular-nums; }
+  svg { width:150px; height:150px; overflow:visible; }
+  .ink   { fill:#000; }
+  .line  { fill:none; stroke:#000; stroke-width:150; stroke-linecap:round; stroke-linejoin:round; }
+</style>
+</head>
+<body>
+  <h1>Splash reveal — the mark draws itself, then inks in</h1>
+  <p class="note">Phase 1 (0–900ms): the outline is stroked on with a dash offset. Phase 2 (900–1500ms): the fill wipes upward from the base, like ink filling the form. No fade, no scale, no rotation.</p>
+  <div class="strip" id="strip"></div>
+
+<script>
+const PATH = "M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z";
+const G = 'translate(1607.34,1607.34) scale(0.58)';
+const TOTAL = 1500;            // ms
+const DRAW_END = 900;
+const stops = [0, 220, 450, 700, 900, 1120, 1500];
+
+const strip = document.getElementById('strip');
+
+// the mark is four subpaths: outer body, inner triangle, small triangle, base bar.
+// drawing them in sequence reads as the logo being constructed, not just appearing.
+const SUBPATHS = PATH.split(/(?=M)/).filter(Boolean);
+const SEGMENT = DRAW_END / SUBPATHS.length;
+
+stops.forEach((t, i) => {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+  const uid = 'clip' + i;
+  const ip = t <= DRAW_END ? 0 : Math.min(1, (t - DRAW_END) / (TOTAL - DRAW_END));
+
+  const strokes = SUBPATHS.map((d, k) => {
+    const local = Math.max(0, Math.min(1, (t - k * SEGMENT) / SEGMENT));
+    return `<path class="line" d="${d}" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${1 - local}"/>`;
+  }).join('');
+
+  cell.innerHTML = `
+    <div class="stage">
+      <svg viewBox="0 0 7654 7654">
+        <defs>
+          <clipPath id="${uid}">
+            <rect x="0" y="${7654 - 7654 * ip}" width="7654" height="${7654 * ip}"/>
+          </clipPath>
+        </defs>
+        <g transform="${G}">${strokes}</g>
+        <g clip-path="url(#${uid})">
+          <g transform="${G}"><path class="ink" d="${PATH}"/></g>
+        </g>
+      </svg>
+    </div>
+    <span>${t} ms</span>`;
+  strip.appendChild(cell);
+});
+</script>
+</body>
+</html>
