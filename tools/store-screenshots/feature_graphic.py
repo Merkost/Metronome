@@ -2,7 +2,7 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1024, 500
-BG = (0x1A, 0x1A, 0x1A)
+BG = (0xF2, 0xEF, 0xEA)
 FONT = "/System/Library/Fonts/SFNS.ttf"
 
 
@@ -34,9 +34,9 @@ def build(hero_path, out_path):
     draw = ImageDraw.Draw(canvas)
     x = 64
     f1, f2 = font(74), font(30, "Medium")
-    draw.text((x, 178), "Set it. Trust it.", font=f1, fill="white")
-    draw.text((x, 272), "A metronome that never drifts.", font=f2, fill=(0xB5, 0xB5, 0xB5))
-    draw.text((x, 316), "No ads. No account. Free.", font=f2, fill=(0xB5, 0xB5, 0xB5))
+    draw.text((x, 178), "Set it. Trust it.", font=f1, fill=(0x14, 0x14, 0x14))
+    draw.text((x, 272), "A metronome that never drifts.", font=f2, fill=(0x5A, 0x56, 0x52))
+    draw.text((x, 316), "No ads. No account. Free.", font=f2, fill=(0x5A, 0x56, 0x52))
 
     canvas.save(out_path, "PNG")
     print(f"✓ {out_path} ({canvas.width}x{canvas.height})")

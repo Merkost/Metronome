@@ -83,19 +83,19 @@ def fit_font(text, max_w, size_max, size_min):
     )
 
 
-def draw_centered(draw, y, text, font, max_w=None):
+def draw_centered(draw, y, text, font, max_w=None, fill="white"):
     lines = word_wrap(draw, text, font, max_w) if max_w else [text]
     for line in lines:
         bbox = draw.textbbox((0, 0), line, font=font)
         h = bbox[3] - bbox[1]
         # Use anchor="mt" (middle-top) for pixel-perfect horizontal centering
         # Adjust y by bbox[1] offset so text top aligns with intended position
-        draw.text((CANVAS_W // 2, y - bbox[1]), line, fill="white", font=font, anchor="mt")
+        draw.text((CANVAS_W // 2, y - bbox[1]), line, fill=fill, font=font, anchor="mt")
         y += h + DESC_LINE_GAP
     return y
 
 
-def compose(bg_hex, verb, desc, screenshot_path, output_path):
+def compose(bg_hex, verb, desc, screenshot_path, output_path, fg="white"):
     bg = hex_to_rgb(bg_hex)
 
     # ── 1. Canvas ───────────────────────────────────────────────────
@@ -119,9 +119,9 @@ def compose(bg_hex, verb, desc, screenshot_path, output_path):
 
     # Draw text at centered position
     y = text_top
-    y = draw_centered(draw, y, verb, verb_font)
+    y = draw_centered(draw, y, verb, verb_font, fill=fg)
     y += VERB_DESC_GAP
-    draw_centered(draw, y, desc, desc_font, max_w=MAX_TEXT_W)
+    draw_centered(draw, y, desc, desc_font, max_w=MAX_TEXT_W, fill=fg)
     device_x = (CANVAS_W - DEVICE_W) // 2
     screen_x = device_x + BEZEL
     screen_y = device_y + BEZEL
@@ -178,9 +178,10 @@ def main():
     p.add_argument("--desc", required=True, help="Benefit descriptor (TRADING CARD PRICES)")
     p.add_argument("--screenshot", required=True, help="Simulator screenshot path")
     p.add_argument("--output", required=True, help="Output file path")
+    p.add_argument("--fg", default="white", help="Headline colour")
     args = p.parse_args()
 
-    compose(args.bg, args.verb, args.desc, args.screenshot, args.output)
+    compose(args.bg, args.verb, args.desc, args.screenshot, args.output, args.fg)
 
 
 if __name__ == "__main__":
