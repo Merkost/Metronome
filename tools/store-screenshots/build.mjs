@@ -47,31 +47,27 @@ for (const [deviceId, device] of devices) {
     const shotH = png.readUInt32BE(20)
 
     const D = config.defaults
-    const align = frame.align === 'left' ? 'left' : 'center'
-    const rings = (frame.rings ?? [0.5, 0.8, 1.1])
-      .map(r => `<span style="width:${Math.round(device.width * r)}px;height:${Math.round(device.width * r)}px;opacity:${(0.26 - 0.05 * (frame.rings ?? []).indexOf(r)).toFixed(3)}"></span>`)
+    const rings = (frame.rings ?? [0.6, 0.95, 1.35, 1.8])
+      .map(r => `<span style="width:${Math.round(device.width * r)}px;height:${Math.round(device.width * r)}px"></span>`)
       .join('')
+    const ticks = Array.from({ length: 9 }, (_, i) =>
+      `<i class="${i === 0 ? 'big' : ''}" style="left:${(10 + i * 10).toFixed(2)}%"></i>`).join('')
 
     const vars = [
-      `--align:${align}`,
-      `--justify:${align === 'left' ? 'flex-start' : 'center'}`,
-      `--device-w:${Math.round(device.width * (frame.deviceW ?? 0.66))}px`,
-      `--device-x:${Math.round(device.width * (frame.deviceX ?? 0.5))}px`,
-      `--device-y:${Math.round(device.height * (frame.deviceY ?? 0.33))}px`,
-      `--device-rot:${frame.rotation ?? '0deg'}`,
-      `--bloom-x:${Math.round(device.width * (frame.bloomX ?? 0.5))}px`,
-      `--bloom-y:${Math.round(device.height * (frame.bloomY ?? 0.66))}px`,
+      `--device-w:${Math.round(device.width * (frame.deviceW ?? 0.64))}px`,
+      `--device-y:${Math.round(device.height * (frame.deviceY ?? 0.32))}px`,
+      `--shot-scale:${frame.shotScale ?? 1}`,
+      `--shot-pan:${frame.shotPan ?? 0}`,
+      `--focus-y:${Math.round(device.height * (frame.focusY ?? 0.72))}px`,
+      `--rule-y:${Math.round(device.height * (frame.ruleY ?? 0.25))}px`,
     ].join(';')
 
     const html = template
       .replaceAll('__WIDTH__', device.width)
       .replaceAll('__HEIGHT__', device.height)
-      .replaceAll('__ACCENT__', frame.accent ?? '#B89FFF')
-      .replaceAll('__BG__', frame.bg ?? D.bg)
-      .replaceAll('__INK__', D.ink)
-      .replaceAll('__MUTED__', D.muted)
       .replaceAll('__SHOT_RATIO__', (shotH / shotW).toFixed(6))
       .replaceAll('__RINGS__', rings)
+      .replaceAll('__TICKS__', ticks)
       .replaceAll('__TITLE__', esc(frame.title))
       .replaceAll('__SUBTITLE__', esc(frame.subtitle))
       .replaceAll('__BADGES__', badges)

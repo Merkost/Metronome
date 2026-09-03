@@ -1,13 +1,21 @@
 package com.merkost.metronome.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.merkost.metronome.screens.AnimatedSplash
 import com.merkost.metronome.screens.MainScreen
 import com.merkost.metronome.screens.PracticePresetsScreen
 import com.merkost.metronome.screens.PracticeSetsScreen
@@ -30,6 +38,18 @@ internal val mainNavigationSavedStateConfiguration = SavedStateConfiguration {
 
 @Composable
 fun AppNavigation() {
+    var splashComplete by rememberSaveable { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        AppNavigationHost()
+        if (!splashComplete) {
+            AnimatedSplash(onFinished = { splashComplete = true })
+        }
+    }
+}
+
+@Composable
+private fun AppNavigationHost() {
     val backStack = rememberNavBackStack(
         mainNavigationSavedStateConfiguration,
         MainDestination.Main,

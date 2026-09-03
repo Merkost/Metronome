@@ -12,151 +12,157 @@
     }
   },
   "defaults": {
-    "bg": "#0E0E10",
+    "bg": "#000000",
     "ink": "#FFFFFF",
-    "muted": "#9A9AA2"
+    "muted": "#8A8A90",
+    "cropTop": 0,
+    "cropBottom": 0
   },
   "frames": [
     {
       "id": "precise-timing",
-      "title": "Precise timing.\nBetter practice.",
-      "subtitle": "A steady pulse you can trust, at any tempo",
+      "title": "A pulse you\ncan trust",
+      "subtitle": "Drift-free timing at every tempo",
       "screenshot": "figma/main.png",
-      "accent": "#B89FFF",
-      "align": "center",
-      "deviceW": 0.645,
+      "deviceW": 0.72,
       "deviceX": 0.5,
-      "deviceY": 0.315,
+      "deviceY": 0.3,
       "rotation": "0deg",
-      "bloomX": 0.5,
-      "bloomY": 0.72,
-      "rings": [
-        0.55,
-        0.85,
-        1.15,
-        1.5
-      ]
-    },
-    {
-      "id": "tempo-trainer",
-      "title": "Build speed\nautomatically",
-      "subtitle": "Raise or lower the tempo over complete bars",
-      "screenshot": "figma/tempo-trainer.png",
-      "accent": "#C9D5FE",
-      "align": "left",
-      "deviceW": 0.575,
-      "deviceX": 0.6,
-      "deviceY": 0.325,
-      "rotation": "-6deg",
-      "bloomX": 0.74,
-      "bloomY": 0.62,
-      "rings": [
-        0.5,
-        0.8,
-        1.1
-      ]
-    },
-    {
-      "id": "gap-trainer",
-      "title": "Train your\ninner clock",
-      "subtitle": "The click drops out; you keep time and find out",
-      "screenshot": "figma/gap-trainer.png",
-      "accent": "#9EFFAE",
-      "align": "left",
-      "deviceW": 0.575,
-      "deviceX": 0.4,
-      "deviceY": 0.325,
-      "rotation": "6deg",
-      "bloomX": 0.26,
-      "bloomY": 0.64,
-      "rings": [
-        0.5,
-        0.8,
-        1.1
-      ]
-    },
-    {
-      "id": "subdivisions",
-      "title": "Hear every\nsubdivision",
-      "subtitle": "Eighths, triplets and sixteenths under the beat",
-      "screenshot": "figma/subdivisions.png",
-      "accent": "#FFCAEA",
-      "align": "center",
-      "deviceW": 0.645,
-      "deviceX": 0.5,
-      "deviceY": 0.315,
-      "rotation": "0deg",
-      "bloomX": 0.5,
-      "bloomY": 0.55,
-      "rings": [
-        0.45,
-        0.75,
-        1.05,
-        1.35
-      ]
-    },
-    {
-      "id": "shape-the-bar",
-      "title": "Shape\nevery beat",
-      "subtitle": "Tap any beat to accent it, soften it or mute it",
-      "screenshot": "figma/accents.png",
-      "accent": "#B89FFF",
-      "align": "left",
-      "deviceW": 0.575,
-      "deviceX": 0.61,
-      "deviceY": 0.325,
-      "rotation": "4deg",
-      "bloomX": 0.73,
-      "bloomY": 0.68,
-      "rings": [
-        0.5,
-        0.82,
-        1.15
-      ]
-    },
-    {
-      "id": "practice-sets",
-      "title": "Save setups.\nPractise in order.",
-      "subtitle": "Presets in a sequence, each with a time or bar goal",
-      "screenshot": "figma/practice-sets.png",
-      "accent": "#C9D5FE",
-      "align": "left",
-      "deviceW": 0.575,
-      "deviceX": 0.39,
-      "deviceY": 0.325,
-      "rotation": "-4deg",
-      "bloomX": 0.27,
-      "bloomY": 0.66,
-      "rings": [
-        0.5,
-        0.82,
-        1.15
-      ]
-    },
-    {
-      "id": "keep-going",
-      "title": "Move through it\nstep by step",
-      "subtitle": "Pause, resume, and pick up where you left off",
-      "screenshot": "figma/session.png",
-      "accent": "#9EFFAE",
-      "align": "center",
-      "deviceW": 0.645,
-      "deviceX": 0.5,
-      "deviceY": 0.315,
-      "rotation": "0deg",
-      "bloomX": 0.5,
-      "bloomY": 0.78,
       "rings": [
         0.6,
         0.95,
-        1.3,
-        1.7
-      ]
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.72,
+      "ruleY": 0.25
+    },
+    {
+      "id": "tempo-trainer",
+      "title": "Get faster,\nbar by bar",
+      "subtitle": "The tempo climbs while you play",
+      "screenshot": "figma/tempo-trainer.png",
+      "deviceW": 0.58,
+      "deviceX": 0.5,
+      "deviceY": 0.352,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.66,
+      "ruleY": 0.272
+    },
+    {
+      "id": "gap-trainer",
+      "title": "Silence is\nthe test",
+      "subtitle": "The click drops out. Can you hold it?",
+      "screenshot": "figma/gap-trainer.png",
+      "deviceW": 0.66,
+      "deviceX": 0.5,
+      "deviceY": 0.322,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.74,
+      "ruleY": 0.258
+    },
+    {
+      "id": "subdivisions",
+      "title": "Feel every\nsubdivision",
+      "subtitle": "Eighths, triplets and sixteenths",
+      "screenshot": "figma/subdivisions.png",
+      "deviceW": 0.54,
+      "deviceX": 0.5,
+      "deviceY": 0.362,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.64,
+      "ruleY": 0.285
+    },
+    {
+      "id": "shape-the-bar",
+      "title": "Accent it.\nMute it.",
+      "subtitle": "Shape any beat in the bar",
+      "screenshot": "figma/accents.png",
+      "deviceW": 0.76,
+      "deviceX": 0.5,
+      "deviceY": 0.292,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.7,
+      "ruleY": 0.262
+    },
+    {
+      "id": "practice-sets",
+      "title": "Your practice,\nin order",
+      "subtitle": "Presets in a sequence, each with a goal",
+      "screenshot": "figma/practice-sets.png",
+      "deviceW": 0.6,
+      "deviceX": 0.5,
+      "deviceY": 0.345,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.68,
+      "ruleY": 0.276
+    },
+    {
+      "id": "keep-going",
+      "title": "Never lose\nyour place",
+      "subtitle": "Pause, resume, pick up where you left off",
+      "screenshot": "figma/session.png",
+      "deviceW": 0.7,
+      "deviceX": 0.5,
+      "deviceY": 0.31,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.76,
+      "ruleY": 0.268
     },
     {
       "id": "no-nonsense",
       "title": "No ads.\nNo account.",
-      "subtitle": "Core practice tools work offline, for free",
+      "subtitle": "Core practice tools work offline, free",
       "screenshot": "figma/settings.png",
       "badges": [
         "No ads",
@@ -164,19 +170,20 @@
         "Works offline",
         "Free"
       ],
-      "accent": "#FFCAEA",
-      "align": "center",
-      "deviceW": 0.645,
+      "deviceW": 0.5,
       "deviceX": 0.5,
-      "deviceY": 0.315,
+      "deviceY": 0.392,
       "rotation": "0deg",
-      "bloomX": 0.5,
-      "bloomY": 0.6,
       "rings": [
-        0.45,
-        0.75,
-        1.05
-      ]
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.66,
+      "ruleY": 0.31
     }
   ]
 }
