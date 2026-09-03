@@ -28,7 +28,7 @@ MIN_TEXT_DEVICE_GAP = 40             # minimum gap between text bottom and devic
 
 # ── Typography ──────────────────────────────────────────────────────
 VERB_SIZE_MAX = 268
-VERB_SIZE_MIN = 150
+VERB_SIZE_MIN = 88
 DESC_SIZE = 116
 VERB_DESC_GAP = 20
 DESC_LINE_GAP = 24
@@ -78,7 +78,9 @@ def fit_font(text, max_w, size_max, size_min):
         bbox = dummy.textbbox((0, 0), text, font=font)
         if (bbox[2] - bbox[0]) <= max_w:
             return font
-    return load_font(size_min)
+    raise SystemExit(
+        f"headline {text!r} does not fit in {max_w}px even at size {size_min}; shorten it"
+    )
 
 
 def draw_centered(draw, y, text, font, max_w=None):
