@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.ui.brandMarkFilled
+import com.merkost.metronome.ui.brandMarkStrokeWidth
 import com.merkost.metronome.ui.brandMarkSubpaths
 
 private const val DRAW_DURATION_MILLIS = 900
@@ -62,7 +63,7 @@ fun AnimatedSplash(
     ) {
         Canvas(Modifier.size(MarkSize)) {
             val segmentCount = measures.size
-            val strokeWidth = size.minDimension * 0.055f
+            val strokeWidth = brandMarkStrokeWidth(size.minDimension)
 
             measures.forEachIndexed { index, measure ->
                 val start = index.toFloat() / segmentCount

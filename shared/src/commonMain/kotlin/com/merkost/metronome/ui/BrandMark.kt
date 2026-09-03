@@ -29,7 +29,14 @@ fun brandMarkSubpaths(size: Float): List<Path> = BRAND_MARK_SUBPATHS.map { data 
 }
 
 fun brandMarkFilled(size: Float): Path {
-    val combined = Path()
-    brandMarkSubpaths(size).forEach { combined.addPath(it) }
-    return combined
+    val path = PathParser().parsePathString(BRAND_MARK_SUBPATHS.joinToString("")).toPath()
+    val unit = size / BRAND_MARK_VIEWPORT
+    val matrix = androidx.compose.ui.graphics.Matrix().apply {
+        translate(BRAND_MARK_GROUP_TRANSLATE * unit, BRAND_MARK_GROUP_TRANSLATE * unit)
+        scale(unit * BRAND_MARK_GROUP_SCALE, unit * BRAND_MARK_GROUP_SCALE)
+    }
+    return path.also { it.transform(matrix) }
 }
+
+/** The mark's stroke weight, matching the proportion used in the design mock. */
+fun brandMarkStrokeWidth(size: Float): Float = size * 0.0196f

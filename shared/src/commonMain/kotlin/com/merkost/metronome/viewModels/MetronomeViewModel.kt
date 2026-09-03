@@ -134,49 +134,6 @@ class MetronomeViewModel(
 
     val whatsNewVersion = MutableStateFlow<String?>(null)
 
-    init {
-        viewModelScope.launch {
-            val ts = appDatastore.timeSignature.first()
-            _metronomeState.update { it.copy(timeSignature = ts, beats = ts.defaultBeats) }
-        }
-        viewModelScope.launch {
-            val subdivision = appDatastore.subdivision.first()
-            _metronomeState.update { it.copy(subdivision = subdivision) }
-        }
-        viewModelScope.launch {
-            appDatastore.onboardingComplete.first().let { complete ->
-                if (!complete) {
-                    onboardingStep.value = 0
-                }
-            }
-        }
-        viewModelScope.launch {
-            whatsNewCoordinator?.let { coordinator ->
-                if (coordinator.shouldShow()) {
-                    whatsNewVersion.value = coordinator.currentVersion()
-                }
-            }
-        }
-        viewModelScope.launch {
-            appDatastore.countInEnabled.collect { enabled ->
-                val active = activePresetState.value.active
-                if (active != null && active.countInEnabled != enabled) {
-                    markConfigurationEdited()
-                }
-            }
-        }
-        practiceSessionController?.let { controller ->
-            viewModelScope.launch {
-                controller.recover()
-                controller.state.value.session?.currentStep?.preset?.let(::commitPracticePreset)
-            }
-            viewModelScope.launch {
-                for (command in controller.commands) {
-                    handlePracticeSessionCommand(command, controller)
-                }
-            }
-        }
-    }
 
     fun onOnboardingNext() {
         onboardingStep.update { if (it < 2) it + 1 else it }
@@ -751,6 +708,50 @@ class MetronomeViewModel(
     private fun markConfigurationEdited() {
         activePresetTracker.changed()
         viewModelScope.launch { practiceSessionController?.markCurrentStepEdited() }
+    }
+
+    init {
+        viewModelScope.launch {
+            val ts = appDatastore.timeSignature.first()
+            _metronomeState.update { it.copy(timeSignature = ts, beats = ts.defaultBeats) }
+        }
+        viewModelScope.launch {
+            val subdivision = appDatastore.subdivision.first()
+            _metronomeState.update { it.copy(subdivision = subdivision) }
+        }
+        viewModelScope.launch {
+            appDatastore.onboardingComplete.first().let { complete ->
+                if (!complete) {
+                    onboardingStep.value = 0
+                }
+            }
+        }
+        viewModelScope.launch {
+            whatsNewCoordinator?.let { coordinator ->
+                if (coordinator.shouldShow()) {
+                    whatsNewVersion.value = coordinator.currentVersion()
+                }
+            }
+        }
+        viewModelScope.launch {
+            appDatastore.countInEnabled.collect { enabled ->
+                val active = activePresetState.value.active
+                if (active != null && active.countInEnabled != enabled) {
+                    markConfigurationEdited()
+                }
+            }
+        }
+        practiceSessionController?.let { controller ->
+            viewModelScope.launch {
+                controller.recover()
+                controller.state.value.session?.currentStep?.preset?.let(::commitPracticePreset)
+            }
+            viewModelScope.launch {
+                for (command in controller.commands) {
+                    handlePracticeSessionCommand(command, controller)
+                }
+            }
+        }
     }
 }
 
