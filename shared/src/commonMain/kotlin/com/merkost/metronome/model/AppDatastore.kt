@@ -12,6 +12,8 @@ interface AppDatastore {
     suspend fun saveClickVolume(volume: Float)
     val totalTime: Flow<Long>
     val colorScheme: Flow<AppColorScheme>
+    val themeMode: Flow<ThemeMode>
+    suspend fun saveThemeMode(mode: ThemeMode)
 
     suspend fun saveStereo(value: Int)
     suspend fun saveColorScheme(colorScheme: AppColorScheme)

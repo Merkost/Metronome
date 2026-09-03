@@ -2,6 +2,7 @@ package com.merkost.metronome.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.merkost.metronome.model.ThemeMode
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
@@ -14,6 +15,8 @@ class SettingsViewModel(
     private val appDatastore: AppDatastore
 ) : ViewModel() {
 
+    val themeMode = appDatastore.themeMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ThemeMode.SYSTEM)
     val colorScheme = appDatastore.colorScheme
         .stateIn(viewModelScope, SharingStarted.Eagerly, AppColorScheme.BLACKNWHITE)
     val colorFlash = appDatastore.colorFlash
@@ -81,6 +84,10 @@ class SettingsViewModel(
         viewModelScope.launch {
             appDatastore.saveBeatDisplayStyle(style)
         }
+    }
+
+    fun onThemeModeChanged(mode: ThemeMode) {
+        viewModelScope.launch { appDatastore.saveThemeMode(mode) }
     }
 
     fun onColorSchemeChanged(it: AppColorScheme) {

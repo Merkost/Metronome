@@ -1,5 +1,6 @@
 package com.merkost.metronome.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -333,23 +334,26 @@ fun PracticeSetRow(
                                 description = stringResource(Res.string.practice_set_actions, practiceSet.name),
                                 onClick = { actionsExpanded = true },
                             )
-                            DropdownMenu(expanded = actionsExpanded, onDismissRequest = { actionsExpanded = false }) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(Res.string.practice_set_edit)) },
+                            AppDropdownMenu(
+                                expanded = actionsExpanded,
+                                onDismissRequest = { actionsExpanded = false },
+                            ) {
+                                AppMenuItem(
+                                    icon = Lucide.Pencil,
+                                    label = stringResource(Res.string.practice_set_edit),
                                     onClick = {
                                         actionsExpanded = false
                                         onEdit()
                                     },
-                                    leadingIcon = { Icon(Lucide.Pencil, contentDescription = null) },
                                 )
-                                HorizontalDivider()
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(Res.string.delete)) },
+                                AppMenuItem(
+                                    icon = Lucide.Trash2,
+                                    label = stringResource(Res.string.delete),
+                                    destructive = true,
                                     onClick = {
                                         actionsExpanded = false
                                         onDelete()
                                     },
-                                    leadingIcon = { Icon(Lucide.Trash2, contentDescription = null) },
                                 )
                             }
                         }
@@ -545,8 +549,9 @@ fun PracticeSessionStrip(
             .fillMaxWidth()
             .pressScale(interactionSource, PressedScaleSubtle),
         shape = RoundedCornerShape(cornerRadiusLarge),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
     ) {
         Column(
             modifier = Modifier.padding(spacingMedium),
@@ -561,21 +566,33 @@ fun PracticeSessionStrip(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    AnimatedContent(
-                        targetState = session.currentStepIndex,
-                        transitionSpec = {
-                            AppAnimations.slideLabelTransform(towardsUp = targetState >= initialState)
-                        },
-                        label = "practiceStripStep",
-                    ) { stepIndex ->
-                        Text(
-                            text = stringResource(
-                                Res.string.practice_session_step,
-                                stepIndex + 1,
-                                session.steps.size,
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
+                    Spacer(Modifier.height(spacingSmall / 2))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+                    ) {
+                        StepDots(
+                            count = session.steps.size,
+                            activeIndex = session.currentStepIndex,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
+                        AnimatedContent(
+                            targetState = session.currentStepIndex,
+                            transitionSpec = {
+                                AppAnimations.slideLabelTransform(towardsUp = targetState >= initialState)
+                            },
+                            label = "practiceStripStep",
+                        ) { stepIndex ->
+                            Text(
+                                text = stringResource(
+                                    Res.string.practice_session_step,
+                                    stepIndex + 1,
+                                    session.steps.size,
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
                 Text(

@@ -46,19 +46,37 @@ for (const [deviceId, device] of devices) {
     const shotW = png.readUInt32BE(16)
     const shotH = png.readUInt32BE(20)
 
+    const D = config.defaults
+    const align = frame.align === 'left' ? 'left' : 'center'
+    const rings = (frame.rings ?? [0.5, 0.8, 1.1])
+      .map(r => `<span style="width:${Math.round(device.width * r)}px;height:${Math.round(device.width * r)}px;opacity:${(0.26 - 0.05 * (frame.rings ?? []).indexOf(r)).toFixed(3)}"></span>`)
+      .join('')
+
+    const vars = [
+      `--align:${align}`,
+      `--justify:${align === 'left' ? 'flex-start' : 'center'}`,
+      `--device-w:${Math.round(device.width * (frame.deviceW ?? 0.66))}px`,
+      `--device-x:${Math.round(device.width * (frame.deviceX ?? 0.5))}px`,
+      `--device-y:${Math.round(device.height * (frame.deviceY ?? 0.33))}px`,
+      `--device-rot:${frame.rotation ?? '0deg'}`,
+      `--bloom-x:${Math.round(device.width * (frame.bloomX ?? 0.5))}px`,
+      `--bloom-y:${Math.round(device.height * (frame.bloomY ?? 0.66))}px`,
+    ].join(';')
+
     const html = template
       .replaceAll('__WIDTH__', device.width)
       .replaceAll('__HEIGHT__', device.height)
-      .replaceAll('__BACKGROUND__', frame.background ?? config.defaults.background)
-      .replaceAll('__TITLE_COLOR__', config.defaults.titleColor)
-      .replaceAll('__SUBTITLE_COLOR__', config.defaults.subtitleColor)
+      .replaceAll('__ACCENT__', frame.accent ?? '#B89FFF')
+      .replaceAll('__BG__', frame.bg ?? D.bg)
+      .replaceAll('__INK__', D.ink)
+      .replaceAll('__MUTED__', D.muted)
+      .replaceAll('__SHOT_RATIO__', (shotH / shotW).toFixed(6))
+      .replaceAll('__RINGS__', rings)
       .replaceAll('__TITLE__', esc(frame.title))
       .replaceAll('__SUBTITLE__', esc(frame.subtitle))
       .replaceAll('__BADGES__', badges)
-      .replaceAll('__SHOT_RATIO__', (shotH / shotW).toFixed(6))
-      .replaceAll('__CROP_TOP__', String(frame.cropTop ?? config.defaults.cropTop ?? 0))
-      .replaceAll('__CROP_BOTTOM__', String(frame.cropBottom ?? config.defaults.cropBottom ?? 0))
       .replaceAll('__SCREENSHOT__', pathToFileURL(shot).href)
+      .replace('<body>', `<body style="${vars}">`)
 
     const page = join(tmp, `${deviceId}-${frame.id}.html`)
     writeFileSync(page, html)

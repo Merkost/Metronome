@@ -224,23 +224,27 @@ fun PracticePresetRow(
                                 description = stringResource(Res.string.preset_actions, preset.name),
                                 onClick = { actionsExpanded = true },
                             )
-                            DropdownMenu(
+                            AppDropdownMenu(
                                 expanded = actionsExpanded,
                                 onDismissRequest = { actionsExpanded = false },
                             ) {
-                                PresetMenuItem(Lucide.Pencil, Res.string.rename) {
+                                AppMenuItem(Lucide.Pencil, stringResource(Res.string.rename)) {
                                     actionsExpanded = false
                                     onRename()
                                 }
-                                PresetMenuItem(Lucide.Copy, Res.string.duplicate) {
+                                AppMenuItem(Lucide.Copy, stringResource(Res.string.duplicate)) {
                                     actionsExpanded = false
                                     onDuplicate()
                                 }
-                                HorizontalDivider()
-                                PresetMenuItem(Lucide.Trash2, Res.string.delete) {
-                                    actionsExpanded = false
-                                    onDelete()
-                                }
+                                AppMenuItem(
+                                    icon = Lucide.Trash2,
+                                    label = stringResource(Res.string.delete),
+                                    destructive = true,
+                                    onClick = {
+                                        actionsExpanded = false
+                                        onDelete()
+                                    },
+                                )
                             }
                         }
                     }

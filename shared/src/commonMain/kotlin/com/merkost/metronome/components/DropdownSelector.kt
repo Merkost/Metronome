@@ -1,6 +1,7 @@
 package com.merkost.metronome.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.PressedScaleSurface
@@ -46,15 +48,21 @@ fun <T> DropdownSelector(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = onDismiss,
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                ),
+                shadowElevation = 0.dp,
+                tonalElevation = 0.dp,
             ) {
                 items.forEach { item ->
                     val isSelected = item == selectedItem
                     val itemBackground by animateColorAsState(
                         targetValue = if (isSelected) {
-                            MaterialTheme.colorScheme.surfaceVariant
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
                         } else {
-                            MaterialTheme.colorScheme.surface
+                            Color.Transparent
                         },
                         animationSpec = AppAnimations.standard(),
                         label = "dropdownItemBackground",

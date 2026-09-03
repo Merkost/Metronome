@@ -300,6 +300,13 @@ fun MainScreen(
                         )
                     },
                     actions = {
+                        TimeSignatureSelector(
+                            expanded = tsExpanded,
+                            selected = metronomeState.timeSignature,
+                            onExpandedChange = { tsExpanded = it },
+                            onSelect = viewModel::onTimeSignatureChanged,
+                        )
+                        Spacer(Modifier.size(spacingSmall))
                         AppIconButton(onClick = onSettingsClicked) {
                             Icon(Lucide.Settings, Lucide.Settings.name)
                         }
@@ -327,13 +334,6 @@ fun MainScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(spacingLarge)
                     ) {
-
-                        TimeSignatureSelector(
-                            expanded = tsExpanded,
-                            selected = metronomeState.timeSignature,
-                            onExpandedChange = { tsExpanded = it },
-                            onSelect = viewModel::onTimeSignatureChanged,
-                        )
 
                         val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
                         AnimatedContent(

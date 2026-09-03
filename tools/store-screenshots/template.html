@@ -6,104 +6,126 @@
   :root {
     --w: __WIDTH__px;
     --h: __HEIGHT__px;
-    --bg: __BACKGROUND__;
-    --title: __TITLE_COLOR__;
-    --subtitle: __SUBTITLE_COLOR__;
-    --crop-top: __CROP_TOP__;
-    --crop-bottom: __CROP_BOTTOM__;
+    --accent: __ACCENT__;
+    --bg: __BG__;
+    --ink: __INK__;
+    --muted: __MUTED__;
+    --shot-ratio: __SHOT_RATIO__;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: var(--w); height: var(--h); }
   body {
     background: var(--bg);
     font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: relative;
     overflow: hidden;
   }
+
+  /* ---- backdrop: dot grid, accent bloom, pulse rings ---- */
+  .grid {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(var(--muted) 1.5px, transparent 1.5px);
+    background-size: calc(var(--w) * 0.038) calc(var(--w) * 0.038);
+    opacity: 0.30;
+  }
+  .bloom {
+    position: absolute;
+    width: calc(var(--w) * 1.75); height: calc(var(--w) * 1.75);
+    left: var(--bloom-x); top: var(--bloom-y);
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 46%, transparent) 0%,
+                                        color-mix(in srgb, var(--accent) 12%, transparent) 45%,
+                                        transparent 70%);
+  }
+  .rings { position: absolute; left: var(--bloom-x); top: var(--bloom-y); transform: translate(-50%, -50%); }
+  .rings span {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+  }
+  .glowline {
+    position: absolute; left: 0; right: 0; top: var(--bloom-y);
+    height: 1px; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent), transparent);
+  }
+
+  /* ---- copy ---- */
   .copy {
-    width: 100%;
-    padding: calc(var(--h) * 0.055) calc(var(--w) * 0.08) 0;
-    text-align: center;
-    flex: 0 0 auto;
+    position: absolute;
+    left: calc(var(--w) * 0.075); right: calc(var(--w) * 0.075);
+    top: calc(var(--h) * 0.052);
+    text-align: var(--align);
+    z-index: 3;
+  }
+  .brand {
+    color: var(--accent);
+    font-size: calc(var(--w) * 0.026);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: calc(var(--h) * 0.016);
   }
   h1 {
-    color: var(--title);
-    font-size: calc(var(--w) * 0.088);
-    line-height: 1.1;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-size: calc(var(--w) * 0.086);
+    line-height: 1.06;
+    font-weight: 800;
+    letter-spacing: -0.025em;
     white-space: pre-line;
   }
   p.sub {
-    margin-top: calc(var(--h) * 0.014);
-    color: var(--subtitle);
-    font-size: calc(var(--w) * 0.036);
+    margin-top: calc(var(--h) * 0.013);
+    color: var(--muted);
+    font-size: calc(var(--w) * 0.034);
     line-height: 1.35;
     font-weight: 400;
   }
-  .badges {
-    margin-top: calc(var(--h) * 0.022);
-    display: flex;
-    flex-wrap: wrap;
-    gap: calc(var(--w) * 0.018);
-    justify-content: center;
-  }
+  .badges { margin-top: calc(var(--h) * 0.022); display: flex; flex-wrap: wrap; gap: calc(var(--w) * 0.016); justify-content: var(--justify); }
   .badges span {
-    border: 2px solid rgba(0,0,0,0.14);
-    color: var(--title);
+    border: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+    color: var(--ink);
     border-radius: 999px;
-    padding: calc(var(--w) * 0.015) calc(var(--w) * 0.035);
-    font-size: calc(var(--w) * 0.029);
+    padding: calc(var(--w) * 0.013) calc(var(--w) * 0.032);
+    font-size: calc(var(--w) * 0.026);
     font-weight: 600;
   }
-  .stage {
-    flex: 1 1 auto;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    padding-top: calc(var(--h) * 0.035);
-  }
+
+  /* ---- device ---- */
   .phone {
-    --shot-h: calc(var(--w) * 0.72 * __SHOT_RATIO__);
-    width: calc(var(--w) * 0.72);
-    border-radius: calc(var(--w) * 0.075);
-    background: #0b0b0d;
-    padding: calc(var(--w) * 0.011);
-    box-shadow: 0 calc(var(--h) * 0.012) calc(var(--h) * 0.05) rgba(0,0,0,0.22);
-    overflow: hidden;
+    position: absolute;
+    width: var(--device-w);
+    left: var(--device-x);
+    top: var(--device-y);
+    transform: translateX(-50%) rotate(var(--device-rot));
+    border-radius: calc(var(--device-w) * 0.105);
+    background: linear-gradient(160deg, #2a2a2e, #0d0d0f);
+    padding: calc(var(--device-w) * 0.017);
+    box-shadow: 0 calc(var(--h) * 0.02) calc(var(--h) * 0.06) rgba(0,0,0,0.55),
+                0 0 calc(var(--h) * 0.05) color-mix(in srgb, var(--accent) 26%, transparent);
+    z-index: 2;
   }
-  .phone .glass {
-    border-radius: calc(var(--w) * 0.065);
+  .screen {
+    border-radius: calc(var(--device-w) * 0.09);
     overflow: hidden;
     background: #fff;
-    display: block;
-    position: relative;
+    aspect-ratio: 1 / var(--shot-ratio);
   }
-  /* crop-top / crop-bottom trim platform chrome (status bar, gesture bar) so the
-     same source screenshot works for both stores */
-  .phone .glass .clip {
-    overflow: hidden;
-    display: block;
-    height: calc(var(--shot-h) * (1 - var(--crop-top) - var(--crop-bottom)));
-  }
-  .phone img {
-    width: 100%;
-    display: block;
-    margin-top: calc(var(--shot-h) * var(--crop-top) * -1);
-  }
+  .screen img { width: 100%; height: 100%; object-fit: cover; display: block; }
 </style>
 </head>
 <body>
+  <div class="grid"></div>
+  <div class="bloom"></div>
+  <div class="glowline"></div>
+  <div class="rings">__RINGS__</div>
+
   <div class="copy">
+    <div class="brand">Metronome</div>
     <h1>__TITLE__</h1>
     <p class="sub">__SUBTITLE__</p>
     __BADGES__
   </div>
-  <div class="stage">
-    <div class="phone"><div class="glass"><span class="clip"><img src="__SCREENSHOT__"></span></div></div>
-  </div>
+
+  <div class="phone"><div class="screen"><img src="__SCREENSHOT__"></div></div>
 </body>
 </html>

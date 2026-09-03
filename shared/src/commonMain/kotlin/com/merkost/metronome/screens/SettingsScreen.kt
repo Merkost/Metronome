@@ -68,6 +68,7 @@ import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
+import com.merkost.metronome.model.ThemeMode
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.AppVersionProvider
 import com.merkost.metronome.ui.AppAnimations
@@ -105,6 +106,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val liveActivityEnabled by viewModel.liveActivityEnabled.collectAsState()
     val practiceStreak by viewModel.practiceStreak.collectAsState()
     val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
+    val themeMode by viewModel.themeMode.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val clickVolume by viewModel.clickVolume.collectAsState()
@@ -192,7 +194,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                 )
             }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SettingsSectionHeader("Sound")
 
             SettingsRow(title = "Click Sound") {
                 Row(
@@ -249,12 +251,10 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             }
 
-            SettingsRow(title = "Volume") {
-                Text(
-                    text = "${(clickVolume * 100).roundToInt()}%",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            SettingsSlider(
+                title = "Volume",
+                value = "${(clickVolume * 100).roundToInt()}%",
+            ) {
                 AppSlider(
                     modifier = Modifier.fillMaxWidth(),
                     value = clickVolume,
@@ -264,17 +264,12 @@ fun SettingsScreen(upPress: () -> Unit) {
                 )
             }
 
-            SettingsRow(title = "Stereo Panning") {
-                val stereoLabel = when {
-                    currentStereo < 0 -> "L${-currentStereo}"
-                    currentStereo > 0 -> "R$currentStereo"
-                    else -> "Center"
-                }
-                Text(
-                    text = stereoLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            val stereoLabel = when {
+                currentStereo < 0 -> "L${-currentStereo}"
+                currentStereo > 0 -> "R$currentStereo"
+                else -> "Center"
+            }
+            SettingsSlider(title = "Stereo Panning", value = stereoLabel) {
                 AppSlider(
                     modifier = Modifier.fillMaxWidth(),
                     value = currentStereo.toFloat(),
@@ -288,7 +283,19 @@ fun SettingsScreen(upPress: () -> Unit) {
 
             SettingsSwitch("Haptic Feedback", hapticEnabled, viewModel::onHapticChanged, subtitle = "Vibrate on each beat")
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SettingsSectionHeader("Appearance")
+
+            SettingsRow(title = "Theme") {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                    ThemeMode.entries.forEach { mode ->
+                        AppChip(
+                            selected = themeMode == mode,
+                            onClick = { viewModel.onThemeModeChanged(mode) },
+                            label = mode.label,
+                        )
+                    }
+                }
+            }
 
             SettingsRow(title = "Color Scheme") {
                 LazyRow(
@@ -342,6 +349,8 @@ fun SettingsScreen(upPress: () -> Unit) {
                     }
                 }
             }
+
+            SettingsSectionHeader("Practice")
 
             SettingsRow(
                 title = "Total Practice Time",
@@ -487,6 +496,42 @@ fun ColorSecondaryButton(
         border = BorderStroke(borderDp, MaterialTheme.colorScheme.primary)
     ) {
         content()
+    }
+}
+
+@Composable
+private fun SettingsSectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(top = spacingSmall),
+    )
+}
+
+@Composable
+private fun SettingsSlider(
+    title: String,
+    value: String,
+    slider: @Composable () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        slider()
     }
 }
 

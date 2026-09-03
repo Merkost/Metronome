@@ -12,65 +12,170 @@
     }
   },
   "defaults": {
-    "background": "#f4f4f5",
-    "titleColor": "#111113",
-    "subtitleColor": "#6b6b70",
-    "cropTop": 0.038,
-    "cropBottom": 0.022
+    "bg": "#0E0E10",
+    "ink": "#FFFFFF",
+    "muted": "#9A9AA2"
   },
   "frames": [
     {
       "id": "precise-timing",
       "title": "Precise timing.\nBetter practice.",
       "subtitle": "A steady pulse you can trust, at any tempo",
-      "screenshot": "raw/main.png"
+      "screenshot": "figma/main.png",
+      "accent": "#B89FFF",
+      "align": "center",
+      "deviceW": 0.645,
+      "deviceX": 0.5,
+      "deviceY": 0.315,
+      "rotation": "0deg",
+      "bloomX": 0.5,
+      "bloomY": 0.72,
+      "rings": [
+        0.55,
+        0.85,
+        1.15,
+        1.5
+      ]
     },
     {
       "id": "tempo-trainer",
       "title": "Build speed\nautomatically",
       "subtitle": "Raise or lower the tempo over complete bars",
-      "screenshot": "raw/tempo-trainer.png"
+      "screenshot": "figma/tempo-trainer.png",
+      "accent": "#C9D5FE",
+      "align": "left",
+      "deviceW": 0.575,
+      "deviceX": 0.6,
+      "deviceY": 0.325,
+      "rotation": "-6deg",
+      "bloomX": 0.74,
+      "bloomY": 0.62,
+      "rings": [
+        0.5,
+        0.8,
+        1.1
+      ]
     },
     {
       "id": "gap-trainer",
       "title": "Train your\ninner clock",
       "subtitle": "The click drops out; you keep time and find out",
-      "screenshot": "raw/gap-trainer.png"
+      "screenshot": "figma/gap-trainer.png",
+      "accent": "#9EFFAE",
+      "align": "left",
+      "deviceW": 0.575,
+      "deviceX": 0.4,
+      "deviceY": 0.325,
+      "rotation": "6deg",
+      "bloomX": 0.26,
+      "bloomY": 0.64,
+      "rings": [
+        0.5,
+        0.8,
+        1.1
+      ]
     },
     {
       "id": "subdivisions",
       "title": "Hear every\nsubdivision",
       "subtitle": "Eighths, triplets and sixteenths under the beat",
-      "screenshot": "raw/subdivisions.png"
+      "screenshot": "figma/subdivisions.png",
+      "accent": "#FFCAEA",
+      "align": "center",
+      "deviceW": 0.645,
+      "deviceX": 0.5,
+      "deviceY": 0.315,
+      "rotation": "0deg",
+      "bloomX": 0.5,
+      "bloomY": 0.55,
+      "rings": [
+        0.45,
+        0.75,
+        1.05,
+        1.35
+      ]
     },
     {
       "id": "shape-the-bar",
       "title": "Shape\nevery beat",
       "subtitle": "Tap any beat to accent it, soften it or mute it",
-      "screenshot": "raw/accents.png"
+      "screenshot": "figma/accents.png",
+      "accent": "#B89FFF",
+      "align": "left",
+      "deviceW": 0.575,
+      "deviceX": 0.61,
+      "deviceY": 0.325,
+      "rotation": "4deg",
+      "bloomX": 0.73,
+      "bloomY": 0.68,
+      "rings": [
+        0.5,
+        0.82,
+        1.15
+      ]
     },
     {
       "id": "practice-sets",
       "title": "Save setups.\nPractise in order.",
       "subtitle": "Presets in a sequence, each with a time or bar goal",
-      "screenshot": "raw/practice-sets.png"
+      "screenshot": "figma/practice-sets.png",
+      "accent": "#C9D5FE",
+      "align": "left",
+      "deviceW": 0.575,
+      "deviceX": 0.39,
+      "deviceY": 0.325,
+      "rotation": "-4deg",
+      "bloomX": 0.27,
+      "bloomY": 0.66,
+      "rings": [
+        0.5,
+        0.82,
+        1.15
+      ]
     },
     {
       "id": "keep-going",
       "title": "Move through it\nstep by step",
       "subtitle": "Pause, resume, and pick up where you left off",
-      "screenshot": "raw/session.png"
+      "screenshot": "figma/session.png",
+      "accent": "#9EFFAE",
+      "align": "center",
+      "deviceW": 0.645,
+      "deviceX": 0.5,
+      "deviceY": 0.315,
+      "rotation": "0deg",
+      "bloomX": 0.5,
+      "bloomY": 0.78,
+      "rings": [
+        0.6,
+        0.95,
+        1.3,
+        1.7
+      ]
     },
     {
       "id": "no-nonsense",
       "title": "No ads.\nNo account.",
       "subtitle": "Core practice tools work offline, for free",
-      "screenshot": "raw/settings.png",
+      "screenshot": "figma/settings.png",
       "badges": [
         "No ads",
         "No account",
         "Works offline",
         "Free"
+      ],
+      "accent": "#FFCAEA",
+      "align": "center",
+      "deviceW": 0.645,
+      "deviceX": 0.5,
+      "deviceY": 0.315,
+      "rotation": "0deg",
+      "bloomX": 0.5,
+      "bloomY": 0.6,
+      "rings": [
+        0.45,
+        0.75,
+        1.05
       ]
     }
   ]

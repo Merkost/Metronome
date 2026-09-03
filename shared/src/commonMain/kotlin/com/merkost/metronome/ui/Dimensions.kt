@@ -49,3 +49,4 @@ val tempoDisplaySize = 62.sp
 val emojiSize = 28.sp
 val setPlayButtonSize = 44.dp
 val emptyStateBadgeSize = 88.dp
+val appMenuMinWidth = 200.dp
