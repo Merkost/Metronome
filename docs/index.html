@@ -6,7 +6,9 @@
     <title>Free Offline Metronome &amp; Practice Tools | Merkost</title>
     <meta name="description" content="Practice with precise BPM control, practice presets and sets, tempo and gap trainers, subdivisions and timers. Free, ad-free metronome for iPhone and Android.">
     <link rel="canonical" href="https://metronome.merkost.dev/">
-    <meta name="theme-color" content="#F2F3F2">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#F2F3F2" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#121412" media="(prefers-color-scheme: dark)">
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Metronome: Practice &amp; Tempo">
@@ -41,7 +43,7 @@
     }
     </script>
 
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000'/%3E%3Cpath d='M16 6 L24 26 H8 Z' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linejoin='round'/%3E%3Cline x1='16' y1='9' x2='21.5' y2='23' stroke='%23fff' stroke-width='2.4'/%3E%3C/svg%3E">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preload" href="fonts/roboto-var.woff2" as="font" type="font/woff2" crossorigin>
     <style>
         /* Roboto is the app's own typeface on Android. Self-hosted here as the
@@ -142,6 +144,7 @@
             backdrop-filter: saturate(1.4) blur(10px);
             border-bottom: 1px solid var(--rule-strong);
         }
+        .mark-logo { width: 21px; height: 21px; margin-right: 9px; display: block; fill: currentColor; }
         .mark { font-size: 19px; font-weight: 800; letter-spacing: -0.03em; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
         .meter {
             font-size: 12px; font-weight: 600;
@@ -339,6 +342,45 @@
         details[open] summary::after { content: '\2212'; }
         details p { color: var(--ink-2); max-width: 68ch; padding-bottom: 20px; }
 
+        /* ---------- tempo scale ---------- */
+        /* The app's real tempo markings at their real thresholds, drawn in the
+           page's own rule language. Nothing else in the category can show this,
+           which is the point: it is the one element a visitor could describe
+           afterwards. Values ported from MetronomeState.tempoName. */
+        .scale { margin-top: calc(var(--lh) * 1.5); max-width: 62ch; }
+        .scale-track {
+            position: relative; height: calc(var(--lh) * 2);
+            border-bottom: var(--rule-w) solid var(--rule-strong);
+        }
+        .scale-track span {
+            position: absolute; bottom: 0; top: 0;
+            display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;
+            padding: 0 0 6px 7px;
+            border-left: var(--rule-w) solid var(--rule);
+            font-size: 12px; line-height: 1.25;
+            color: var(--ink-2); white-space: nowrap;
+        }
+        .scale-track span b { font-size: 11px; font-weight: 400; opacity: .68; order: -1; }
+        .scale-track span.is-now {
+            border-left-color: var(--accent); color: var(--accent-ink); font-weight: 600;
+        }
+        .scale-ends {
+            display: flex; justify-content: space-between;
+            font-size: 12px; color: var(--ink-2); line-height: var(--lh);
+        }
+        /* The seven markings are not evenly spaced, so the crowded ones sit a
+           row up rather than colliding with their neighbours. */
+        .scale-track span.is-tight { padding-bottom: calc(var(--lh) + 6px); }
+        /* The staggered row carries its name only; the thresholds for all seven
+           markings stay in the track's accessible label. */
+        .scale-track span.is-tight b { display: none; }
+        .scale-track span:last-child {
+            left: auto; right: 0; text-align: right;
+            border-left: 0; border-right: var(--rule-w) solid var(--rule);
+            padding: 0 7px 6px 0;
+        }
+        @media (max-width: 700px) { .scale-track span.is-tight { display: none; } }
+
         /* ---------- proof ---------- */
         /* A device at 280px renders the app's 14px labels at ~9px, which makes
            the screenshot decorative on a page arguing for craft. These are
@@ -397,7 +439,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 <div class="playhead" id="playhead" aria-hidden="true"></div>
 
 <header class="bar">
-    <a class="mark" href="#top">Metronome</a>
+    <a class="mark" href="#top"><svg class="mark-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7654 7654" aria-hidden="true" focusable="false"><g transform="translate(1607.34,1607.34) scale(0.58)"><path fill="currentColor" d="M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z"/></g></svg>Metronome</a>
     <span class="meter">4/4</span>
     <span class="bar-spacer"></span>
     <a class="bar-link" href="#practice">Practice tools</a>
@@ -452,6 +494,18 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                     <li><span>Per beat</span><span>Accent, normal, mute</span></li>
                     <li><span>Click sounds</span><span>Wood, Click, Classic</span></li>
                 </ul>
+                <div class="scale">
+                    <div class="scale-track" role="img" aria-label="Tempo markings across the range: Largo from 40, Adagio from 66, Andante from 76, Moderato from 108, Allegro from 120, Presto from 168, Prestissimo from 201 to 220 BPM.">
+                        <span style="left:0%">Largo<b>40</b></span>
+                        <span class="is-tight" style="left:14.4%">Adagio<b>66</b></span>
+                        <span class="is-now" style="left:20%">Andante<b>76</b></span>
+                        <span class="is-tight" style="left:37.8%">Moderato<b>108</b></span>
+                        <span style="left:44.4%">Allegro<b>120</b></span>
+                        <span style="left:71.1%">Presto<b>168</b></span>
+                        <span class="is-tight" style="left:89.4%">Prestissimo<b>201</b></span>
+                    </div>
+                    <p class="scale-ends"><span>40 BPM</span><span>220 BPM</span></p>
+                </div>
             </div>
             <figure class="proof">
                 <img src="screenshots/detail-main.png" width="960" height="846" loading="lazy" alt="The metronome screen at 100 BPM in 4/4, marked Andante, with beat dots, tempo slider and the play, timer and tap tempo controls.">
