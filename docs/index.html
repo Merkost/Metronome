@@ -103,6 +103,9 @@
             -webkit-text-size-adjust: 100%;
             scroll-behavior: smooth;
             scrollbar-color: var(--rule-strong) var(--ground);
+            /* The bar is sticky, so an untreated anchor jump parks the heading
+               underneath it. One bar height plus half a band of air. */
+            scroll-padding-top: calc(var(--bar-h) + var(--lh) / 2);
         }
         @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
@@ -153,7 +156,7 @@
             backdrop-filter: saturate(1.4) blur(10px);
             border-bottom: 1px solid var(--rule-strong);
         }
-        .mark-logo { width: 21px; height: 21px; margin-right: 9px; display: block; fill: currentColor; }
+        .mark-logo { width: 26px; height: 26px; margin-right: 10px; display: block; fill: currentColor; }
         .mark { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
         .meter {
             font-size: 12px; font-weight: 600;
@@ -263,10 +266,14 @@
            anywhere else the rules cross letterforms mid-stem and the two
            patterns resolve as moire, which is what "too many stripes" was. */
         /* The ruling lives on its own layer. Masking the element itself also
-           masked its text, which faded the first line of every paragraph. */
-        .field { position: relative; }
+           masked its text, which faded the first line of every paragraph.
+           An absolute pseudo-element paints after the in-flow text it shares
+           the box with, so it needs its own negative layer or it strikes the
+           copy through; isolate keeps that layer above the ancestor ground. */
+        .field { position: relative; isolation: isolate; }
         .field::before {
             content: ''; position: absolute; inset: 0; pointer-events: none;
+            z-index: -1;
             background-image: repeating-linear-gradient(to bottom,
                 transparent 0,
                 transparent calc(var(--rule-y) - var(--rule-w)),
@@ -463,6 +470,12 @@
         .close h2 { max-width: min(18ch, var(--measure)); }
         .close .say { color: color-mix(in srgb, var(--on-accent) 88%, var(--accent-deep)); }
         .close .badge--play img { filter: none; }
+        /* The ledger separator is a mark on the ruled ground. The closing band
+           is its own surface and paints its fill before the pseudo-element, so
+           the rule would land on the green and stop at the measure. */
+        .entry + .entry.close::before { content: none; }
+        /* --accent on --accent-deep is 1.74:1: no visible focus ring in the band. */
+        .close :focus-visible { outline-color: var(--on-accent); }
 
         /* ---------- footer ---------- */
         footer { padding: var(--lh) 0 calc(var(--lh) * 2); border-top: 1px solid var(--rule-strong); }
@@ -474,7 +487,7 @@
                 display: flex; flex-wrap: wrap; gap: 0 22px;
                 margin-bottom: var(--lh);
             }
-            .foot-nav a { display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 600; }
+            .foot-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; font-size: 15px; font-weight: 600; }
         }
         .foot-links { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 15px; margin-bottom: 12px; }
         .foot-links a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -502,7 +515,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 <div class="playhead" id="playhead" aria-hidden="true"></div>
 
 <header class="bar">
-    <a class="mark" href="#top"><svg class="mark-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7654 7654" aria-hidden="true" focusable="false"><g transform="translate(1607.34,1607.34) scale(0.58)"><path fill="currentColor" d="M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z"/></g></svg>Metronome</a>
+    <a class="mark" href="#top"><svg class="mark-logo" width="26" height="26" xmlns="http://www.w3.org/2000/svg" viewBox="980.7 857.6 5795.1 5795.1" aria-hidden="true" focusable="false"><g><path fill="currentColor" d="M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z"/></g></svg>Metronome</a>
     <span class="meter">4/4</span>
     <span class="bar-spacer"></span>
     <a class="bar-link" href="#practice">Practice tools</a>
@@ -530,7 +543,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <p class="aside">An example entry. Your own practice time, tempos and streak are recorded on your device.</p>
             </div>
             <div class="screen screen--hero">
-                <img src="screenshots/app-main.png" width="560" height="1244" fetchpriority="high" alt="The metronome screen at 100 BPM in 4/4, marked Andante, with beat dots, tempo slider and the play, timer and tap tempo controls.">
+                <img src="screenshots/app-main.png" width="560" height="1244" fetchpriority="high" alt="The metronome screen running at 100 BPM in 4/4, marked Andante: four beat dots with the first accented, the tempo slider and fine steps, and a bottom bar holding a 9:06 timer, pause, and tap tempo.">
             </div>
         </div>
 
@@ -571,7 +584,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 </div>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-main.png" width="960" height="846" loading="lazy" alt="The metronome screen at 100 BPM in 4/4, marked Andante, with beat dots, tempo slider and the play, timer and tap tempo controls.">
+                <img src="screenshots/detail-main.png" width="1000" height="846" loading="lazy" alt="The tempo cluster: an Andante marking pill above 100 BPM, minus and plus buttons either side, the tempo slider, and the minus 5, halve, double and plus 5 shortcuts.">
                 <figcaption>The tempo cluster: marking, BPM, fine steps and the slider.</figcaption>
             </figure>
         </div>
@@ -585,7 +598,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <p class="say field">The Gap Trainer plays a set number of bars, then goes quiet for a set number while the beat keeps counting underneath. You hold the pulse yourself, and find out whether you are still with the click when it comes back. It is the most direct way to train an internal clock.</p>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-gap.png" width="1000" height="101" loading="lazy" alt="The Gap Trainer running, with a status strip reading Muted, bar 2 of 2, over a 4 plus 2 bar cycle.">
+                <img src="screenshots/detail-gap.png" width="1000" height="162" loading="lazy" alt="The Gap Trainer running, with a status strip reading Muted, bar 2 of 2, over a 4 plus 2 bar cycle.">
                 <figcaption>The status strip while the Gap Trainer is muted: bar 2 of 2 of a 4 plus 2 bar cycle.</figcaption>
             </figure>
         </div>
@@ -604,7 +617,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 </ul>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-tempo.png" width="955" height="404" loading="lazy" alt="The Tempo Trainer sheet set to climb from 80 to 120 BPM in steps of 2 every 4 bars, totalling 80 bars or about 3 minutes.">
+                <img src="screenshots/detail-tempo.png" width="1000" height="423" loading="lazy" alt="The Tempo Trainer's step controls, with a step of plus 2 selected and held every 4 bars, summarised underneath as 80 bars or about 3 minutes.">
                 <figcaption>A climb configured to step +2 every 4 bars: 80 bars, about 3 minutes.</figcaption>
             </figure>
         </div>
@@ -618,7 +631,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <p class="say field">Save a whole setup as a preset: tempo, meter, subdivision, accents and count-in. Then order those presets into a practice set, each step with a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-session.png" width="1000" height="403" loading="lazy" alt="A practice session in progress showing step 2 of 3, Scales at 100 BPM in 4/4, three of five minutes done, with Etude up next.">
+                <img src="screenshots/detail-session.png" width="1000" height="425" loading="lazy" alt="A practice session card reading step 2 of 3, Scales, 100 BPM in 4/4, three of five minutes done.">
                 <figcaption>Step 2 of 3 of a saved practice set, three of five minutes done.</figcaption>
             </figure>
         </div>
@@ -638,7 +651,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 </ul>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-settings.png" width="1000" height="560" loading="lazy" alt="The settings screen with click sound, volume, stereo panning, haptic feedback, theme and colour scheme options.">
+                <img src="screenshots/detail-settings.png" width="1000" height="548" loading="lazy" alt="The appearance settings, with Theme set to Light alongside System and Dark, above a row of colour scheme swatches.">
                 <figcaption>Theme and colour scheme, both stored on your device.</figcaption>
             </figure>
         </div>
