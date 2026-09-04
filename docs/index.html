@@ -323,6 +323,9 @@
             transition: background-color .18s cubic-bezier(.2,.8,.2,1), color .18s cubic-bezier(.2,.8,.2,1);
         }
         .ghost:hover { background: var(--ink); color: var(--ground); }
+        /* The store badges render 44px tall; the pill matches them so the three
+           read as one row rather than a button beside two badges. */
+        .ghost--try { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; }
         .aside { font-size: 15px; color: var(--ink-2); margin-top: 14px; max-width: var(--measure); }
 
         /* ---------- opening entry ---------- */
@@ -554,6 +557,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
             <a class="badge badge--play" href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
                 <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="646" height="250" alt="Get Metronome: Practice &amp; Tempo on Google Play">
             </a>
+            <a class="ghost ghost--try" href="app/">Try it in the browser</a>
         </div>
     </section>
 
