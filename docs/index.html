@@ -537,10 +537,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
                 <div class="figures">
                     <div class="fig"><b>42</b><span>minutes practised</span></div>
-                    <div class="fig"><b>168</b><span>bpm reached</span></div>
+                    <div class="fig"><b>14</b><span>hours in total</span></div>
                     <div class="fig is-accent"><b>9</b><span>day streak</span></div>
                 </div>
-                <p class="aside">An example entry. Your own practice time, tempos and streak are recorded on your device.</p>
+                <p class="aside">An example entry. Your own practice time and streak are recorded on your device.</p>
             </div>
             <div class="screen screen--hero">
                 <img src="screenshots/app-main.png" width="560" height="1244" fetchpriority="high" alt="The metronome screen running at 100 BPM in 4/4, marked Andante: four beat dots with the first accented, the tempo slider and fine steps, and a bottom bar holding a 9:06 timer, pause, and tap tempo.">
@@ -562,7 +562,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
             <div>
                 <p class="date">The click</p>
                 <h2>A beat that holds.</h2>
-                <p class="say field">Set the tempo, tap it in, or shape it bar by bar. Every beat can be accented, softened or muted, and the pulse is scheduled against a monotonic clock, so it does not wander as a session runs long.</p>
+                <p class="say field">Set the tempo, tap it in, or shape it bar by bar. Every beat can be accented or muted, and the pulse is scheduled against a monotonic clock, so it does not wander as a session runs long.</p>
                 <ul class="specs field">
                     <li><span>Tempo range</span><span>40 to 220 BPM</span></li>
                     <li><span>Time signatures</span><span>2/4, 3/4, 4/4, 5/4, 6/8, 7/8</span></li>
@@ -628,7 +628,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
             <div>
                 <p class="date">The session</p>
                 <h2>Plan it once, follow it after.</h2>
-                <p class="say field">Save a whole setup as a preset: tempo, meter, subdivision, accents and count-in. Then order those presets into a practice set, each step with a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
+                <p class="say field">Save a whole setup as a preset: tempo, meter, subdivision, accents and count-in. Then order those presets into a practice set, giving any step a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
             </div>
             <figure class="proof">
                 <img src="screenshots/detail-session.png" width="1000" height="425" loading="lazy" alt="A practice session card reading step 2 of 3, Scales, 100 BPM in 4/4, three of five minutes done.">
@@ -642,7 +642,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
             <div>
                 <p class="date">Yours</p>
                 <h2>No advertising. No account.</h2>
-                <p class="say field">Nothing sits behind a subscription and nothing asks you to sign in. Core practice works offline, your settings and practice history stay on your device, and playback keeps running with the screen off — on supported iPhones the tempo and timer appear on the Lock Screen and in the Dynamic Island.</p>
+                <p class="say field">Nothing sits behind a subscription and nothing asks you to sign in. Core practice works offline, your settings and practice time stay on your device, and playback keeps running with the screen off — always on iPhone, on Android once Background Play is on.</p>
                 <ul class="specs field">
                     <li><span>Price</span><span>Free</span></li>
                     <li><span>Account</span><span>Not required</span></li>
@@ -660,7 +660,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <section class="entry entry--turn">
         <p class="date">Before you install</p>
         <h2>Hear it in this browser.</h2>
-        <p class="say field">The same app, compiled to WebAssembly and running as a web page. It is the whole instrument, not a cut-down demo. The installed app is still the one that plays with the screen off, keeps your presets and vibrates on the beat.</p>
+        <p class="say field">The same app, compiled to WebAssembly and running as a web page. Every screen and every trainer is there, though nothing you set or save survives a reload. The installed app is still the one that keeps your presets, can play with the screen off and can vibrate on the beat.</p>
         <div class="actions">
             <a class="ghost" href="app/">Open the web app</a>
         </div>
@@ -688,11 +688,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
             </details>
             <details>
                 <summary>Does it keep playing in the background?</summary>
-                <p>Yes. Playback continues with the screen off or another app in front. On supported iPhones the current tempo and practice timer also appear on the Lock Screen and in the Dynamic Island.</p>
+                <p>On iPhone, yes: playback continues with the screen off or another app in front, and on supported iPhones the current tempo and practice timer also appear on the Lock Screen and in the Dynamic Island. On Android, turn on Background Play in Settings first — until you do, playback stops when you leave the app.</p>
             </details>
             <details>
                 <summary>Is the web version the same as the app?</summary>
-                <p>It is the same app: the browser version is built from the same Kotlin and Compose code, compiled to WebAssembly, and runs the same beat scheduler. The installed app still has the advantage on a phone, because it keeps playing with the screen off, supports haptics and Live Activities, and remembers your presets and practice sets between sessions.</p>
+                <p>It is the same app: the browser version is built from the same Kotlin and Compose code, compiled to WebAssembly, and runs the same beat scheduler. The installed app still has the advantage on a phone, because it can keep playing with the screen off, supports haptics and Live Activities, and remembers your presets and practice sets, which the browser forgets when you reload the tab.</p>
             </details>
         </div>
     </section>
