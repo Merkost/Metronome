@@ -1,0 +1,60 @@
+name: Deploy site
+
+# The web app is a 14.6 MB Kotlin/Wasm bundle. Building it here instead of
+# committing it keeps the binaries out of git history, and Cloudflare serves
+# .wasm with brotli, which takes that payload to about 4.5 MB on the wire.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'shared/src/commonMain/**'
+      - 'shared/src/wasmJsMain/**'
+      - 'shared/build.gradle.kts'
+      - 'gradle/**'
+      - '.github/workflows/deploy-site.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Gradle 9.5 and AGP 9.3 need 21 to run; the modules still target 17.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build the web app
+        run: ./gradlew :shared:wasmJsBrowserDistribution --no-daemon
+
+      - name: Assemble the site
+        run: |
+          set -euo pipefail
+          rm -rf _site && mkdir -p _site
+          cp -R docs/. _site/
+          # The freshly built app replaces whatever docs/app holds, so the
+          # deployed bundle always matches the source in this commit.
+          rm -rf _site/app
+          cp -R shared/build/dist/wasmJs/productionExecutable _site/app
+          rm -f _site/app/*.map _site/app/*.LICENSE.txt
+          # CNAME is GitHub Pages' mechanism; Cloudflare uses its own domain binding.
+          rm -f _site/CNAME
+          du -sh _site
+          ls _site/app
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy _site --project-name=metronome --branch=main
