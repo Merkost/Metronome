@@ -42,8 +42,8 @@ jobs:
           set -euo pipefail
           rm -rf _site && mkdir -p _site
           cp -R docs/. _site/
-          # The freshly built app replaces whatever docs/app holds, so the
-          # deployed bundle always matches the source in this commit.
+          # docs/app is no longer committed; this stays as a guard so a stray
+          # local copy can never be uploaded in place of the real build.
           rm -rf _site/app
           cp -R shared/build/dist/wasmJs/productionExecutable _site/app
           rm -f _site/app/*.map _site/app/*.LICENSE.txt

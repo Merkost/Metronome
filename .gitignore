@@ -50,3 +50,8 @@ artifacts/aso-screenshots/*/
 # Impeccable session scratch (decision-round comps, question-server logs)
 .impeccable/mocks/
 .impeccable/questions/
+
+# The web app is built in CI and uploaded straight to Cloudflare Pages.
+# Committing it added ~6 MB per build, and it is not reproducible across
+# machines, so the checked-in copy churned on every rebuild.
+docs/app/
