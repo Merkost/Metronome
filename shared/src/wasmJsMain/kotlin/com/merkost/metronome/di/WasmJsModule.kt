@@ -19,7 +19,6 @@ import com.merkost.metronome.platform.createDataStore
 import org.koin.dsl.module
 
 val wasmJsModule = module {
-    // No crash reporting on the web build; Crashlytics has no browser SDK.
     single<ReleaseLogTreeProvider> { ReleaseLogTreeProvider { null } }
     single { createDataStore() }
     single<MetronomePlayer> { MetronomePlayerWasm() }

@@ -3,15 +3,6 @@ package com.merkost.metronome.engine
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
 
-/*
- * Web Audio playback for the browser build.
- *
- * The engine already owns the schedule (BeatTimeline), so this class only has
- * to make a sound now without blocking. Every call goes through the JS shim in
- * webAudio.js: buffers are decoded once up front, and play() creates a source
- * node and starts it immediately, which is non-blocking and sample accurate.
- * Nothing here allocates on the network or decodes on the beat path.
- */
 class MetronomePlayerWasm : MetronomePlayer {
 
     private var current: ClickSound = ClickSound.WOOD
