@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
@@ -23,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -110,28 +115,35 @@ private fun RepeatingStepButton(
         }
     }
 
-    Card(
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val container = when {
+        !enabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        isHovered -> MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+
+    // indication = null for the same reason as MyIconButton: the ripple's
+    // hover layer is drawn to the component bounds, not the circle.
+    Box(
         modifier = Modifier
             .size(stepperButtonSize)
-            .pressScale(interactionSource, pressedScale = PressedScaleControl),
-        colors = CardDefaults.cardColors(
-            containerColor = if (enabled) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            }
-        ),
-        onClick = {
-            if (holdConsumed[0]) {
-                holdConsumed[0] = false
-            } else {
-                haptics.tick()
-                onStep(1)
-            }
-        },
-        enabled = enabled,
-        shape = CircleShape,
-        interactionSource = interactionSource
+            .pressScale(interactionSource, pressedScale = PressedScaleControl)
+            .clip(CircleShape)
+            .background(container)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = enabled,
+                role = Role.Button,
+                onClick = {
+                    if (holdConsumed[0]) {
+                        holdConsumed[0] = false
+                    } else {
+                        haptics.tick()
+                        onStep(1)
+                    }
+                },
+            ),
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Icon(icon, contentDescription = if (icon == Lucide.Minus) "Decrease" else "Increase", modifier = Modifier.size(20.dp))

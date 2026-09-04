@@ -9,6 +9,10 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -30,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
@@ -87,7 +92,9 @@ fun MySecondaryButton(
     OutlinedCard(
         border = border,
         colors = CardDefaults.outlinedCardColors(),
-        modifier = modifier.pressScale(interactionSource, PressedScaleSurface),
+        modifier = modifier
+            .clip(shape)
+            .pressScale(interactionSource, PressedScaleSurface),
         onClick = onClick,
         shape = shape,
         interactionSource = interactionSource
@@ -123,34 +130,42 @@ fun MyIconButton(
     val interactionSource = remember { MutableInteractionSource() }
     val haptics = rememberAppHaptics()
     val isPressed by interactionSource.collectIsPressedAsState()
+    val isHovered by interactionSource.collectIsHoveredAsState()
     val containerColor by animateColorAsState(
-        targetValue = if (isPressed) {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
-        } else {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.07f)
-        },
+        targetValue = MaterialTheme.colorScheme.primary.copy(
+            alpha = when {
+                isPressed -> 0.16f
+                isHovered -> 0.12f
+                else -> 0.07f
+            }
+        ),
         animationSpec = AppAnimations.standard(),
         label = "iconButtonContainer"
     )
 
-    Card(
+    // Built from a Box with indication = null rather than a clickable Card:
+    // Material's ripple paints its hover layer across the card's bounds, which
+    // reads as a square behind a round button on any pointer device. Driving
+    // the container colour from the interaction state instead keeps every
+    // state inside the circle.
+    Box(
         modifier = modifier
             .size(size)
-            .pressScale(interactionSource, PressedScaleControl),
-        colors = CardDefaults.cardColors(
-            containerColor = containerColor,
-            contentColor = MaterialTheme.colorScheme.primary
-        ),
-        onClick = {
-            haptics.tick()
-            onClick()
-        },
-        shape = CircleShape,
-        interactionSource = interactionSource
+            .pressScale(interactionSource, PressedScaleControl)
+            .clip(CircleShape)
+            .background(containerColor)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                role = Role.Button,
+                onClick = {
+                    haptics.tick()
+                    onClick()
+                },
+            ),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Icon(icon, icon.name, modifier = Modifier.align(Alignment.Center))
-        }
+        Icon(icon, icon.name, tint = MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -209,6 +224,7 @@ fun PlayButton(
         modifier = modifier
             .size(size)
             .then(glowModifier)
+            .clip(RoundedCornerShape(cornerRadius))
             .pressScale(interactionSource, PressedScaleControl),
         onClick = {
             haptics.confirm()
