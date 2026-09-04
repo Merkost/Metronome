@@ -213,6 +213,19 @@
         .entry--turn { padding: calc(var(--lh) * 5) 0; }
         .close { padding-block: calc(var(--lh) * 4); }
         .entry { position: relative; }
+        @media (min-width: 1240px) {
+            .sheet, footer.sheet { max-width: 1340px; padding-left: 260px; }
+            /* The rule hugs the writing column, the way a ruled margin line
+               does, so the label has the margin to itself outside it. */
+            .rail { left: 230px; }
+            .date {
+                position: absolute;
+                right: calc(100% + 44px);
+                width: 156px; margin: 0; text-align: right;
+                white-space: nowrap;
+            }
+            .close .date { position: static; width: auto; text-align: left; }
+        }
         /* The separator stops at the measure like everything else; a full-width
            rule over a 640px column is what made the ruled area read as texture
            rather than as a bounded sheet. */
@@ -534,7 +547,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <section class="entry" id="practice">
         <div>
             <div>
-                <p class="date">Entry — the click</p>
+                <p class="date">The click</p>
                 <h2>A beat that holds.</h2>
                 <p class="say field">Set the tempo, tap it in, or shape it bar by bar. Every beat can be accented, softened or muted, and the pulse is scheduled against a monotonic clock, so it does not wander as a session runs long.</p>
                 <ul class="specs field">
@@ -567,7 +580,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <section class="entry">
         <div>
             <div>
-                <p class="date">Entry — the silence</p>
+                <p class="date">The silence</p>
                 <h2>Count through the gaps.</h2>
                 <p class="say field">The Gap Trainer plays a set number of bars, then goes quiet for a set number while the beat keeps counting underneath. You hold the pulse yourself, and find out whether you are still with the click when it comes back. It is the most direct way to train an internal clock.</p>
             </div>
@@ -581,7 +594,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <section class="entry">
         <div>
             <div>
-                <p class="date">Entry — the climb</p>
+                <p class="date">The climb</p>
                 <h2>Take it up two at a time.</h2>
                 <p class="say field">Give the Tempo Trainer a start, a target, a step and how many complete bars to hold, and it moves the tempo for you while you play. A passage travels from careful to performance speed without you stopping to change the number.</p>
                 <ul class="specs field">
@@ -600,7 +613,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <section class="entry">
         <div>
             <div>
-                <p class="date">Entry — the session</p>
+                <p class="date">The session</p>
                 <h2>Plan it once, follow it after.</h2>
                 <p class="say field">Save a whole setup as a preset: tempo, meter, subdivision, accents and count-in. Then order those presets into a practice set, each step with a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
             </div>
@@ -614,7 +627,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <section class="entry">
         <div>
             <div>
-                <p class="date">Entry — yours</p>
+                <p class="date">Yours</p>
                 <h2>No advertising. No account.</h2>
                 <p class="say field">Nothing sits behind a subscription and nothing asks you to sign in. Core practice works offline, your settings and practice history stay on your device, and playback keeps running with the screen off — on supported iPhones the tempo and timer appear on the Lock Screen and in the Dynamic Island.</p>
                 <ul class="specs field">
@@ -632,7 +645,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     </section>
 
     <section class="entry entry--turn">
-        <p class="date">Entry — before you install</p>
+        <p class="date">Before you install</p>
         <h2>Hear it in this browser.</h2>
         <p class="say field">The same app, compiled to WebAssembly and running as a web page. It is the whole instrument, not a cut-down demo. The installed app is still the one that plays with the screen off, keeps your presets and vibrates on the beat.</p>
         <div class="actions">
