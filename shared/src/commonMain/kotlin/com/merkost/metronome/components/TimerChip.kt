@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Check
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Timer
@@ -65,11 +67,12 @@ fun TimerChip(
             ) {
                 when (current) {
                     is TimerChipMode.Stopwatch -> {
-                        Icon(Lucide.Timer, Lucide.Timer.name)
+                        Icon(Lucide.Timer, contentDescription = null)
                         Text(
                             text = TimestampMillisecondsFormatter.format(current.elapsed),
                             maxLines = 1,
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                            autoSize = TextAutoSize.StepBased(10.sp, 18.sp),
                         )
                     }
 
@@ -88,6 +91,7 @@ fun TimerChip(
                             maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                             color = contentColor,
+                            autoSize = TextAutoSize.StepBased(10.sp, 18.sp),
                         )
                     }
 
@@ -100,7 +104,7 @@ fun TimerChip(
                         ) {
                             Icon(
                                 Lucide.Check,
-                                Lucide.Check.name,
+                                contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                             )
                         }
@@ -109,6 +113,7 @@ fun TimerChip(
                             maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                             color = MaterialTheme.colorScheme.primary,
+                            autoSize = TextAutoSize.StepBased(10.sp, 18.sp),
                         )
                     }
                 }

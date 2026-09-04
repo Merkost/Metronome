@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --w: __WIDTH__px;
+    --h: __HEIGHT__px;
+    --shot-ratio: __SHOT_RATIO__;
+    --ink: #FFFFFF;
+    --muted: #8A8A90;
+    --bg: #000000;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:var(--w); height:var(--h); }
+  body {
+    background:var(--bg);
+    font-family:-apple-system,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif;
+    position:relative; overflow:hidden;
+  }
+
+  /* ---- monochrome backdrop ---- */
+  .wash {
+    position:absolute; inset:0;
+    background:
+      radial-gradient(105% 60% at 50% var(--focus-y), #2A2A2E 0%, #131316 42%, #000 76%);
+  }
+  .grid {
+    position:absolute; inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.20) 1.4px, transparent 1.4px);
+    background-size:calc(var(--w) * .036) calc(var(--w) * .036);
+    mask-image:radial-gradient(95% 55% at 50% var(--focus-y), #000 5%, transparent 70%);
+  }
+  .rings { position:absolute; left:50%; top:var(--focus-y); transform:translate(-50%,-50%); }
+  .rings span {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    border-radius:50%; border:2px solid rgba(255,255,255,.10);
+  }
+  .rule { position:absolute; left:0; right:0; top:var(--rule-y); height:calc(var(--w) * .05); }
+  .rule .bar {
+    position:absolute; left:10%; right:10%; top:50%; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.42) 20%,rgba(255,255,255,.42) 80%,transparent);
+  }
+  .rule i {
+    position:absolute; top:50%; width:2px; height:calc(var(--w) * .020);
+    transform:translateY(-50%); background:rgba(255,255,255,.42);
+  }
+  .rule i.big { height:calc(var(--w) * .044); background:#fff; }
+
+  /* ---- copy ---- */
+  .copy { position:absolute; left:calc(var(--w) * .08); right:calc(var(--w) * .08); top:calc(var(--h) * .055); text-align:center; z-index:4; }
+  .brand { color:#fff; opacity:.55; font-size:calc(var(--w) * .025); font-weight:700; letter-spacing:.2em; text-transform:uppercase; margin-bottom:calc(var(--h) * .015); }
+  h1 { color:var(--ink); font-size:calc(var(--w) * .092); line-height:1.02; font-weight:800; letter-spacing:-.03em; white-space:pre-line; }
+  p.sub { margin-top:calc(var(--h) * .014); color:var(--muted); font-size:calc(var(--w) * .034); line-height:1.35; }
+  .badges { margin-top:calc(var(--h) * .024); display:flex; flex-wrap:wrap; gap:calc(var(--w) * .016); justify-content:center; }
+  .badges span { border:2px solid rgba(255,255,255,.35); color:#fff; border-radius:999px; padding:calc(var(--w) * .013) calc(var(--w) * .032); font-size:calc(var(--w) * .026); font-weight:600; }
+
+  /* ---- device ---- */
+  .device {
+    position:absolute; left:50%; top:var(--device-y);
+    width:var(--device-w); transform:translateX(-50%);
+    z-index:3;
+  }
+  .bezel {
+    position:relative; width:100%;
+    padding:calc(var(--device-w) * .028);
+    border-radius:calc(var(--device-w) * .135);
+    background:linear-gradient(155deg,#4a4a52 0%,#1b1b20 18%,#0a0a0c 55%,#26262c 100%);
+    box-shadow:
+      0 calc(var(--h) * .03) calc(var(--h) * .075) rgba(0,0,0,.85),
+      0 0 0 1px rgba(255,255,255,.08),
+      inset 0 0 0 1px rgba(255,255,255,.05);
+  }
+  .screen {
+    position:relative; overflow:hidden;
+    border-radius:calc(var(--device-w) * .108);
+    background:#fff;
+    aspect-ratio: 1 / var(--shot-ratio);
+  }
+  .screen img {
+    position:absolute; left:50%; top:0;
+    width:calc(100% * var(--shot-scale));
+    transform:translateX(-50%) translateY(calc(var(--shot-pan) * -1 * (var(--shot-scale) - 1) * 100%));
+    display:block;
+  }
+  .island {
+    position:absolute; z-index:2; left:50%; top:calc(var(--device-w) * .022);
+    transform:translateX(-50%);
+    width:calc(var(--device-w) * .30); height:calc(var(--device-w) * .085);
+    background:#000; border-radius:999px;
+  }
+</style>
+</head>
+<body>
+  <div class="wash"></div>
+  <div class="grid"></div>
+  <div class="rings">__RINGS__</div>
+  <div class="rule"><div class="bar"></div>__TICKS__</div>
+
+  <div class="copy">
+    <div class="brand">Metronome</div>
+    <h1>__TITLE__</h1>
+    <p class="sub">__SUBTITLE__</p>
+    __BADGES__
+  </div>
+
+  <div class="device">
+    <div class="bezel">
+      <div class="screen"><img src="__SCREENSHOT__"><div class="island"></div></div>
+    </div>
+  </div>
+</body>
+</html>

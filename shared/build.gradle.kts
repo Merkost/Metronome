@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -5,6 +6,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -25,6 +27,18 @@ kotlin {
         }
     }
 
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        outputModuleName.set("composeApp")
+        browser {
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+            }
+        }
+        binaries.executable()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -33,35 +47,41 @@ kotlin {
             implementation(compose.ui)
             implementation(libs.icons.lucide)
             implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
 
             implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.lifecycle.runtime.compose)
-            implementation(libs.navigation.compose)
+            implementation(libs.lifecycle.viewmodel.navigation3)
+            implementation(libs.navigation3.runtime)
+            implementation(libs.navigation3.ui)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 
-            implementation(libs.datastore.preferences)
+            implementation(libs.datastore.preferences.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
 
             api(libs.cedar.logging)
-            implementation(libs.gitlive.crashlytics)
         }
 
         androidMain.dependencies {
+            implementation(libs.gitlive.crashlytics)
             implementation(libs.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.accompanist.permissions)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.play.review)
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
 
         iosMain.dependencies {
+            implementation(libs.gitlive.crashlytics)
         }
     }
 }

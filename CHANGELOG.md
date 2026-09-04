@@ -1,9 +1,90 @@
 # Changelog
 
-All notable releases of **Metronome: Feel the Beat!** Each entry includes a
-short, paste-ready **store message** for the App Store ("What's New") and Google
-Play ("What's new"). Store messages are kept under 500 characters to fit Play's
-limit. Newest first.
+All notable releases of **Metronome: Practice & Tempo**, named "Metronome: Feel
+the Beat!" before 1.3.0. Each entry includes a short, paste-ready **store
+message** for the App Store ("What's New") and Google Play ("What's new").
+Play's field is capped at 500 characters, so from 1.3.0 each release carries a
+separate message per store rather than one shared text — the App Store copy has
+room to explain, and platform-specific fixes only appear in the store they apply
+to. Newest first.
+
+---
+
+## 1.3.0 — Structured practice
+_2026-09-03 · Android versionCode 8 · iOS build 1_
+
+**Highlights**
+- **Practice Presets.** Named, editable setups that capture BPM, time signature,
+  subdivision, per-beat accents and mutes, and count-in state. Favourite,
+  reorder, rename, duplicate, and apply them in one tap. Existing saved tempos
+  migrate across without loss.
+- **Practice Sets.** Order presets into a sequence and give any step an optional
+  duration or bar target. Move back and forward through steps, pause and resume,
+  and finish the set — an interrupted session is recovered when you return.
+- **Practice Again.** Repeat the set you last completed straight from the tempo
+  sheet.
+- **Active practice strip.** One restrained strip on the main screen shows the
+  running set, its progress, and previous/pause/next without leaving the
+  instrument.
+- **What's new in the app.** Release highlights appear once after an update, and
+  stay available from Settings. New installs go straight to the app.
+
+**Motion and interaction**
+- A single motion system across the app: every animation now runs on one set of
+  calm spring tokens, tuned for near-zero bounce rather than the springier mix
+  that preceded it.
+- Screen transitions are a parallax push — the incoming screen travels the full
+  width while the one behind it recedes — used for navigation and for in-screen
+  route changes alike.
+- Lists animate when practice sets and presets are added, removed, or reordered,
+  and reorder mode cross-fades in place of switching instantly.
+- Consistent press feedback on every control, and haptics on the tempo cluster,
+  steppers, chips, beat balls, and sliders, with slider detents derived from each
+  slider's own range.
+- Expanding a section in a sheet now scrolls it into view.
+
+**Fixes**
+- Playback stops predictably on iOS when a call or another app takes over audio,
+  through a dedicated audio-focus controller matching the Android behaviour.
+- A pressed practice row now scales as one card instead of shrinking its contents
+  inside a card that stayed put.
+
+**Under the hood**
+- The review prompt appears only after a qualifying practice pause, and is
+  suppressed while a timer, trainer, preset editor, or Practice Set is active.
+- 139 unit tests, up from 26 in 1.2.1, covering preset and set storage, session
+  control and recovery, review- and release-note prompt policy, navigation, and
+  the audio-focus and sound-loading state machines.
+
+**Store message — Google Play** (426 of 500 characters)
+```
+What's new in 1.3.0
+
+Practice Presets — save a complete setup (tempo, time signature, subdivision, accents and count-in) and return to it in one tap.
+
+Practice Sets — line your presets up into a sequence and give each step a time or bar goal. Move through it at your own pace; an interrupted session resumes where you left it.
+
+Practice Again repeats the set you last finished.
+
+Plus a calmer, more consistent feel throughout.
+```
+
+**Store message — App Store** (977 of 4000 characters)
+```
+Structured practice
+
+Save a complete setup as a Practice Preset — tempo, time signature, subdivision, per-beat accents and mutes, and count-in — then return to it in one tap. Favourite the ones you reach for most, rename or duplicate any of them, and keep them in the order you practise. Your existing saved tempos carry across.
+
+Build a Practice Set from those presets and give any step a time or bar goal. Move forward and back at your own pace, pause and resume, and finish when you are done. If practice is interrupted, the session picks up where you left it.
+
+Practice Again repeats the set you last finished, straight from the tempo sheet.
+
+ALSO IN THIS VERSION
+• A calmer, more consistent feel throughout, with smoother screen transitions
+• Steadier feedback under your thumb across the tempo controls and sliders
+• Playback now stops reliably when a call or another app takes over audio
+• A short summary of what changed appears after each update, and stays in Settings
+```
 
 ---
 

@@ -2,6 +2,7 @@ package com.merkost.metronome.engine
 
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
@@ -10,9 +11,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import org.kimplify.cedar.logging.Cedar
 import platform.AVFAudio.AVAudioEngine
 import platform.AVFAudio.AVAudioFile
@@ -28,178 +27,184 @@ import platform.Foundation.NSBundle
 import platform.Foundation.NSError
 import kotlin.math.max
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 class MetronomePlayerIos : MetronomePlayer {
-    private val audioDispatcher = Dispatchers.Default.limitedParallelism(1)
-    private val scope = CoroutineScope(audioDispatcher + SupervisorJob())
+    private sealed interface AudioCommand {
+        data class Initialize(val sound: ClickSound) : AudioCommand
+        data class Play(val beat: Beat, val left: Float, val right: Float) : AudioCommand
+        data object Stop : AudioCommand
+        data class SwitchSound(val sound: ClickSound) : AudioCommand
+        data object Release : AudioCommand
+    }
 
-    private var audioEngine: AVAudioEngine? = null
-    private var playerNode: AVAudioPlayerNode? = null
-    private var varispeedNode: AVAudioUnitVarispeed? = null
-    private var audioBuffer: AVAudioPCMBuffer? = null
+    private data class AudioGraph(
+        val engine: AVAudioEngine,
+        val player: AVAudioPlayerNode,
+        val varispeed: AVAudioUnitVarispeed,
+        val buffer: AVAudioPCMBuffer,
+    )
+
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val commands = SerializedCommandQueue(
+        scope = scope,
+        handler = ::handleCommand,
+        onFailure = { error ->
+            Cedar.tag(TAG).e("Audio command failed: ${error.message ?: error::class.simpleName}")
+        },
+    )
+
+    private var graph: AudioGraph? = null
     private var requestedSound: ClickSound? = null
 
     override fun initialize(initialSound: ClickSound) {
-        scope.launch { initializeInternal(initialSound) }
+        commands.offer(AudioCommand.Initialize(initialSound))
     }
 
     override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) {
-        scope.launch { playInternal(beat, stereoLeft, stereoRight) }
+        commands.offer(AudioCommand.Play(beat, stereoLeft, stereoRight))
     }
 
     override fun stop() {
-        scope.launch { playerNode?.stop() }
+        commands.offer(AudioCommand.Stop)
     }
 
     override fun switchSound(sound: ClickSound) {
-        scope.launch { switchSoundInternal(sound) }
+        commands.offer(AudioCommand.SwitchSound(sound))
     }
 
     override fun release() {
-        scope.launch {
-            playerNode?.stop()
-            audioEngine?.stop()
-            audioEngine = null
-            playerNode = null
-            varispeedNode = null
-            audioBuffer = null
-            requestedSound = null
+        commands.offer(AudioCommand.Release)
+    }
+
+    private fun handleCommand(command: AudioCommand) {
+        when (command) {
+            is AudioCommand.Initialize -> initializeInternal(command.sound)
+            is AudioCommand.Play -> playInternal(command.beat, command.left, command.right)
+            AudioCommand.Stop -> stopInternal()
+            is AudioCommand.SwitchSound -> switchSoundInternal(command.sound)
+            AudioCommand.Release -> releaseInternal()
         }
     }
 
     private fun initializeInternal(initialSound: ClickSound) {
-        requestedSound = initialSound
-        val session = AVAudioSession.sharedInstance()
-        memScoped {
-            val err = alloc<ObjCObjectVar<NSError?>>()
-            val ok = session.setCategory(
-                AVAudioSessionCategoryPlayback,
-                withOptions = AVAudioSessionCategoryOptionMixWithOthers,
-                error = err.ptr,
-            )
-            if (!ok) {
-                Cedar.tag("MetronomePlayerIos").e("setCategory failed: ${describe(err.value)}")
-            }
-        }
-        memScoped {
-            val err = alloc<ObjCObjectVar<NSError?>>()
-            if (!session.setActive(true, error = err.ptr)) {
-                Cedar.tag("MetronomePlayerIos").e("setActive failed: ${describe(err.value)}")
-            }
-        }
-
-        val (name, ext) = soundFileInfo(initialSound)
-        val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext)
-        if (url == null) {
-            Cedar.tag("MetronomePlayerIos").e("Audio resource not found: $name.$ext")
-            return
-        }
-        val audioFile = AVAudioFile(forReading = url, error = null)
-
-        val frameCount = audioFile.length.toUInt()
-        val buffer = AVAudioPCMBuffer(
-            pCMFormat = audioFile.processingFormat,
-            frameCapacity = frameCount
-        )
-        audioFile.readIntoBuffer(buffer, error = null)
-        audioBuffer = buffer
-
-        val engine = AVAudioEngine()
-        val player = AVAudioPlayerNode()
-        val varispeed = AVAudioUnitVarispeed()
-
-        engine.attachNode(player)
-        engine.attachNode(varispeed)
-
-        val format = audioFile.processingFormat
-        engine.connect(player, varispeed, format)
-        engine.connect(varispeed, engine.mainMixerNode, format)
-
-        engine.prepare()
-        memScoped {
-            val err = alloc<ObjCObjectVar<NSError?>>()
-            if (!engine.startAndReturnError(err.ptr)) {
-                Cedar.tag("MetronomePlayerIos").e("Failed to start audio engine: ${describe(err.value)}")
-                return
-            }
-        }
-        player.play()
-
-        audioEngine = engine
-        playerNode = player
-        varispeedNode = varispeed
+        if (!configureSession() || !activateSession()) return
+        val replacement = createGraph(initialSound) ?: return
+        installGraph(replacement, initialSound)
     }
 
     private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float) {
-        val buffer = audioBuffer ?: return
-        val player = playerNode ?: return
-
-        varispeedNode?.rate = beat.rate
-
-        val volume = max(stereoLeft, stereoRight)
-        val pan = if (stereoLeft + stereoRight > 0f) {
+        val current = graph ?: return
+        if (!ensureRunning(current)) return
+        current.varispeed.rate = beat.rate
+        current.player.volume = max(stereoLeft, stereoRight)
+        current.player.pan = if (stereoLeft + stereoRight > 0f) {
             (stereoRight - stereoLeft) / max(stereoLeft, stereoRight)
         } else {
             0f
         }
-
-        player.volume = volume
-        player.pan = pan
-
-        if (!player.playing) {
-            player.play()
-        }
-
-        player.scheduleBuffer(
-            buffer,
+        if (!current.player.playing) current.player.play()
+        current.player.scheduleBuffer(
+            current.buffer,
             atTime = null,
             options = AVAudioPlayerNodeBufferInterrupts,
-            completionHandler = null
+            completionHandler = null,
         )
+    }
+
+    private fun stopInternal() {
+        graph?.player?.stop()
+        graph?.engine?.stop()
+        deactivateSession()
     }
 
     private fun switchSoundInternal(sound: ClickSound) {
         if (sound == requestedSound) return
-        requestedSound = sound
+        if (!activateSession()) return
+        val replacement = createGraph(sound) ?: return
+        installGraph(replacement, sound)
+    }
 
+    private fun releaseInternal() {
+        graph?.player?.stop()
+        graph?.engine?.stop()
+        graph = null
+        requestedSound = null
+        deactivateSession()
+    }
+
+    private fun installGraph(replacement: AudioGraph, sound: ClickSound) {
+        val previous = graph
+        graph = replacement
+        requestedSound = sound
+        previous?.player?.stop()
+        previous?.engine?.stop()
+    }
+
+    private fun createGraph(sound: ClickSound): AudioGraph? {
         val (name, ext) = soundFileInfo(sound)
         val url = NSBundle.mainBundle.URLForResource(name, withExtension = ext)
         if (url == null) {
-            Cedar.tag("MetronomePlayerIos").e("Audio resource not found: $name.$ext")
-            return
+            Cedar.tag(TAG).e("Audio resource not found: $name.$ext")
+            return null
         }
         val audioFile = AVAudioFile(forReading = url, error = null)
-        val frameCount = audioFile.length.toUInt()
-        val newFormat = audioFile.processingFormat
-        val buffer = AVAudioPCMBuffer(pCMFormat = newFormat, frameCapacity = frameCount)
+        val buffer = AVAudioPCMBuffer(
+            pCMFormat = audioFile.processingFormat,
+            frameCapacity = audioFile.length.toUInt(),
+        )
         audioFile.readIntoBuffer(buffer, error = null)
 
-        val engine = audioEngine ?: return
-        val player = playerNode ?: return
-        val varispeed = varispeedNode ?: return
+        val engine = AVAudioEngine()
+        val player = AVAudioPlayerNode()
+        val varispeed = AVAudioUnitVarispeed()
+        engine.attachNode(player)
+        engine.attachNode(varispeed)
+        engine.connect(player, varispeed, audioFile.processingFormat)
+        engine.connect(varispeed, engine.mainMixerNode, audioFile.processingFormat)
+        engine.prepare()
+        if (!startEngine(engine)) return null
+        player.play()
+        return AudioGraph(engine, player, varispeed, buffer)
+    }
 
-        val wasRunning = engine.running
-        player.stop()
-        engine.stop()
-
-        engine.disconnectNodeOutput(player)
-        engine.disconnectNodeOutput(varispeed)
-        engine.connect(player, varispeed, newFormat)
-        engine.connect(varispeed, engine.mainMixerNode, newFormat)
-
-        audioBuffer = buffer
-
-        if (wasRunning) {
-            memScoped {
-                val err = alloc<ObjCObjectVar<NSError?>>()
-                if (!engine.startAndReturnError(err.ptr)) {
-                    Cedar.tag("MetronomePlayerIos")
-                        .e("Failed to restart audio engine after sound switch: ${describe(err.value)}")
-                    return
-                }
-            }
-            player.play()
+    private fun ensureRunning(current: AudioGraph): Boolean {
+        if (!current.engine.running) {
+            if (!activateSession() || !startEngine(current.engine)) return false
         }
+        return true
+    }
+
+    private fun configureSession(): Boolean = memScoped {
+        val error = alloc<ObjCObjectVar<NSError?>>()
+        val configured = AVAudioSession.sharedInstance().setCategory(
+            AVAudioSessionCategoryPlayback,
+            withOptions = AVAudioSessionCategoryOptionMixWithOthers,
+            error = error.ptr,
+        )
+        if (!configured) Cedar.tag(TAG).e("setCategory failed: ${describe(error.value)}")
+        configured
+    }
+
+    private fun activateSession(): Boolean = memScoped {
+        val error = alloc<ObjCObjectVar<NSError?>>()
+        val activated = AVAudioSession.sharedInstance().setActive(true, error = error.ptr)
+        if (!activated) Cedar.tag(TAG).e("setActive failed: ${describe(error.value)}")
+        activated
+    }
+
+    private fun deactivateSession() {
+        memScoped {
+            val error = alloc<ObjCObjectVar<NSError?>>()
+            val deactivated = AVAudioSession.sharedInstance().setActive(false, error = error.ptr)
+            if (!deactivated) Cedar.tag(TAG).e("setActive(false) failed: ${describe(error.value)}")
+        }
+    }
+
+    private fun startEngine(engine: AVAudioEngine): Boolean = memScoped {
+        val error = alloc<ObjCObjectVar<NSError?>>()
+        val started = engine.startAndReturnError(error.ptr)
+        if (!started) Cedar.tag(TAG).e("Audio engine start failed: ${describe(error.value)}")
+        started
     }
 
     private fun describe(error: NSError?): String =
@@ -209,5 +214,9 @@ class MetronomePlayerIos : MetronomePlayer {
         ClickSound.WOOD -> "wood" to "mp3"
         ClickSound.CLICK -> "click" to "mp3"
         ClickSound.CLASSIC -> "metronome" to "wav"
+    }
+
+    private companion object {
+        const val TAG = "MetronomePlayerIos"
     }
 }

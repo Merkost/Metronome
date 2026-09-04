@@ -12,6 +12,8 @@ interface AppDatastore {
     suspend fun saveClickVolume(volume: Float)
     val totalTime: Flow<Long>
     val colorScheme: Flow<AppColorScheme>
+    val themeMode: Flow<ThemeMode>
+    suspend fun saveThemeMode(mode: ThemeMode)
 
     suspend fun saveStereo(value: Int)
     suspend fun saveColorScheme(colorScheme: AppColorScheme)
@@ -28,6 +30,9 @@ interface AppDatastore {
 
     val onboardingComplete: Flow<Boolean>
     suspend fun saveOnboardingComplete(complete: Boolean)
+
+    val lastSeenReleaseVersion: Flow<String?>
+    suspend fun saveLastSeenReleaseVersion(version: String)
 
     val timeSignature: Flow<TimeSignature>
     suspend fun saveTimeSignature(timeSignature: TimeSignature)

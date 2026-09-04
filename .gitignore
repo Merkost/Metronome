@@ -39,3 +39,10 @@ androidApp/release/
 keystore.properties
 *.jks
 *.keystore
+
+# Python caches
+__pycache__/
+
+# ASO screenshot working intermediates (keep only the approved set)
+artifacts/aso-screenshots/*/
+!artifacts/aso-screenshots/final/

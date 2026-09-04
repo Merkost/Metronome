@@ -8,8 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -22,14 +27,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Minus
 import com.composables.icons.lucide.Plus
 import com.merkost.metronome.ui.AnimatedNumberText
+import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.pressScale
+import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.stepperButtonSize
 import kotlinx.coroutines.delay
@@ -66,7 +75,8 @@ fun ValueStepper(
             AnimatedNumberText(
                 value = value,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-                modifier = Modifier.widthIn(min = 52.dp),
+                modifier = Modifier.width(60.dp),
+                autoSize = TextAutoSize.StepBased(12.sp, 24.sp),
             )
             RepeatingStepButton(
                 icon = Lucide.Plus,
@@ -85,6 +95,7 @@ private fun RepeatingStepButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val haptics = rememberAppHaptics()
     val currentOnStep by rememberUpdatedState(onStep)
     val currentEnabled by rememberUpdatedState(enabled)
     val holdConsumed = remember { booleanArrayOf(false) }
@@ -96,6 +107,7 @@ private fun RepeatingStepButton(
             holdConsumed[0] = true
             var repeats = 0
             while (currentEnabled) {
+                if (repeats % 3 == 0) haptics.tick()
                 currentOnStep(if (repeats >= 10) 5 else 1)
                 repeats++
                 delay(90L)
@@ -103,30 +115,38 @@ private fun RepeatingStepButton(
         }
     }
 
-    Card(
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val container = when {
+        !enabled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        isHovered -> MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+
+    // indication = null for the same reason as MyIconButton: the ripple's
+    // hover layer is drawn to the component bounds, not the circle.
+    Box(
         modifier = Modifier
             .size(stepperButtonSize)
-            .pressScale(interactionSource, pressedScale = 0.9f),
-        colors = CardDefaults.cardColors(
-            containerColor = if (enabled) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            }
-        ),
-        onClick = {
-            if (holdConsumed[0]) {
-                holdConsumed[0] = false
-            } else {
-                onStep(1)
-            }
-        },
-        enabled = enabled,
-        shape = CircleShape,
-        interactionSource = interactionSource
+            .pressScale(interactionSource, pressedScale = PressedScaleControl)
+            .clip(CircleShape)
+            .background(container)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = enabled,
+                role = Role.Button,
+                onClick = {
+                    if (holdConsumed[0]) {
+                        holdConsumed[0] = false
+                    } else {
+                        haptics.tick()
+                        onStep(1)
+                    }
+                },
+            ),
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Icon(icon, icon.name, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = if (icon == Lucide.Minus) "Decrease" else "Increase", modifier = Modifier.size(20.dp))
         }
     }
 }

@@ -27,10 +27,11 @@ val cornerRadiusMedium = 12.dp
 val cornerRadiusLarge = 16.dp
 val cornerRadiusXLarge = 28.dp
 
-val statusStripHeight = 44.dp
+val minimumTouchTargetSize = 48.dp
+val statusStripHeight = minimumTouchTargetSize
 val pendulumHeight = 132.dp
 val sheetButtonHeight = 52.dp
-val stepperButtonSize = 40.dp
+val stepperButtonSize = minimumTouchTargetSize
 val progressRingSize = 22.dp
 val progressRingStroke = 2.5.dp
 
@@ -46,3 +47,6 @@ val maxContentWidth = 480.dp
 // Typography overrides
 val tempoDisplaySize = 62.sp
 val emojiSize = 28.sp
+val setPlayButtonSize = 44.dp
+val emptyStateBadgeSize = 88.dp
+val appMenuMinWidth = 200.dp

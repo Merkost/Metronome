@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Metronome — mocks</title>
+<style>
+  :root { --accent:#B89FFF; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0E0E10; color:#fff; font-family:-apple-system,'SF Pro Display',Helvetica,Arial,sans-serif; padding:48px 40px 90px; }
+  h1 { font-size:40px; font-weight:800; letter-spacing:-0.03em; }
+  h2 { font-size:26px; font-weight:700; margin:56px 0 6px; letter-spacing:-0.02em; }
+  p.note { color:#9A9AA2; font-size:16px; line-height:1.5; max-width:820px; margin-bottom:26px; }
+  .brand { color:var(--accent); font-size:13px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; margin-bottom:10px; }
+  button {
+    background:var(--accent); color:#0E0E10; border:0; border-radius:999px;
+    padding:12px 26px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .row { display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap; }
+  .phone {
+    width:300px; height:620px; background:#fff; border-radius:36px;
+    display:flex; align-items:center; justify-content:center; overflow:hidden; border:7px solid #17171b;
+  }
+  .cell span { display:block; margin-top:10px; color:#9A9AA2; font-size:14px; font-variant-numeric:tabular-nums; text-align:center; }
+  .mark { position:relative; width:170px; height:170px; }
+  .mark svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .line { fill:none; stroke:#000; stroke-width:150; stroke-linecap:round; stroke-linejoin:round; }
+  .ink  { fill:#000; }
+  .inkwrap { clip-path: inset(100% 0 0 0); }
+  .play .line { animation: draw .9s cubic-bezier(.4,0,.2,1) forwards; stroke-dasharray:1; stroke-dashoffset:1; }
+  .play .line:nth-child(1){ animation-delay:0ms }
+  .play .line:nth-child(2){ animation-delay:225ms }
+  .play .line:nth-child(3){ animation-delay:450ms }
+  .play .line:nth-child(4){ animation-delay:675ms }
+  .play .inkwrap { animation: ink .6s cubic-bezier(.4,0,.2,1) .9s forwards; }
+  @keyframes draw { to { stroke-dashoffset:0 } }
+  @keyframes ink  { to { clip-path: inset(0 0 0 0) } }
+  .shots { display:grid; grid-template-columns:repeat(4, 1fr); gap:22px; }
+  .shots img { width:100%; border-radius:16px; display:block; border:1px solid #24242a; }
+  .shots figcaption { color:#9A9AA2; font-size:13px; margin-top:8px; }
+</style>
+</head>
+<body>
+  <div class="brand">Metronome</div>
+  <h1>Mocks</h1>
+
+  <h2>1 · Splash reveal</h2>
+  <p class="note">The four subpaths of the mark are stroked on in sequence, then the fill wipes up from the base. A construction and an ink — no fade, no scale, no rotation. Total 1.5s.</p>
+  <button onclick="replay()">Replay</button>
+  <div class="row" style="margin-top:22px">
+    <div class="cell"><div class="phone"><div class="mark" id="live"></div></div><span>live</span></div>
+    <div id="strip" style="display:flex; gap:18px"></div>
+  </div>
+
+  <h2>2 · Store frames — App Store 6.9"</h2>
+  <p class="note">Real 1.3.0 screenshots. Accent, device placement and rotation vary per frame so the set does not read as one repeated slide.</p>
+  <div class="shots" id="shots"></div>
+
+<script>
+const PATH = "M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z";
+const G = 'translate(1607.34,1607.34) scale(0.58)';
+const SUB = PATH.split(/(?=M)/).filter(Boolean);
+const DRAW_END = 900, TOTAL = 1500;
+
+document.getElementById('live').innerHTML = `
+  <svg viewBox="0 0 7654 7654"><g transform="${G}">${SUB.map(d=>`<path class="line" d="${d}" pathLength="1"/>`).join('')}</g></svg>
+  <svg viewBox="0 0 7654 7654"><g class="inkwrap"><g transform="${G}"><path class="ink" d="${PATH}"/></g></g></svg>`;
+
+function replay(){ const m=document.getElementById('live'); m.classList.remove('play'); void m.offsetWidth; m.classList.add('play'); }
+replay(); setInterval(replay, 2600);
+
+const stops = [220, 450, 700, 900, 1200, 1500];
+document.getElementById('strip').innerHTML = stops.map((t,i) => {
+  const ip = t <= DRAW_END ? 0 : Math.min(1,(t-DRAW_END)/(TOTAL-DRAW_END));
+  const seg = DRAW_END / SUB.length;
+  const strokes = SUB.map((d,k) => {
+    const local = Math.max(0, Math.min(1, (t - k*seg)/seg));
+    return `<path class="line" d="${d}" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${1-local}"/>`;
+  }).join('');
+  return `<div class="cell"><div class="phone" style="width:190px;height:392px;border-radius:26px">
+    <div class="mark" style="width:104px;height:104px">
+      <svg viewBox="0 0 7654 7654"><g transform="${G}">${strokes}</g></svg>
+      <svg viewBox="0 0 7654 7654"><g style="clip-path:inset(${100-ip*100}% 0 0 0)"><g transform="${G}"><path class="ink" d="${PATH}"/></g></g></svg>
+    </div></div><span>${t} ms</span></div>`;
+}).join('');
+
+const FRAMES = ['01-precise-timing','02-tempo-trainer','03-gap-trainer','04-subdivisions','05-shape-the-bar','06-practice-sets','07-keep-going','08-no-nonsense'];
+document.getElementById('shots').innerHTML = FRAMES.map(f =>
+  `<figure><a href="../../artifacts/store-screenshots/iphone-6.9/${f}.png" target="_blank">
+     <img src="../../artifacts/store-screenshots/iphone-6.9/${f}.png" alt="${f}"></a>
+   <figcaption>${f.replace(/^\d+-/,'').replace(/-/g,' ')}</figcaption></figure>`).join('');
+</script>
+</body>
+</html>

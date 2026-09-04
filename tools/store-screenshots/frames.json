@@ -1,0 +1,189 @@
+{
+  "devices": {
+    "iphone-6.9": {
+      "width": 1290,
+      "height": 2796,
+      "label": "App Store 6.9\" iPhone"
+    },
+    "android-phone": {
+      "width": 1080,
+      "height": 1920,
+      "label": "Google Play phone"
+    }
+  },
+  "defaults": {
+    "bg": "#000000",
+    "ink": "#FFFFFF",
+    "muted": "#8A8A90",
+    "cropTop": 0,
+    "cropBottom": 0
+  },
+  "frames": [
+    {
+      "id": "precise-timing",
+      "title": "A pulse you\ncan trust",
+      "subtitle": "Drift-free timing at every tempo",
+      "screenshot": "figma/main.png",
+      "deviceW": 0.72,
+      "deviceX": 0.5,
+      "deviceY": 0.3,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.72,
+      "ruleY": 0.25
+    },
+    {
+      "id": "tempo-trainer",
+      "title": "Get faster,\nbar by bar",
+      "subtitle": "The tempo climbs while you play",
+      "screenshot": "figma/tempo-trainer.png",
+      "deviceW": 0.58,
+      "deviceX": 0.5,
+      "deviceY": 0.352,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.66,
+      "ruleY": 0.272
+    },
+    {
+      "id": "gap-trainer",
+      "title": "Silence is\nthe test",
+      "subtitle": "The click drops out. Can you hold it?",
+      "screenshot": "figma/gap-trainer.png",
+      "deviceW": 0.66,
+      "deviceX": 0.5,
+      "deviceY": 0.322,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.74,
+      "ruleY": 0.258
+    },
+    {
+      "id": "subdivisions",
+      "title": "Feel every\nsubdivision",
+      "subtitle": "Eighths, triplets and sixteenths",
+      "screenshot": "figma/subdivisions.png",
+      "deviceW": 0.54,
+      "deviceX": 0.5,
+      "deviceY": 0.362,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.64,
+      "ruleY": 0.285
+    },
+    {
+      "id": "shape-the-bar",
+      "title": "Accent it.\nMute it.",
+      "subtitle": "Shape any beat in the bar",
+      "screenshot": "figma/accents.png",
+      "deviceW": 0.76,
+      "deviceX": 0.5,
+      "deviceY": 0.292,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.7,
+      "ruleY": 0.262
+    },
+    {
+      "id": "practice-sets",
+      "title": "Your practice,\nin order",
+      "subtitle": "Presets in a sequence, each with a goal",
+      "screenshot": "figma/practice-sets.png",
+      "deviceW": 0.6,
+      "deviceX": 0.5,
+      "deviceY": 0.345,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.68,
+      "ruleY": 0.276
+    },
+    {
+      "id": "keep-going",
+      "title": "Never lose\nyour place",
+      "subtitle": "Pause, resume, pick up where you left off",
+      "screenshot": "figma/session.png",
+      "deviceW": 0.7,
+      "deviceX": 0.5,
+      "deviceY": 0.31,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.76,
+      "ruleY": 0.268
+    },
+    {
+      "id": "no-nonsense",
+      "title": "No ads.\nNo account.",
+      "subtitle": "Core practice tools work offline, free",
+      "screenshot": "figma/settings.png",
+      "badges": [
+        "No ads",
+        "No account",
+        "Works offline",
+        "Free"
+      ],
+      "deviceW": 0.5,
+      "deviceX": 0.5,
+      "deviceY": 0.392,
+      "rotation": "0deg",
+      "rings": [
+        0.6,
+        0.95,
+        1.35,
+        1.8
+      ],
+      "shotScale": 1.0,
+      "shotPan": 0.0,
+      "focusY": 0.66,
+      "ruleY": 0.31
+    }
+  ]
+}

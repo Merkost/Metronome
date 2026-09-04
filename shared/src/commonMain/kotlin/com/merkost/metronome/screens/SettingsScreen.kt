@@ -21,17 +21,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -43,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -51,19 +49,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import com.composables.icons.lucide.ArrowLeft
+import com.composables.icons.lucide.ChevronRight
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Sparkles
 import com.composables.icons.lucide.Mail
 import com.composables.icons.lucide.Smartphone
 import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Timer
+import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppDialog
+import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
+import com.merkost.metronome.model.ThemeMode
 import com.merkost.metronome.platform.PlatformActions
+import com.merkost.metronome.platform.AppVersionProvider
+import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.cornerRadiusMedium
 import com.merkost.metronome.ui.emojiSize
 import com.merkost.metronome.ui.horizontalPadding
@@ -74,6 +84,7 @@ import com.merkost.metronome.ui.theme.AppColorScheme
 import com.merkost.metronome.viewModels.SettingsViewModel
 import metronome.shared.generated.resources.Res
 import metronome.shared.generated.resources.settings
+import metronome.shared.generated.resources.settings_whats_new
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -95,6 +106,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val liveActivityEnabled by viewModel.liveActivityEnabled.collectAsState()
     val practiceStreak by viewModel.practiceStreak.collectAsState()
     val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
+    val themeMode by viewModel.themeMode.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val clickVolume by viewModel.clickVolume.collectAsState()
@@ -103,6 +115,15 @@ fun SettingsScreen(upPress: () -> Unit) {
     var showBackgroundPlayPermission by remember { mutableStateOf(false) }
     if (showBackgroundPlayPermission) {
         BackgroundPlayPermissionCheck(true)
+    }
+
+    val appVersionProvider: AppVersionProvider = koinInject()
+    var showWhatsNew by remember { mutableStateOf(false) }
+    if (showWhatsNew) {
+        WhatsNewSheet(
+            version = appVersionProvider.getAppVersion()?.versionName.orEmpty(),
+            onDismiss = { showWhatsNew = false },
+        )
     }
 
     var showResetConfirmation by remember { mutableStateOf(false) }
@@ -129,7 +150,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                     style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
                 )
             }, navigationIcon = {
-                IconButton(onClick = upPress) {
+                AppIconButton(onClick = upPress) {
                     Icon(Lucide.ArrowLeft, "Back")
                 }
             })
@@ -150,7 +171,30 @@ fun SettingsScreen(upPress: () -> Unit) {
 
             AppInfoCard()
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(cornerRadiusMedium))
+                    .pressableSurface(onClick = { showWhatsNew = true })
+                    .heightIn(min = minimumTouchTargetSize)
+                    .padding(vertical = spacingSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+            ) {
+                Icon(Lucide.Sparkles, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Text(
+                    text = stringResource(Res.string.settings_whats_new),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    Lucide.ChevronRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            SettingsSectionHeader("Sound")
 
             SettingsRow(title = "Click Sound") {
                 Row(
@@ -160,15 +204,21 @@ fun SettingsScreen(upPress: () -> Unit) {
                     ClickSound.entries.forEach { sound ->
                         val isSelected = sound == selectedSound
                         val borderWidth by animateDpAsState(
-                            targetValue = if (isSelected) 2.5.dp else 0.dp
+                            targetValue = if (isSelected) 2.5.dp else 0.dp,
+                            animationSpec = AppAnimations.emphasized(),
+                            label = "soundBorderWidth",
                         )
                         val borderColor by animateColorAsState(
                             targetValue = if (isSelected) MaterialTheme.colorScheme.primary
-                            else Color.Transparent
+                            else Color.Transparent,
+                            animationSpec = AppAnimations.standard(),
+                            label = "soundBorderColor",
                         )
                         val containerColor by animateColorAsState(
                             targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
-                            else Color.Transparent
+                            else Color.Transparent,
+                            animationSpec = AppAnimations.standard(),
+                            label = "soundContainer",
                         )
                         MySecondaryButton(
                             onClick = { viewModel.onSoundChanged(sound) },
@@ -201,53 +251,51 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             }
 
-            SettingsRow(title = "Volume") {
-                Text(
-                    text = "${(clickVolume * 100).roundToInt()}%",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Slider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp),
+            SettingsSlider(
+                title = "Volume",
+                value = "${(clickVolume * 100).roundToInt()}%",
+            ) {
+                AppSlider(
+                    modifier = Modifier.fillMaxWidth(),
                     value = clickVolume,
                     onValueChange = viewModel::onClickVolumeChanged,
                     valueRange = 0f..1f,
-                    colors = SliderDefaults.colors(
-                        inactiveTickColor = Color.Transparent
-                    )
+                    accessibilityLabel = "Click volume, ${(clickVolume * 100).roundToInt()} percent",
                 )
             }
 
-            SettingsRow(title = "Stereo Panning") {
-                val stereoLabel = when {
-                    currentStereo < 0 -> "L${-currentStereo}"
-                    currentStereo > 0 -> "R$currentStereo"
-                    else -> "Center"
-                }
-                Text(
-                    text = stereoLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Slider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp),
+            val stereoLabel = when {
+                currentStereo < 0 -> "L${-currentStereo}"
+                currentStereo > 0 -> "R$currentStereo"
+                else -> "Center"
+            }
+            SettingsSlider(title = "Stereo Panning", value = stereoLabel) {
+                AppSlider(
+                    modifier = Modifier.fillMaxWidth(),
                     value = currentStereo.toFloat(),
                     onValueChange = viewModel::onStereoChanged,
                     valueRange = -5f..5f,
                     steps = 9,
-                    colors = SliderDefaults.colors(
-                        inactiveTickColor = Color.Transparent
-                    )
+                    showActiveTicks = true,
+                    accessibilityLabel = "Stereo panning, $stereoLabel",
                 )
             }
 
             SettingsSwitch("Haptic Feedback", hapticEnabled, viewModel::onHapticChanged, subtitle = "Vibrate on each beat")
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SettingsSectionHeader("Appearance")
+
+            SettingsRow(title = "Theme") {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                    ThemeMode.entries.forEach { mode ->
+                        AppChip(
+                            selected = themeMode == mode,
+                            onClick = { viewModel.onThemeModeChanged(mode) },
+                            label = mode.label,
+                        )
+                    }
+                }
+            }
 
             SettingsRow(title = "Color Scheme") {
                 LazyRow(
@@ -256,6 +304,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                     if (platformActions.isDynamicColorSupported()) {
                         item {
                             ColorSecondaryButton(
+                                label = "System color scheme",
                                 content = {
                                     Box(
                                         modifier = Modifier
@@ -266,7 +315,7 @@ fun SettingsScreen(upPress: () -> Unit) {
                                     ) {
                                         Icon(
                                             Lucide.Smartphone,
-                                            Lucide.Smartphone.name
+                                            contentDescription = null
                                         )
                                     }
                                 },
@@ -277,6 +326,7 @@ fun SettingsScreen(upPress: () -> Unit) {
 
                     items(AppColorScheme.defaultValues()) { colorScheme ->
                         ColorSecondaryButton(
+                            label = colorScheme.displayName,
                             content = {
                                 Box(
                                     modifier = Modifier
@@ -300,6 +350,8 @@ fun SettingsScreen(upPress: () -> Unit) {
                 }
             }
 
+            SettingsSectionHeader("Practice")
+
             SettingsRow(
                 title = "Total Practice Time",
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -310,10 +362,11 @@ fun SettingsScreen(upPress: () -> Unit) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Lucide.Timer, Lucide.Timer.name)
+                        Icon(Lucide.Timer, contentDescription = null)
                         Text(
                             text = buildString {
                                 append(TimestampMillisecondsFormatter.formatHuman(totalTime))
@@ -321,7 +374,6 @@ fun SettingsScreen(upPress: () -> Unit) {
                                     append(" · $practiceStreak-day streak")
                                 }
                             },
-                            maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
                         )
                     }
@@ -395,7 +447,7 @@ fun SettingsBigButton(
     icon: ImageVector? = null,
     onClick: () -> Unit,
 ) {
-    Button(
+    MySecondaryButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         shape = CircleShape
@@ -412,24 +464,77 @@ fun SettingsBigButton(
                     modifier = Modifier.size(18.dp)
                 )
             }
-            Text(text = text, fontWeight = FontWeight.Bold)
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(10.sp, 16.sp),
+            )
         }
     }
 }
 
 @Composable
 fun ColorSecondaryButton(
+    label: String,
     content: @Composable () -> Unit,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderDp by animateDpAsState(targetValue = if (isSelected) 6.dp else 1.dp)
+    val borderDp by animateDpAsState(
+        targetValue = if (isSelected) 6.dp else 1.dp,
+        animationSpec = AppAnimations.emphasized(),
+        label = "colorSchemeBorder",
+    )
 
     MySecondaryButton(
+        modifier = Modifier.semantics {
+            contentDescription = label
+            selected = isSelected
+        },
         onClick = onClick,
         border = BorderStroke(borderDp, MaterialTheme.colorScheme.primary)
     ) {
         content()
+    }
+}
+
+@Composable
+private fun SettingsSectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelMedium.copy(
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.8.sp,
+        ),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = spacingMedium),
+    )
+}
+
+@Composable
+private fun SettingsSlider(
+    title: String,
+    value: String,
+    slider: @Composable () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        slider()
     }
 }
 
@@ -459,7 +564,9 @@ fun SettingsSwitch(
     subtitle: String? = null,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {},
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -479,3 +586,13 @@ fun SettingsSwitch(
         PlatformSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
+
+private val AppColorScheme.displayName: String
+    get() = when (this) {
+        AppColorScheme.MATERIAL3 -> "System"
+        AppColorScheme.BLACKNWHITE -> "Monochrome"
+        AppColorScheme.MELROSE -> "Melrose"
+        AppColorScheme.PERIWINKLE -> "Periwinkle"
+        AppColorScheme.MINT_GREEN -> "Mint green"
+        AppColorScheme.PINK_LACE -> "Pink lace"
+    }

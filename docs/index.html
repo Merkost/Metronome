@@ -3,198 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metronome: Feel the Beat!</title>
+    <title>Free Offline Metronome &amp; Practice Tools | Merkost</title>
+    <meta name="description" content="Practice with precise BPM control, practice presets and sets, tempo and gap trainers, subdivisions and timers. Free, ad-free metronome for iPhone and Android.">
+    <link rel="canonical" href="https://metronome.merkost.dev/">
+    <meta name="theme-color" content="#F2EFEA">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Metronome: Practice &amp; Tempo">
+    <meta property="og:title" content="Metronome: Practice &amp; Tempo — precise timing, better practice">
+    <meta property="og:description" content="A precise, ad-free metronome with practice presets, practice sets, tempo and gap trainers. Free on iPhone and Android.">
+    <meta property="og:url" content="https://metronome.merkost.dev/">
+    <meta property="og:image" content="https://metronome.merkost.dev/screenshots/og-card.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Metronome: Practice &amp; Tempo — precise timing, better practice">
+    <meta name="twitter:description" content="A precise, ad-free metronome with practice presets, practice sets, tempo and gap trainers. Free on iPhone and Android.">
+    <meta name="twitter:image" content="https://metronome.merkost.dev/screenshots/og-card.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Metronome: Practice & Tempo",
+      "operatingSystem": "iOS, Android",
+      "applicationCategory": "MusicApplication",
+      "softwareVersion": "1.3.0",
+      "description": "A precise, ad-free metronome with practice presets, practice sets, tempo and gap trainers, subdivisions and timers. Core practice features work offline.",
+      "url": "https://metronome.merkost.dev/",
+      "author": { "@type": "Person", "name": "Merkost", "url": "https://merkost.dev" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "downloadUrl": [
+        "https://apps.apple.com/app/id6761737690",
+        "https://play.google.com/store/apps/details?id=com.merkost.metronome"
+      ]
+    }
+    </script>
     <style>
+        /* Tokens mirror the app's monochrome light scheme (ColorSchemes.kt)
+           on the store set's bone ground. */
+        :root {
+            --bone: #F2EFEA;
+            --bone-sunk: #EAE6E0;
+            --ink: #141414;
+            --ink-soft: #5A5652;
+            --line: #DFDAD3;
+            --surface: #FFFFFF;
+            --container: #F2F2F2;
+            --container-high: #E6E6E6;
+            --radius-lg: 16px;
+            --radius-xl: 28px;
+            --gutter: 18px;
+            --content: 480px;
+            --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #f5f5f5;
-            line-height: 1.6;
+            font-family: var(--font);
+            background: var(--bone);
+            color: var(--ink);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
         }
-        .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; }
-        h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 8px; }
-        .subtitle { font-size: 1.1rem; color: #999; margin-bottom: 48px; }
-        .features { list-style: none; margin-bottom: 48px; }
-        .features li {
-            padding: 12px 0;
-            border-bottom: 1px solid #1a1a1a;
-            font-size: 1.05rem;
-        }
-        .features li span { margin-right: 12px; }
-        .carousel {
-            position: relative;
-            margin-bottom: 48px;
-            overflow: hidden;
-            border-radius: 16px;
-        }
-        .carousel-track {
-            display: flex;
-            transition: transform 0.4s ease;
-        }
-        .carousel-slide {
-            min-width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .carousel-slide img {
-            width: 260px;
-            border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-        .carousel-slide .caption {
-            margin-top: 16px;
-            text-align: center;
-        }
-        .carousel-slide .caption h3 {
-            font-size: 1.2rem;
+        .wrap { max-width: 880px; margin: 0 auto; padding: 0 var(--gutter); }
+        section { padding: 72px 0; }
+        section + section { border-top: 1px solid var(--line); }
+
+        h1 {
+            font-size: clamp(2rem, 6vw, 3.1rem);
             font-weight: 700;
-            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            max-width: 16ch;
         }
-        .carousel-slide .caption p {
-            font-size: 0.9rem;
-            color: #999;
+        h2 {
+            font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
         }
-        .carousel-nav {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
+        .lede { font-size: 1.12rem; color: var(--ink-soft); margin-top: 16px; max-width: 46ch; }
+        .eyebrow {
+            font-size: 12px; font-weight: 600; letter-spacing: 0.8px;
+            color: var(--ink-soft); margin-bottom: 10px;
         }
-        .carousel-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #333;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            transition: background 0.3s;
+        .section-note { color: var(--ink-soft); margin-bottom: 32px; max-width: 52ch; }
+
+        /* ---- Launch card ---- */
+        .hero { padding-top: 64px; }
+        .hero-grid { display: grid; gap: 48px; align-items: start; }
+        @media (min-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr minmax(320px, 380px); gap: 56px; }
         }
-        .carousel-dot.active { background: #f5f5f5; }
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #f5f5f5;
-            font-size: 1.5rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 2;
-            transition: background 0.2s;
+        .launch {
+            display: flex; flex-direction: column; gap: 8px;
+            background: var(--surface); border-radius: var(--radius-xl);
+            padding: 30px 26px 26px; text-decoration: none; color: var(--ink);
+            box-shadow: 0 1px 2px rgba(20,18,16,.04), 0 18px 44px -18px rgba(20,18,16,.22);
+            transition: transform .16s ease, box-shadow .16s ease;
         }
-        .carousel-btn:hover { background: rgba(255,255,255,0.2); }
-        .carousel-btn.prev { left: 8px; }
-        .carousel-btn.next { right: 8px; }
-        .badges { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
-        .badges a img { height: 52px; border-radius: 8px; }
-        .links { margin-top: 32px; }
-        .links a {
-            color: #999;
-            text-decoration: none;
-            margin-right: 24px;
-            font-size: 0.95rem;
+        .launch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 1px 2px rgba(20,18,16,.05), 0 26px 56px -20px rgba(20,18,16,.28);
         }
-        .links a:hover { color: #f5f5f5; }
-        footer {
-            margin-top: 64px;
-            padding-top: 24px;
-            border-top: 1px solid #1a1a1a;
-            color: #666;
-            font-size: 0.85rem;
+        .launch-eyebrow {
+            font-size: 12px; font-weight: 600; letter-spacing: .8px; color: var(--ink-soft);
+        }
+        .launch-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; }
+        .launch-body { color: var(--ink-soft); font-size: .97rem; margin-top: 2px; }
+        .launch-cta {
+            align-self: flex-start; margin-top: 14px;
+            background: var(--ink); color: #fff; border-radius: 999px;
+            padding: 11px 20px; font-size: 14px; font-weight: 600;
+        }
+        .launch-note { font-size: 12px; color: var(--ink-soft); margin-top: 12px; }
+        @media (prefers-reduced-motion: reduce) { .launch { transition: none; } }
+
+        /* ---- Shots ---- */
+        .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .shot img {
+            width: 100%; height: auto; display: block;
+            border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--surface);
+        }
+        .shot p { font-size: 13px; color: var(--ink-soft); margin-top: 10px; }
+        .shot strong { display: block; color: var(--ink); font-size: 14px; }
+
+        /* ---- Features ---- */
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 32px; list-style: none; }
+        .features li { padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+
+        /* ---- Badges / FAQ / footer ---- */
+        .badges { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 28px; }
+        .badges img { height: 52px; width: auto; display: block; }
+        .faq details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+        .faq summary {
+            cursor: pointer; font-weight: 600; list-style: none; display: flex;
+            justify-content: space-between; gap: 16px; align-items: center;
+        }
+        .faq summary::-webkit-details-marker { display: none; }
+        .faq summary::after { content: '+'; color: var(--ink-soft); font-weight: 400; font-size: 20px; }
+        .faq details[open] summary::after { content: '−'; }
+        .faq p { color: var(--ink-soft); margin-top: 10px; max-width: 62ch; }
+        footer { padding: 40px 0 56px; border-top: 1px solid var(--line); }
+        .links { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 14px; }
+        a { color: var(--ink); }
+        .links a { font-size: 14px; }
+        .copyright { font-size: 13px; color: var(--ink-soft); }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+            .m-dot.is-active { transform: none; outline: 2px solid var(--ink); outline-offset: 2px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Metronome: Feel the Beat!</h1>
-        <p class="subtitle">A simple, precise metronome for musicians of all levels.</p>
+<div class="wrap">
 
+    <section class="hero">
+        <div class="hero-grid">
+            <div>
+                <h1>A precise metronome built for better practice</h1>
+                <p class="lede">Precise timing. Better practice. Free, ad-free, and no account required.</p>
+                <p class="lede" style="margin-top:12px;font-size:.98rem">
+                    Try it right now — the whole app runs
+                    <a href="app/">in your browser</a>, no download.
+                </p>
+                <div class="badges">
+                    <a href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
+                        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get Metronome: Practice &amp; Tempo on Google Play">
+                    </a>
+                    <a href="https://apps.apple.com/app/id6761737690">
+                        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download Metronome: Practice &amp; Tempo on the App Store">
+                    </a>
+                </div>
+            </div>
+
+            <a class="launch" href="app/">
+                <span class="launch-eyebrow">No download needed</span>
+                <span class="launch-title">Open the web app</span>
+                <span class="launch-body">The real app, compiled to WebAssembly — tempo, accents, subdivisions, and both trainers, running in this browser.</span>
+                <span class="launch-cta">Launch &rarr;</span>
+                <span class="launch-note">Needs a recent browser (Safari&nbsp;18.2+, Chrome&nbsp;119+, Firefox&nbsp;120+).</span>
+            </a>
+        </div>
+    </section>
+
+    <section>
+        <p class="eyebrow">Inside the app</p>
+        <h2>Practice tools, not just a click</h2>
+        <p class="section-note">The browser version above covers the basics. The app adds the practice structure: saved setups, ordered sessions, and trainers that make the click harder on purpose.</p>
+        <div class="shots">
+            <figure class="shot">
+                <img src="screenshots/app-main.jpg" width="720" height="1600" loading="lazy" alt="The main metronome screen showing 4/4 time, 100 BPM marked Andante, the beat dots, tempo slider and the play, timer and tap-tempo controls.">
+                <p><strong>Precise timing</strong>Set the BPM, tap a tempo, shape every beat.</p>
+            </figure>
+            <figure class="shot">
+                <img src="screenshots/app-gap.jpg" width="720" height="1600" loading="lazy" alt="The Gap Trainer running, with a status strip reading Muted, bar 2 of 2, over a 4 plus 2 bar cycle.">
+                <p><strong>Gap Trainer</strong>Keep time through the silent bars.</p>
+            </figure>
+            <figure class="shot">
+                <img src="screenshots/app-tempo.jpg" width="720" height="1600" loading="lazy" alt="The Tempo Trainer sheet configured to climb from 80 to 120 BPM in steps of 2 every 4 bars, totalling 80 bars or about 3 minutes.">
+                <p><strong>Tempo Trainer</strong>Climb from 80 to 120, two BPM at a time.</p>
+            </figure>
+            <figure class="shot">
+                <img src="screenshots/app-session.jpg" width="720" height="1600" loading="lazy" alt="A practice session in progress showing step 2 of 3, Scales at 100 BPM in 4/4, three of five minutes done, with Etude up next.">
+                <p><strong>Practice Sets</strong>Follow your plan, one step to the next.</p>
+            </figure>
+            <figure class="shot">
+                <img src="screenshots/app-settings.jpg" width="720" height="1600" loading="lazy" alt="The settings screen with click sound, volume, stereo panning, haptic feedback, theme and colour scheme options.">
+                <p><strong>Made yours</strong>Sounds, haptics, themes and colour schemes.</p>
+            </figure>
+        </div>
+    </section>
+
+    <section>
+        <p class="eyebrow">Everything included</p>
+        <h2>Free, and genuinely free</h2>
+        <p class="section-note">No advertisements, no account, no paid tier holding a feature back.</p>
         <ul class="features">
-            <li><span>&#9834;</span> Precise audio engine with low-latency playback</li>
-            <li><span>&#9996;</span> Tap tempo for quick BPM detection</li>
-            <li><span>&#8593;</span> Gradual tempo increase for practice sessions</li>
-            <li><span>&#9835;</span> Multiple time signatures</li>
-            <li><span>&#127925;</span> Selectable click sounds</li>
-            <li><span>&#9711;</span> Visual beat indicator with animated ball</li>
-            <li><span>&#9201;</span> Timer mode for timed practice</li>
-            <li><span>&#127912;</span> Light and dark themes with multiple color schemes</li>
-            <li><span>&#128243;</span> Haptic feedback on every beat</li>
-            <li><span>&#9654;</span> Keeps playing with screen off</li>
+            <li>Precise BPM from 40 to 220</li>
+            <li>Tap tempo and quick BPM steps</li>
+            <li>Common and odd time signatures</li>
+            <li>Per-beat accents and mute</li>
+            <li>Eighths, triplets and sixteenth subdivisions</li>
+            <li>Practice Presets for whole setups</li>
+            <li>Practice Sets that run presets in order</li>
+            <li>Tempo Trainer and Gap Trainer</li>
+            <li>Countdown timer, stopwatch and count-in</li>
+            <li>Background playback and Live Activities</li>
+            <li>Practice time, totals and streaks</li>
+            <li>Light and dark themes, multiple colour schemes</li>
         </ul>
+    </section>
 
-        <div class="carousel">
-            <button class="carousel-btn prev" onclick="moveSlide(-1)">&#8249;</button>
-            <button class="carousel-btn next" onclick="moveSlide(1)">&#8250;</button>
-            <div class="carousel-track" id="carouselTrack">
-                <div class="carousel-slide">
-                    <img src="screenshots/screen1.png" alt="Main metronome screen">
-                    <div class="caption">
-                        <h3>Perfect Tempo</h3>
-                        <p>Precise BPM control</p>
-                    </div>
-                </div>
-                <div class="carousel-slide">
-                    <img src="screenshots/screen2.png" alt="Settings screen">
-                    <div class="caption">
-                        <h3>Make It Yours</h3>
-                        <p>Themes, sounds &amp; more</p>
-                    </div>
-                </div>
-                <div class="carousel-slide">
-                    <img src="screenshots/screen3.png" alt="Color flash with pink theme">
-                    <div class="caption">
-                        <h3>Feel the Beat</h3>
-                        <p>Visual pulse on every click</p>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-nav">
-                <button class="carousel-dot active" onclick="goToSlide(0)"></button>
-                <button class="carousel-dot" onclick="goToSlide(1)"></button>
-                <button class="carousel-dot" onclick="goToSlide(2)"></button>
-            </div>
-        </div>
+    <section class="faq">
+        <h2>Questions</h2>
+        <details>
+            <summary>What is a gap trainer?</summary>
+            <p>The gap trainer plays a set number of bars, then goes silent for a set number of bars while the beat keeps counting. You keep time yourself through the silence and find out whether you are still with the click when it returns. It is the most direct way to train your internal pulse.</p>
+        </details>
+        <details>
+            <summary>How does gradual tempo practice work?</summary>
+            <p>Set a starting tempo, a target tempo, a step size and how many complete bars to hold before each step. The Tempo Trainer then moves the BPM for you while you play, so you can take a difficult passage from slow to performance tempo without stopping to change the number.</p>
+        </details>
+        <details>
+            <summary>What is the difference between a preset and a practice set?</summary>
+            <p>A Practice Preset is one saved setup — tempo, time signature, subdivision, per-beat accents and mutes, and count-in. A Practice Set is an ordered sequence of those presets, where any step can carry a time or bar goal. Presets are what you play; sets are how you work through a session.</p>
+        </details>
+        <details>
+            <summary>Does it work offline?</summary>
+            <p>Yes. The core practice features work without a network connection, and there is no account to create. Settings and practice activity are stored on your device.</p>
+        </details>
+        <details>
+            <summary>Does it keep playing in the background?</summary>
+            <p>Yes. Playback continues with the screen off or another app in front. On supported iPhones the current tempo and practice timer also appear on the Lock Screen and in the Dynamic Island.</p>
+        </details>
+        <details>
+            <summary>Is the web version the same as the app?</summary>
+            <p>It is the same app: the browser version is built from the same Kotlin and Compose code, compiled to WebAssembly, and runs the same beat scheduler. The installed app still has the advantage on a phone, because it keeps playing with the screen off, supports haptics and Live Activities, and remembers your presets and practice sets between sessions.</p>
+        </details>
+    </section>
 
-        <div class="badges">
-            <a href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
-                <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="52">
-            </a>
-            <a href="https://apps.apple.com/app/id6480380648">
-                <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" height="52">
-            </a>
-        </div>
-
+    <footer>
         <div class="links">
             <a href="support.html">Support</a>
             <a href="privacy.html">Privacy Policy</a>
+            <a href="https://merkost.dev">More from Merkost</a>
         </div>
+        <p class="copyright">© 2026 Merkost. All rights reserved.</p>
+    </footer>
 
-        <footer>
-            &copy; 2024 Merkost. All rights reserved.
-        </footer>
-    </div>
-    <script>
-        let current = 0;
-        const total = 3;
-        function moveSlide(dir) { goToSlide((current + dir + total) % total); }
-        function goToSlide(i) {
-            current = i;
-            document.getElementById('carouselTrack').style.transform = 'translateX(-' + (current * 100) + '%)';
-            document.querySelectorAll('.carousel-dot').forEach((d, idx) => d.classList.toggle('active', idx === current));
-        }
-        let startX = 0;
-        const track = document.getElementById('carouselTrack');
-        track.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-        track.addEventListener('touchend', e => {
-            const diff = startX - e.changedTouches[0].clientX;
-            if (Math.abs(diff) > 50) moveSlide(diff > 0 ? 1 : -1);
-        });
-    </script>
+</div>
 </body>
 </html>

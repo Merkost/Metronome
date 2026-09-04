@@ -1,5 +1,8 @@
 package com.merkost.metronome.di
 
+import com.merkost.metronome.logging.CrashlyticsTree
+import com.merkost.metronome.logging.ReleaseLogTreeProvider
+
 import com.merkost.metronome.engine.MetronomePlayer
 import com.merkost.metronome.engine.MetronomePlayerAndroid
 import com.merkost.metronome.platform.AndroidAppVersionProvider
@@ -13,10 +16,14 @@ import com.merkost.metronome.platform.LiveActivityController
 import com.merkost.metronome.platform.NoopLiveActivityController
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.createDataStore
+import com.merkost.metronome.review.AndroidInAppReviewRequester
+import com.merkost.metronome.review.CurrentActivityProvider
+import com.merkost.metronome.review.InAppReviewRequester
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val androidModule = module {
+    single<ReleaseLogTreeProvider> { ReleaseLogTreeProvider { CrashlyticsTree() } }
     single { createDataStore(androidContext()) }
     single<MetronomePlayer> { MetronomePlayerAndroid(androidContext()) }
     single<PlatformActions> { AndroidPlatformActions(androidContext()) }
@@ -24,4 +31,6 @@ val androidModule = module {
     single<HapticProvider> { HapticProviderAndroid(androidContext()) }
     single<LiveActivityController> { NoopLiveActivityController() }
     single<AudioFocusController> { AndroidAudioFocusController(androidContext()) }
+    single { CurrentActivityProvider(androidContext() as android.app.Application) }
+    single<InAppReviewRequester> { AndroidInAppReviewRequester(get()) }
 }

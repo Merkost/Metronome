@@ -2,12 +2,12 @@ package com.merkost.metronome.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.Lucide
+import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.pressScale
 
 @Composable
@@ -40,6 +43,7 @@ fun PillChip(
         } else {
             MaterialTheme.colorScheme.primary.copy(alpha = 0.055f)
         },
+        animationSpec = AppAnimations.standard(),
         label = "pillChipContainer"
     )
 
@@ -47,7 +51,7 @@ fun PillChip(
         shape = RoundedCornerShape(50),
         color = containerColor,
         modifier = modifier
-            .pressScale(interactionSource, pressedScale = 0.94f)
+            .pressScale(interactionSource, pressedScale = PressedScaleControl)
             .clip(RoundedCornerShape(50))
             .clickable(
                 interactionSource = interactionSource,
@@ -59,7 +63,8 @@ fun PillChip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
-                .animateContentSize(spring(stiffness = 600f, dampingRatio = 0.8f))
+                .animateContentSize(AppAnimations.standard())
+                .heightIn(min = minimumTouchTargetSize)
                 .padding(start = 14.dp, end = if (showDropdownIcon) 8.dp else 14.dp, top = 8.dp, bottom = 8.dp)
         ) {
             content()

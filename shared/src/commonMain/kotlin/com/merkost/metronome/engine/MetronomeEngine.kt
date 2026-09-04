@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.ComparableTimeMark
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 
@@ -29,7 +30,7 @@ class MetronomeEngine(
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
-    private val timeSource = TimeSource.Monotonic
+    private val timeSource: TimeSource.WithComparableMarks = TimeSource.Monotonic
 
     private var beatCount = 0
     private var barNumber = 0
@@ -46,7 +47,9 @@ class MetronomeEngine(
             }
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
-                    audioFocus.requestFocus()
+                    if (!requestPlaybackFocus(audioFocus, viewModel::onStopClicked)) {
+                        return@collectLatest
+                    }
                     var isRestart = false
                     viewModel.metronomeState
                         .map { it.beats.size }
@@ -58,11 +61,11 @@ class MetronomeEngine(
                             viewModel.onBarReset()
                             viewModel.onCountInTick(0)
 
-                            var nextBeat = timeSource.markNow()
+                            val timeline = BeatTimeline(timeSource)
 
                             if (!isRestart && viewModel.countInEnabled.value) {
                                 for (remaining in beatsCount downTo 1) {
-                                    delayUntil(nextBeat)
+                                    delayUntil(timeline.deadline)
                                     viewModel.onCountInTick(remaining)
                                     val stereo = viewModel.currentStereo.value
                                     val volume = viewModel.clickVolume.value
@@ -70,15 +73,15 @@ class MetronomeEngine(
                                     if (viewModel.hapticEnabled.value) {
                                         hapticProvider.playBeatHaptic(Beat.HIGH)
                                     }
-                                    nextBeat += viewModel.metronomeState.value.beatDuration
+                                    timeline.advance(viewModel.metronomeState.value.beatDuration)
                                 }
                                 viewModel.onCountInTick(0)
                             }
                             isRestart = true
 
                             createBeatsSequence(beatsCount).collect { index ->
-                                delayUntil(nextBeat)
-                                val beatStart = nextBeat
+                                val beatStart = timeline.deadline
+                                delayUntil(beatStart)
                                 val state = viewModel.metronomeState.value
                                 val beat = state.beats[index]
                                 val stereo = viewModel.currentStereo.value
@@ -102,14 +105,14 @@ class MetronomeEngine(
                                     subClickVolume = SUB_CLICK_VOLUME,
                                 )
                                 for (event in events) {
-                                    delayUntil(beatStart + event.offset)
-                                    player.play(event.beat, event.leftVolume, event.rightVolume)
+                                    val eventDeadline = beatStart + event.offset
+                                    delayUntil(eventDeadline)
+                                    if (!timeline.isStale(eventDeadline, interval)) {
+                                        player.play(event.beat, event.leftVolume, event.rightVolume)
+                                    }
                                 }
 
-                                nextBeat = beatStart + interval
-                                if (nextBeat.elapsedNow() > interval) {
-                                    nextBeat = timeSource.markNow()
-                                }
+                                timeline.advance(interval)
 
                                 beatCount++
                                 if (beatCount >= beatsCount) {
@@ -129,7 +132,7 @@ class MetronomeEngine(
         }
     }
 
-    private suspend fun delayUntil(target: TimeSource.Monotonic.ValueTimeMark) {
+    private suspend fun delayUntil(target: ComparableTimeMark) {
         val remaining = -target.elapsedNow()
         if (remaining > Duration.ZERO) delay(remaining)
     }

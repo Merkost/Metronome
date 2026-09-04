@@ -1,9 +1,9 @@
 package com.merkost.metronome.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.X
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.PressedScaleSurface
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -51,7 +51,7 @@ fun StatusStrip(
     val interactionSource = remember { MutableInteractionSource() }
     val animatedProgress by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = AppAnimations.Gentle,
+        animationSpec = AppAnimations.Calm,
         label = "stripProgress"
     )
 
@@ -61,7 +61,7 @@ fun StatusStrip(
         modifier = modifier
             .fillMaxWidth()
             .height(statusStripHeight)
-            .pressScale(interactionSource, pressedScale = 0.97f)
+            .pressScale(interactionSource, pressedScale = PressedScaleSurface)
             .clip(RoundedCornerShape(50))
             .drawBehind {
                 drawRect(
@@ -95,14 +95,20 @@ fun StatusStrip(
                 modifier = titleModifier,
             )
             Spacer(Modifier.weight(1f))
-            Text(
-                text = caption,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            AnimatedContent(
+                targetState = caption,
+                transitionSpec = { AppAnimations.fadeThrough },
+                label = "stripCaption",
+            ) { text ->
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             if (onStop != null) {
                 Spacer(Modifier.width(spacingSmall / 2))
-                IconButton(onClick = onStop, modifier = Modifier.size(32.dp)) {
+                AppIconButton(onClick = onStop) {
                     Icon(
                         imageVector = Lucide.X,
                         contentDescription = "Stop",
