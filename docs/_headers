@@ -1,0 +1,11 @@
+# The wasm filenames carry a content hash, so they can never go stale.
+/app/*.wasm
+  Cache-Control: public, max-age=31536000, immutable
+
+# composeApp.js has a fixed name and changes with every build, so it must not
+# be immutable. Its hashed wasm is what carries the weight anyway.
+/app/composeApp.js
+  Cache-Control: public, max-age=300
+
+/*
+  Cache-Control: public, max-age=3600
