@@ -91,89 +91,35 @@
         }
         .section-note { color: var(--ink-soft); margin-bottom: 32px; max-width: 52ch; }
 
-        /* ---- Player ---- */
+        /* ---- Launch card ---- */
         .hero { padding-top: 64px; }
         .hero-grid { display: grid; gap: 48px; align-items: start; }
         @media (min-width: 900px) {
-            .hero-grid { grid-template-columns: 1fr minmax(340px, 400px); gap: 56px; }
+            .hero-grid { grid-template-columns: 1fr minmax(320px, 380px); gap: 56px; }
         }
-        #player {
-            background: var(--surface);
-            border-radius: var(--radius-xl);
-            padding: 28px 22px 24px;
-            max-width: var(--content);
+        .launch {
+            display: flex; flex-direction: column; gap: 8px;
+            background: var(--surface); border-radius: var(--radius-xl);
+            padding: 30px 26px 26px; text-decoration: none; color: var(--ink);
             box-shadow: 0 1px 2px rgba(20,18,16,.04), 0 18px 44px -18px rgba(20,18,16,.22);
+            transition: transform .16s ease, box-shadow .16s ease;
         }
-        .m-head {
-            display: flex; align-items: baseline; justify-content: space-between;
-            margin-bottom: 22px;
+        .launch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 1px 2px rgba(20,18,16,.05), 0 26px 56px -20px rgba(20,18,16,.28);
         }
-        .m-title { font-size: 15px; font-weight: 700; }
-        .m-hint { font-size: 12px; color: var(--ink-soft); }
-
-        .m-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 26px; flex-wrap: wrap; }
-        .m-dot {
-            width: 34px; height: 34px; border-radius: 50%;
-            border: 0; cursor: pointer; padding: 0;
-            background: var(--container-high);
-            transition: transform .12s ease, background-color .12s ease;
+        .launch-eyebrow {
+            font-size: 12px; font-weight: 600; letter-spacing: .8px; color: var(--ink-soft);
         }
-        .m-dot.is-accented { background: var(--ink); }
-        .m-dot.is-muted { background: transparent; box-shadow: inset 0 0 0 2px var(--container-high); }
-        .m-dot.is-active { transform: scale(1.22); }
-        .m-dot.is-active.is-normal { background: #B8B8B8; }
-        .m-dot.is-active.is-muted { box-shadow: inset 0 0 0 2px #B8B8B8; }
-
-        .m-tempo { text-align: center; }
-        .m-name {
-            display: inline-block; padding: 5px 16px; border-radius: 999px;
-            background: var(--container); font-size: 14px; font-weight: 700; margin-bottom: 10px;
+        .launch-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; }
+        .launch-body { color: var(--ink-soft); font-size: .97rem; margin-top: 2px; }
+        .launch-cta {
+            align-self: flex-start; margin-top: 14px;
+            background: var(--ink); color: #fff; border-radius: 999px;
+            padding: 11px 20px; font-size: 14px; font-weight: 600;
         }
-        .m-readout { display: flex; align-items: center; justify-content: center; gap: 18px; }
-        .m-bpm {
-            font-size: 62px; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
-            font-variant-numeric: tabular-nums; min-width: 3ch;
-        }
-        .m-step {
-            width: 48px; height: 48px; border-radius: 50%; border: 0; cursor: pointer;
-            background: var(--container); font-size: 22px; color: var(--ink);
-            font-family: var(--font);
-        }
-        .m-step:hover { background: var(--container-high); }
-        .m-unit { font-size: 12px; color: var(--ink-soft); letter-spacing: .6px; margin-top: 2px; }
-
-        .m-slider {
-            -webkit-appearance: none; appearance: none; width: 100%; height: 4px;
-            background: var(--container-high); border-radius: 999px; margin: 22px 0 24px; cursor: pointer;
-        }
-        .m-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
-            background: var(--ink); cursor: pointer;
-        }
-        .m-slider::-moz-range-thumb {
-            width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--ink); cursor: pointer;
-        }
-
-        .m-play {
-            display: block; margin: 0 auto 22px; width: 85px; height: 85px; border-radius: 50%;
-            border: 0; cursor: pointer; background: var(--ink); color: #fff;
-            font-size: 15px; font-weight: 700; font-family: var(--font);
-            transition: transform .12s ease;
-        }
-        .m-play:hover { transform: scale(1.04); }
-        .m-play.is-playing { background: var(--container-high); color: var(--ink); }
-
-        .m-row { margin-top: 16px; }
-        .m-label { font-size: 12px; font-weight: 600; letter-spacing: .8px; color: var(--ink-soft); margin-bottom: 8px; }
-        .m-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-        .m-chip {
-            padding: 8px 14px; border-radius: 999px; border: 0; cursor: pointer;
-            background: var(--container); color: var(--ink);
-            font-size: 13px; font-weight: 500; font-family: var(--font);
-        }
-        .m-chip:hover { background: var(--container-high); }
-        .m-chip.is-on { background: var(--ink); color: #fff; font-weight: 700; }
-        .m-status { font-size: 13px; color: #B3261E; text-align: center; min-height: 18px; margin-top: 10px; }
+        .launch-note { font-size: 12px; color: var(--ink-soft); margin-top: 12px; }
+        @media (prefers-reduced-motion: reduce) { .launch { transition: none; } }
 
         /* ---- Shots ---- */
         .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
@@ -221,8 +167,8 @@
                 <h1>A precise metronome built for better practice</h1>
                 <p class="lede">Precise timing. Better practice. Free, ad-free, and no account required.</p>
                 <p class="lede" style="margin-top:12px;font-size:.98rem">
-                    Try the click on the right, or
-                    <a href="app/">open the full app in your browser</a> — the real thing, compiled to WebAssembly.
+                    Try it right now — the whole app runs
+                    <a href="app/">in your browser</a>, no download.
                 </p>
                 <div class="badges">
                     <a href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
@@ -234,39 +180,13 @@
                 </div>
             </div>
 
-            <div id="player">
-                <div class="m-head">
-                    <span class="m-title">Try it here</span>
-                    <span class="m-hint">Space to start · tap a dot to accent</span>
-                </div>
-                <div class="m-dots"></div>
-                <div class="m-tempo">
-                    <span class="m-name">Andante</span>
-                    <div class="m-readout">
-                        <button type="button" class="m-step" data-delta="-1" aria-label="Decrease tempo">−</button>
-                        <div>
-                            <div class="m-bpm">80</div>
-                            <div class="m-unit">BPM</div>
-                        </div>
-                        <button type="button" class="m-step" data-delta="1" aria-label="Increase tempo">+</button>
-                    </div>
-                </div>
-                <input class="m-slider" type="range" min="40" max="220" value="80" aria-label="Tempo in beats per minute">
-                <button type="button" class="m-play" aria-label="Start metronome">Play</button>
-                <div class="m-row">
-                    <div class="m-label">Time signature</div>
-                    <div class="m-chips m-sigs"></div>
-                </div>
-                <div class="m-row">
-                    <div class="m-label">Subdivision</div>
-                    <div class="m-chips m-subs"></div>
-                </div>
-                <div class="m-row">
-                    <div class="m-label">Sound</div>
-                    <div class="m-chips m-sounds"></div>
-                </div>
-                <p class="m-status" role="status"></p>
-            </div>
+            <a class="launch" href="app/">
+                <span class="launch-eyebrow">No download needed</span>
+                <span class="launch-title">Open the web app</span>
+                <span class="launch-body">The real app, compiled to WebAssembly — tempo, accents, subdivisions, and both trainers, running in this browser.</span>
+                <span class="launch-cta">Launch &rarr;</span>
+                <span class="launch-note">Needs a recent browser (Safari&nbsp;18.2+, Chrome&nbsp;119+, Firefox&nbsp;120+).</span>
+            </a>
         </div>
     </section>
 
@@ -341,8 +261,8 @@
             <p>Yes. Playback continues with the screen off or another app in front. On supported iPhones the current tempo and practice timer also appear on the Lock Screen and in the Dynamic Island.</p>
         </details>
         <details>
-            <summary>Is the metronome on this page as accurate as the app?</summary>
-            <p>It uses the same timing approach: every click is scheduled against the audio clock rather than a JavaScript timer, so it does not drift as a session goes on. The app still has the advantage on a phone, because it keeps running with the screen off and is not subject to browser tab throttling.</p>
+            <summary>Is the web version the same as the app?</summary>
+            <p>It is the same app: the browser version is built from the same Kotlin and Compose code, compiled to WebAssembly, and runs the same beat scheduler. The installed app still has the advantage on a phone, because it keeps playing with the screen off, supports haptics and Live Activities, and remembers your presets and practice sets between sessions.</p>
         </details>
     </section>
 
@@ -356,6 +276,5 @@
     </footer>
 
 </div>
-<script src="metronome.js"></script>
 </body>
 </html>
