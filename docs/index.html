@@ -74,6 +74,9 @@
             /* A filled region needs a darker tint of the same hue: ground-on-#1A8A2E
                is 4.00:1, which fails AA for the paragraph inside it. */
             --accent-deep: #116018;
+            /* Ink for the accent region. Deliberately fixed in both appearances:
+               --ground flips to near-black in dark, which made this unreadable. */
+            --on-accent: #F2F3F2;
 
             --bar-h: 60px;
             --gutter: clamp(20px, 5vw, 64px);
@@ -262,7 +265,8 @@
         }
         .fig b { font-weight: 800; }
         .fig span { font-size: 0.27em; font-weight: 400; letter-spacing: -0.01em; color: var(--ink-2); }
-        .fig.is-accent, .fig.is-accent span { color: var(--accent); }
+        .fig.is-accent { color: var(--accent); }
+        .fig.is-accent span { color: var(--accent-ink); }
 
         /* ---------- actions ---------- */
         .actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: var(--lh); }
@@ -419,13 +423,13 @@
            second call to action the page was missing. */
         .close {
             background: var(--accent-deep);
-            color: var(--ground);
+            color: var(--on-accent);
             margin-left: calc(var(--gutter) * -2);
             margin-right: calc(var(--gutter) * -1);
             padding-inline: calc(var(--gutter) * 2);
         }
         .close h2 { max-width: 18ch; }
-        .close .say { color: color-mix(in srgb, var(--ground) 88%, var(--accent-deep)); }
+        .close .say { color: color-mix(in srgb, var(--on-accent) 88%, var(--accent-deep)); }
         .close .badge--play img { filter: none; }
 
         /* ---------- footer ---------- */
@@ -649,7 +653,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     </section>
 
     <section class="entry close">
-        <p class="date" style="color: color-mix(in srgb, var(--ground) 80%, var(--accent-deep))">Tomorrow's entry</p>
+        <p class="date" style="color: color-mix(in srgb, var(--on-accent) 80%, var(--accent-deep))">Tomorrow's entry</p>
         <h2>Leave yourself something to write down.</h2>
         <p class="say">Free, with no advertising and no account. Install it, set a tempo, and the log fills itself in.</p>
         <div class="actions">
