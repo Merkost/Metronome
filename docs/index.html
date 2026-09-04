@@ -376,7 +376,7 @@
         }
         .screen img { border-radius: 29px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
         /* Reserve the box before a lazy image arrives, so nothing reflows. */
-        .screen img { width: 100%; height: auto; aspect-ratio: 560 / 1244; }
+        .screen img { width: 100%; height: auto; aspect-ratio: 592 / 1316; }
 
         .specs { list-style: none; margin-top: var(--lh); max-width: var(--measure); }
         .specs li {
@@ -384,6 +384,23 @@
             font-size: 15px; line-height: var(--lh);
         }
         .specs li span:last-child { color: var(--ink-2); text-align: right; }
+        /* The app draws these as selectable chips; the page borrows that
+           vocabulary rather than inventing a shape for the same data. Each chip
+           is exactly one 28px band, so a wrapped row stays on the lattice. */
+        .chips { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 6px; }
+        /* The label holds its line and the chips wrap around it; without this the
+           chip group squeezes "Time signatures" onto two lines at 390. */
+        .specs li > span:first-child { white-space: nowrap; flex: none; }
+        .chip {
+            display: inline-flex; align-items: center; height: var(--lh);
+            padding: 0 11px; border-radius: 999px;
+            font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
+            color: var(--ink); background: var(--paper);
+            box-shadow: inset 0 0 0 1px var(--rule);
+        }
+        /* One chip per group shows the app's default, the way the product marks
+           a current selection: filled, not outlined. */
+        .chip.is-on { color: var(--ground); background: var(--ink); box-shadow: none; }
         /* The accent marks progression wherever it appears, so one green glyph
            becomes a system rather than an accident. */
         .specs li.is-live span:last-child { color: var(--accent-ink); font-weight: 600; }
@@ -546,7 +563,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <p class="aside">An example entry. Your own practice time and streak are recorded on your device.</p>
             </div>
             <div class="screen screen--hero">
-                <img src="screenshots/app-main.png" width="560" height="1244" fetchpriority="high" alt="The metronome screen running at 100 BPM in 4/4, marked Andante: four beat dots with the first accented, the tempo slider and fine steps, and a bottom bar holding a 9:06 timer, pause, and tap tempo.">
+                <img src="screenshots/app-main.png" width="592" height="1316" fetchpriority="high" alt="The metronome screen running at 100 BPM in 4/4, marked Andante: four beat dots with the first accented, the tempo slider and fine steps, and a bottom bar holding a 9:06 timer, pause, and tap tempo.">
             </div>
         </div>
 
@@ -569,10 +586,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <p class="say field">Set the tempo, tap it in, or shape it bar by bar. Every beat can be accented or muted, and the pulse is scheduled against a monotonic clock, so it does not wander as a session runs long.</p>
                 <ul class="specs field">
                     <li><span>Tempo range</span><span>40 to 220 BPM</span></li>
-                    <li><span>Time signatures</span><span>2/4, 3/4, 4/4, 5/4, 6/8, 7/8</span></li>
-                    <li><span>Subdivisions</span><span>Quarter, eighths, triplets, sixteenths</span></li>
-                    <li><span>Per beat</span><span>Accent, normal, mute</span></li>
-                    <li><span>Click sounds</span><span>Wood, Click, Classic</span></li>
+                    <li><span>Time signatures</span><span class="chips"><b class="chip">2/4</b><b class="chip">3/4</b><b class="chip is-on">4/4</b><b class="chip">5/4</b><b class="chip">6/8</b><b class="chip">7/8</b></span></li>
+                    <li><span>Subdivisions</span><span class="chips"><b class="chip is-on">Quarter</b><b class="chip">Eighths</b><b class="chip">Triplets</b><b class="chip">Sixteenths</b></span></li>
+                    <li><span>Per beat</span><span class="chips"><b class="chip is-on">Accent</b><b class="chip">Normal</b><b class="chip">Mute</b></span></li>
+                    <li><span>Click sounds</span><span class="chips"><b class="chip is-on">Wood</b><b class="chip">Click</b><b class="chip">Classic</b></span></li>
                 </ul>
                 <div class="scale">
                     <div class="scale-track" role="img" aria-label="Tempo markings across the range: Largo from 40, Adagio from 66, Andante from 76, Moderato from 108, Allegro from 120, Presto from 168, Prestissimo from 201 to 220 BPM.">
@@ -615,7 +632,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <h2>Take it up two at a time.</h2>
                 <p class="say field">Give the Tempo Trainer a start, a target, a step and how many complete bars to hold, and it moves the tempo for you while you play. A passage travels from careful to performance speed without you stopping to change the number.</p>
                 <ul class="specs field">
-                    <li class="is-live"><span>Example climb</span><span>80 → 120 BPM</span></li>
+                    <li class="is-live"><span>Example climb</span><span>80 to 120 BPM</span></li>
                     <li><span>Step</span><span>+2 every 4 bars</span></li>
                     <li><span>Length</span><span>80 bars, about 3 minutes</span></li>
                 </ul>
