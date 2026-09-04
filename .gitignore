@@ -46,3 +46,7 @@ __pycache__/
 # ASO screenshot working intermediates (keep only the approved set)
 artifacts/aso-screenshots/*/
 !artifacts/aso-screenshots/final/
+
+# Impeccable session scratch (decision-round comps, question-server logs)
+.impeccable/mocks/
+.impeccable/questions/
