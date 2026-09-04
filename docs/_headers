@@ -1,11 +1,12 @@
-# The wasm filenames carry a content hash, so they can never go stale.
+# Cloudflare Pages applies EVERY matching rule and concatenates same-named
+# headers, so a /* catch-all does not lose to a more specific path -- it gets
+# appended to it, producing "max-age=31536000, immutable, max-age=3600".
+# Only name paths that need something other than the default here.
+
+# Content-hashed, so it can never go stale.
 /app/*.wasm
   Cache-Control: public, max-age=31536000, immutable
 
-# composeApp.js has a fixed name and changes with every build, so it must not
-# be immutable. Its hashed wasm is what carries the weight anyway.
+# Fixed filename, rewritten every build: must not be cached long.
 /app/composeApp.js
   Cache-Control: public, max-age=300
-
-/*
-  Cache-Control: public, max-age=3600
