@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Metronome — web app | Merkost</title>
+    <meta name="description" content="The Metronome practice app running in your browser. Precise BPM, accents, subdivisions and trainers.">
+    <meta name="theme-color" content="#F2EFEA">
+    <link rel="canonical" href="https://metronome.merkost.dev/app/">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #F2EFEA; color: #141414;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        /* Shown until Compose paints, and left in place if wasm cannot run, so
+           a visitor who bounces early still sees the pitch and the store links. */
+        #boot {
+            position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+            padding: 24px; text-align: center;
+        }
+        #boot .inner { max-width: 30rem; }
+        #boot h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 10px; }
+        #boot p { color: #5A5652; margin-bottom: 20px; }
+        #boot .links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+        #boot a {
+            display: inline-block; padding: 11px 18px; border-radius: 999px;
+            background: #141414; color: #fff; text-decoration: none; font-size: 14px; font-weight: 600;
+        }
+        #boot a.ghost { background: transparent; color: #141414; box-shadow: inset 0 0 0 1px #DFDAD3; }
+        .spinner {
+            width: 26px; height: 26px; margin: 0 auto 18px;
+            border: 2px solid #DFDAD3; border-top-color: #141414; border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+    </style>
+</head>
+<body>
+<div id="boot">
+    <div class="inner">
+        <div class="spinner" id="spin"></div>
+        <h1 id="boot-title">Loading the metronome…</h1>
+        <p id="boot-msg">The full app is starting in your browser. It is a few megabytes, so this can take a moment on a slow connection.</p>
+        <div class="links">
+            <a href="https://apps.apple.com/app/id6761737690">Get it on iPhone</a>
+            <a class="ghost" href="https://play.google.com/store/apps/details?id=com.merkost.metronome">Get it on Android</a>
+            <a class="ghost" href="../">Back to the site</a>
+        </div>
+    </div>
+</div>
+<script src="webAudio.js"></script>
+<script>
+    // Kotlin/Wasm needs WasmGC. Fail loudly and usefully instead of leaving a
+    // dead canvas on browsers that cannot run it (Safari below 18.2).
+    (function () {
+        var gcOk = false;
+        try {
+            gcOk = WebAssembly.validate(new Uint8Array([
+                0,97,115,109,1,0,0,0,1,5,1,95,1,120,0
+            ]));
+        } catch (e) { gcOk = false; }
+        if (!gcOk) {
+            document.getElementById('spin').style.display = 'none';
+            document.getElementById('boot-title').textContent = 'This browser cannot run the web version';
+            document.getElementById('boot-msg').textContent =
+                'The browser build needs a recent browser (Safari 18.2+, Chrome 119+, Firefox 120+). The app itself has no such limitation.';
+            window.__metronomeBlocked = true;
+        }
+    })();
+</script>
+<script type="application/javascript" src="composeApp.js"></script>
+</body>
+</html>
