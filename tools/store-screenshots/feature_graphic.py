@@ -1,7 +1,7 @@
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
-W, H = 1024, 500
+
 BG = (0xF2, 0xEF, 0xEA)
 FONT = "/System/Library/Fonts/SFNS.ttf"
 
@@ -15,8 +15,9 @@ def font(size, weight="Bold"):
     return f
 
 
-def build(hero_path, out_path):
+def build(hero_path, out_path, W=1024, H=500):
     canvas = Image.new("RGB", (W, H), BG)
+    scale = H / 500.0
 
     hero = Image.open(hero_path).convert("RGB")
     hw, hh = hero.size
@@ -32,15 +33,17 @@ def build(hero_path, out_path):
     canvas.paste(phone, (px, int(H * 0.16)))
 
     draw = ImageDraw.Draw(canvas)
-    x = 64
-    f1, f2 = font(74), font(30, "Medium")
-    draw.text((x, 178), "Set it. Trust it.", font=f1, fill=(0x14, 0x14, 0x14))
-    draw.text((x, 272), "A metronome that never drifts.", font=f2, fill=(0x5A, 0x56, 0x52))
-    draw.text((x, 316), "No ads. No account. Free.", font=f2, fill=(0x5A, 0x56, 0x52))
+    x = int(64 * scale)
+    f1, f2 = font(int(74 * scale)), font(int(30 * scale), "Medium")
+    draw.text((x, int(178 * scale)), "Set it. Trust it.", font=f1, fill=(0x14, 0x14, 0x14))
+    draw.text((x, int(272 * scale)), "A metronome that never drifts.", font=f2, fill=(0x5A, 0x56, 0x52))
+    draw.text((x, int(316 * scale)), "No ads. No account. Free.", font=f2, fill=(0x5A, 0x56, 0x52))
 
     canvas.save(out_path, "PNG")
     print(f"✓ {out_path} ({canvas.width}x{canvas.height})")
 
 
 if __name__ == "__main__":
-    build(sys.argv[1], sys.argv[2])
+    w = int(sys.argv[3]) if len(sys.argv) > 3 else 1024
+    h = int(sys.argv[4]) if len(sys.argv) > 4 else 500
+    build(sys.argv[1], sys.argv[2], w, h)
