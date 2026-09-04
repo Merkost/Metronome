@@ -177,6 +177,9 @@
             margin: 0 auto;
             padding: 0 var(--gutter) 0 calc(var(--gutter) * 2);
         }
+        @media (max-width: 700px) {
+            .sheet { padding-left: calc(var(--gutter) * 1.5); }
+        }
         /* The margin rule and its playhead: the page's single authored motion. */
         .rail { position: absolute; left: var(--gutter); top: 0; bottom: 0; width: 1px; background: var(--rule-strong); }
         .playhead {
@@ -189,7 +192,17 @@
             z-index: 15;
         }
 
+        /* Pacing. Uniform air on sections ranging from 500 to 1500px tall
+           flattens the argument; every band here is still a multiple of the
+           lattice, so the ruling stays in phase.
+             open   1 / 4  breathes out of the masthead into the page
+             entry  3 / 3  the steady pulse of the five feature entries
+             turn   5 / 5  a rest before the ask
+             quiet  3 / 3  questions recede
+             close  4 / 4  the peak */
         .entry { padding: calc(var(--lh) * 3) 0; }
+        .entry--turn { padding: calc(var(--lh) * 5) 0; }
+        .close { padding-block: calc(var(--lh) * 4); }
         .entry + .entry { border-top: 1px solid var(--rule-strong); }
         .date { font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: calc(var(--lh) / 2); }
 
@@ -274,7 +287,7 @@
         .aside { font-size: 13px; color: var(--ink-2); margin-top: 14px; max-width: 62ch; }
 
         /* ---------- opening entry ---------- */
-        .entry--open { padding-top: var(--lh); }
+        .entry--open { padding-top: var(--lh); padding-bottom: calc(var(--lh) * 4); }
         /* The ledger survives as one short patch behind the figures rather than
            as the whole page's ground: the journal reads as a move, not as
            wallpaper. */
@@ -347,7 +360,7 @@
            page's own rule language. Nothing else in the category can show this,
            which is the point: it is the one element a visitor could describe
            afterwards. Values ported from MetronomeState.tempoName. */
-        .scale { margin-top: calc(var(--lh) * 1.5); max-width: 62ch; }
+        .scale { margin-top: var(--lh); max-width: 62ch; }
         .scale-track {
             position: relative; height: calc(var(--lh) * 2);
             border-bottom: var(--rule-w) solid var(--rule-strong);
@@ -409,7 +422,7 @@
             color: var(--ground);
             margin-left: calc(var(--gutter) * -2);
             margin-right: calc(var(--gutter) * -1);
-            padding: calc(var(--lh) * 3) calc(var(--gutter) * 2);
+            padding-inline: calc(var(--gutter) * 2);
         }
         .close h2 { max-width: 18ch; }
         .close .say { color: color-mix(in srgb, var(--ground) 88%, var(--accent-deep)); }
@@ -420,6 +433,10 @@
         .foot-links { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 14px; margin-bottom: 12px; }
         .foot-links a { display: inline-flex; align-items: center; min-height: 44px; }
         .fine { font-size: 13px; color: var(--ink-2); }
+
+        /* The sheet's left inset shrinks on phones, so the full-bleed closing
+           region has to match it. Declared last so it wins on source order. */
+        @media (max-width: 700px) { .close { margin-left: calc(var(--gutter) * -1.5); } }
 
         /* Three bands suits a single display line; two is right once it wraps
            at phone width. Declared last so it wins on source order. */
@@ -581,7 +598,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
         </div>
     </section>
 
-    <section class="entry">
+    <section class="entry entry--turn">
         <p class="date">Entry — before you install</p>
         <h2>Hear it in this browser.</h2>
         <p class="say field">The same app, compiled to WebAssembly and running as a web page. It is the whole instrument, not a cut-down demo — though the installed app is the one that plays with the screen off, keeps your presets and vibrates on the beat.</p>
