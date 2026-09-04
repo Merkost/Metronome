@@ -3,6 +3,7 @@ package com.merkost.metronome.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.merkost.metronome.model.AppDatastore
@@ -31,9 +32,14 @@ fun MetronomeTheme(
         else -> if (darkTheme) selectedColorScheme.darkColor else selectedColorScheme.lightColor
     }
 
+    val fontFamily = appFontFamily()
+    val typography = remember(fontFamily) {
+        fontFamily?.let { Typography.withFontFamily(it) } ?: Typography
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = typography,
         content = content
     )
 }
