@@ -25,7 +25,10 @@ class MetronomePlayerWasm : MetronomePlayer {
 
     override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) {
         if (!ready || beat == Beat.MUTE) return
-        webAudioPlay(current.name, beat.rate, stereoLeft, stereoRight)
+        val gain = maxOf(stereoLeft, stereoRight)
+        if (gain <= 0f) return
+        val pan = (stereoRight - stereoLeft) / gain
+        webAudioPlay(current.name, beat.rate, gain, pan)
     }
 
     override fun stop() = Unit
@@ -42,7 +45,7 @@ class MetronomePlayerWasm : MetronomePlayer {
 
 private fun webAudioInit(): Unit = js("MetronomeWebAudio.init()")
 
-private fun webAudioPlay(sound: String, rate: Float, left: Float, right: Float): Unit =
-    js("MetronomeWebAudio.play(sound, rate, left, right)")
+private fun webAudioPlay(sound: String, rate: Float, gain: Float, pan: Float): Unit =
+    js("MetronomeWebAudio.play(sound, rate, gain, pan)")
 
 private fun webAudioRelease(): Unit = js("MetronomeWebAudio.release()")

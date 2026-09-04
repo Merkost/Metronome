@@ -32,23 +32,27 @@
     });
   }
 
-  function play(sound, rate, left, right) {
+  function play(sound, rate, gain, pan) {
     if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume();
     var buf = buffers[sound];
     if (!buf) return;
+    var level = gain == null ? 1 : Math.max(0, Math.min(1, gain));
+    if (level === 0) return;
     var src = ctx.createBufferSource();
     src.buffer = buf;
     src.playbackRate.value = rate || 1;
-    var panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    var gainNode = ctx.createGain();
+    gainNode.gain.value = level;
     var node = src;
-    if (panner) {
-      // left/right are gains in 0..1; convert to a single -1..1 pan position.
-      panner.pan.value = Math.max(-1, Math.min(1, (right || 1) - (left || 1)));
+    if (ctx.createStereoPanner) {
+      var panner = ctx.createStereoPanner();
+      panner.pan.value = Math.max(-1, Math.min(1, pan || 0));
       src.connect(panner);
       node = panner;
     }
-    node.connect(ctx.destination);
+    node.connect(gainNode);
+    gainNode.connect(ctx.destination);
     src.start();
   }
 

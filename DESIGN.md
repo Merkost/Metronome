@@ -199,7 +199,7 @@ Depth is primarily tonal and structural: thin outlines, surface-container steps,
 
 ### Named Rules
 
-**The Flat Instrument Rule.** Controls rest on the surface without decorative shadow; depth appears only when containment, modality or interaction state requires it.
+**The Flat Instrument Rule.** Controls rest on the surface without decorative shadow; depth appears only when containment, modality or interaction state requires it. This rule scopes to in-product controls. What it forbids is *ornamental* shadow — a flat card made to float. It does not forbid *contact* shadow, an object resting on a surface, which is physical truth rather than decoration. Marketing surfaces may therefore depict the device as a physical object, with a contact shadow, without breaching this rule.
 
 ## Shapes
 
