@@ -83,6 +83,12 @@
             --lh: 28px;
             --rule-y: 20px;
             --rule-w: 1px;
+            /* One measure, in px. Every block previously carried its own
+               max-width in `ch`, and a ch is a different pixel width at 15, 17
+               and 20px - which produced nine ragged right edges and left the
+               ruling reading as underlines of varying length rather than as a
+               bounded field. */
+            --measure: 640px;
 
             --font: 'Roboto Var', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         }
@@ -206,26 +212,35 @@
         .entry { padding: calc(var(--lh) * 3) 0; }
         .entry--turn { padding: calc(var(--lh) * 5) 0; }
         .close { padding-block: calc(var(--lh) * 4); }
-        .entry + .entry { border-top: 1px solid var(--rule-strong); }
+        .entry { position: relative; }
+        /* The separator stops at the measure like everything else; a full-width
+           rule over a 640px column is what made the ruled area read as texture
+           rather than as a bounded sheet. */
+        .entry + .entry { border-top: 0; }
+        .entry + .entry::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: min(var(--measure), 100%); height: var(--rule-w);
+            background: var(--rule-strong);
+        }
         .date { font-size: 15px; font-weight: 600; color: var(--ink-2); margin-bottom: calc(var(--lh) / 2); }
 
         h1 {
             font-size: clamp(2.8rem, 8.5vw, 5.5rem);
             font-weight: 800; letter-spacing: -0.04em;
             line-height: calc(var(--lh) * 2);
-            max-width: 13ch;
+            max-width: min(13ch, var(--measure));
         }
         h2 {
             font-size: clamp(1.85rem, 4.4vw, 3rem);
             font-weight: 800; letter-spacing: -0.04em;
             line-height: calc(var(--lh) * 2);
-            max-width: 15ch;
+            max-width: min(15ch, var(--measure));
         }
         .say {
             font-size: 20px;
             line-height: var(--lh);
             color: var(--ink-2);
-            max-width: 62ch;
+            max-width: var(--measure);
             margin-top: var(--lh);
             padding-bottom: var(--lh);
         }
@@ -250,7 +265,7 @@
             mask-image: linear-gradient(to bottom, transparent 0, #000 var(--lh), #000 calc(100% - var(--lh)), transparent 100%);
         }
 
-        .figures { display: block; margin-top: calc(var(--lh) * 1.5); }
+        .figures { display: block; margin-top: calc(var(--lh) * 1.5); max-width: var(--measure); }
         /* One figure per line, number and unit sharing a baseline: a journal
            entry, not a three-column stat row. */
         .fig {
@@ -258,7 +273,7 @@
             font-size: clamp(3rem, 6.6vw, 5.6rem);
             line-height: calc(var(--lh) * 3);
             letter-spacing: -0.04em;
-            max-width: 62ch;
+            max-width: var(--measure);
             /* One drawn rule at the baseline, stopping hard at the measure the
                way handwriting stops — not a background running past the words. */
             border-bottom: var(--rule-w) solid var(--rule);
@@ -288,7 +303,7 @@
             transition: background-color .18s cubic-bezier(.2,.8,.2,1), color .18s cubic-bezier(.2,.8,.2,1);
         }
         .ghost:hover { background: var(--ink); color: var(--ground); }
-        .aside { font-size: 15px; color: var(--ink-2); margin-top: 14px; max-width: 62ch; }
+        .aside { font-size: 15px; color: var(--ink-2); margin-top: 14px; max-width: var(--measure); }
 
         /* ---------- opening entry ---------- */
         .entry--open { padding-top: var(--lh); padding-bottom: calc(var(--lh) * 4); }
@@ -302,8 +317,12 @@
         .screen--hero { margin-inline: auto; }
         /* ---------- entry with a screen ---------- */
         .split { display: grid; gap: clamp(28px, 5vw, 72px); align-items: center; }
-        @media (min-width: 880px) {
-            .split { grid-template-columns: 1fr minmax(230px, 290px); }
+        /* The hero's writing column obeys the same measure as every entry. */
+        .split > :not(.screen) { max-width: var(--measure); }
+        @media (min-width: 1140px) {
+            /* The writing column is the measure, so the hero's blocks share the
+               same right edge as every entry below it. */
+            .split { grid-template-columns: minmax(0, var(--measure)) 1fr; gap: 48px; }
             .split > .screen { grid-column: 2; grid-row: 1; }
             .split > :not(.screen) { grid-column: 1; grid-row: 1; }
             /* Explicit placement, never `order`: order changes visual sequence
@@ -336,7 +355,7 @@
         /* Reserve the box before a lazy image arrives, so nothing reflows. */
         .screen img { width: 100%; height: auto; aspect-ratio: 560 / 1244; }
 
-        .specs { list-style: none; margin-top: var(--lh); max-width: 62ch; }
+        .specs { list-style: none; margin-top: var(--lh); max-width: var(--measure); }
         .specs li {
             display: flex; justify-content: space-between; gap: 24px;
             font-size: 15px; line-height: var(--lh);
@@ -348,7 +367,7 @@
         details[open] > summary { color: var(--accent-ink); }
 
         /* ---------- questions ---------- */
-        details { border-bottom: 1px solid var(--rule); }
+        details { border-bottom: 1px solid var(--rule); max-width: var(--measure); }
         summary {
             cursor: pointer; list-style: none;
             display: flex; justify-content: space-between; gap: 20px; align-items: baseline;
@@ -357,14 +376,14 @@
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '+'; color: var(--ink-2); font-weight: 400; font-size: 22px; line-height: 1; width: 1ch; text-align: center; flex: none; }
         details[open] summary::after { content: '\2212'; }
-        details p { color: var(--ink-2); max-width: 68ch; padding-bottom: 20px; font-size: 17px; line-height: var(--lh); }
+        details p { color: var(--ink-2); max-width: var(--measure); padding-bottom: 20px; font-size: 17px; line-height: var(--lh); }
 
         /* ---------- tempo scale ---------- */
         /* The app's real tempo markings at their real thresholds, drawn in the
            page's own rule language. Nothing else in the category can show this,
            which is the point: it is the one element a visitor could describe
            afterwards. Values ported from MetronomeState.tempoName. */
-        .scale { margin-top: var(--lh); max-width: 62ch; }
+        .scale { margin-top: var(--lh); max-width: var(--measure); }
         .scale-track {
             position: relative; height: calc(var(--lh) * 2);
             border-bottom: var(--rule-w) solid var(--rule-strong);
@@ -408,7 +427,7 @@
             border-radius: var(--radius, 16px);
             padding: clamp(10px, 1.4vw, 16px);
             box-shadow: 0 1px 2px rgba(20,24,20,.05), 0 14px 34px -22px rgba(20,24,20,.28);
-            max-width: 640px;
+            max-width: var(--measure);
             line-height: 0;
         }
         .proof img { width: 100%; height: auto; display: block; }
@@ -428,7 +447,7 @@
             margin-right: calc(var(--gutter) * -1);
             padding-inline: calc(var(--gutter) * 2);
         }
-        .close h2 { max-width: 18ch; }
+        .close h2 { max-width: min(18ch, var(--measure)); }
         .close .say { color: color-mix(in srgb, var(--on-accent) 88%, var(--accent-deep)); }
         .close .badge--play img { filter: none; }
 
@@ -454,7 +473,7 @@
 
         /* Three bands suits a single display line; two is right once it wraps
            at phone width. Declared last so it wins on source order. */
-        @media (min-width: 880px) { h1 { line-height: calc(var(--lh) * 3); } }
+        @media (min-width: 1140px) { h1 { line-height: calc(var(--lh) * 3); } }
     </style>
 </head>
 <body>
