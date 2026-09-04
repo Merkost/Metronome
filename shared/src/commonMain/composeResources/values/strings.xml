@@ -142,4 +142,5 @@
     <string name="whats_new_motion_title">A calmer feel</string>
     <string name="whats_new_motion_body">Consistent motion throughout, smoother screen transitions, and steadier feedback under your thumb.</string>
     <string name="settings_whats_new">What&apos;s new in this version</string>
+    <string name="coach_mark_skip">Skip</string>
 </resources>

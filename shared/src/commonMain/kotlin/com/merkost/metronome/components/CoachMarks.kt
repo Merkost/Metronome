@@ -57,6 +57,12 @@ import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import org.jetbrains.compose.resources.stringResource
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.coach_mark_skip
 
 private data class CoachStep(val title: String, val description: String, val tooltipBelow: Boolean)
 
@@ -146,19 +152,30 @@ fun CoachMarksOverlay(
 
         Surface(
             onClick = onDismiss,
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+            color = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface,
             shape = CircleShape,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 52.dp, end = 20.dp)
+                // The status bar inset is a runtime value, not a constant: a
+                // hardcoded top offset leaves this floating at the wrong height
+                // on any surface without a status bar, the web build included.
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(top = spacingMedium, end = spacingMedium)
                 .heightIn(min = minimumTouchTargetSize)
+                .clip(CircleShape)
         ) {
-            Text(
-                text = "Skip",
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                modifier = Modifier.padding(horizontal = spacingMedium, vertical = spacingSmall),
-            )
+            Box(
+                modifier = Modifier
+                    .heightIn(min = minimumTouchTargetSize)
+                    .padding(horizontal = spacingMedium),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(Res.string.coach_mark_skip),
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                )
+            }
         }
 
         val tooltipMarginPx = with(density) { TooltipMargin.toPx() }
