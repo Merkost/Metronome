@@ -215,7 +215,11 @@
         /* Field ruling. Only on blocks whose line-height is exactly one band —
            anywhere else the rules cross letterforms mid-stem and the two
            patterns resolve as moire, which is what "too many stripes" was. */
-        .field {
+        /* The ruling lives on its own layer. Masking the element itself also
+           masked its text, which faded the first line of every paragraph. */
+        .field { position: relative; }
+        .field::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
             background-image: repeating-linear-gradient(to bottom,
                 transparent 0,
                 transparent calc(var(--rule-y) - var(--rule-w)),
@@ -272,10 +276,10 @@
            as the whole page's ground: the journal reads as a move, not as
            wallpaper. */
 
-        /* Cap the image's height, not the frame's: capping the frame with
-           overflow:hidden guillotined the transport bar mid-control. */
-        .screen--hero img { max-height: min(58vh, 520px); width: auto; margin: 0 auto; }
-        .screen--hero { display: flex; justify-content: center; }
+        /* One sizing mechanism only: the frame's max-width sets the width and
+           the declared aspect-ratio sets the height. Adding a max-height here
+           fought the ratio and squashed the device by 13.6%. */
+        .screen--hero { margin-inline: auto; }
         /* ---------- entry with a screen ---------- */
         .split { display: grid; gap: clamp(28px, 5vw, 72px); align-items: center; }
         @media (min-width: 880px) {
@@ -343,9 +347,9 @@
             margin-top: var(--lh);
             background: var(--paper);
             border-radius: var(--radius, 16px);
-            padding: clamp(14px, 2.4vw, 26px);
+            padding: clamp(10px, 1.4vw, 16px);
             box-shadow: 0 1px 2px rgba(20,24,20,.05), 0 14px 34px -22px rgba(20,24,20,.28);
-            max-width: 720px;
+            max-width: 640px;
             line-height: 0;
         }
         .proof img { width: 100%; height: auto; display: block; }
@@ -450,7 +454,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 </ul>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-main.png" loading="lazy" alt="The metronome screen at 100 BPM in 4/4, marked Andante, with beat dots, tempo slider and the play, timer and tap tempo controls.">
+                <img src="screenshots/detail-main.png" width="960" height="846" loading="lazy" alt="The metronome screen at 100 BPM in 4/4, marked Andante, with beat dots, tempo slider and the play, timer and tap tempo controls.">
                 <figcaption>The tempo cluster: marking, BPM, fine steps and the slider.</figcaption>
             </figure>
         </div>
@@ -464,7 +468,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <p class="say field">The Gap Trainer plays a set number of bars, then goes quiet for a set number while the beat keeps counting underneath. You hold the pulse yourself, and find out whether you are still with the click when it comes back. It is the most direct way to train an internal clock.</p>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-gap.png" loading="lazy" alt="The Gap Trainer running, with a status strip reading Muted, bar 2 of 2, over a 4 plus 2 bar cycle.">
+                <img src="screenshots/detail-gap.png" width="1000" height="101" loading="lazy" alt="The Gap Trainer running, with a status strip reading Muted, bar 2 of 2, over a 4 plus 2 bar cycle.">
                 <figcaption>The status strip while the Gap Trainer is muted: bar 2 of 2 of a 4 plus 2 bar cycle.</figcaption>
             </figure>
         </div>
@@ -483,7 +487,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 </ul>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-tempo.png" loading="lazy" alt="The Tempo Trainer sheet set to climb from 80 to 120 BPM in steps of 2 every 4 bars, totalling 80 bars or about 3 minutes.">
+                <img src="screenshots/detail-tempo.png" width="955" height="404" loading="lazy" alt="The Tempo Trainer sheet set to climb from 80 to 120 BPM in steps of 2 every 4 bars, totalling 80 bars or about 3 minutes.">
                 <figcaption>A climb configured to step +2 every 4 bars — 80 bars, about 3 minutes.</figcaption>
             </figure>
         </div>
@@ -497,7 +501,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 <p class="say field">Save a whole setup as a preset — tempo, meter, subdivision, accents and count-in — then order those presets into a practice set, each step with a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-session.png" loading="lazy" alt="A practice session in progress showing step 2 of 3, Scales at 100 BPM in 4/4, three of five minutes done, with Etude up next.">
+                <img src="screenshots/detail-session.png" width="1000" height="403" loading="lazy" alt="A practice session in progress showing step 2 of 3, Scales at 100 BPM in 4/4, three of five minutes done, with Etude up next.">
                 <figcaption>Step 2 of 3 of a saved practice set, three of five minutes done.</figcaption>
             </figure>
         </div>
@@ -517,7 +521,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 </ul>
             </div>
             <figure class="proof">
-                <img src="screenshots/detail-settings.png" loading="lazy" alt="The settings screen with click sound, volume, stereo panning, haptic feedback, theme and colour scheme options.">
+                <img src="screenshots/detail-settings.png" width="1000" height="560" loading="lazy" alt="The settings screen with click sound, volume, stereo panning, haptic feedback, theme and colour scheme options.">
                 <figcaption>Theme and colour scheme, both stored on your device.</figcaption>
             </figure>
         </div>
