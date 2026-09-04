@@ -62,6 +62,8 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 
 # DataStore KMP
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+# preferences-core publishes wasmJs; the full preferences artifact does not.
+datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 
 # Coroutines
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }

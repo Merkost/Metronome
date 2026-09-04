@@ -46,15 +46,15 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 
-            implementation(libs.datastore.preferences)
+            implementation(libs.datastore.preferences.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
 
             api(libs.cedar.logging)
-            implementation(libs.gitlive.crashlytics)
         }
 
         androidMain.dependencies {
+            implementation(libs.gitlive.crashlytics)
             implementation(libs.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.accompanist.permissions)
@@ -68,6 +68,7 @@ kotlin {
         }
 
         iosMain.dependencies {
+            implementation(libs.gitlive.crashlytics)
         }
     }
 }

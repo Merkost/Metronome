@@ -1,5 +1,8 @@
 package com.merkost.metronome.di
 
+import com.merkost.metronome.logging.CrashlyticsTree
+import com.merkost.metronome.logging.ReleaseLogTreeProvider
+
 import com.merkost.metronome.engine.MetronomePlayer
 import com.merkost.metronome.engine.MetronomePlayerIos
 import com.merkost.metronome.platform.AppVersionProvider
@@ -14,6 +17,7 @@ import com.merkost.metronome.platform.createDataStore
 import org.koin.dsl.module
 
 val iosModule = module {
+    single<ReleaseLogTreeProvider> { ReleaseLogTreeProvider { CrashlyticsTree() } }
     single { createDataStore() }
     single<MetronomePlayer> { MetronomePlayerIos() }
     single<PlatformActions> { IosPlatformActions() }
