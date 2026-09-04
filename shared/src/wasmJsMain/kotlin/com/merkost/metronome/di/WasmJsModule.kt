@@ -13,6 +13,8 @@ import com.merkost.metronome.platform.WasmLiveActivityController
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.WasmAppVersionProvider
 import com.merkost.metronome.platform.WasmPlatformActions
+import com.merkost.metronome.review.InAppReviewRequester
+import com.merkost.metronome.review.WasmInAppReviewRequester
 import com.merkost.metronome.platform.createDataStore
 import org.koin.dsl.module
 
@@ -26,4 +28,5 @@ val wasmJsModule = module {
     single<HapticProvider> { HapticProviderWasm() }
     single<AudioFocusController> { NoopAudioFocusController() }
     single<LiveActivityController> { WasmLiveActivityController() }
+    single<InAppReviewRequester> { WasmInAppReviewRequester() }
 }

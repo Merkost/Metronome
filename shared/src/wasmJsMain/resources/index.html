@@ -9,10 +9,15 @@
     <link rel="canonical" href="https://metronome.merkost.dev/app/">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
+        /* Compose appends its canvas to <body>, so the document itself has to
+           fill the viewport or the app renders into a collapsed box. */
+        html, body {
+            height: 100%; width: 100%; overflow: hidden;
             background: #F2EFEA; color: #141414;
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            overscroll-behavior: none;
         }
+        body > canvas { display: block; width: 100%; height: 100%; outline: none; }
         /* Shown until Compose paints, and left in place if wasm cannot run, so
            a visitor who bounces early still sees the pitch and the store links. */
         #boot {
@@ -61,6 +66,18 @@
                 0,97,115,109,1,0,0,0,1,5,1,95,1,120,0
             ]));
         } catch (e) { gcOk = false; }
+        // Drop the boot screen as soon as Compose paints, so it is not left
+        // sitting underneath the canvas holding the viewport open.
+        if (gcOk) {
+            var boot = document.getElementById('boot');
+            var obs = new MutationObserver(function () {
+                if (document.querySelector('body > canvas')) {
+                    boot.remove();
+                    obs.disconnect();
+                }
+            });
+            obs.observe(document.body, { childList: true });
+        }
         if (!gcOk) {
             document.getElementById('spin').style.display = 'none';
             document.getElementById('boot-title').textContent = 'This browser cannot run the web version';
