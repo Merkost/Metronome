@@ -7,8 +7,8 @@
     <meta name="description" content="Practice with precise BPM control, practice presets and sets, tempo and gap trainers, subdivisions and timers. Free, ad-free metronome for iPhone and Android.">
     <link rel="canonical" href="https://metronome.merkost.dev/">
     <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#F2F3F2" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#121412" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Metronome: Practice &amp; Tempo">
@@ -46,10 +46,10 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preload" href="fonts/roboto-var.woff2" as="font" type="font/woff2" crossorigin>
     <style>
-        /* Roboto is the app's own typeface on Android. Self-hosted here as the
-           page's display voice so the marketing surface and the product share
-           one letterform, rather than falling back to whatever sans the
-           visitor's OS happens to supply. SIL OFL 1.1 - fonts/roboto-OFL.txt */
+        /* Roboto is the typeface the web build ships: skiko carries only a
+           Roboto Regular, so AppFontFamily.wasmJs.kt supplies the real weights.
+           Every capture on this page was taken in it. SIL OFL 1.1 -
+           fonts/roboto-OFL.txt */
         @font-face {
             font-family: 'Roboto Var';
             src: url('fonts/roboto-var.woff2') format('woff2-variations'),
@@ -59,480 +59,275 @@
             font-display: swap;
         }
 
+        /* Every value below is the app's own. ColorSchemes.kt defines the
+           default BlackNWhite scheme, a fresh install resolves to it in all
+           three places that pick a scheme, and Settings calls it "Monochrome".
+           So no hue appears here: the coloured families are user themes, not
+           brand. Every app neutral is strictly R=G=B. */
         :root {
-            --ground: #F2F3F2;
-            --ink: #000000;
-            --ink-2: #55605A;
-            --rule: #C8CEC8;
-            --rule-strong: #A9B2A9;
-            --paper: #FFFFFF;
-            /* Deep Mint Pulse is the app's own accent. It clears AA at display
-               sizes (4.00:1, large-text threshold 3:1) but not for small text,
-               so a darkened companion carries anything under 24px. */
-            --accent: #1A8A2E;
-            --accent-ink: #167936;
-            /* A filled region needs a darker tint of the same hue: ground-on-#1A8A2E
-               is 4.00:1, which fails AA for the paragraph inside it. */
-            --accent-deep: #116018;
-            /* Ink for the accent region. Deliberately fixed in both appearances:
-               --ground flips to near-black in dark, which made this unreadable. */
-            --on-accent: #F2F3F2;
+            --paper:   #FFFFFF;          /* surface */
+            --well:    #F7F7F7;          /* surfaceContainerLow */
+            --quiet:   #F2F2F2;          /* surfaceContainer */
+            --quiet-2: #ECECEC;          /* surfaceContainerHigh */
+            --live:    #E6E6E6;          /* surfaceContainerHighest */
+            --ink:     #000000;          /* primary - filled objects only */
+            --text:    #1D1B20;          /* onSurface - all running text */
+            --text-2:  rgba(0,0,0,.62);  /* de-emphasis is alpha of the ink,
+                                            never a separate grey */
+            --hairline:#CAC4D0;          /* outlineVariant */
+            --on-ink:  #FFFFFF;
 
-            --bar-h: 60px;
-            --gutter: clamp(20px, 5vw, 64px);
-            --lh: 28px;
-            --rule-y: 20px;
-            --rule-w: 1px;
-            /* One measure, in px. Every block previously carried its own
-               max-width in `ch`, and a ch is a different pixel width at 15, 17
-               and 20px - which produced nine ragged right edges and left the
-               ruling reading as underlines of varying length rather than as a
-               bounded field. */
-            --measure: 640px;
-
-            --font: 'Roboto Var', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --measure: 680px;
+            --gutter: 18px;              /* horizontalPadding, Dimensions.kt */
+            --s1: 8px; --s2: 16px; --s3: 32px; --s4: 64px; --s5: 96px;
+            --font: 'Roboto Var', Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
-
-        /* A 1px rule is 2 device pixels on retina and reads as drawn; 0.5px
-           reads as an impression in paper. */
-        @media (min-resolution: 2dppx) { :root { --rule-w: 0.5px; } }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #000000; --well: #121212; --quiet: #1A1A1A;
+                --quiet-2: #222222; --live: #2B2B2B;
+                --ink: #FFFFFF; --text: #E6E0E9; --text-2: rgba(255,255,255,.70);
+                --hairline: #49454F; --on-ink: #000000;
+            }
+        }
+        @media (min-width: 900px) { :root { --gutter: 40px; } }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html {
             -webkit-text-size-adjust: 100%;
             scroll-behavior: smooth;
-            scrollbar-color: var(--rule-strong) var(--ground);
-            /* The bar is sticky, so an untreated anchor jump parks the heading
-               underneath it. One bar height plus half a band of air. */
-            scroll-padding-top: calc(var(--bar-h) + var(--lh) / 2);
+            scroll-padding-top: 88px;
+            scrollbar-color: var(--quiet-2) var(--paper);
         }
         @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
         body {
             font-family: var(--font);
-            background: var(--ground);
-            color: var(--ink);
-            font-size: 17px;
-            line-height: var(--lh);
+            background: var(--paper);
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.625;
             -webkit-font-smoothing: antialiased;
         }
-        /* Tabular figures belong to aligned data, not to running prose, where
-           they open visible gaps in strings like "2/4, 3/4, 4/4". */
-        .specs li span:last-child, .fig b { font-variant-numeric: tabular-nums; }
 
-        /* The page advertises light and dark themes; it should honour the one
-           the visitor already chose. */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --ground: #121412;
-                --ink: #F2F3F2;
-                --ink-2: #9AA69C;
-                --rule: #2A2E2A;
-                --rule-strong: #3C423C;
-                --paper: #1A1D1A;
-                --accent: #7BD98F;
-                --accent-ink: #7BD98F;
-                --accent-deep: #14512A;
-            }
-            .screen img { box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
-            .proof { box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 34px -22px rgba(0,0,0,.7); }
-            /* The captures are of the light theme. Inverting them would show a
-               UI the app never renders, so the proof card keeps its own paper. */
-            .proof { background: #F2F3F2; }
-        }
+        /* Selection is fill inversion, the way AppChip swaps its container and
+           content colours. Not a tint. */
+        ::selection { background: var(--ink); color: var(--on-ink); }
+        :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 999px; }
+        a { color: inherit; text-underline-offset: 0.22em; }
+        img { max-width: 100%; }
 
-        ::selection { background: var(--accent); color: #fff; }
-        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-        a { color: inherit; text-underline-offset: 0.22em; text-decoration-thickness: 1px; }
+        .wrap { width: 100%; max-width: var(--measure); margin-inline: auto; padding-inline: var(--gutter); }
 
         /* ---------- top bar ---------- */
         .bar {
             position: sticky; top: 0; z-index: 20;
-            height: var(--bar-h);
+            height: 64px; background: var(--paper);
             display: flex; align-items: center; gap: 14px;
-            padding: 0 var(--gutter);
-            background: color-mix(in srgb, var(--ground) 88%, transparent);
-            backdrop-filter: saturate(1.4) blur(10px);
-            border-bottom: 1px solid var(--rule-strong);
+            padding-inline: var(--gutter);
+            max-width: calc(var(--measure) + var(--gutter) * 2); margin-inline: auto;
+        }
+        /* One of the page's two hairlines, and it only appears once paper has
+           moved under it, so the page opens unbroken. */
+        .bar::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+            height: 1px; background: var(--hairline); opacity: 0;
+            transition: opacity .18s ease;
+        }
+        body.is-scrolled .bar::after { opacity: 1; }
+        .mark {
+            font-size: 22px; font-weight: 700; text-decoration: none;
+            display: inline-flex; align-items: center; min-height: 48px;
         }
         .mark-logo { width: 26px; height: 26px; margin-right: 10px; display: block; fill: currentColor; }
-        .mark { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
-        .meter {
-            font-size: 12px; font-weight: 600;
-            color: var(--ink-2);
-            border: 1px solid var(--rule-strong); border-radius: 999px;
-            padding: 3px 10px;
-        }
         .bar-spacer { flex: 1; }
-        .bar-link { font-size: 15px; color: var(--ink-2); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
-        .bar-link:hover { color: var(--ink); }
-        .bar-cta {
-            font-size: 15px; font-weight: 600; text-decoration: none;
-            background: var(--ink); color: var(--ground);
-            border-radius: 999px; padding: 0 18px; min-height: 44px; display: inline-flex; align-items: center;
+        .bar-link {
+            font-size: 14px; font-weight: 500; color: var(--text-2); text-decoration: none;
+            display: inline-flex; align-items: center; min-height: 48px;
+        }
+        .bar-link:hover { color: var(--text); }
+        /* The app's filled action: ink pill, inverse label, subtle press scale. */
+        .cta {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-height: 48px; padding: 0 22px; border-radius: 999px;
+            background: var(--ink); color: var(--on-ink);
+            font-size: 16px; font-weight: 600; text-decoration: none;
+            transition: transform .18s cubic-bezier(.2,.8,.2,1);
+        }
+        .cta:active { transform: scale(.985); }
+        .meter {
+            display: inline-flex; align-items: center; height: 32px; padding: 0 12px;
+            border-radius: 999px; background: var(--quiet);
+            font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums;
+        }
+        @media (max-width: 720px) { .bar-link, .meter { display: none; } }
+
+        /* ---------- type ---------- */
+        h1 {
+            font-size: clamp(40px, 3.6vw + 12px, 64px);
+            line-height: 1.08; font-weight: 800; letter-spacing: -0.02em;
+        }
+        h2 { font-size: clamp(26px, 2vw + 12px, 32px); line-height: 1.25; font-weight: 700; }
+        /* The app's only tracked style, and it is sentence case. It sits with
+           its own heading rather than out in a margin. */
+        .eyebrow {
+            font-size: 12px; font-weight: 600; letter-spacing: .8px;
+            color: var(--text-2); margin-bottom: var(--s1);
+        }
+        .lede { font-size: clamp(19px, .6vw + 17px, 22px); line-height: 1.45; color: var(--text-2); }
+        p.say { max-width: 60ch; }
+        h2 + .say, h1 + .lede, h2 + .lede { margin-top: var(--s2); }
+        .caption { font-size: 14px; line-height: 1.43; color: var(--text-2); }
+
+        /* ---------- sections ---------- */
+        section { padding-block: var(--s4); }
+        @media (min-width: 900px) { section { padding-block: var(--s5); } }
+
+        /* ---------- the container ---------- */
+        /* The app's card is one tonal step and nothing else: Surface(shape =
+           RoundedCornerShape(16.dp), color = surfaceContainerLow) on a surface
+           ground. Compose defaults both tonal and shadow elevation to zero, and
+           there is not one .shadow( call anywhere in the app. So depth here is
+           a background colour - never a shadow, and never a fill AND a border. */
+        .well {
+            background: var(--well); border-radius: 16px;
+            padding: 24px; margin-top: var(--s3);
+        }
+        .well--live { background: var(--live); }
+        /* A capture carries its own white, so putting one on a grey card reads
+           as a card inside a card. The captures stand on the page; cards hold
+           data. One fill per object. */
+        .fig { margin-top: var(--s3); }
+        .fig img { display: block; width: 100%; height: auto; border-radius: 12px; }
+        .fig figcaption { margin-top: var(--s2); font-size: 14px; line-height: 1.43; color: var(--text-2); }
+
+        /* ---------- rows and chips ---------- */
+        /* AppChip: the container inverts to ink when selected and the label
+           goes Bold, so selection is never colour alone. */
+        .rows { list-style: none; display: flex; flex-direction: column; gap: var(--s2); }
+        .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s2); }
+        .row > .k { font-size: 14px; font-weight: 500; color: var(--text-2); flex: none; }
+        .row > .v { font-size: 14px; margin-left: auto; text-align: right; font-variant-numeric: tabular-nums; }
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; justify-content: flex-end; }
+        .chip {
+            display: inline-flex; align-items: center; height: 34px; padding: 0 14px;
+            border-radius: 999px; background: var(--quiet-2); color: var(--text);
+            font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums;
+        }
+        .chip.is-on { background: var(--ink); color: var(--on-ink); font-weight: 700; }
+
+        /* ---------- status strip ---------- */
+        /* StatusStrip.kt: a 48dp pill at 10% of the ink with progress drawn
+           behind the content at 16%. The app's own live-state component. */
+        .strip {
+            position: relative; overflow: hidden; display: flex; flex-wrap: wrap;
+            align-items: center; gap: var(--s2); min-height: 48px; padding: 8px 16px;
+            border-radius: 999px; font-size: 14px;
+            background: color-mix(in srgb, var(--ink) 10%, transparent);
+        }
+        .strip::before {
+            content: ''; position: absolute; inset: 0 auto 0 0; width: 45%;
+            background: color-mix(in srgb, var(--ink) 7%, transparent);
+        }
+        .strip > * { position: relative; }
+        .strip .t { font-weight: 700; }
+        .strip .c { margin-left: auto; color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+        /* ---------- stats ---------- */
+        /* PracticeTimerSheet's stat block: a 12px label over a 20px value.
+           Deliberately not the biggest thing on the page - the app's own rule
+           is that practice statistics never compete with the tempo. */
+        .stats { display: flex; flex-wrap: wrap; gap: var(--s3); }
+        .stat .k { font-size: 12px; font-weight: 500; color: var(--text-2); }
+        .stat .v { font-size: 20px; font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; }
+
+        /* ---------- hero ---------- */
+        .hero { text-align: center; padding-top: var(--s3); }
+        .hero .say { margin-inline: auto; }
+        .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: var(--s3); }
+        .badge, .ghost { flex: none; }
+        .badge { display: flex; align-items: center; }
+        /* The global max-width:100% resolves against .badge, whose own width
+           comes from this image, and the browser settles that loop by clamping
+           the artwork 12.5% narrower than its ratio. */
+        .badge img { display: block; width: auto; max-width: none; }
+        .badge--apple img { height: 48px; }
+        .badge--play img { height: 71px; margin: -11.5px; }
+        /* The app's outlined pill: a border and no fill, the exact inverse of a
+           card. MySecondaryButton. */
+        .ghost {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-height: 48px; padding: 0 22px; border-radius: 999px;
+            border: 1px solid color-mix(in srgb, var(--ink) 50%, transparent);
+            color: var(--text); font-size: 16px; font-weight: 600; text-decoration: none;
             transition: background-color .18s cubic-bezier(.2,.8,.2,1);
         }
-        .bar-cta:hover { background: var(--accent); }
-        .bar-cta--alt { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule-strong); }
-        .bar-cta--alt:hover { background: var(--ink); color: var(--ground); box-shadow: none; }
-        .bar-cta--compact { display: none; }
-        @media (max-width: 820px) {
-            .bar-link, .bar-cta--alt, .bar-cta--store { display: none; }
-            .bar-cta--compact { display: inline-block; }
+        .ghost:hover { background: var(--quiet); }
+        /* No drawn device. The app's own answer to showing a screen is a card
+           holding it, so the capture sits on the same material as every other
+           container, at a size where its labels are actually readable. */
+        /* The capture sits on the same card as every other container, so the
+           screen has an edge instead of dissolving into the page - both are
+           white. */
+        .shot {
+            margin-top: var(--s4); background: var(--well); border-radius: 16px;
+            padding: 24px; width: fit-content; margin-inline: auto; max-width: 100%;
         }
-
-        /* ---------- ledger frame ---------- */
-        .sheet {
-            position: relative;
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 0 var(--gutter) 0 calc(var(--gutter) * 2);
-        }
-        @media (max-width: 700px) {
-            .sheet { padding-left: calc(var(--gutter) * 1.5); }
-        }
-        /* The margin rule and its playhead: the page's single authored motion. */
-        .rail { position: absolute; left: var(--gutter); top: 0; bottom: 0; width: 1px; background: var(--rule-strong); }
-        .playhead {
-            position: fixed; left: 0; top: 0;
-            width: 0; height: 0;
-            border-left: 11px solid var(--accent);
-            border-top: 7px solid transparent;
-            border-bottom: 7px solid transparent;
-            will-change: transform;
-            z-index: 15;
-        }
-
-        /* Pacing. Uniform air on sections ranging from 500 to 1500px tall
-           flattens the argument; every band here is still a multiple of the
-           lattice, so the ruling stays in phase.
-             open   1 / 4  breathes out of the masthead into the page
-             entry  3 / 3  the steady pulse of the five feature entries
-             turn   5 / 5  a rest before the ask
-             quiet  3 / 3  questions recede
-             close  4 / 4  the peak */
-        .entry { padding: calc(var(--lh) * 3) 0; }
-        .entry--turn { padding: calc(var(--lh) * 5) 0; }
-        .close { padding-block: calc(var(--lh) * 4); }
-        .entry { position: relative; }
-        @media (min-width: 1240px) {
-            .sheet, footer.sheet { max-width: 1340px; padding-left: 260px; }
-            /* The rule hugs the writing column, the way a ruled margin line
-               does, so the label has the margin to itself outside it. */
-            .rail { left: 230px; }
-            .date {
-                position: absolute;
-                right: calc(100% + 44px);
-                width: 156px; margin: 0; text-align: right;
-                white-space: nowrap;
-            }
-            .close .date { position: static; width: auto; text-align: left; }
-        }
-        /* The separator stops at the measure like everything else; a full-width
-           rule over a 640px column is what made the ruled area read as texture
-           rather than as a bounded sheet. */
-        .entry + .entry { border-top: 0; }
-        .entry + .entry::before {
-            content: ''; position: absolute; top: 0; left: 0;
-            width: min(var(--measure), 100%); height: var(--rule-w);
-            background: var(--rule-strong);
-        }
-        .date { font-size: 15px; font-weight: 600; color: var(--ink-2); margin-bottom: calc(var(--lh) / 2); }
-
-        h1 {
-            font-size: clamp(2.8rem, 8.5vw, 5.5rem);
-            font-weight: 800; letter-spacing: -0.04em;
-            line-height: calc(var(--lh) * 2);
-            max-width: min(13ch, var(--measure));
-        }
-        h2 {
-            font-size: clamp(1.85rem, 4.4vw, 3rem);
-            font-weight: 800; letter-spacing: -0.04em;
-            line-height: calc(var(--lh) * 2);
-            max-width: min(15ch, var(--measure));
-        }
-        .say {
-            font-size: 20px;
-            line-height: var(--lh);
-            color: var(--ink-2);
-            max-width: var(--measure);
-            margin-top: var(--lh);
-            padding-bottom: var(--lh);
-        }
-
-        /* ---------- figures ---------- */
-        /* Field ruling. Only on blocks whose line-height is exactly one band —
-           anywhere else the rules cross letterforms mid-stem and the two
-           patterns resolve as moire, which is what "too many stripes" was. */
-        /* The ruling lives on its own layer. Masking the element itself also
-           masked its text, which faded the first line of every paragraph.
-           An absolute pseudo-element paints after the in-flow text it shares
-           the box with, so it needs its own negative layer or it strikes the
-           copy through; isolate keeps that layer above the ancestor ground. */
-        .field { position: relative; isolation: isolate; }
-        .field::before {
-            content: ''; position: absolute; inset: 0; pointer-events: none;
-            z-index: -1;
-            background-image: repeating-linear-gradient(to bottom,
-                transparent 0,
-                transparent calc(var(--rule-y) - var(--rule-w)),
-                var(--rule) calc(var(--rule-y) - var(--rule-w)),
-                var(--rule) var(--rule-y),
-                transparent var(--rule-y),
-                transparent var(--lh));
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--lh), #000 calc(100% - var(--lh)), transparent 100%);
-            mask-image: linear-gradient(to bottom, transparent 0, #000 var(--lh), #000 calc(100% - var(--lh)), transparent 100%);
-        }
-
-        .figures { display: block; margin-top: calc(var(--lh) * 1.5); max-width: var(--measure); }
-        /* One figure per line, number and unit sharing a baseline: a journal
-           entry, not a three-column stat row. */
-        .fig {
-            display: flex; align-items: baseline; gap: 0.28em;
-            font-size: clamp(3rem, 6.6vw, 5.6rem);
-            line-height: calc(var(--lh) * 3);
-            letter-spacing: -0.04em;
-            max-width: var(--measure);
-            /* One drawn rule at the baseline, stopping hard at the measure the
-               way handwriting stops — not a background running past the words. */
-            border-bottom: var(--rule-w) solid var(--rule);
-        }
-        .fig b { font-weight: 800; }
-        .fig span { font-size: 0.27em; font-weight: 400; letter-spacing: -0.01em; color: var(--ink-2); }
-        .fig.is-accent { color: var(--accent); }
-        .fig.is-accent span { color: var(--accent-ink); }
-
-        /* ---------- actions ---------- */
-        .actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: var(--lh); }
-        /* The two official badges are not comparable assets. Apple's SVG is
-           119.66x40 of pure artwork; Google's PNG is 646x250 with 41px of
-           transparent padding on every side, so its artwork is only 67.2% of
-           the file's height. Matching the CSS height would render Google's
-           visibly smaller. Google is scaled by 1/0.672 and pulled back in with
-           negative margins so the two badges share an optical height of 44px
-           without disturbing the row. */
-        .badge { display: flex; align-items: center; }
-        .badge img { display: block; width: auto; }
-        .badge--apple img { height: 44px; }
-        .badge--play img { height: 65px; margin: -10px -10.5px; }
-        .ghost {
-            font-size: 15px; font-weight: 600; text-decoration: none;
-            border: 1px solid var(--ink); border-radius: 999px;
-            padding: 13px 22px;
-            transition: background-color .18s cubic-bezier(.2,.8,.2,1), color .18s cubic-bezier(.2,.8,.2,1);
-        }
-        .ghost:hover { background: var(--ink); color: var(--ground); }
-        /* The store badges render 44px tall; the pill matches them so the three
-           read as one row rather than a button beside two badges. */
-        .ghost--try { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; }
-        .aside { font-size: 15px; color: var(--ink-2); margin-top: 14px; max-width: var(--measure); }
-
-        /* ---------- opening entry ---------- */
-        .entry--open { padding-top: var(--lh); padding-bottom: calc(var(--lh) * 4); }
-        /* The ledger survives as one short patch behind the figures rather than
-           as the whole page's ground: the journal reads as a move, not as
-           wallpaper. */
-
-        /* One sizing mechanism only: the frame's max-width sets the width and
-           the declared aspect-ratio sets the height. Adding a max-height here
-           fought the ratio and squashed the device by 13.6%. */
-        .screen--hero { margin-inline: auto; }
-        /* ---------- entry with a screen ---------- */
-        .split { display: grid; gap: clamp(28px, 5vw, 72px); align-items: center; }
-        /* The hero's writing column obeys the same measure as every entry. */
-        .split > :not(.screen) { max-width: var(--measure); }
-        @media (min-width: 1140px) {
-            /* The writing column is the measure, so the hero's blocks share the
-               same right edge as every entry below it. */
-            .split { grid-template-columns: minmax(0, var(--measure)) 1fr; gap: 48px; }
-            .split > .screen { grid-column: 2; grid-row: 1; }
-            .split > :not(.screen) { grid-column: 1; grid-row: 1; }
-            /* Explicit placement, never `order`: order changes visual sequence
-               but grid auto-placement still fills tracks in order-modified
-               document order, which put the screen in the 1fr track and blew
-               it up to 626px wide. */
-            .split.is-flipped { grid-template-columns: minmax(230px, 290px) 1fr; }
-            .split.is-flipped > .screen { grid-column: 1; }
-            .split.is-flipped > :not(.screen) { grid-column: 2; }
-        }
-        /* Flat device frame. DESIGN.md's Flat Instrument Rule forbids ornamental
-           shadow, so the screen sits in a drawn frame, not a photographic
-           device render. */
-        .screen {
-            /* Below the two-column breakpoint the device would otherwise run to
-               the full column width and stack into a 12,000px page. */
-            width: 100%;
-            max-width: 280px;
-            /* width:100% is required alongside margin-inline:auto — auto side
-               margins turn off a grid item's default stretch, leaving the box
-               shrink-to-fit and therefore zero-wide until its lazy image loads. */
-            margin-inline: auto;
-            padding: 7px;
-            border-radius: 36px;
-            background: linear-gradient(160deg, #1C1E1C 0%, #0A0B0A 100%);
-            box-shadow: 0 2px 6px rgba(0,0,0,.10), 0 18px 40px -20px rgba(0,0,0,.30);
-            line-height: 0;
-        }
-        .screen img { border-radius: 29px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
-        /* Reserve the box before a lazy image arrives, so nothing reflows. */
-        .screen img { width: 100%; height: auto; aspect-ratio: 592 / 1316; }
-
-        .specs { list-style: none; margin-top: var(--lh); max-width: var(--measure); }
-        .specs li {
-            display: flex; justify-content: space-between; gap: 24px;
-            font-size: 15px; line-height: var(--lh);
-        }
-        .specs li span:last-child { color: var(--ink-2); text-align: right; }
-        /* The app draws these as selectable chips; the page borrows that
-           vocabulary rather than inventing a shape for the same data. Each chip
-           is exactly one 28px band, so a wrapped row stays on the lattice. */
-        .chips { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 6px; }
-        /* The label holds its line and the chips wrap around it; without this the
-           chip group squeezes "Time signatures" onto two lines at 390. */
-        .specs li > span:first-child { white-space: nowrap; flex: none; }
-        .chip {
-            display: inline-flex; align-items: center; height: var(--lh);
-            padding: 0 11px; border-radius: 999px;
-            font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
-            color: var(--ink); background: var(--paper);
-            box-shadow: inset 0 0 0 1px var(--rule);
-        }
-        /* One chip per group shows the app's default, the way the product marks
-           a current selection: filled, not outlined. */
-        .chip.is-on { color: var(--ground); background: var(--ink); box-shadow: none; }
-        /* The accent marks progression wherever it appears, so one green glyph
-           becomes a system rather than an accident. */
-        .specs li.is-live span:last-child { color: var(--accent-ink); font-weight: 600; }
-        details[open] > summary { color: var(--accent-ink); }
+        /* The capture is 560px for a 393pt screen, so displaying it at 393
+           renders the app's type at its true size. Below that the 14sp labels
+           fall under 10px and the screen stops being readable evidence. */
+        .shot img { width: min(393px, 100%); height: auto; margin-inline: auto; border-radius: 12px; }
 
         /* ---------- questions ---------- */
-        details { border-bottom: 1px solid var(--rule); max-width: var(--measure); }
+        details {
+            background: var(--well); border-radius: 16px;
+            padding: 0 20px; margin-bottom: var(--s1);
+        }
+        details[open] { background: var(--quiet); }
         summary {
-            cursor: pointer; list-style: none;
-            display: flex; justify-content: space-between; gap: 20px; align-items: baseline;
-            padding: 18px 0; font-size: 20px; font-weight: 600;
+            cursor: pointer; list-style: none; display: flex; gap: 16px; align-items: center;
+            min-height: 56px; font-size: 16px; font-weight: 600;
         }
         summary::-webkit-details-marker { display: none; }
-        summary::after { content: '+'; color: var(--ink-2); font-weight: 400; font-size: 22px; line-height: 1; width: 1ch; text-align: center; flex: none; }
-        details[open] summary::after { content: '\2212'; }
-        details p { color: var(--ink-2); max-width: var(--measure); padding-bottom: 20px; font-size: 17px; line-height: var(--lh); }
+        summary::after {
+            content: ''; margin-left: auto; flex: none; width: 9px; height: 9px;
+            border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+            transform: translateY(-3px) rotate(45deg);
+            transition: transform .18s cubic-bezier(.2,.8,.2,1);
+        }
+        details[open] > summary::after { transform: translateY(2px) rotate(225deg); }
+        details p { padding-bottom: 20px; color: var(--text-2); max-width: 60ch; }
 
-        /* ---------- tempo scale ---------- */
-        /* The app's real tempo markings at their real thresholds, drawn in the
-           page's own rule language. Nothing else in the category can show this,
-           which is the point: it is the one element a visitor could describe
-           afterwards. Values ported from MetronomeState.tempoName. */
-        .scale { margin-top: var(--lh); max-width: var(--measure); }
-        .scale-track {
-            position: relative; height: calc(var(--lh) * 2);
-            border-bottom: var(--rule-w) solid var(--rule-strong);
-        }
-        .scale-track span {
-            position: absolute; bottom: 0; top: 0;
-            display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;
-            padding: 0 0 6px 7px;
-            border-left: var(--rule-w) solid var(--rule);
-            font-size: 12px; line-height: 1.25;
-            color: var(--ink-2); white-space: nowrap;
-        }
-        .scale-track span b { font-size: 12px; font-weight: 400; opacity: .68; order: -1; }
-        .scale-track span.is-now {
-            border-left-color: var(--accent); color: var(--accent-ink); font-weight: 600;
-        }
-        .scale-ends {
-            display: flex; justify-content: space-between;
-            font-size: 12px; color: var(--ink-2); line-height: var(--lh);
-        }
-        /* The seven markings are not evenly spaced, so the crowded ones sit a
-           row up rather than colliding with their neighbours. */
-        .scale-track span.is-tight { padding-bottom: calc(var(--lh) + 6px); }
-        /* The staggered row carries its name only; the thresholds for all seven
-           markings stay in the track's accessible label. */
-        .scale-track span.is-tight b { display: none; }
-        .scale-track span:last-child {
-            left: auto; right: 0; text-align: right;
-            border-left: 0; border-right: var(--rule-w) solid var(--rule);
-            padding: 0 7px 6px 0;
-        }
-        @media (max-width: 700px) { .scale-track span.is-tight { display: none; } }
-
-        /* ---------- proof ---------- */
-        /* A device at 280px renders the app's 14px labels at ~9px, which makes
-           the screenshot decorative on a page arguing for craft. These are
-           native-resolution crops of the real UI, shown large enough to read. */
-        .proof {
-            margin-top: var(--lh);
-            background: var(--paper);
-            border-radius: var(--radius, 16px);
-            padding: clamp(10px, 1.4vw, 16px);
-            box-shadow: 0 1px 2px rgba(20,24,20,.05), 0 14px 34px -22px rgba(20,24,20,.28);
-            max-width: var(--measure);
-            line-height: 0;
-        }
-        .proof img { width: 100%; height: auto; display: block; }
-        .proof figcaption {
-            line-height: var(--lh); font-size: 15px; color: var(--ink-2);
-            margin-top: 12px;
-        }
-
-        /* ---------- closing entry ---------- */
-        /* One region committed to the accent, rather than the accent spread
-           thinly over the whole page. It supplies the peak, the ending and the
-           second call to action the page was missing. */
-        .close {
-            background: var(--accent-deep);
-            color: var(--on-accent);
-            margin-left: calc(var(--gutter) * -2);
-            margin-right: calc(var(--gutter) * -1);
-            padding-inline: calc(var(--gutter) * 2);
-        }
-        .close h2 { max-width: min(18ch, var(--measure)); }
-        .close .say { color: color-mix(in srgb, var(--on-accent) 88%, var(--accent-deep)); }
-        .close .badge--play img { filter: none; }
-        /* The ledger separator is a mark on the ruled ground. The closing band
-           is its own surface and paints its fill before the pseudo-element, so
-           the rule would land on the green and stop at the measure. */
-        .entry + .entry.close::before { content: none; }
-        /* --accent on --accent-deep is 1.74:1: no visible focus ring in the band. */
-        .close :focus-visible { outline-color: var(--on-accent); }
+        /* ---------- close ---------- */
+        /* The page's one peak, and it is a tonal step rather than a colour. */
+        .close { background: var(--live); border-radius: 16px; padding: var(--s4) 28px; text-align: center; }
+        .close .say { margin-inline: auto; }
 
         /* ---------- footer ---------- */
-        footer { padding: var(--lh) 0 calc(var(--lh) * 2); border-top: 1px solid var(--rule-strong); }
-        .foot-nav { display: none; }
-        /* The bar drops its in-page links on phones, so the footer carries
-           them there rather than leaving an 8,800px page with no wayfinding. */
-        @media (max-width: 820px) {
-            .foot-nav {
-                display: flex; flex-wrap: wrap; gap: 0 22px;
-                margin-bottom: var(--lh);
-            }
-            .foot-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; font-size: 15px; font-weight: 600; }
-        }
-        .foot-links { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 15px; margin-bottom: 12px; }
-        .foot-links a { display: inline-flex; align-items: center; min-height: 44px; }
-        .fine { font-size: 15px; color: var(--ink-2); }
-
-        /* The sheet's left inset shrinks on phones, so the full-bleed closing
-           region has to match it. Declared last so it wins on source order. */
-        @media (max-width: 700px) { .close { margin-left: calc(var(--gutter) * -1.5); } }
-
-        /* Three bands suits a single display line; two is right once it wraps
-           at phone width. Declared last so it wins on source order. */
-        @media (min-width: 1140px) { h1 { line-height: calc(var(--lh) * 3); } }
+        footer { border-top: 1px solid var(--hairline); padding-block: var(--s3) var(--s4); }
+        .foot-links { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 14px; }
+        .foot-links a { display: inline-flex; align-items: center; min-height: 48px; color: var(--text-2); }
+        .foot-links a:hover { color: var(--text); }
+        .fine { font-size: 12px; color: var(--text-2); }
     </style>
 </head>
 <body>
 <!--
-THESIS: This page is the practice journal the app fills in, so the product is argued by the practice it produces; it refuses the feature-grid landing page whose sections are equal cards of icon, heading and text.
-OWN-WORLD: Ruled ledger ground on #F2F3F2, ink #000000, one accent #167936 reserved for the streak figure and the playhead. Self-hosted Roboto at 800 for display, tabular figures, hairline rules, flat drawn device frames, pills for controls.
-STORY: A musician reads a real practice entry, understands the app shapes practice rather than only ticking, believes the craft, and installs from the bar that never leaves.
-FIRST VIEWPORT: Sticky bar with the app mark, wordmark, a 4/4 meter chip and both store links at the right. Below it the opening log entry: an 88px headline against the left rail, a ruled supporting line, three oversized tabular figures with the streak line in accent, the store badges beneath, and the device at the right.
-FORM: The Practice Log, ranked fifth of six derived structures and dealt as the lead by an external roll; seed key 903debb9b1d3.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+THESIS: The page is the product's own surface. Everything on it is a value the
+app already uses - white ground, one tonal step for a card, a 16px radius, ink
+pills, chips that invert when selected - so a visitor meets the instrument
+before installing it.
+OWN-WORLD: The default BlackNWhite scheme from ColorSchemes.kt. Ground #FFFFFF,
+card #F7F7F7, active card #E6E6E6, ink #000000 on filled objects, text #1D1B20.
+No hue, because the coloured schemes are user themes. No shadow, because the
+app has none. Two hairlines on the whole page.
+STORY: A musician reads what the app does, sees the real screens on the app's
+own cards, and installs from a bar that never leaves.
+FIRST VIEWPORT: The mark and one ink CTA over unbroken paper, then the
+headline, the lede, the three ways to get it, and the instrument itself.
+FORM: A centred single column, sections separated by whitespace alone.
 -->
-
-<div class="playhead" id="playhead" aria-hidden="true"></div>
 
 <header class="bar">
     <a class="mark" href="#top"><svg class="mark-logo" width="26" height="26" xmlns="http://www.w3.org/2000/svg" viewBox="980.7 857.6 5795.1 5795.1" aria-hidden="true" focusable="false"><g><path fill="currentColor" d="M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z"/></g></svg>Metronome</a>
@@ -540,32 +335,13 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <span class="bar-spacer"></span>
     <a class="bar-link" href="#practice">Practice tools</a>
     <a class="bar-link" href="#questions">Questions</a>
-    <a class="bar-cta bar-cta--store" href="https://apps.apple.com/app/id6761737690">App&nbsp;Store</a>
-    <a class="bar-cta bar-cta--compact" href="#get">Get the app</a>
-    <a class="bar-cta bar-cta--alt" href="https://play.google.com/store/apps/details?id=com.merkost.metronome">Google&nbsp;Play</a>
+    <a class="cta" href="#get">Get the app</a>
 </header>
 
-<main class="sheet" id="top">
-    <div class="rail" aria-hidden="true"></div>
-
-    <section class="entry entry--open">
-        <div class="split split--open">
-            <div>
-                <p class="date">Practice log</p>
-                <h1>Built like an instrument.</h1>
-                <p class="say field">A precise metronome with a full practice studio behind it: trainers that make the click harder on purpose, sessions you can plan, and a beat that holds from the first bar to the last. Free, no advertising, no account.</p>
-
-                <div class="figures">
-                    <div class="fig"><b>42</b><span>minutes practised</span></div>
-                    <div class="fig"><b>14</b><span>hours in total</span></div>
-                    <div class="fig is-accent"><b>9</b><span>day streak</span></div>
-                </div>
-                <p class="aside">An example entry. Your own practice time and streak are recorded on your device.</p>
-            </div>
-            <div class="screen screen--hero">
-                <img src="screenshots/app-main.png" width="592" height="1316" fetchpriority="high" alt="The metronome screen running at 100 BPM in 4/4, marked Andante: four beat dots with the first accented, the tempo slider and fine steps, and a bottom bar holding a 9:06 timer, pause, and tap tempo.">
-            </div>
-        </div>
+<main id="top">
+    <section class="hero wrap">
+        <h1>Built like an instrument.</h1>
+        <p class="lede say">A precise metronome with a full practice studio behind it: trainers that make the click harder on purpose, sessions you can plan, and a beat that holds from the first bar to the last. Free, no advertising, no account.</p>
 
         <div class="actions" id="get">
             <a class="badge badge--apple" href="https://apps.apple.com/app/id6761737690">
@@ -574,123 +350,110 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
             <a class="badge badge--play" href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
                 <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="646" height="250" alt="Get Metronome: Practice &amp; Tempo on Google Play">
             </a>
-            <a class="ghost ghost--try" href="app/">Try it in the browser</a>
+            <a class="ghost" href="app/">Try it in the browser</a>
+        </div>
+
+        <div class="shot">
+            <img src="screenshots/app-main.png" width="560" height="1244" fetchpriority="high" alt="The metronome screen running at 100 BPM in 4/4, marked Andante: four beat dots with the first accented, the tempo slider and fine steps, and a bottom bar holding a 9:06 timer, pause, and tap tempo.">
         </div>
     </section>
 
-    <section class="entry" id="practice">
-        <div>
-            <div>
-                <p class="date">The click</p>
-                <h2>A beat that holds.</h2>
-                <p class="say field">Set the tempo, tap it in, or shape it bar by bar. Every beat can be accented or muted, and the pulse is scheduled against a monotonic clock, so it does not wander as a session runs long.</p>
-                <ul class="specs field">
-                    <li><span>Tempo range</span><span>40 to 220 BPM</span></li>
-                    <li><span>Time signatures</span><span class="chips"><b class="chip">2/4</b><b class="chip">3/4</b><b class="chip is-on">4/4</b><b class="chip">5/4</b><b class="chip">6/8</b><b class="chip">7/8</b></span></li>
-                    <li><span>Subdivisions</span><span class="chips"><b class="chip is-on">Quarter</b><b class="chip">Eighths</b><b class="chip">Triplets</b><b class="chip">Sixteenths</b></span></li>
-                    <li><span>Per beat</span><span class="chips"><b class="chip is-on">Accent</b><b class="chip">Normal</b><b class="chip">Mute</b></span></li>
-                    <li><span>Click sounds</span><span class="chips"><b class="chip is-on">Wood</b><b class="chip">Click</b><b class="chip">Classic</b></span></li>
-                </ul>
-                <div class="scale">
-                    <div class="scale-track" role="img" aria-label="Tempo markings across the range: Largo from 40, Adagio from 66, Andante from 76, Moderato from 108, Allegro from 120, Presto from 168, Prestissimo from 201 to 220 BPM.">
-                        <span style="left:0%">Largo<b>40</b></span>
-                        <span class="is-tight" style="left:14.4%">Adagio<b>66</b></span>
-                        <span class="is-now" style="left:20%">Andante<b>76</b></span>
-                        <span class="is-tight" style="left:37.8%">Moderato<b>108</b></span>
-                        <span style="left:44.4%">Allegro<b>120</b></span>
-                        <span style="left:71.1%">Presto<b>168</b></span>
-                        <span class="is-tight" style="left:89.4%">Prestissimo<b>201</b></span>
-                    </div>
-                    <p class="scale-ends"><span>40 BPM</span><span>220 BPM</span></p>
-                </div>
+    <section class="wrap" id="practice">
+        <p class="eyebrow">The click</p>
+        <h2>A beat that holds.</h2>
+        <p class="say">Set the tempo, tap it in, or shape it bar by bar. Every beat can be accented or muted, and the pulse is scheduled against a monotonic clock, so it does not wander as a session runs long.</p>
+        <div class="well">
+            <ul class="rows">
+                <li class="row"><span class="k">Tempo range</span><span class="v">40 to 220 BPM</span></li>
+                <li class="row"><span class="k">Time signatures</span><span class="chips"><b class="chip">2/4</b><b class="chip">3/4</b><b class="chip is-on">4/4</b><b class="chip">5/4</b><b class="chip">6/8</b><b class="chip">7/8</b></span></li>
+                <li class="row"><span class="k">Subdivisions</span><span class="chips"><b class="chip is-on">Quarter</b><b class="chip">Eighths</b><b class="chip">Triplets</b><b class="chip">Sixteenths</b></span></li>
+                <li class="row"><span class="k">Per beat</span><span class="chips"><b class="chip is-on">Accent</b><b class="chip">Normal</b><b class="chip">Mute</b></span></li>
+                <li class="row"><span class="k">Click sounds</span><span class="chips"><b class="chip is-on">Wood</b><b class="chip">Click</b><b class="chip">Classic</b></span></li>
+            </ul>
+        </div>
+        <figure class="fig">
+            <img src="screenshots/detail-main.png" width="1000" height="846" loading="lazy" alt="The tempo cluster: an Andante marking pill above 100 BPM, minus and plus buttons either side, the tempo slider, and the minus 5, halve, double and plus 5 shortcuts.">
+            <figcaption>The tempo cluster: marking, BPM, fine steps and the slider.</figcaption>
+        </figure>
+    </section>
+
+    <section class="wrap">
+        <p class="eyebrow">The silence</p>
+        <h2>Count through the gaps.</h2>
+        <p class="say">The Gap Trainer plays a set number of bars, then goes quiet for a set number while the beat keeps counting underneath. You hold the pulse yourself, and find out whether you are still with the click when it comes back. It is the most direct way to train an internal clock.</p>
+        <figure class="fig">
+            <img src="screenshots/detail-gap.png" width="1000" height="162" loading="lazy" alt="The Gap Trainer running, with a status strip reading Muted, bar 2 of 2, over a 4 plus 2 bar cycle.">
+            <figcaption>The status strip while the Gap Trainer is muted: bar 2 of 2 of a 4 plus 2 bar cycle.</figcaption>
+        </figure>
+    </section>
+
+    <section class="wrap">
+        <p class="eyebrow">The climb</p>
+        <h2>Take it up two at a time.</h2>
+        <p class="say">Give the Tempo Trainer a start, a target, a step and how many complete bars to hold, and it moves the tempo for you while you play. A passage travels from careful to performance speed without you stopping to change the number.</p>
+        <div class="well">
+            <p class="strip"><span class="t">Example climb</span><span>80 to 120 BPM</span><span class="c">80 bars, about 3 minutes</span></p>
+            <ul class="rows" style="margin-top: var(--s3)">
+                <li class="row"><span class="k">Step</span><span class="v">+2 every 4 bars</span></li>
+                <li class="row"><span class="k">Length</span><span class="v">80 bars, about 3 minutes</span></li>
+            </ul>
+        </div>
+        <figure class="fig">
+            <img src="screenshots/detail-tempo.png" width="1000" height="423" loading="lazy" alt="The Tempo Trainer's step controls, with a step of plus 2 selected and held every 4 bars, summarised underneath as 80 bars or about 3 minutes.">
+            <figcaption>A climb configured to step +2 every 4 bars: 80 bars, about 3 minutes.</figcaption>
+        </figure>
+    </section>
+
+    <section class="wrap">
+        <p class="eyebrow">The session</p>
+        <h2>Plan it once, follow it after.</h2>
+        <p class="say">Save a whole setup as a preset: tempo, meter, subdivision, accents and count-in. Then order those presets into a practice set, giving any step a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
+        <div class="well well--live">
+            <div class="stats">
+                <div class="stat"><div class="k">Minutes practised</div><div class="v">42</div></div>
+                <div class="stat"><div class="k">Hours in total</div><div class="v">14</div></div>
+                <div class="stat"><div class="k">Day streak</div><div class="v">9</div></div>
             </div>
-            <figure class="proof">
-                <img src="screenshots/detail-main.png" width="1000" height="846" loading="lazy" alt="The tempo cluster: an Andante marking pill above 100 BPM, minus and plus buttons either side, the tempo slider, and the minus 5, halve, double and plus 5 shortcuts.">
-                <figcaption>The tempo cluster: marking, BPM, fine steps and the slider.</figcaption>
-            </figure>
+            <p class="caption" style="margin-top: var(--s2)">An example entry. Your own practice time and streak are recorded on your device.</p>
         </div>
+        <figure class="fig">
+            <img src="screenshots/detail-session.png" width="1000" height="425" loading="lazy" alt="A practice session card reading step 2 of 3, Scales, 100 BPM in 4/4, three of five minutes done.">
+            <figcaption>Step 2 of 3 of a saved practice set, three of five minutes done.</figcaption>
+        </figure>
     </section>
 
-    <section class="entry">
-        <div>
-            <div>
-                <p class="date">The silence</p>
-                <h2>Count through the gaps.</h2>
-                <p class="say field">The Gap Trainer plays a set number of bars, then goes quiet for a set number while the beat keeps counting underneath. You hold the pulse yourself, and find out whether you are still with the click when it comes back. It is the most direct way to train an internal clock.</p>
-            </div>
-            <figure class="proof">
-                <img src="screenshots/detail-gap.png" width="1000" height="162" loading="lazy" alt="The Gap Trainer running, with a status strip reading Muted, bar 2 of 2, over a 4 plus 2 bar cycle.">
-                <figcaption>The status strip while the Gap Trainer is muted: bar 2 of 2 of a 4 plus 2 bar cycle.</figcaption>
-            </figure>
+    <section class="wrap">
+        <p class="eyebrow">Yours</p>
+        <h2>No advertising. No account.</h2>
+        <p class="say">Nothing sits behind a subscription and nothing asks you to sign in. Core practice works offline, your settings and practice time stay on your device, and playback keeps running with the screen off — always on iPhone, on Android once Background Play is on.</p>
+        <div class="well">
+            <ul class="rows">
+                <li class="row"><span class="k">Price</span><span class="v">Free</span></li>
+                <li class="row"><span class="k">Account</span><span class="v">Not required</span></li>
+                <li class="row"><span class="k">Core features offline</span><span class="v">Yes</span></li>
+                <li class="row"><span class="k">Appearance</span><span class="v">Light and dark, five colour schemes</span></li>
+            </ul>
         </div>
+        <figure class="fig">
+            <img src="screenshots/detail-settings.png" width="1000" height="548" loading="lazy" alt="The appearance settings, with Theme set to Light alongside System and Dark, above a row of colour scheme swatches.">
+            <figcaption>Theme and colour scheme, both stored on your device.</figcaption>
+        </figure>
     </section>
 
-    <section class="entry">
-        <div>
-            <div>
-                <p class="date">The climb</p>
-                <h2>Take it up two at a time.</h2>
-                <p class="say field">Give the Tempo Trainer a start, a target, a step and how many complete bars to hold, and it moves the tempo for you while you play. A passage travels from careful to performance speed without you stopping to change the number.</p>
-                <ul class="specs field">
-                    <li class="is-live"><span>Example climb</span><span>80 to 120 BPM</span></li>
-                    <li><span>Step</span><span>+2 every 4 bars</span></li>
-                    <li><span>Length</span><span>80 bars, about 3 minutes</span></li>
-                </ul>
-            </div>
-            <figure class="proof">
-                <img src="screenshots/detail-tempo.png" width="1000" height="423" loading="lazy" alt="The Tempo Trainer's step controls, with a step of plus 2 selected and held every 4 bars, summarised underneath as 80 bars or about 3 minutes.">
-                <figcaption>A climb configured to step +2 every 4 bars: 80 bars, about 3 minutes.</figcaption>
-            </figure>
-        </div>
-    </section>
-
-    <section class="entry">
-        <div>
-            <div>
-                <p class="date">The session</p>
-                <h2>Plan it once, follow it after.</h2>
-                <p class="say field">Save a whole setup as a preset: tempo, meter, subdivision, accents and count-in. Then order those presets into a practice set, giving any step a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
-            </div>
-            <figure class="proof">
-                <img src="screenshots/detail-session.png" width="1000" height="425" loading="lazy" alt="A practice session card reading step 2 of 3, Scales, 100 BPM in 4/4, three of five minutes done.">
-                <figcaption>Step 2 of 3 of a saved practice set, three of five minutes done.</figcaption>
-            </figure>
-        </div>
-    </section>
-
-    <section class="entry">
-        <div>
-            <div>
-                <p class="date">Yours</p>
-                <h2>No advertising. No account.</h2>
-                <p class="say field">Nothing sits behind a subscription and nothing asks you to sign in. Core practice works offline, your settings and practice time stay on your device, and playback keeps running with the screen off — always on iPhone, on Android once Background Play is on.</p>
-                <ul class="specs field">
-                    <li><span>Price</span><span>Free</span></li>
-                    <li><span>Account</span><span>Not required</span></li>
-                    <li><span>Core features offline</span><span>Yes</span></li>
-                    <li><span>Appearance</span><span>Light and dark, five colour schemes</span></li>
-                </ul>
-            </div>
-            <figure class="proof">
-                <img src="screenshots/detail-settings.png" width="1000" height="548" loading="lazy" alt="The appearance settings, with Theme set to Light alongside System and Dark, above a row of colour scheme swatches.">
-                <figcaption>Theme and colour scheme, both stored on your device.</figcaption>
-            </figure>
-        </div>
-    </section>
-
-    <section class="entry entry--turn">
-        <p class="date">Before you install</p>
+    <section class="wrap">
+        <p class="eyebrow">Before you install</p>
         <h2>Hear it in this browser.</h2>
-        <p class="say field">The same app, compiled to WebAssembly and running as a web page. Every screen and every trainer is here, but nothing you set or save survives a reload. The installed app is still the one that keeps your presets, can play with the screen off and can vibrate on the beat.</p>
-        <div class="actions">
+        <p class="say">The same app, compiled to WebAssembly and running as a web page. Every screen and every trainer is here, but nothing you set or save survives a reload. The installed app is still the one that keeps your presets, can play with the screen off and can vibrate on the beat.</p>
+        <div class="actions" style="justify-content: flex-start">
             <a class="ghost" href="app/">Open the web app</a>
         </div>
-        <p class="aside">Needs a recent browser: Safari 18.2 or newer, Chrome 119, Firefox 120.</p>
+        <p class="caption" style="margin-top: var(--s2)">Needs a recent browser: Safari 18.2 or newer, Chrome 119, Firefox 120.</p>
     </section>
 
-    <section class="entry" id="questions">
-        <p class="date">Questions</p>
-        <div style="margin-top: calc(var(--lh) / 2)">
+    <section class="wrap" id="questions">
+        <p class="eyebrow">Questions</p>
+        <h2>Before you ask.</h2>
+        <div style="margin-top: var(--s3)">
             <details>
                 <summary>What is a gap trainer?</summary>
                 <p>The gap trainer plays a set number of bars, then goes silent for a set number of bars while the beat keeps counting. You keep time yourself through the silence and find out whether you are still with the click when it returns. It is the most direct way to train your internal pulse.</p>
@@ -718,67 +481,40 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
         </div>
     </section>
 
-    <section class="entry close">
-        <p class="date" style="color: color-mix(in srgb, var(--on-accent) 80%, var(--accent-deep))">Tomorrow's entry</p>
-        <h2>Leave yourself something to write down.</h2>
-        <p class="say">Free, with no advertising and no account. Install it, set a tempo, and the log fills itself in.</p>
-        <div class="actions">
-            <a class="badge badge--apple" href="https://apps.apple.com/app/id6761737690">
-                <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" width="120" height="40" alt="Download Metronome: Practice &amp; Tempo on the App Store">
-            </a>
-            <a class="badge badge--play" href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
-                <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="646" height="250" alt="Get Metronome: Practice &amp; Tempo on Google Play">
-            </a>
+    <section class="wrap">
+        <div class="close">
+            <h2>Leave yourself something to write down.</h2>
+            <p class="say lede" style="margin-top: var(--s2)">Free, with no advertising and no account. Install it, set a tempo, and the log fills itself in.</p>
+            <div class="actions">
+                <a class="badge badge--apple" href="https://apps.apple.com/app/id6761737690">
+                    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" width="120" height="40" alt="Download Metronome: Practice &amp; Tempo on the App Store">
+                </a>
+                <a class="badge badge--play" href="https://play.google.com/store/apps/details?id=com.merkost.metronome">
+                    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="646" height="250" alt="Get Metronome: Practice &amp; Tempo on Google Play">
+                </a>
+            </div>
         </div>
     </section>
+</main>
 
-    </main>
-
-    <footer class="sheet">
-        <nav class="foot-nav" aria-label="On this page">
-            <a href="#top">Top</a>
-            <a href="#practice">Practice tools</a>
-            <a href="#questions">Questions</a>
-            <a href="#get">Get the app</a>
-        </nav>
-        <div class="foot-links">
-            <a href="support.html">Support</a>
-            <a href="privacy.html">Privacy Policy</a>
-            <a href="app/">Web app</a>
-            <a href="https://merkost.dev">More from Merkost</a>
-        </div>
-        <p class="fine">© 2026 Merkost. All rights reserved.</p>
-    </footer>
+<footer class="wrap">
+    <div class="foot-links">
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="app/">Web app</a>
+        <a href="https://merkost.dev">More from Merkost</a>
+    </div>
+    <p class="fine">© 2026 Merkost. All rights reserved.</p>
+</footer>
 
 <script>
-    // The page's one authored motion: the playhead rides the margin rule at the
-    // reader's scroll position, the way a cursor tracks a timeline.
     (function () {
-        var head = document.getElementById('playhead');
-        var rail = document.querySelector('.rail');
-        if (!head || !rail) return;
-        var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var ticking = false;
-        function place() {
-            var r = rail.getBoundingClientRect();
-            var doc = document.documentElement;
-            var max = doc.scrollHeight - doc.clientHeight;
-            var p = max > 0 ? Math.min(1, Math.max(0, doc.scrollTop / max)) : 0;
-            // Snap to the nearest rule: a marker between rules destroys the
-            // registration the ledger just established; one on a rule confirms it.
-            var band = 28;
-            var y = 76 + p * (doc.clientHeight - 120);
-            y = Math.round((y - 20) / band) * band + 20;
-            head.style.transform = 'translate3d(' + Math.round(r.left - 5) + 'px,' + Math.round(y) + 'px,0)';
-            ticking = false;
-        }
-        function request() {
-            if (!ticking) { ticking = true; requestAnimationFrame(place); }
-        }
-        if (!still) window.addEventListener('scroll', request, { passive: true });
-        // With motion reduced the marker still exists; it simply rests at the top rule.
-        window.addEventListener('resize', request);
-        place();
+        var b = document.body, t = false;
+        function set() { b.classList.toggle('is-scrolled', window.scrollY > 4); t = false; }
+        window.addEventListener('scroll', function () {
+            if (!t) { t = true; requestAnimationFrame(set); }
+        }, { passive: true });
+        set();
     })();
 </script>
 </body>

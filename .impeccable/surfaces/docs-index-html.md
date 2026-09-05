@@ -7,48 +7,35 @@ related_targets: []
 
 Scope: `docs/index.html`, the public landing page at metronome.merkost.dev. Visitor mode: **Persuade**.
 
-Audience: musicians who practise alone and are deciding whether to install. Action: **install** — both store links sit in the sticky bar and the badges repeat in the hero and the closing entry. The browser app is proof, reached by a secondary link.
+Audience: musicians who practise alone and are deciding whether to install. Action: **install** — one ink CTA in the sticky bar, both store badges in the hero and in the closing panel. The browser build is proof, offered beside them.
 
 Belief to earn: this is a beautiful, serious instrument. Design carries the argument, so the page's own craft is the proof.
 
-Direction: **The Practice Log** (surface-scope roll, seed key 903debb9b1d3). Approved comp `.impeccable/mocks/decision/practice-log.webp`, sidecar marked approved.
+Direction: **The product's own surface.** Superseded "The Practice Log" on client rejection: *"the UI/UX does not represent the same feel as in app elements! There is no calm and elevated card feel! And there are lines, triangles and green color which we don't use at all!"* All three named offenders were real, and none of them existed in the app.
 
-## What the critique changed
+## What the redesign changed
 
-A dual-agent critique (design review + detector) found the first build had abandoned the direction: the ledger had been deleted, leaving a page a budgeting app could ship unchanged. Rebuilt from those findings.
+**Depth is one tonal step, because that is the app's entire depth system.** `Surface(shape = RoundedCornerShape(16.dp), color = surfaceContainerLow)` on a `surface` ground, and Compose defaults both tonal and shadow elevation to zero. Evidence: `.shadow(` has zero hits across 102 commonMain files; `shadowElevation` appears twice and is `0.dp` both times (`AppMenu.kt:45`, `DropdownSelector.kt:56`); the four elevation tokens at `Dimensions.kt:39-42` have no call sites at all. So the page uses no `box-shadow` anywhere. A card is `#FFFFFF` → `#F7F7F7`, and the one active card is `#E6E6E6`.
 
-**Registration, not density, is the ledger's variable.** Hairlines out of phase with the type read as moire, which is what "too many stripes" was. The ruling is now two devices: a **field** (repeating gradient) only on blocks whose leading is exactly one 28px band, and **single drawn rules** at display baselines. Verified empirically with `Range.getClientRects()` — baselines land at 20.2px against `--rule-y: 20px`.
+**The palette is the default scheme, verified rather than assumed.** A fresh install resolves to `BLACKNWHITE` in all three places that pick one — `AppDatastoreImpl.kt:59`, `Theme.kt:19`, `SettingsViewModel.kt:21` — and Settings names it "Monochrome". Green is `MINT_GREEN`, one of five user themes; `MintGreenDark = #1a8a2e` was verbatim the old page's accent. Every app neutral is strictly R=G=B, where every neutral on the old page was hue-120° tinted.
 
-Never ruled: the device column, the store badges, h1/h2 blocks, the bar, the footer, FAQ answers. **No rule passes between a number and its own label.**
+**Ink and text are different roles and the app enforces it.** The BPM numeral is `onSurface` `#1D1B20` (`MainScreen.kt:472`); the play button and selected chips are `primary` `#000000`. So all running text is `#1D1B20` and only filled objects are pure ink. The app has no grey-text role — `onSurfaceVariant` is overridden to black (`ColorSchemes.kt:72`) — so de-emphasis is alpha of the ink, never a separate grey.
 
-**Colour is concentrated, not spread.** Committed (30-60%) was rejected: it would lie about a genuinely monochrome product. The accent owns one semantic role — progression — plus one inverted closing region, roughly 10-12% coverage.
+**Deleted outright:** the ruled field and every ledger separator, the playhead triangle and its script, the rail, the tempo ruler, the CSS device frame, the `.split` two-column layout, and all nine accent tokens. The page draws exactly two hairlines: under the bar once scrolled, and above the footer.
 
-**The accent is the product's own.** `#167936` was invented by the comp and is not in DESIGN.md. Reconciled to Deep Mint `#1A8A2E`, with `--accent-ink #167936` for text sizes (4.94:1) and `--accent-deep #116018` for the filled region (6.97:1; the undarkened mint gave 4.00:1 and failed AA there).
+**Chips are the app's, not decoration.** `AppChip` inverts its container to ink and sets the label Bold when selected, so selection is never colour alone. Time signatures, subdivisions, per-beat states and click sounds each show the app's real default.
 
-## Tokens as built
-
-ground `#F2F3F2` · ink `#000000` · secondary `#55605A` · field rule `#C8CEC8` (1.44:1) · structure rule `#A9B2A9` (1.96:1) · paper `#FFFFFF` · accent `#1A8A2E` / ink `#167936` / deep `#116018`. Lattice `--lh: 28px`, all leading integer multiples. Rules 1px, 0.5px at >=2dppx. Dark appearance declared; all four dark pairs pass AA (16.64 / 7.32 / 10.72 / 8.43:1).
-
-## Implementation inventory and provenance
-
-| Region | Medium | Provenance |
-|---|---|---|
-| Top bar, ledger, rules, figures, spec rows, FAQ, closing region | HTML/CSS | authored |
-| Playhead | CSS + JS, snapped to the lattice | authored |
-| Device frame | CSS: tonal bezel `#1C1E1C`->`#0A0B0A`, 36px radius, inner highlight, contact shadow | authored |
-| `app-main.png` | raster, hero device screen | crop of `tools/store-screenshots/raw/main-nolabel.png`, real emulator capture 2026-09-03 |
-| `detail-*.png` (5) | raster, evidential crops | native-resolution crops of the raw captures in `tools/store-screenshots/raw/`; no generated imagery on this page |
-| Favicon | inline SVG data URI | authored |
-| Store badges | remote official artwork | Apple and Google, required by their brand rules |
-
-`detail-tempo.png` was deliberately re-cropped below the Start/Target steppers: the original capture predates commit `d9369a1` and still showed the `onPrimaryContainer` purple, which the app no longer renders. Shipping it would have advertised a fixed bug.
+**Hierarchy.** The stats were the largest objects on the page (89.6px against an 88px h1) — three disclaimed example figures outranking the headline, against DESIGN.md's "Tempo Owns the Room". They are demoted into the practice section as the app's own 12px-label-over-20px-value stat row, and h1 owns the page.
 
 ## Deviations, disclosed
 
-The comp renders a photorealistic tilted device with a cast shadow. It ships as a drawn device with a **contact** shadow — physical truth, which is what the comp was expressing — rather than a stock 3D mockup. Tracking is `-0.04em`, not the `-0.05em` the review suggested, because the craft floor sets that as a hard limit.
+Captures are of the light theme, so in dark appearance they read as bright panels on black. Honest but imperfect; dark-theme captures would need a re-shoot of every screen.
+
+Container padding is 24px where the app uses 16dp: a 680px web container at 16px reads mean. Still on the app's 8/16/32 ladder, and named here as a deliberate scale-up rather than an app value.
+
+The images carry no container. A capture brings its own white, so a grey card around one reads as a card inside a card — the nesting the craft floor bans. Cards hold data; captures stand on the page.
 
 ## Open
 
-- **Recommended DESIGN.md change, not made** (a durable system decision the owner should approve): scope the Flat Instrument Rule to in-product controls, distinguishing ornamental shadow (forbidden) from contact shadow (permitted on marketing surfaces). Applying it to a page depicting the product was a category error that cost the page its only element with mass.
-- PRODUCT.md is stale: it records the old store name and claims index.html links a superseded App Store id. `docs/aso-strategy.md` is newer and disagrees. Reported, not acted on.
-- The detector reports findings that are largely false positives (it cannot resolve `calc(var())`, and DESIGN.md documents the app's mobile palette with no web grey ramp). Not individually re-triaged after the rebuild.
+- The hero would be stronger with a properly composited device raster in the manner of `og-card.png`. Not attempted: it is an asset to cut, not something to fake in CSS, and the drawn frame it replaces had failed twice.
+- `og-card.png` is built on `#F2EFEA`, a warm neutral that agrees with neither the app nor this page. Worth re-exporting on `#FFFFFF`.
