@@ -181,8 +181,15 @@
         .caption { font-size: 14px; line-height: 1.43; color: var(--text-2); }
 
         /* ---------- sections ---------- */
+        /* Uniform separation made nine equal beats of the page. The four tool
+           sections are one run, so they sit closer to each other than to the
+           sections that open a new movement. */
         section { padding-block: var(--s4); }
         @media (min-width: 900px) { section { padding-block: var(--s5); } }
+        .run { padding-top: var(--s3); }
+        @media (min-width: 900px) { .run { padding-top: var(--s3); } }
+        .movement { padding-top: var(--s5); }
+        @media (min-width: 900px) { .movement { padding-top: calc(var(--s5) * 1.5); } }
 
         /* ---------- the container ---------- */
         /* The app's card is one tonal step and nothing else: Surface(shape =
@@ -199,7 +206,11 @@
            as a card inside a card. The captures stand on the page; cards hold
            data. One fill per object. */
         .fig { margin-top: var(--s3); }
-        .fig img { display: block; width: 100%; height: auto; border-radius: 12px; }
+        /* The crops are 1000px of a 1080px capture of a 393pt screen, so 364px
+           renders them at the same 1:1 the hero screen uses. At full column
+           width a detail of the UI drew larger than the whole screen it came
+           from, which inverted the hierarchy and made every crop shout. */
+        .fig img { display: block; width: min(364px, 100%); height: auto; border-radius: 12px; }
         .fig figcaption { margin-top: var(--s2); font-size: 14px; line-height: 1.43; color: var(--text-2); }
 
         /* ---------- rows and chips ---------- */
@@ -302,6 +313,7 @@
         /* ---------- close ---------- */
         /* The page's one peak, and it is a tonal step rather than a colour. */
         .close { background: var(--live); border-radius: 16px; padding: var(--s4) 28px; text-align: center; }
+        .close h2 { font-size: clamp(30px, 2.4vw + 14px, 40px); }
         .close .say { margin-inline: auto; }
 
         /* ---------- footer ---------- */
@@ -377,7 +389,7 @@ FORM: A centred single column, sections separated by whitespace alone.
         </figure>
     </section>
 
-    <section class="wrap">
+    <section class="wrap run">
         <p class="eyebrow">The silence</p>
         <h2>Count through the gaps.</h2>
         <p class="say">The Gap Trainer plays a set number of bars, then goes quiet for a set number while the beat keeps counting underneath. You hold the pulse yourself, and find out whether you are still with the click when it comes back. It is the most direct way to train an internal clock.</p>
@@ -387,7 +399,7 @@ FORM: A centred single column, sections separated by whitespace alone.
         </figure>
     </section>
 
-    <section class="wrap">
+    <section class="wrap run">
         <p class="eyebrow">The climb</p>
         <h2>Take it up two at a time.</h2>
         <p class="say">Give the Tempo Trainer a start, a target, a step and how many complete bars to hold, and it moves the tempo for you while you play. A passage travels from careful to performance speed without you stopping to change the number.</p>
@@ -404,7 +416,7 @@ FORM: A centred single column, sections separated by whitespace alone.
         </figure>
     </section>
 
-    <section class="wrap">
+    <section class="wrap run">
         <p class="eyebrow">The session</p>
         <h2>Plan it once, follow it after.</h2>
         <p class="say">Save a whole setup as a preset: tempo, meter, subdivision, accents and count-in. Then order those presets into a practice set, giving any step a time or bar goal. You decide when to move on; nothing advances behind your back.</p>
@@ -422,7 +434,7 @@ FORM: A centred single column, sections separated by whitespace alone.
         </figure>
     </section>
 
-    <section class="wrap">
+    <section class="wrap movement">
         <p class="eyebrow">Yours</p>
         <h2>No advertising. No account.</h2>
         <p class="say">Nothing sits behind a subscription and nothing asks you to sign in. Core practice works offline, your settings and practice time stay on your device, and playback keeps running with the screen off — always on iPhone, on Android once Background Play is on.</p>
@@ -481,7 +493,7 @@ FORM: A centred single column, sections separated by whitespace alone.
         </div>
     </section>
 
-    <section class="wrap">
+    <section class="wrap movement">
         <div class="close">
             <h2>Leave yourself something to write down.</h2>
             <p class="say lede" style="margin-top: var(--s2)">Free, with no advertising and no account. Install it, set a tempo, and the log fills itself in.</p>
