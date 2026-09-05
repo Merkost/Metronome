@@ -5,15 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Metronome — web app | Merkost</title>
     <meta name="description" content="The Metronome practice app running in your browser. Precise BPM, accents, subdivisions and trainers.">
-    <meta name="theme-color" content="#F2EFEA">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <link rel="canonical" href="https://metronome.merkost.dev/app/">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --paper: #FFFFFF; --text: #1D1B20; --text-2: rgba(0,0,0,.62);
+            --line: #CAC4D0; --ink: #000000; --on-ink: #FFFFFF;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #000000; --text: #E6E0E9; --text-2: rgba(255,255,255,.70);
+                --line: #49454F; --ink: #FFFFFF; --on-ink: #000000;
+            }
+        }
         /* Compose appends its canvas to <body>, so the document itself has to
            fill the viewport or the app renders into a collapsed box. */
         html, body {
             height: 100%; width: 100%; overflow: hidden;
-            background: #F2EFEA; color: #141414;
+            background: var(--paper); color: var(--text);
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             overscroll-behavior: none;
         }
@@ -26,16 +38,16 @@
         }
         #boot .inner { max-width: 30rem; }
         #boot h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 10px; }
-        #boot p { color: #5A5652; margin-bottom: 20px; }
+        #boot p { color: var(--text-2); margin-bottom: 20px; }
         #boot .links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
         #boot a {
             display: inline-block; padding: 11px 18px; border-radius: 999px;
-            background: #141414; color: #fff; text-decoration: none; font-size: 14px; font-weight: 600;
+            background: var(--ink); color: var(--on-ink); text-decoration: none; font-size: 14px; font-weight: 600;
         }
-        #boot a.ghost { background: transparent; color: #141414; box-shadow: inset 0 0 0 1px #DFDAD3; }
+        #boot a.ghost { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
         .spinner {
             width: 26px; height: 26px; margin: 0 auto 18px;
-            border: 2px solid #DFDAD3; border-top-color: #141414; border-radius: 50%;
+            border: 2px solid var(--line); border-top-color: var(--text); border-radius: 50%;
             animation: spin .8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
