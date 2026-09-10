@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    @font-face {
+        font-family: 'Roboto Var';
+        src: url('../../docs/fonts/roboto-var.woff2') format('woff2-variations'),
+             url('../../docs/fonts/roboto-var.woff2') format('woff2');
+        font-weight: 400 800;
+        font-style: normal;
+    }
+
+    :root {
+        --paper: #FFFFFF;
+        --ink: #000000;
+        --text: #1D1B20;
+        --text-2: rgba(0,0,0,.62);
+        --dot-off: #E6E6E6;
+        --bezel: #1C1C1E;
+        --lift: 0 24px 60px rgba(0,0,0,.22), 0 3px 10px rgba(0,0,0,.10);
+        --glow: transparent;
+    }
+    html[data-theme="dark"] {
+        --paper: #000000;
+        --ink: #FFFFFF;
+        --text: #FFFFFF;
+        --text-2: rgba(255,255,255,.68);
+        --dot-off: rgba(255,255,255,.24);
+        --bezel: #2B2B2B;
+        --lift: 0 34px 80px rgba(0,0,0,.85), 0 4px 14px rgba(0,0,0,.6);
+        --glow: rgba(255,255,255,.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        width: 1584px;
+        height: 396px;
+        background: var(--paper);
+        color: var(--text);
+        font-family: 'Roboto Var', Roboto, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Ambient light behind the device: depth, not ornament. 7% at the peak. */
+    .halo {
+        position: absolute;
+        right: -60px; top: -140px;
+        width: 900px; height: 760px;
+        background: radial-gradient(closest-side, var(--glow), transparent 72%);
+        pointer-events: none;
+    }
+
+    /* The avatar covers the lower-left on desktop and mobile crops the sides,
+       so nothing that has to be read starts before 400px. */
+    .copy {
+        position: absolute;
+        left: 400px; top: 0; bottom: 0;
+        width: 700px;
+        display: flex; flex-direction: column; justify-content: center;
+        gap: 20px;
+    }
+
+    .mark {
+        display: flex; align-items: center; gap: 11px;
+        font-size: 25px; font-weight: 700; letter-spacing: -0.01em;
+        color: var(--text);
+    }
+    .mark svg { width: 31px; height: 31px; display: block; color: var(--text); }
+
+    h1 {
+        font-size: 52px; font-weight: 800;
+        letter-spacing: -0.025em; line-height: 1.04;
+        color: var(--text);
+    }
+
+    .say { font-size: 19px; line-height: 1.45; color: var(--text-2); max-width: 620px; }
+
+    .meta {
+        display: flex; align-items: center; gap: 18px;
+        font-size: 15px; color: var(--text-2);
+    }
+    .meta .sep { width: 1px; height: 15px; background: var(--text-2); opacity: .35; }
+    .meta .url { color: var(--text); font-weight: 500; }
+
+    /* The beat row, at bar position 3 of 4: first beat accented, current beat
+       ringed, the rest idle. The app's own signature, and the one motif a 4:1
+       letterbox actually suits. */
+    .beat { display: flex; align-items: center; gap: 10px; }
+    .beat i { width: 13px; height: 13px; border-radius: 50%; background: var(--dot-off); display: block; }
+    .beat i.on { background: var(--ink); }
+    .beat i.now {
+        background: var(--dot-off);
+        box-shadow: 0 0 0 2.5px var(--ink);
+        margin: 0 3px;
+    }
+
+    /* Device: upright, bleeding off the bottom edge the way the store graphic
+       does. The bezel wraps the screen, so the capture is never scaled down to
+       make room for it. */
+    .device {
+        position: absolute;
+        left: 1146px; top: 58px;
+        width: 322px; height: 700px;
+        border-radius: 46px;
+        background: var(--bezel);
+        padding: 11px;
+        box-shadow: var(--lift);
+    }
+    .device::after {
+        content: ''; position: absolute; inset: 0;
+        border-radius: 46px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+        pointer-events: none;
+    }
+    /* The capture's status bar sits hard against the edges, so the corner
+       radius eats into "9:41" and the battery. Crop it and pad with the app's
+       own white instead: the seam is invisible and the frame stays platform
+       neutral, which suits an app that ships on both stores. */
+    .screen {
+        width: 100%; height: 100%;
+        border-radius: 36px;
+        overflow: hidden;
+        background: #FFFFFF;
+        padding-top: 26px;
+    }
+    /* The negative offset has to be clipped by its own box - padding on the
+       screen only moves the status bar down, it does not remove it. */
+    .crop { height: 100%; overflow: hidden; }
+    .crop img {
+        width: 100%; height: auto; display: block;
+        margin-top: -30px;
+    }
+</style>
+</head>
+<body>
+    <div class="halo"></div>
+
+    <div class="copy">
+        <div class="mark">
+            <svg viewBox="0 0 7654 7654" aria-hidden="true"><g transform="translate(1607.34,1607.34) scale(0.58)"><path fill="currentColor" d="M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z"/></g></svg>
+            Metronome
+        </div>
+
+        <h1>Built like an instrument.</h1>
+
+        <p class="say">A precise metronome with a practice studio behind it: gap and tempo trainers, presets and sets, and a beat that holds.</p>
+
+        <div class="meta">
+            <span class="beat"><i class="on"></i><i></i><i class="now"></i><i></i></span>
+            <span class="sep"></span>
+            <span>Free. No ads. No account.</span>
+            <span class="sep"></span>
+            <span class="url">metronome.merkost.dev</span>
+        </div>
+    </div>
+
+    <div class="device">
+        <div class="screen"><div class="crop"><img src="../../docs/screenshots/app-main.png" alt=""></div></div>
+    </div>
+</body>
+</html>
