@@ -420,7 +420,7 @@ h1 {
   background: #16161620;
 }
 .pulse-dot {
-  background: var(--on-brand);
+  background: color-mix(in oklab, var(--on-brand) 24%, var(--violet));
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -430,9 +430,8 @@ h1 {
   color: #fff;
   font-size: 12px;
 }
-.pulse-dot:nth-child(2) {
-  width: 56px;
-  height: 56px;
+.pulse-dot.is-accent {
+  background: var(--on-brand);
 }
 .pulse-dot.is-active::after {
   content: "";

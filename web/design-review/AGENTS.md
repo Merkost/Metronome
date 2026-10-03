@@ -23,7 +23,7 @@ Settings must make the existing web app discoverable. Keep a compact branded web
 - Run `npm run check:runtime` before preview or handoff. If it fails, restore the protected runtime instead of weakening or bypassing the check.
 - `npm run build` preserves the mobile runtime and prepares the static Cloudflare Worker output required by Sites. Before a Sites handoff, confirm `dist/client/index.html`, `dist/server/index.js`, `dist/.openai/hosting.json`, and source `.openai/hosting.json` exist, then run `npm run test:sites`. Do not replace this project with a Vinext starter.
 
-Beat indicators must be unnumbered across the instrument and rhythm editor. Preserve the accent ring, normal dot and outlined mute icon, with the beat index and current state in accessibility labels.
+Beat indicators must be unnumbered across the instrument and rhythm editor. Accent is the solid primary dot; normal is the quieter tonal dot; mute keeps the outlined dot and icon. A separate outer ring identifies only the currently active playback beat, regardless of its sound state. The ring must move with shared spring tokens and disappear when playback stops. Keep the beat index, sound state and active state in accessibility labels.
 
 ## Runtime Contract
 
