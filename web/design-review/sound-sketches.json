@@ -1,0 +1,61 @@
+{
+  "provenance": "Original deterministic synthesis authored for this local mockup. No third-party samples. Sound-character sketches, not release masters. Existing Wood, Click and Classic files are copies of app assets.",
+  "files": [
+    {
+      "file": "soft.wav",
+      "duration_ms": 70,
+      "sample_rate": 48000,
+      "voice": "normal",
+      "peak_dbfs": -6.94
+    },
+    {
+      "file": "soft-accent.wav",
+      "duration_ms": 70,
+      "sample_rate": 48000,
+      "voice": "accent",
+      "peak_dbfs": -5.04
+    },
+    {
+      "file": "rim.wav",
+      "duration_ms": 50,
+      "sample_rate": 48000,
+      "voice": "normal",
+      "peak_dbfs": -6.94
+    },
+    {
+      "file": "rim-accent.wav",
+      "duration_ms": 50,
+      "sample_rate": 48000,
+      "voice": "accent",
+      "peak_dbfs": -5.04
+    },
+    {
+      "file": "clave.wav",
+      "duration_ms": 85,
+      "sample_rate": 48000,
+      "voice": "normal",
+      "peak_dbfs": -6.94
+    },
+    {
+      "file": "clave-accent.wav",
+      "duration_ms": 85,
+      "sample_rate": 48000,
+      "voice": "accent",
+      "peak_dbfs": -5.04
+    },
+    {
+      "file": "studio.wav",
+      "duration_ms": 27,
+      "sample_rate": 48000,
+      "voice": "normal",
+      "peak_dbfs": -6.94
+    },
+    {
+      "file": "studio-accent.wav",
+      "duration_ms": 27,
+      "sample_rate": 48000,
+      "voice": "accent",
+      "peak_dbfs": -5.04
+    }
+  ]
+}
