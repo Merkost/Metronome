@@ -9,6 +9,8 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - 'web/design-review/**'
+      - 'tools/build-design-review.mjs'
       - 'shared/src/commonMain/**'
       - 'shared/src/wasmJsMain/**'
       - 'shared/build.gradle.kts'
@@ -34,6 +36,15 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/design-review/package-lock.json
+
+      - name: Install design review dependencies
+        run: npm ci --prefix web/design-review
+
       - name: Build the web app
         run: ./gradlew :shared:wasmJsBrowserDistribution --no-daemon
 
@@ -51,6 +62,9 @@ jobs:
           rm -f _site/CNAME
           du -sh _site
           ls _site/app
+
+      - name: Build the design review
+        run: node tools/build-design-review.mjs
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
