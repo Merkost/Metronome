@@ -132,27 +132,53 @@ const lastBeatBefore = (frame: number) => {
   return last;
 };
 
+export const riseY = (frame: number) => (1 - calm(frame, T.s1 - 2, 22)) * 1500;
+const matchHandoff = (frame: number) => ramp(frame, T.s1 + 9, T.s1 + 14, easeInOut);
+
+const RowMask: React.FC<{ frame: number }> = ({ frame }) => {
+  const a = 1 - matchHandoff(frame);
+  if (a <= 0) return null;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: `${(layout.ballsY - 0.045) * 100}%`,
+        height: "9%",
+        background: "#FFFFFF",
+        opacity: a,
+      }}
+    />
+  );
+};
+
 const ColdOpen: React.FC<{ frame: number }> = ({ frame }) => {
   const p = calm(frame, T.s1 - 2, 22);
   const words = [0, BEAT, BEAT * 2, BEAT * 3];
   const bigSize = 112;
   const sx = mix(1, HEAD_SIZE / bigSize, p);
   const ty = mix(640, HEAD_Y, p);
-  const dotsUnitStart = 2.15;
-  const dotsUnitEnd = PHONE_W / 440;
-  const unit = mix(dotsUnitStart, dotsUnitEnd, p);
-  const target = screenToCanvas(layout.ballsX[0], layout.ballsY);
+  const target = screenToCanvas(0.5, layout.ballsY);
+  const restY = 1180;
+  let lockFrame = T.s1 + 30;
+  for (let f = T.s1 - 2; f < T.s1 + 30; f++) {
+    if (target.y + riseY(f) <= restY) {
+      lockFrame = f;
+      break;
+    }
+  }
+  const shrink = ramp(frame, T.s1 - 4, lockFrame, easeInOut);
+  const unit = mix(2.15, PHONE_W / 440, shrink);
+  const gapToRow = target.y + riseY(frame) - restY;
+  const cy = restY + Math.min(0, gapToRow);
   const rowW = (3 * PITCH + BALL) * unit;
-  const startCx = W / 2;
-  const startCy = 1180;
-  const endCx = screenToCanvas((layout.ballsX[0] + layout.ballsX[3]) / 2, layout.ballsY).x;
-  const cx = mix(startCx, endCx, p);
-  const cy = mix(startCy, target.y, p);
-  const beatIndex = Math.max(0, Math.min(3, Math.floor(frame / BEAT)));
-  const slide = beatIndex === 0 ? 0 : beatIndex - 1 + emphasized(frame, beatIndex * BEAT);
-  const indicator = frame >= T.s1 ? 3 - 3 * emphasized(frame, T.s1) : slide;
-  const handoff = ramp(frame, T.s1 + 14, T.s1 + 22, easeInOut);
-  const colorT = ramp(frame, T.s1 + 2, T.s1 + 16, easeInOut);
+  const n = Math.max(0, Math.floor(frame / BEAT));
+  const to = n % 4;
+  const from = n === 0 ? 0 : (n - 1) % 4;
+  const indicator = from + (to - from) * emphasized(frame, n * BEAT);
+  const colorT = easeInOut(clamp((300 - gapToRow) / 110));
+  const handoff = matchHandoff(frame);
   const balls = [0, 1, 2, 3].map((i) => {
     const appear = frame >= i * BEAT ? expressive(frame, i * BEAT) : 0;
     const glow = pulse(frame, i * BEAT, 8) * (frame < T.s1 ? 1 : 0);
@@ -161,7 +187,6 @@ const ColdOpen: React.FC<{ frame: number }> = ({ frame }) => {
     const light = i === 0 ? INK : "#3A3A3F";
     return { state, appear, glow, color: lerpColor(light, dark, colorT) };
   });
-  const headOut = frame >= T.s1 ? 0 : 0;
   return (
     <>
       <div
@@ -171,7 +196,6 @@ const ColdOpen: React.FC<{ frame: number }> = ({ frame }) => {
           top: ty,
           transform: `scale(${sx})`,
           transformOrigin: "0 0",
-          opacity: 1 - headOut,
         }}
       >
         {frame < T.s2 ? (
@@ -189,7 +213,7 @@ const ColdOpen: React.FC<{ frame: number }> = ({ frame }) => {
         <div
           style={{
             position: "absolute",
-            left: cx - rowW / 2,
+            left: target.x - rowW / 2,
             top: cy - (BALL * unit) / 2,
             opacity: 1 - handoff,
           }}
@@ -228,7 +252,7 @@ const Count: React.FC<{ frame: number }> = ({ frame }) => {
         gap: 34,
         fontFamily: FONT,
         fontWeight: 700,
-        fontSize: 44,
+        fontSize: 52,
         opacity: 1 - out,
       }}
     >
@@ -254,36 +278,41 @@ const Count: React.FC<{ frame: number }> = ({ frame }) => {
 };
 
 const EndCard: React.FC<{ frame: number }> = ({ frame }) => {
-  const f = frame - T.end;
-  const drawStart = T.end + 2;
-  const draw = [0, 1, 2, 3].map((i) => ramp(frame, drawStart + i * 4, drawStart + i * 4 + 20, easeInOut));
-  const fill = ramp(frame, T.final - 3, T.final + 4, easeOut);
+  if (frame < T.end) return null;
+  const drawStart = T.end + 4;
+  const draw = [0, 1, 2, 3].map((i) => ramp(frame, drawStart + i * 3, drawStart + i * 3 + 22, easeInOut));
+  const fill = ramp(frame, T.final - 2, T.final + 3, easeOut);
   const pop = frame >= T.final ? expressive(frame, T.final) : 0;
-  const markScale = 1 + 0.06 * pulse(frame, T.final, 12);
-  const word = calm(frame, T.final + 2);
-  const tag = calm(frame, T.final + 8);
-  const dots = [VIOLET, MINT, BLUE, PINK];
-  const dotsIn = calm(frame, T.final + 12);
+  const markScale = (0.86 + 0.14 * calm(frame, T.end + 2)) * (1 + 0.07 * pulse(frame, T.final, 14));
+  const word = calm(frame, T.final + 3);
+  const tag = calm(frame, T.final + 9);
+  const hues = [VIOLET, MINT, BLUE, PINK];
   const markColor = lerpColor(INK, VIOLET.accent, clamp(pop));
-  if (f < 0) return null;
   return (
-    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
-      <div style={{ transform: `translateY(-90px) scale(${markScale})` }}>
-        <BrandMark size={250} color={markColor} draw={draw} fill={fill} />
+    <AbsoluteFill>
+      <div
+        style={{
+          position: "absolute",
+          left: W / 2 - 150,
+          top: 650,
+          transform: `scale(${markScale})`,
+        }}
+      >
+        <BrandMark size={300} color={markColor} draw={draw} fill={fill} />
       </div>
       <div
         style={{
           position: "absolute",
-          top: 1040,
+          top: 1010,
           width: "100%",
           textAlign: "center",
           fontFamily: FONT,
           fontWeight: 700,
-          fontSize: 92,
-          letterSpacing: "-0.03em",
+          fontSize: 104,
+          letterSpacing: "-0.025em",
           color: INK,
           opacity: word,
-          transform: `translateY(${(1 - word) * 30}px)`,
+          transform: `translateY(${(1 - word) * 36}px)`,
         }}
       >
         Metronome
@@ -291,7 +320,7 @@ const EndCard: React.FC<{ frame: number }> = ({ frame }) => {
       <div
         style={{
           position: "absolute",
-          top: 1150,
+          top: 1140,
           width: "100%",
           textAlign: "center",
           fontFamily: FONT,
@@ -299,14 +328,24 @@ const EndCard: React.FC<{ frame: number }> = ({ frame }) => {
           fontSize: 34,
           color: INK_SOFT,
           opacity: tag,
-          transform: `translateY(${(1 - tag) * 20}px)`,
+          transform: `translateY(${(1 - tag) * 22}px)`,
         }}
       >
         No ads. No account. Just practice.
       </div>
-      <div style={{ position: "absolute", top: 1290, display: "flex", gap: 26 }}>
-        {dots.map((h, i) => {
+      <div
+        style={{
+          position: "absolute",
+          top: 1262,
+          left: W / 2 - (4 * 22 + 3 * 30) / 2,
+          display: "flex",
+          gap: 30,
+        }}
+      >
+        {hues.map((h, i) => {
           const a = calm(frame, T.final + 12 + i * 3);
+          const beat = T.final + 15 + i * 7.5;
+          const hit = pulse(frame, beat, 10);
           return (
             <div
               key={i}
@@ -315,8 +354,8 @@ const EndCard: React.FC<{ frame: number }> = ({ frame }) => {
                 height: 22,
                 borderRadius: 11,
                 background: h.accent,
-                opacity: a * dotsIn,
-                transform: `scale(${a})`,
+                opacity: a,
+                transform: `scale(${a * (1 + 0.45 * hit)})`,
               }}
             />
           );
@@ -331,8 +370,7 @@ export const AppPreview: React.FC = () => {
   const hue = hueAt(frame);
   const beatPulse = pulse(frame, lastBeatBefore(frame), 8);
 
-  const riseP = calm(frame, T.s1 - 2, 22);
-  const s1Y = (1 - riseP) * 1500;
+  const s1Y = riseY(frame);
   const s1Push = ramp(frame, T.s1, T.s2, easeInOut);
 
   const s2In = snappy(frame, T.s2 - 6);
@@ -366,8 +404,11 @@ export const AppPreview: React.FC = () => {
           card={VIOLET.card}
           src={footage("s1", frame)}
           y={s1Y}
-          scale={(1 + 0.025 * s1Push) * (1 - 0.06 * clamp(s2In))}
+          scale={1 - 0.06 * clamp(s2In)}
           origin={{ x: W / 2, y: CARD_TOP }}
+          zoom={1 + 0.035 * s1Push}
+          focus={screenToCanvas(0.5, layout.ballsY)}
+          overlay={<RowMask frame={frame} />}
           dim={0.5 * clamp(s2In)}
         />
       )}
@@ -377,8 +418,8 @@ export const AppPreview: React.FC = () => {
           card={MINT.card}
           src={footage("s2", Math.max(frame, T.s2))}
           y={(1 - s2In) * 1500}
-          scale={1 + 0.3 * s2Zoom}
-          origin={{ x: bpm.x, y: bpm.y }}
+          zoom={1 + 0.34 * s2Zoom}
+          focus={bpm}
         />
       )}
 
@@ -399,8 +440,8 @@ export const AppPreview: React.FC = () => {
           src={footage("s4", Math.max(frame, T.s4))}
           x={(1 - s4In) * W}
           y={outP * 1700}
-          scale={1 + 0.42 * s4Zoom}
-          origin={{ x: balls.x, y: balls.y }}
+          zoom={1 + 0.42 * s4Zoom}
+          focus={balls}
           overlay={<Touches taps={score.taps} size={150} />}
         />
       )}

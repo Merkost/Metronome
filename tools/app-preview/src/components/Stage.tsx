@@ -26,13 +26,27 @@ type Props = {
   y?: number;
   scale?: number;
   origin?: { x: number; y: number };
+  zoom?: number;
+  focus?: { x: number; y: number };
   dim?: number;
   overlay?: React.ReactNode;
 };
 
-export const Stage: React.FC<Props> = ({ card, src, x = 0, y = 0, scale = 1, origin, dim = 0, overlay }) => {
+export const Stage: React.FC<Props> = ({
+  card,
+  src,
+  x = 0,
+  y = 0,
+  scale = 1,
+  origin,
+  zoom = 1,
+  focus,
+  dim = 0,
+  overlay,
+}) => {
   const b = phoneBox();
   const o = origin ?? { x: W / 2, y: 1100 };
+  const f = focus ?? { x: W / 2, y: 1100 };
   return (
     <div
       style={{
@@ -51,22 +65,27 @@ export const Stage: React.FC<Props> = ({ card, src, x = 0, y = 0, scale = 1, ori
           height: 1920,
           borderRadius: CARD_RADIUS,
           background: card,
+          overflow: "hidden",
         }}
-      />
-      <div style={{ position: "absolute", left: b.left, top: b.top }}>
-        <Phone width={PHONE_W} src={src}>
-          {overlay}
-        </Phone>
-      </div>
-      {dim > 0 && (
+      >
         <div
           style={{
             position: "absolute",
-            inset: -400,
-            background: `rgba(10,10,10,${dim})`,
+            inset: 0,
+            transform: `scale(${zoom})`,
+            transformOrigin: `${f.x - CARD_X}px ${f.y - CARD_TOP}px`,
           }}
-        />
-      )}
+        >
+          <div style={{ position: "absolute", left: b.left - CARD_X, top: b.top - CARD_TOP }}>
+            <Phone width={PHONE_W} src={src}>
+              {overlay}
+            </Phone>
+          </div>
+        </div>
+        {dim > 0 && (
+          <div style={{ position: "absolute", inset: 0, background: `rgba(10,10,10,${dim})` }} />
+        )}
+      </div>
     </div>
   );
 };
