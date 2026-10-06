@@ -383,12 +383,16 @@ fun MainScreen(
                                 .padding(bottom = spacingLarge),
                         ) { style ->
                             when (style) {
-                                BeatDisplayStyle.PENDULUM -> Pendulum(
-                                    selectedIndex = selectedIndex,
-                                    beats = beats,
-                                    isPlaying = isPlaying,
-                                    intervalMs = metronomeState.interval,
-                                )
+                                BeatDisplayStyle.PENDULUM -> {
+                                    val beatClock by viewModel.beatClock.collectAsState()
+                                    Pendulum(
+                                        selectedIndex = selectedIndex,
+                                        beats = beats,
+                                        isPlaying = isPlaying,
+                                        intervalMs = metronomeState.interval,
+                                        beatPulse = beatClock.pulse,
+                                    )
+                                }
 
                                 BeatDisplayStyle.DOTS -> {
                                     val compactBalls = beats.size > 5

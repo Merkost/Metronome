@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="iosSimulatorArm64Test.com.merkost.metronome.components.PendulumRenderingTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-06T22:56:00.293Z" hostname="MacBook-Pro---Merkost.local" time="0.001">
+  <properties/>
+  <testcase name="audibleBeatCrossesTheCentreInsteadOfArrivingAtAnEdge[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.components.PendulumRenderingTest" time="0.0"/>
+  <testcase name="repeatedIndicesAndOddBarsKeepAlternatingAtEveryPrimaryPulse[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.components.PendulumRenderingTest" time="0.0"/>
+  <testcase name="lateMountDroppedFramesTempoChangesAndPauseUseAudioPhase[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.components.PendulumRenderingTest" time="0.0"/>
+  <testcase name="reducedMotionKeepsTheArmCentredWhileBeatStateChanges[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.components.PendulumRenderingTest" time="0.0"/>
+  <testcase name="anEntireCycleUsesStaticLayoutAndSymmetricCentreCrossings[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.components.PendulumRenderingTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

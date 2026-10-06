@@ -9,6 +9,10 @@ interface MetronomePlayer {
     val failures: Flow<Throwable> get() = emptyFlow()
     fun initialize(initialSound: ClickSound = ClickSound.WOOD)
     fun play(beat: Beat, stereoLeft: Float, stereoRight: Float)
+    fun play(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: () -> Unit) {
+        play(beat, stereoLeft, stereoRight)
+        onSubmitted()
+    }
     fun stop()
     fun release()
     fun switchSound(sound: ClickSound)

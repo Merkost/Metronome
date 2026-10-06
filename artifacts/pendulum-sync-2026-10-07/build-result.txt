@@ -1,0 +1,15 @@
+Command: ANDROID_HOME=/Users/merkost/Library/Android/sdk ./gradlew :shared:iosSimulatorArm64Test -PiosTestSdkDirectory=/private/tmp/MetronomeIosTestSdk :androidApp:assembleDebug :shared:testDebugUnitTest :shared:compileKotlinIosArm64 :shared:linkDebugFrameworkIosSimulatorArm64 :shared:compileKotlinWasmJs --console=plain
+
+> Task :shared:iosSimulatorArm64Test
+> Task :shared:testDebugUnitTest UP-TO-DATE
+> Task :shared:compileKotlinIosArm64
+> Task :shared:linkDebugFrameworkIosSimulatorArm64
+> Task :androidApp:assembleDebug
+> Task :shared:compileKotlinWasmJs
+BUILD SUCCESSFUL in 2m 51s
+106 actionable tasks: 16 executed, 90 up-to-date
+
+Native: 242 tests, zero failures/errors/skips. Android: 196 tests, zero failures/errors/skips. Rendering: 46 cases. New: 6 phase, 8 actual-engine boundary, 5 native rendering cases.
+The original rendered regression failed at tip 111.753px instead of centre 150px before production edits.
+A subdivision integration assertion initially checked before the next configuration-capture boundary; it was corrected to observe the next primary beat and passed.
+Compiler deprecation/opt-in warnings remain.

@@ -32,7 +32,7 @@ import kotlin.math.max
 class MetronomePlayerIos : MetronomePlayer {
     private sealed interface AudioCommand {
         data class Initialize(val sound: ClickSound, val generation: Long) : AudioCommand
-        data class Play(val beat: Beat, val left: Float, val right: Float, val generation: Long) : AudioCommand
+        data class Play(val beat: Beat, val left: Float, val right: Float, val generation: Long, val onSubmitted: (() -> Unit)? = null) : AudioCommand
         data object Stop : AudioCommand
         data class SwitchSound(val sound: ClickSound, val generation: Long) : AudioCommand
         data object Release : AudioCommand
@@ -73,6 +73,10 @@ class MetronomePlayerIos : MetronomePlayer {
         commands.offer(AudioCommand.Play(beat, stereoLeft, stereoRight, latestGeneration.value))
     }
 
+    override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: () -> Unit) {
+        commands.offer(AudioCommand.Play(beat, stereoLeft, stereoRight, latestGeneration.value, onSubmitted))
+    }
+
     override fun stop() {
         commands.offer(AudioCommand.Stop)
     }
@@ -96,7 +100,7 @@ class MetronomePlayerIos : MetronomePlayer {
         }
         when (command) {
             is AudioCommand.Initialize -> initializeInternal(command.sound)
-            is AudioCommand.Play -> playInternal(command.beat, command.left, command.right)
+            is AudioCommand.Play -> playInternal(command.beat, command.left, command.right, command.onSubmitted)
             AudioCommand.Stop -> stopInternal()
             is AudioCommand.SwitchSound -> switchSoundInternal(command.sound)
             AudioCommand.Release -> releaseInternal()
@@ -117,7 +121,7 @@ class MetronomePlayerIos : MetronomePlayer {
         installGraph(replacement, initialSound)
     }
 
-    private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float) {
+    private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: (() -> Unit)?) {
         val current = graph ?: return
         if (!ensureRunning(current)) {
             reportFailure(IllegalStateException("Audio engine is unavailable"))
@@ -138,6 +142,7 @@ class MetronomePlayerIos : MetronomePlayer {
             options = AVAudioPlayerNodeBufferInterrupts,
             completionHandler = null,
         )
+        onSubmitted?.invoke()
     }
 
     private fun stopInternal() {

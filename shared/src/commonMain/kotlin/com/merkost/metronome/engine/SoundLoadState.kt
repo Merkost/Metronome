@@ -6,6 +6,7 @@ internal data class QueuedSoundPlay(
     val left: Float,
     val right: Float,
     val rate: Float,
+    val onSubmitted: (() -> Unit)? = null,
 )
 
 internal data class ReadySoundPlay(

@@ -70,6 +70,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object AppAnimations {
 
+    const val PendulumSwingDegrees = 20f
+
     private const val PressStiffness = 1600f
     private const val QuickStiffness = 1100f
     private const val StandardStiffness = 700f

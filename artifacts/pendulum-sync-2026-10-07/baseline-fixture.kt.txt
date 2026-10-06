@@ -1,0 +1,82 @@
+package com.merkost.metronome.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.unit.dp
+import com.merkost.metronome.model.Beat
+import kotlin.math.abs
+import kotlin.test.Test
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalTestApi::class)
+class PendulumRenderingTest {
+    @Test
+    fun audibleBeatCrossesTheCentreInsteadOfArrivingAtAnEdge() = runComposeUiTest {
+        mainClock.autoAdvance = false
+        val index = mutableIntStateOf(0)
+        setContent {
+            MaterialTheme {
+                Box(Modifier.width(300.dp).background(MaterialTheme.colorScheme.surface)) {
+                    Pendulum(index.intValue, List(4) { Beat.LOW }, true, 500, Modifier.testTag("pendulum"))
+                }
+            }
+        }
+        mainClock.advanceTimeBy(512)
+        waitForIdle()
+        runOnUiThread { index.intValue = 1 }
+        mainClock.advanceTimeBy(16)
+        waitForIdle()
+        val image = onNodeWithTag("pendulum").captureToImage()
+        exportPendulumPpm(image, "/private/tmp/metronome-pendulum/baseline-beat.ppm")
+        val centre = image.width / 2f
+        val actual = tipCentre(image)
+        assertTrue(abs(actual - centre) <= 2f, "A click must occur at the centre crossing. centre=$centre tip=$actual")
+    }
+}
+
+private fun tipCentre(image: ImageBitmap): Float {
+    val pixels = image.toPixelMap()
+    val background = pixels[0, 0]
+    var weightedX = 0f
+    var ink = 0f
+    for (y in 5 until 25) {
+        for (x in 0 until image.width) {
+            val color = pixels[x, y]
+            val difference = maxOf(abs(color.red - background.red), abs(color.green - background.green), abs(color.blue - background.blue))
+            if (difference > 0.2f) {
+                weightedX += x * difference
+                ink += difference
+            }
+        }
+    }
+    assertTrue(ink > 0f, "The pendulum tip must be visible")
+    return weightedX / ink
+}
+
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+private fun exportPendulumPpm(image: ImageBitmap, path: String) {
+    val file = platform.posix.fopen(path, "wb") ?: error(path)
+    try {
+        platform.posix.fputs("P6\n${image.width} ${image.height}\n255\n", file)
+        val pixels = image.toPixelMap()
+        for (y in 0 until image.height) for (x in 0 until image.width) {
+            val pixel = pixels[x, y]
+            platform.posix.fputc((pixel.red * 255f).toInt().coerceIn(0, 255), file)
+            platform.posix.fputc((pixel.green * 255f).toInt().coerceIn(0, 255), file)
+            platform.posix.fputc((pixel.blue * 255f).toInt().coerceIn(0, 255), file)
+        }
+    } finally {
+        platform.posix.fclose(file)
+    }
+}

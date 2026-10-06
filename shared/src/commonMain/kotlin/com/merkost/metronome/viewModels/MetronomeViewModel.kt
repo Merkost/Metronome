@@ -6,6 +6,8 @@ import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.BeatPulse
+import com.merkost.metronome.model.BeatClockState
 import com.merkost.metronome.model.bpmFromTapIntervals
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
@@ -53,6 +55,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.seconds
@@ -136,6 +139,22 @@ class MetronomeViewModel(
     val metronomeState = _metronomeState.asStateFlow()
 
     val index = MutableStateFlow(-1)
+    private val mutableBeatClock = MutableStateFlow(BeatClockState())
+    val beatClock = mutableBeatClock.asStateFlow()
+
+    internal fun beginBeatSession(): Long = mutableBeatClock.updateAndGet {
+        BeatClockState(generation = it.generation + 1L)
+    }.generation
+
+    internal fun onBeatPulse(generation: Long, pulse: BeatPulse) {
+        mutableBeatClock.update { current ->
+            if (generation == current.generation && (current.pulse == null || pulse.ordinal > current.pulse.ordinal)) {
+                current.copy(pulse = pulse)
+            } else {
+                current
+            }
+        }
+    }
 
     private val mutableOnboardingLoaded = MutableStateFlow(false)
     val onboardingLoaded = mutableOnboardingLoaded.asStateFlow()

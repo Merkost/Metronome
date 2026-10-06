@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-06T22:55:57.232Z" hostname="MacBook-Pro---Merkost.local" time="0.0">
+  <properties/>
+  <testcase name="deferredAudioSubmissionStartsAtCentreAndOlderCallbacksCannotRewindIt[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <testcase name="cancellationDuringTimestampCaptureCannotRestoreAPreviousPlaybackSession[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <testcase name="countInFlowsIntoOddBarsWithoutResettingTheSwingDirection[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <testcase name="silentGapBarsRetainScheduledPhaseAndSubdivisionsDoNotRetargetTheMainSwing[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <testcase name="stalePrimariesAreSkippedAndTheNextSubmittedClickHasFreshCentreTiming[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <testcase name="pauseResumeAndMeterRestartFencePreviouslyQueuedSubmissions[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <testcase name="aLiveTempoChangeUsesTheNextBeatsExactCadenceWithoutRetargetingThisBeat[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <testcase name="mutedPrimaryBeatsKeepThePendulumClockWithoutSubmittingSound[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

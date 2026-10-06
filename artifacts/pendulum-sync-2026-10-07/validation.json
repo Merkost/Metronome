@@ -1,0 +1,60 @@
+{
+  "native": {
+    "tests": 242,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidShared": {
+    "tests": 196,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "renderingTests": 46,
+  "newPhaseTests": 6,
+  "newEngineIntegrationTests": 8,
+  "newNativeRenderingTests": 5,
+  "baseline": {
+    "tests": 224,
+    "failures": 1,
+    "errors": 0,
+    "tipCentrePx": 111.75317,
+    "canvasCentrePx": 150
+  },
+  "platformGates": [
+    "Android debug build",
+    "iOS arm64 source compilation",
+    "iOS simulator debug framework linking",
+    "Wasm source compilation"
+  ],
+  "sourceSha256": {
+    "shared/src/commonMain/kotlin/com/merkost/metronome/model/BeatPulse.kt": "b0972d9a3e9ae80dd5e7a8cc6f49c093e86965c004a370ef7c40efd8bb51c5f5",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/Pendulum.kt": "befa989ea69da9ee1edf624ca4a9a4608437e7e18659a6fdae058e3a146a3e10",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/engine/MetronomeEngine.kt": "0ccceb116198582c45b6dc39e076b9646363cfd30ff2acdba598616f3d2b9b8c",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/engine/MetronomePlayer.kt": "0d974673ce4aa2ccbb6113da64f118b742dd7cab746f4eef17871eb1be1c6292",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/engine/SoundLoadState.kt": "57d5ba749423db6a16db551c65ebd517d23b2c03fc87bb65b8161d84a30c5dea",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/MainScreen.kt": "43adcec29c39f96203175bb8a3c01efe6c34bc8fdca8b049187c456626c1b89e",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/ui/AppAnimations.kt": "ae99e29a158af794e0a533af390c799d37c39bd8fa43373712147c9ebcc1b8e9",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/viewModels/MetronomeViewModel.kt": "af0869567930dfe5479ae7baccce4ae632268917fe0a1fb770158fadc3350de6",
+    "shared/src/androidMain/kotlin/com/merkost/metronome/engine/MetronomePlayerAndroid.kt": "0e070c7a30d489d9c782cd31700386d0c2ea2a9eeaa4aeedd6ecdeabefc861e5",
+    "shared/src/iosMain/kotlin/com/merkost/metronome/engine/MetronomePlayerIos.kt": "c6c65a0f1edf0596233bc9a09e2d2080ce6c97546ebc862f9ace15b2c4a6ac6f",
+    "shared/src/commonTest/kotlin/com/merkost/metronome/model/BeatPulseTest.kt": "9b04b4fd5d704ad7c1aa715457426741ac5789c61e20e55126e3106ae67250a0",
+    "shared/src/commonTest/kotlin/com/merkost/metronome/engine/MetronomePulseIntegrationTest.kt": "c214e87760e7c47ddc25b3b763185cc0b77bed2d5de6835c79d1982d2108167e",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/components/PendulumRenderingTest.kt": "ea87ae348745d7c69645562d47d3862e39ab63f306c8b8bc75b3cc71eb6bd72c"
+  },
+  "captureType": "Production Pendulum rendered in native raster fixtures with controlled monotonic pulses; no acoustic, full UIKit or physical-device acceptance",
+  "crossingPolicy": "Primary beats and count-in ticks; silent/muted/gap primaries keep scheduled phase; subdivisions do not retarget the swing",
+  "nativeAudioTiming": "Android acknowledges successful SoundPool submission, including deferred resource loads; iOS acknowledges AVAudioPlayerNode.scheduleBuffer in its serialized command handler",
+  "otherPlayerTiming": "Backwards-compatible overload fallback acknowledges engine handoff; Web compilation is verified, not Web acoustic timing",
+  "physics": "Small-angle harmonic angular displacement; fastest at centre, zero turning-point velocity; ordinal parity independent of bar index",
+  "lateCallbacks": "Single atomic generation/pulse state fences stop/restart/meter changes; strict ordinal ordering rejects older or duplicate callbacks",
+  "reducedMotion": "Arm remains centred; existing beat-state color remains available",
+  "audioScheduleChanged": false,
+  "temporaryCaptureCodeRemoved": true,
+  "limits": [
+    "No speaker/Bluetooth output latency compensation or acoustic measurements",
+    "No full mass/gravity simulation",
+    "Silent movie is native raster geometry under controlled audio-pulse timestamps"
+  ]
+}

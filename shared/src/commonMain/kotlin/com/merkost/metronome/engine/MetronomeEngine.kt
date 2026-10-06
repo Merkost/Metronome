@@ -1,6 +1,7 @@
 package com.merkost.metronome.engine
 
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.BeatPulse
 import com.merkost.metronome.platform.AudioFocusController
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.viewModels.MetronomeViewModel
@@ -9,6 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,10 +32,10 @@ class MetronomeEngine(
     private val hapticProvider: HapticProvider,
     private val audioFocus: AudioFocusController,
     private val soundPreview: SoundPreviewController? = null,
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+    private val timeSource: TimeSource.WithComparableMarks = TimeSource.Monotonic,
 ) {
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
-    private val timeSource: TimeSource.WithComparableMarks = TimeSource.Monotonic
 
     private var beatCount = 0
     private var barNumber = 0
@@ -54,10 +57,12 @@ class MetronomeEngine(
                         return@collectLatest
                     }
                     var isRestart = false
+                    var pulseOrdinal = 0L
                     viewModel.metronomeState
                         .map { it.beats.size }
                         .distinctUntilChanged()
                         .collectLatest { beatsCount ->
+                            val pulseGeneration = viewModel.beginBeatSession()
                             viewModel.index.update { -1 }
                             beatCount = 0
                             barNumber = 0
@@ -65,6 +70,12 @@ class MetronomeEngine(
                             viewModel.onCountInTick(0)
 
                             val timeline = BeatTimeline(timeSource)
+                            val playbackContext = currentCoroutineContext()
+                            fun submittedPulse(interval: Duration, ordinal: Long) {
+                                if (playbackContext.isActive && viewModel.metronomeState.value.playing) {
+                                    viewModel.onBeatPulse(pulseGeneration, BeatPulse(timeSource.markNow(), interval, ordinal))
+                                }
+                            }
 
                             if (!isRestart && viewModel.countInEnabled.value) {
                                 for (remaining in beatsCount downTo 1) {
@@ -72,11 +83,15 @@ class MetronomeEngine(
                                     viewModel.onCountInTick(remaining)
                                     val stereo = viewModel.currentStereo.value
                                     val volume = viewModel.clickVolume.value
-                                    player.play(Beat.HIGH, stereo.first * volume, stereo.second * volume)
+                                    val interval = viewModel.metronomeState.value.beatDuration
+                                    val ordinal = pulseOrdinal++
+                                    player.play(Beat.HIGH, stereo.first * volume, stereo.second * volume) {
+                                        submittedPulse(interval, ordinal)
+                                    }
                                     if (viewModel.hapticEnabled.value) {
                                         hapticProvider.playBeatHaptic(Beat.HIGH)
                                     }
-                                    timeline.advance(viewModel.metronomeState.value.beatDuration)
+                                    timeline.advance(interval)
                                 }
                                 viewModel.onCountInTick(0)
                             }
@@ -107,11 +122,25 @@ class MetronomeEngine(
                                     volume = volume,
                                     subClickVolume = SUB_CLICK_VOLUME,
                                 )
+                                val ordinal = pulseOrdinal++
+                                if (events.firstOrNull()?.offset != Duration.ZERO) {
+                                    viewModel.onBeatPulse(pulseGeneration, BeatPulse(beatStart, interval, ordinal))
+                                }
                                 for (event in events) {
                                     val eventDeadline = beatStart + event.offset
                                     delayUntil(eventDeadline)
-                                    if (!timeline.isStale(eventDeadline, interval)) {
-                                        player.play(event.beat, event.leftVolume, event.rightVolume)
+                                    val stale = timeline.isStale(eventDeadline, interval)
+                                    if (stale && event.offset == Duration.ZERO) {
+                                        viewModel.onBeatPulse(pulseGeneration, BeatPulse(beatStart, interval, ordinal))
+                                    }
+                                    if (!stale) {
+                                        if (event.offset == Duration.ZERO) {
+                                            player.play(event.beat, event.leftVolume, event.rightVolume) {
+                                                submittedPulse(interval, ordinal)
+                                            }
+                                        } else {
+                                            player.play(event.beat, event.leftVolume, event.rightVolume)
+                                        }
                                     }
                                 }
 
@@ -128,6 +157,7 @@ class MetronomeEngine(
                 } else {
                     audioFocus.abandonFocus()
                     player.stop()
+                    viewModel.beginBeatSession()
                     viewModel.index.update { -1 }
                     viewModel.onCountInTick(0)
                 }
@@ -142,6 +172,7 @@ class MetronomeEngine(
 
     fun stop() {
         job?.cancel()
+        viewModel.beginBeatSession()
         player.stop()
     }
 

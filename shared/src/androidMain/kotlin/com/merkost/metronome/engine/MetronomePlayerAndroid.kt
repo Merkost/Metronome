@@ -49,6 +49,14 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
     }
 
     override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) {
+        playInternal(beat, stereoLeft, stereoRight, null)
+    }
+
+    override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: () -> Unit) {
+        playInternal(beat, stereoLeft, stereoRight, onSubmitted)
+    }
+
+    private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: (() -> Unit)?) {
         if (beat == Beat.MUTE) return
         synchronized(lock) {
             val pool = soundPool ?: return
@@ -59,6 +67,7 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
                     left = stereoLeft,
                     right = stereoRight,
                     rate = rate,
+                    onSubmitted = onSubmitted,
                 )
             )?.let { ready -> pool.playReady(ready) }
         }
@@ -141,6 +150,7 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
             ready.play.rate,
         )
         if (stream != 0) {
+            ready.play.onSubmitted?.invoke()
             streams.addLast(stream)
             if (streams.size > 4) streams.removeFirst()
         } else {
