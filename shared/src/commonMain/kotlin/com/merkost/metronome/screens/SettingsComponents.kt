@@ -9,6 +9,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -405,7 +408,11 @@ internal fun SettingsChoiceRow(content: @Composable RowScope.() -> Unit) {
 @Composable
 fun SettingsSwitch(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, subtitle: String? = null) {
     Row(
-        modifier = Modifier.fillMaxWidth().heightIn(min = minimumTouchTargetSize).semantics(mergeDescendants = true) {},
+        modifier = Modifier.fillMaxWidth().heightIn(min = minimumTouchTargetSize)
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .semantics(mergeDescendants = true) {
+                contentDescription = subtitle?.let { "$title. $it" } ?: title
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
@@ -413,7 +420,7 @@ fun SettingsSwitch(title: String, checked: Boolean, onCheckedChange: (Boolean) -
             Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
             subtitle?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
-        PlatformSwitch(checked, onCheckedChange)
+        Box(Modifier.clearAndSetSemantics {}.focusProperties { canFocus = false }) { PlatformSwitch(checked, onCheckedChange) }
     }
 }
 
