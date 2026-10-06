@@ -1,0 +1,16 @@
+{
+  "durationInFrames": 465,
+  "timing": { "s1": 60, "s2": 120, "s3": 180, "gap": 240, "s4": 300, "end": 390, "final": 420 },
+  "layout": { "ballsX": [0.2, 0.4, 0.6, 0.8], "ballsY": 0.17, "bpmY": 0.36, "highColor": "#1A1A1A", "lowColor": "#E3E3E3" },
+  "scenes": {
+    "s1": { "start": 60, "end": 120, "clip": "c1", "frames": [0] },
+    "s2": { "start": 120, "end": 180, "clip": "c2", "frames": [0] },
+    "s3": { "start": 180, "end": 300, "clip": "c3", "frames": [0] },
+    "s4": { "start": 300, "end": 390, "clip": "c4", "frames": [0] }
+  },
+  "taps": [],
+  "clicks": [],
+  "thumps": [],
+  "risers": [],
+  "chords": []
+}

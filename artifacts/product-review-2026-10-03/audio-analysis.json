@@ -1,0 +1,32 @@
+{
+  "method": "Decode mono at 48 kHz; whole-file RMS is an asset-level measurement, not perceived loudness or device output. Onset threshold is 40 dB below each file peak.",
+  "sounds": [
+    {
+      "file": "wood.mp3",
+      "decoded_duration_ms": 757.62,
+      "sample_peak_dbfs": 1.93,
+      "whole_file_rms_dbfs": -21.78,
+      "onset_at_40db_below_peak_ms": 0.17,
+      "last_active_at_40db_below_peak_ms": 158.04,
+      "android_ios_identical": true
+    },
+    {
+      "file": "click.mp3",
+      "decoded_duration_ms": 304.88,
+      "sample_peak_dbfs": -2.76,
+      "whole_file_rms_dbfs": -27.19,
+      "onset_at_40db_below_peak_ms": 0.0,
+      "last_active_at_40db_below_peak_ms": 81.56,
+      "android_ios_identical": true
+    },
+    {
+      "file": "metronome.wav",
+      "decoded_duration_ms": 25.85,
+      "sample_peak_dbfs": -9.98,
+      "whole_file_rms_dbfs": -26.1,
+      "onset_at_40db_below_peak_ms": 0.73,
+      "last_active_at_40db_below_peak_ms": 23.67,
+      "android_ios_identical": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "index.html": {
+    "h1": 1,
+    "links": 66,
+    "missing": []
+  },
+  "support.html": {
+    "h1": 1,
+    "links": 34,
+    "missing": []
+  },
+  "privacy.html": {
+    "h1": 1,
+    "links": 27,
+    "missing": []
+  },
+  "404.html": {
+    "h1": 1,
+    "links": 27,
+    "missing": []
+  },
+  "privacy_body": "unchanged",
+  "js_syntax": "passed",
+  "local_assets": "passed"
+}

@@ -1,0 +1,32 @@
+{
+  "checks": [
+    "Inactive accent keeps solid primary fill with no outer ring",
+    "Normal beat receives the ring during playback without changing its fill",
+    "Exactly one ring during playback; zero after pause",
+    "Rhythm editor uses the same beat component and contains no visible beat numbers",
+    "Website preview has unnumbered tonal beats and an independent current-beat ring",
+    "Settings reveals, theme changes, audio preview and both device frames verified on /design/",
+    "28 protected runtime hashes match in both source copies",
+    "TypeScript and production build passed; 62 local page resources checked"
+  ],
+  "pen": {
+    "path": "/Users/merkost/StudioProjects/Metronome/Metronome.pen",
+    "saved": true,
+    "boards": 74,
+    "reusableComponents": 61,
+    "layoutProblems": 0,
+    "intentionalCrop": "N1OwyS",
+    "pdf": "artifacts/metronome-pen-2026-10-03/exports/export.pdf"
+  },
+  "deployment": {
+    "domain": "https://metronome.merkost.dev",
+    "reviewPath": "/design/",
+    "revision": "73906622dbb697be4bc411ace0576b5998c52511",
+    "workflow": "https://github.com/Merkost/Metronome/actions/runs/37121629996",
+    "status": "success",
+    "liveVerified": true,
+    "resourcesVerified": 69,
+    "screenshot": "/Users/merkost/StudioProjects/Metronome/artifacts/custom-domain-deployment-2026-10-03/live-corrected-beats.png",
+    "liveRuntimeErrors": 0
+  }
+}
