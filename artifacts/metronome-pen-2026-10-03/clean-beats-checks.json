@@ -1,0 +1,15 @@
+{
+  "updatedBeatInstances": 65,
+  "updatedScreens": 16,
+  "visibleBeatNumberNodes": 0,
+  "layoutProblems": 0,
+  "intentionalCrop": "N1OwyS",
+  "pdfPages": 74,
+  "prototypeBuild": "passed",
+  "interactionCycle": [
+    "normal",
+    "accent",
+    "muted"
+  ],
+  "accessibleIndexAndStatePreserved": true
+}

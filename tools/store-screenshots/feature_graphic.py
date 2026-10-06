@@ -37,7 +37,7 @@ def build(hero_path, out_path, W=1024, H=500):
     f1, f2 = font(int(74 * scale)), font(int(30 * scale), "Medium")
     draw.text((x, int(178 * scale)), "Set it. Trust it.", font=f1, fill=(0x14, 0x14, 0x14))
     draw.text((x, int(272 * scale)), "A metronome that never drifts.", font=f2, fill=(0x5A, 0x56, 0x52))
-    draw.text((x, int(316 * scale)), "No ads. No account. Free.", font=f2, fill=(0x5A, 0x56, 0x52))
+    draw.text((x, int(316 * scale)), "Tap a tempo. Make the beat yours.", font=f2, fill=(0x5A, 0x56, 0x52))
 
     canvas.save(out_path, "PNG")
     print(f"✓ {out_path} ({canvas.width}x{canvas.height})")

@@ -1,0 +1,116 @@
+{
+  "pages": [
+    {
+      "url": "/",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "matchesSource": true,
+      "bytes": 28754
+    },
+    {
+      "url": "/support",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "matchesSource": false,
+      "bytes": 12538,
+      "emailProtection": true,
+      "contentMatchesSource": true,
+      "contactHref": "merkostdev+metronome@gmail.com?subject=Support%20Request%20from%20Metronome%20App"
+    },
+    {
+      "url": "/privacy",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "matchesSource": false,
+      "bytes": 11857,
+      "emailProtection": true,
+      "contentMatchesSource": true,
+      "contactHref": "merkostdev+metronome@gmail.com"
+    },
+    {
+      "url": "/404",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "matchesSource": true,
+      "bytes": 9056
+    },
+    {
+      "url": "/site.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "matchesSource": true,
+      "bytes": 26348
+    },
+    {
+      "url": "/site.js",
+      "status": 200,
+      "type": "application/javascript",
+      "matchesSource": true,
+      "bytes": 10818
+    },
+    {
+      "url": "/motion.js",
+      "status": 200,
+      "type": "application/javascript",
+      "matchesSource": true,
+      "bytes": 4163
+    },
+    {
+      "url": "/sounds/wood.mp3",
+      "status": 200,
+      "type": "audio/mpeg",
+      "matchesSource": true,
+      "bytes": 5232
+    },
+    {
+      "url": "/sounds/click.mp3",
+      "status": 200,
+      "type": "audio/mpeg",
+      "matchesSource": true,
+      "bytes": 3576
+    },
+    {
+      "url": "/sounds/metronome.wav",
+      "status": 200,
+      "type": "audio/wav",
+      "matchesSource": true,
+      "bytes": 10936
+    },
+    {
+      "url": "/images/suby-icon.png",
+      "status": 200,
+      "type": "image/png",
+      "matchesSource": true,
+      "bytes": 19923
+    }
+  ],
+  "app": [
+    {
+      "path": "/app/",
+      "status": 200,
+      "sha256": "35b0982e3e4ce3fc60c95c0372fbf6788bdb5d61ca5ba672d7163a7a78b9da09",
+      "unchanged": true
+    },
+    {
+      "path": "/app/composeApp.js",
+      "status": 200,
+      "sha256": "c3a22443526d60ccaf226229c917526f3c3e669868af0b378995cdf57ecf0c18",
+      "unchanged": true
+    },
+    {
+      "path": "/app/webAudio.js",
+      "status": 200,
+      "sha256": "2ab56dcd9b37ab80d1f780063c636cb7a303cbfcc819320b6265eac42c0d539f",
+      "unchanged": true
+    }
+  ],
+  "custom404": {
+    "status": 404,
+    "branded": true
+  },
+  "release": {
+    "commit": "2325af588f06a0eb8d6856259c237744acae87d6",
+    "workflow": "https://github.com/Merkost/Metronome/actions/runs/37097667633",
+    "conclusion": "success"
+  }
+}

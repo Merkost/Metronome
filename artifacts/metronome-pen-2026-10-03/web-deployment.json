@@ -1,0 +1,27 @@
+{
+  "id": "appgdep_6ac0a127b6908191bc88ed885cbf109e",
+  "project_id": "appgprj_6ac0a0a880008191bb6872412661066f",
+  "title": "Metronome · Design review",
+  "version_id": "appgprj_6ac0a0a880008191bb6872412661066f~appgver_3782f7b56b2081918170c6eeaa3694da",
+  "type": "publish",
+  "status": "succeeded",
+  "url": "https://metronome-design-review.merkost.chatgpt.site",
+  "has_mcp": false,
+  "screenshot_asset_pointer": null,
+  "provider_deployment_id": "site---6ac0a0a880008191bb6872412661066f",
+  "failure_message": null,
+  "env_set_revision": 0,
+  "updated_at": "2026-10-03T06:31:18.606188+00:00",
+  "source": {
+    "project_id": "appgprj_6ac0a0a880008191bb6872412661066f",
+    "checkout_path": "/Users/merkost/Documents/Codex/2026-10-03/metronome-web-review",
+    "commit_sha": "7c76260a72eb98e4deacde137b534119cc581c46",
+    "archive": "/Users/merkost/StudioProjects/Metronome/artifacts/metronome-pen-2026-10-03/metronome-web-review.tar.gz"
+  },
+  "checks": {
+    "build": "passed",
+    "protectedRuntimeFiles": 28,
+    "hostingTestsPassed": 4
+  },
+  "audience": "private"
+}

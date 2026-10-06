@@ -1,0 +1,20 @@
+[
+  {
+    "path": "/app/",
+    "status": 200,
+    "sha256": "35b0982e3e4ce3fc60c95c0372fbf6788bdb5d61ca5ba672d7163a7a78b9da09",
+    "bytes": 5122
+  },
+  {
+    "path": "/app/composeApp.js",
+    "status": 200,
+    "sha256": "c3a22443526d60ccaf226229c917526f3c3e669868af0b378995cdf57ecf0c18",
+    "bytes": 534231
+  },
+  {
+    "path": "/app/webAudio.js",
+    "status": 200,
+    "sha256": "2ab56dcd9b37ab80d1f780063c636cb7a303cbfcc819320b6265eac42c0d539f",
+    "bytes": 1994
+  }
+]

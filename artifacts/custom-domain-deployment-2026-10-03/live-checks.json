@@ -1,0 +1,646 @@
+{
+  "verifiedAt": "2026-10-03T12:08:58.209Z",
+  "url": "https://metronome.merkost.dev/design/",
+  "version": {
+    "kind": "interactive-design-review",
+    "base": "/design/",
+    "revision": "73906622dbb697be4bc411ace0576b5998c52511",
+    "sourceHash": "28b8892a9d4e8eab3c2e1aa80378b72637cc0306c3b523e1c34e783df6f89c94"
+  },
+  "resourceCount": 69,
+  "failures": [],
+  "retainedApp": [
+    {
+      "path": "/app/",
+      "unchanged": true
+    },
+    {
+      "path": "/app/composeApp.js",
+      "unchanged": true
+    }
+  ],
+  "workflow": "https://github.com/Merkost/Metronome/actions/runs/37121629996",
+  "resources": [
+    {
+      "resource": "/",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/",
+      "type": "text/html; charset=utf-8",
+      "bytes": 28752,
+      "sha256": "45ca14e71b5817d3b9e3ee54b7694adc715f0150c21eee377af437c2215f3513",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/app/",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/app/",
+      "type": "text/html; charset=utf-8",
+      "bytes": 5122,
+      "sha256": "35b0982e3e4ce3fc60c95c0372fbf6788bdb5d61ca5ba672d7163a7a78b9da09",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/app/composeApp.js",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/app/composeApp.js",
+      "type": "application/javascript",
+      "bytes": 534231,
+      "sha256": "c3a22443526d60ccaf226229c917526f3c3e669868af0b378995cdf57ecf0c18",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/site.css",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/site.css",
+      "type": "text/css; charset=utf-8",
+      "bytes": 26385,
+      "sha256": "355e74800fba9b6112996fc0d3e4eba37d89d772ec5054be7ab739335c5777a0",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/site.js",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/site.js",
+      "type": "application/javascript",
+      "bytes": 10818,
+      "sha256": "f4e3246961229d992d44c13f39705e4c00b409bef46f3865125646ee28e7317d",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/motion.js",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/motion.js",
+      "type": "application/javascript",
+      "bytes": 4163,
+      "sha256": "eee612b9dea51b1ddbe403167f4f3477bb9c9413dfc10cac1087299912585685",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/build-version.json",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/build-version.json",
+      "type": "application/json",
+      "bytes": 206,
+      "sha256": "7bdce3fffe0be20150cbc033e95968422051956b55c2f133cc7efb972f32b9d6",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/gallery.html",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/gallery",
+      "type": "text/html; charset=utf-8",
+      "bytes": 6913,
+      "sha256": "093391740b023fa7328cc0a976130f9e9d0005926f82aa74ae75152875e96ac0",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/",
+      "type": "text/html; charset=utf-8",
+      "bytes": 512,
+      "sha256": "5b1e10aeb4ff418f8a1660d94ffa2f7de37e556937714a387429aa3877e3fff3",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/suggestions.html",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/suggestions",
+      "type": "text/html; charset=utf-8",
+      "bytes": 17460,
+      "sha256": "c33b32fd1d28cf3e6c63485b3f8fe87d95c7c737240286b5388d8dad8822f40e",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/onboarding.html",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/onboarding",
+      "type": "text/html; charset=utf-8",
+      "bytes": 4920,
+      "sha256": "3ef538c738054bde76ddfb7357696b596f5b293b8ae31c5f1f9e13361daa9907",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/settings.html",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/settings",
+      "type": "text/html; charset=utf-8",
+      "bytes": 4865,
+      "sha256": "2ab7a22975ede48e52bfa610dd29373faccffe1071ce04fe61db5286874bd8d2",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/review/index.html",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/review/",
+      "type": "text/html; charset=utf-8",
+      "bytes": 24385,
+      "sha256": "f13e922e3647b0e2b481567fc807c1be64fc5fa043b76bb40792bd673cc3b042",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/captures/main-brand-slider-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/main-brand-slider-light.png",
+      "type": "image/png",
+      "bytes": 15053,
+      "sha256": "3711597a9c184f9bc22cbdfe479bb4226cab18a3e81f0d6690171f140c4231c1",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/practice-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/practice-light.png",
+      "type": "image/png",
+      "bytes": 36171,
+      "sha256": "3073fdb6fce32717bb6fb1b43a8c72ced0ab5d0f4b32afa0e5b950bfd9c0f588",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/rhythm-clean-beats.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/rhythm-clean-beats.png",
+      "type": "image/png",
+      "bytes": 20134,
+      "sha256": "85a7420d3769690330f2adef80c3a1a6deb5dcd8bbbdbf2609a7bf04d28f0a07",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/presets-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/presets-light.png",
+      "type": "image/png",
+      "bytes": 26637,
+      "sha256": "7919ae7d501a91137c5101eaf179c0e6e48f7f6c0e288fd5f7f6e36d0247ed1b",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/sets-empty.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/sets-empty.png",
+      "type": "image/png",
+      "bytes": 33379,
+      "sha256": "9791d6247a8d415d144bd6c2b9982c9877a43080b5ad3ca87cfd9ed0fb437b1a",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/editor-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/editor-light.png",
+      "type": "image/png",
+      "bytes": 31163,
+      "sha256": "133859cbc91c874474c421b53a044ff007e9795a6b84ef16731959312b94d024",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/session-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/session-light.png",
+      "type": "image/png",
+      "bytes": 28610,
+      "sha256": "cca7af2883f9258e516f92ed3518c6e27d96ff77cd6481f25b99b469587f404c",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/timer-custom-slider-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/timer-custom-slider-light.png",
+      "type": "image/png",
+      "bytes": 25377,
+      "sha256": "837e88a55a37e9ee649e6f5f77d8133d6dbc40edbd5f18e01ba295fb1ac24ca9",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/tempo-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/tempo-light.png",
+      "type": "image/png",
+      "bytes": 28772,
+      "sha256": "d5adfaad613ed0d5b2b5c75760bc33c1f14079eb261305eb322267368d7d168e",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/gap-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/gap-light.png",
+      "type": "image/png",
+      "bytes": 26806,
+      "sha256": "ba408e4f1ff4a0e3b215489fd4fd562f55b9cf13923fb50a6e6646f780aa6b02",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/sounds-custom-slider-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/sounds-custom-slider-light.png",
+      "type": "image/png",
+      "bytes": 32642,
+      "sha256": "a26a63626ccfec23a1552096f38fd7f67becbb6eb18bdb5d921bf2485e9d9aaa",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/settings-custom-slider-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/settings-custom-slider-light.png",
+      "type": "image/png",
+      "bytes": 35856,
+      "sha256": "5e33b595070b9762720113908d18d169f58bd6e5e37f263b60c9346a62d74a5b",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/data-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/data-light.png",
+      "type": "image/png",
+      "bytes": 29875,
+      "sha256": "38870ed8a678b7a2ff4bbbd1acf236c181e40263719bb558f6b49fd6a9773553",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/about-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/about-light.png",
+      "type": "image/png",
+      "bytes": 22772,
+      "sha256": "2604d4d60949353ea9106800e1b8e5a1ea795bc975a265eeb46f9747c8b1fe94",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/studio-permanent-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/studio-permanent-light.png",
+      "type": "image/png",
+      "bytes": 33327,
+      "sha256": "949c15795fc3fe11991317c82bcb3230fc5418e366ce7dc93407948e3c7aa6a3",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/welcome-distinct-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/welcome-distinct-light.png",
+      "type": "image/png",
+      "bytes": 29230,
+      "sha256": "f127ca2afdc312a2ccfc89562aacf3488823a5bfb7aa8389d492699896a4a2b0",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/onboarding-sound-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/onboarding-sound-light.png",
+      "type": "image/png",
+      "bytes": 28312,
+      "sha256": "31a39e69d1d879e29581259470bea3337d71f749a3b71c07139f7cea4f40f74d",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/main-brand-slider-dark.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/main-brand-slider-dark.png",
+      "type": "image/png",
+      "bytes": 13998,
+      "sha256": "eeb05a8e2c3c81ab0e4e429bcdf9232fd834a363e7c5b7882204520eab2f92c5",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/settings-custom-slider-dark.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/settings-custom-slider-dark.png",
+      "type": "image/png",
+      "bytes": 33207,
+      "sha256": "0d4cdf87f199fc7f38d68ecb7e6369a71d5a90ee201ebf8a2e39e0fb13de78f5",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/studio-permanent-dark.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/studio-permanent-dark.png",
+      "type": "image/png",
+      "bytes": 31564,
+      "sha256": "c8c5fc0c09d4ce3b5e58047d16517635bed4b12743d70f5179d2b5532b1c17d3",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/welcome-distinct-dark.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/welcome-distinct-dark.png",
+      "type": "image/png",
+      "bytes": 27929,
+      "sha256": "44a4ad98efa0578a9acb4cd25e958c181e5a89b3433640a6e8e4c9001b3f165c",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/index.html",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/",
+      "type": "text/html; charset=utf-8",
+      "bytes": 512,
+      "sha256": "5b1e10aeb4ff418f8a1660d94ffa2f7de37e556937714a387429aa3877e3fff3",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/metronome-icon.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/metronome-icon.png",
+      "type": "image/png",
+      "bytes": 77387,
+      "sha256": "364199f05a9ef33e037119129c826b69137683f8f498953749a6ee492f2de4a4",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/index-DD9gjL_6.js",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/index-DD9gjL_6.js",
+      "type": "application/javascript",
+      "bytes": 529757,
+      "sha256": "496ad60fa89b2b9b8bd54029cfc884e6df48f884076eceeb73738e5d8f1c9ae4",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/index-DAw7GVUD.css",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/index-DAw7GVUD.css",
+      "type": "text/css; charset=utf-8",
+      "bytes": 52967,
+      "sha256": "13f038e46a42c2c65f2977241c4e0a19079338ff955949fdc2accc924bf7ff33",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/motion.html",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/motion",
+      "type": "text/html; charset=utf-8",
+      "bytes": 4751,
+      "sha256": "51f315b3eb4b06d33bba88dfb953db245840b5b14336170859a0b066ca4787c2",
+      "matchesLocal": null
+    },
+    {
+      "resource": "/design/captures/settings-refined-comparison.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/settings-refined-comparison.png",
+      "type": "image/png",
+      "bytes": 236574,
+      "sha256": "28c2d355281ae10738b9a4b1de9cfbfdbfd6493dafd16db0d9a231db1455dc8c",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/comparison-welcome-distinct.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/comparison-welcome-distinct.png",
+      "type": "image/png",
+      "bytes": 209805,
+      "sha256": "51c668b089b9cd22fe555718adb67c07350da1351c3bf18497bd4823236c8f53",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/brand-refinement-storyboard.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/brand-refinement-storyboard.png",
+      "type": "image/png",
+      "bytes": 349214,
+      "sha256": "ba333e1e77d9db769bb1512f4a93011027bb28bd2b835e2307fe7140b9840a58",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/comparison-main-brand-slider.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/comparison-main-brand-slider.png",
+      "type": "image/png",
+      "bytes": 136955,
+      "sha256": "4744cc0b9d382bf560123634d2fab8d5924debe00f3e5111f8978af2cd2715ce",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/welcome-distinct-pixel.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/welcome-distinct-pixel.png",
+      "type": "image/png",
+      "bytes": 29501,
+      "sha256": "bdddec5d9740494fd525f3954d44cb11d7c189bc0d40c9f257950907f5a4c3f7",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/comparison-settings-playful.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/comparison-settings-playful.png",
+      "type": "image/png",
+      "bytes": 264383,
+      "sha256": "c8daef3e976ba39d7f151456bfcecbebc0b8c0d8f4e8b633c64d28704e2c4786",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/settings-appearance-light.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/settings-appearance-light.png",
+      "type": "image/png",
+      "bytes": 33479,
+      "sha256": "d27dcf7b2cf6c26253cc2532d3d097983a8aeff1e62b180d84fafb9f54031430",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/settings-more-by-merkost-final.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/settings-more-by-merkost-final.png",
+      "type": "image/png",
+      "bytes": 21151,
+      "sha256": "4eeab5caea03a44d20736aaa882c911f41fa16206932d021ca40c3281be02c56",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/settings-web-comparison.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/settings-web-comparison.png",
+      "type": "image/png",
+      "bytes": 223861,
+      "sha256": "2794edf38a4d92ef50a6b604d7d8c3e2de2a30247c5152a3bca61cbb459eb72f",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/captures/settings-custom-theme-comparison.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/captures/settings-custom-theme-comparison.png",
+      "type": "image/png",
+      "bytes": 311577,
+      "sha256": "4f258fdcbad893b0d0a33ac3debfc0d0c66409a00b4636e0ab98e2dde9dacdff",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/soft.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/soft.wav",
+      "type": "audio/wav",
+      "bytes": 6764,
+      "sha256": "c03921061d0b8492ccf2895f4354e4a36588c16f8cd08229b332eb9b80beb2d2",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/rim.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/rim.wav",
+      "type": "audio/wav",
+      "bytes": 4844,
+      "sha256": "8beafbaceeb07c067b6d042bf08b0c0e2a214d6e48594b2b3b55bba896ce1d66",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/clave.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/clave.wav",
+      "type": "audio/wav",
+      "bytes": 8204,
+      "sha256": "d4f9940252e067497f2db8994148ab38c32619d0e00be9d31edd72bd20391e0e",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/studio.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/studio.wav",
+      "type": "audio/wav",
+      "bytes": 2636,
+      "sha256": "e4e0cce96bbd4d34b0e916bb87dcfe619448330f3f86beb5ebbfb858eab6a45d",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/roboto-latin-500-normal-7RbcRiD8.woff2",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/roboto-latin-500-normal-7RbcRiD8.woff2",
+      "type": "font/woff2",
+      "bytes": 22200,
+      "sha256": "5bcc3aa180e7f26f643cd5b2621cd7c2de193d0661d913a94afd3d4881a7a34b",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/roboto-latin-500-normal-DQZyH_nt.woff",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/roboto-latin-500-normal-DQZyH_nt.woff",
+      "type": "font/woff",
+      "bytes": 21920,
+      "sha256": "b9c3346f0ae869eee449c94a182d90b100f253d916827785577887d03eff51db",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/classic.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/classic.wav",
+      "type": "audio/wav",
+      "bytes": 10936,
+      "sha256": "a1904415fd138f3aa4f796a4b6bd48a961cb34b705a674e2ad257278fb5ae955",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/clave-accent.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/clave-accent.wav",
+      "type": "audio/wav",
+      "bytes": 8204,
+      "sha256": "2edf0c04402eb9378dffe92b7e1abc87fe6c81ce3f45c47c779d28837d6f1a33",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/click.mp3",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/click.mp3",
+      "type": "audio/mpeg",
+      "bytes": 3576,
+      "sha256": "5e41f07e4a3cf000c90b6abeb89a1cac1ce2b27835ed4556ac7d9f064f1f7b50",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/rim-accent.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/rim-accent.wav",
+      "type": "audio/wav",
+      "bytes": 4844,
+      "sha256": "264d58fa84a8300304c47751b8db626e3fcc0d819302b040e9218566da9cdbb5",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/soft-accent.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/soft-accent.wav",
+      "type": "audio/wav",
+      "bytes": 6764,
+      "sha256": "2d52cff9e55b5714a17dfee8144d6b2f7932baa1dd73a055bb7e46a5f82cfb96",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/studio-accent.wav",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/studio-accent.wav",
+      "type": "audio/wav",
+      "bytes": 2636,
+      "sha256": "20ad0f1c57d942258629c51cec1a6615f6952ebc38ff5fe1a2762b25d64dc7cb",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/audio/wood.mp3",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/audio/wood.mp3",
+      "type": "audio/mpeg",
+      "bytes": 5232,
+      "sha256": "81d2403b05734a97c5dce9fba90095df6e7be67d13c9d61b70ef7c2ba4c454a6",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/iphone/Bezel.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/iphone/Bezel.png",
+      "type": "image/png",
+      "bytes": 353980,
+      "sha256": "ee2514d74d2f75f3541405fa2f20811f159879a66586778cfd8c9c84c44959df",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/iphone/Keyboard.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/iphone/Keyboard.png",
+      "type": "image/png",
+      "bytes": 53341,
+      "sha256": "292e2d83d69adaeb663d6a840ce8db8d0a5257710b472c20713e03f56b08ea88",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/android/Pixel10.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/android/Pixel10.png",
+      "type": "image/png",
+      "bytes": 214337,
+      "sha256": "a87c1250ba20756f5d020b5351a7ae71d663dcfc64aca3a1cd56452e8a05233e",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/android/Keyboard.png",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/android/Keyboard.png",
+      "type": "image/png",
+      "bytes": 42695,
+      "sha256": "6085e50be17ca2705b4351283187be2c5b01b58262c70b90d74b3376efb4adfe",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/android/navigation-bar.svg",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/android/navigation-bar.svg",
+      "type": "image/svg+xml",
+      "bytes": 542,
+      "sha256": "077a782a3b6c2915fc518dfb4bba825c8c5861b2572f9522a7024902b9cb2850",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/status/status-icons.svg",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/status/status-icons.svg",
+      "type": "image/svg+xml",
+      "bytes": 824,
+      "sha256": "1a8bd4207cf34532ae514bdcdca693acc9a2b8ebc9d3182dc163c3e9ddcc4823",
+      "matchesLocal": true
+    },
+    {
+      "resource": "/design/assets/status/ios-status-icons.svg",
+      "status": 200,
+      "url": "https://metronome.merkost.dev/design/assets/status/ios-status-icons.svg",
+      "type": "image/svg+xml",
+      "bytes": 2765,
+      "sha256": "40e218b274d0973d519b50f42884e6e05ef0f2b6a0e46e102fda54218784466d",
+      "matchesLocal": true
+    }
+  ]
+}

@@ -21,8 +21,8 @@
   "frames": [
     {
       "id": "precise-timing",
-      "title": "A pulse you\ncan trust",
-      "subtitle": "Drift-free timing at every tempo",
+      "title": "Precise timing.\nBetter practice.",
+      "subtitle": "A steady pulse you can trust, at any tempo",
       "screenshot": "figma/main.png",
       "deviceW": 0.72,
       "deviceX": 0.5,
@@ -41,8 +41,8 @@
     },
     {
       "id": "tempo-trainer",
-      "title": "Get faster,\nbar by bar",
-      "subtitle": "The tempo climbs while you play",
+      "title": "Build speed\nautomatically",
+      "subtitle": "Raise or lower the tempo over complete bars",
       "screenshot": "figma/tempo-trainer.png",
       "deviceW": 0.58,
       "deviceX": 0.5,
@@ -61,8 +61,8 @@
     },
     {
       "id": "gap-trainer",
-      "title": "Silence is\nthe test",
-      "subtitle": "The click drops out. Can you hold it?",
+      "title": "Train your\ninner clock",
+      "subtitle": "The click drops out; you keep time and find out",
       "screenshot": "figma/gap-trainer.png",
       "deviceW": 0.66,
       "deviceX": 0.5,
@@ -81,8 +81,8 @@
     },
     {
       "id": "subdivisions",
-      "title": "Feel every\nsubdivision",
-      "subtitle": "Eighths, triplets and sixteenths",
+      "title": "Hear every\nsubdivision",
+      "subtitle": "Eighths, triplets and sixteenths under the beat",
       "screenshot": "figma/subdivisions.png",
       "deviceW": 0.54,
       "deviceX": 0.5,
@@ -101,8 +101,8 @@
     },
     {
       "id": "shape-the-bar",
-      "title": "Accent it.\nMute it.",
-      "subtitle": "Shape any beat in the bar",
+      "title": "Shape\nevery beat",
+      "subtitle": "Tap any beat to accent it, soften it or mute it",
       "screenshot": "figma/accents.png",
       "deviceW": 0.76,
       "deviceX": 0.5,
@@ -121,9 +121,9 @@
     },
     {
       "id": "practice-sets",
-      "title": "Your practice,\nin order",
-      "subtitle": "Presets in a sequence, each with a goal",
-      "screenshot": "figma/practice-sets.png",
+      "title": "Practise with\na plan",
+      "subtitle": "Move through timed steps and bar goals",
+      "screenshot": "raw/practice-session-sheet.png",
       "deviceW": 0.6,
       "deviceX": 0.5,
       "deviceY": 0.345,
@@ -141,8 +141,8 @@
     },
     {
       "id": "keep-going",
-      "title": "Never lose\nyour place",
-      "subtitle": "Pause, resume, pick up where you left off",
+      "title": "Move through it\nstep by step",
+      "subtitle": "Pause, resume, and pick up where you left off",
       "screenshot": "figma/session.png",
       "deviceW": 0.7,
       "deviceX": 0.5,
@@ -161,15 +161,9 @@
     },
     {
       "id": "no-nonsense",
-      "title": "No ads.\nNo account.",
-      "subtitle": "Core practice tools work offline, free",
+      "title": "Make every\nbeat yours",
+      "subtitle": "Choose your click, feel and colour",
       "screenshot": "figma/settings.png",
-      "badges": [
-        "No ads",
-        "No account",
-        "Works offline",
-        "Free"
-      ],
       "deviceW": 0.5,
       "deviceX": 0.5,
       "deviceY": 0.392,

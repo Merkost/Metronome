@@ -1,8 +1,17 @@
 # Store screenshots
 
-Generates the App Store and Google Play screenshot frames from real app
-screenshots plus a text manifest, so they can be regenerated every release
-instead of being hand-edited in a design tool.
+The current App Store set contains eight branded, opaque portrait PNGs in each
+of [`screenshots/final/6.5-1242x2688/`](../../screenshots/final/6.5-1242x2688/)
+and [`screenshots/final/6.7-1284x2778/`](../../screenshots/final/6.7-1284x2778/).
+Their editable source is the [Metronome page in Figma](https://www.figma.com/design/ZOpOs8XklFaKvZXNM4uIem/App-Store-Screenshot-Template--Community-?node-id=2647-13).
+Export its eight frames at 1× into `screenshots/source/figma-1320x2868/`, then
+run `python3 tools/store-screenshots/export_app_store.py`. The script fits each
+master to both accepted sizes with a centered vertical crop of about 5–6 px
+per edge. Upload only a set from `screenshots/final/`.
+
+The local renderer below generates alternate phone frames from real app
+screenshots and the copy manifest in `frames.json`. Its output is separate
+from the current Figma-designed App Store set.
 
 ```
 tools/store-screenshots/
@@ -58,13 +67,12 @@ Only claims that are true of the shipped build belong here. Do not add
 implying editorial endorsement, and `docs/aso-strategy.md` rules out
 review-derived claims until there is a real review corpus.
 
-## Store requirements
+## Alternate renderer output sizes
 
 | Device key | Size | Used for |
 |---|---|---|
-| `iphone-6.9` | 1290 × 2796 | App Store 6.9" iPhone (Apple scales it down for smaller sizes) |
+| `iphone-6.9` | 1290 × 2796 | Alternate iPhone preview; use the Figma-derived sets above for App Store upload |
 | `android-phone` | 1080 × 1920 | Google Play phone screenshots |
 
-Both stores take between 2 and 8 phone screenshots. The frame order in
-`frames.json` is the order they should be uploaded in — the first three carry
-the core promise, because Apple can surface them directly in search results.
+The frame order in `frames.json` applies to this alternate renderer. The
+Figma-derived App Store set uses its numbered file order.
