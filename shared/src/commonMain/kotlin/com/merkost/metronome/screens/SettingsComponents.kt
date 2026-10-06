@@ -426,6 +426,7 @@ internal fun SettingsChoiceRow(content: @Composable RowScope.() -> Unit) {
 fun SettingsSwitch(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, subtitle: String? = null) {
     Row(
         modifier = Modifier.fillMaxWidth().heightIn(min = minimumTouchTargetSize)
+            .clip(RoundedCornerShape(cornerRadiusMedium))
             .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
             .semantics(mergeDescendants = true) {
                 contentDescription = subtitle?.let { "$title. $it" } ?: title
