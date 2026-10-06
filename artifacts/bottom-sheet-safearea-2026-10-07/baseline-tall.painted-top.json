@@ -1,0 +1,54 @@
+{
+  "name": "baseline-tall",
+  "nativeFrameCount": 193,
+  "sampledModalFrames": 5,
+  "minimumPaintedTopPx": 0,
+  "lastTopPx": 0,
+  "frames": [
+    {
+      "frameIndex": 188,
+      "topPxAtX150": 0,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 189,
+      "topPxAtX150": 0,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 190,
+      "topPxAtX150": 0,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 191,
+      "topPxAtX150": 0,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 192,
+      "topPxAtX150": 0,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    }
+  ]
+}
