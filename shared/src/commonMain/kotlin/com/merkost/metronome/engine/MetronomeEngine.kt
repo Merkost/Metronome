@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.ComparableTimeMark
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -27,6 +28,7 @@ class MetronomeEngine(
     private val viewModel: MetronomeViewModel,
     private val hapticProvider: HapticProvider,
     private val audioFocus: AudioFocusController,
+    private val soundPreview: SoundPreviewController? = null,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
@@ -47,6 +49,7 @@ class MetronomeEngine(
             }
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
+                    withContext(Dispatchers.Main.immediate) { soundPreview?.stop() }
                     if (!requestPlaybackFocus(audioFocus, viewModel::onStopClicked)) {
                         return@collectLatest
                     }

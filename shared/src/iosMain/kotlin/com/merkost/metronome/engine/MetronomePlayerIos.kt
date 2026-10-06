@@ -12,17 +12,18 @@ import kotlinx.cinterop.value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.asSharedFlow
 import org.kimplify.cedar.logging.Cedar
 import platform.AVFAudio.AVAudioEngine
 import platform.AVFAudio.AVAudioFile
 import platform.AVFAudio.AVAudioPCMBuffer
 import platform.AVFAudio.AVAudioPlayerNode
 import platform.AVFAudio.AVAudioPlayerNodeBufferInterrupts
-import platform.AVFAudio.AVAudioSession
-import platform.AVFAudio.AVAudioSessionCategoryOptionMixWithOthers
-import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.AVAudioUnitVarispeed
-import platform.AVFAudio.setActive
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
 import kotlin.math.max
@@ -30,10 +31,10 @@ import kotlin.math.max
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 class MetronomePlayerIos : MetronomePlayer {
     private sealed interface AudioCommand {
-        data class Initialize(val sound: ClickSound) : AudioCommand
-        data class Play(val beat: Beat, val left: Float, val right: Float) : AudioCommand
+        data class Initialize(val sound: ClickSound, val generation: Long) : AudioCommand
+        data class Play(val beat: Beat, val left: Float, val right: Float, val generation: Long) : AudioCommand
         data object Stop : AudioCommand
-        data class SwitchSound(val sound: ClickSound) : AudioCommand
+        data class SwitchSound(val sound: ClickSound, val generation: Long) : AudioCommand
         data object Release : AudioCommand
     }
 
@@ -42,26 +43,34 @@ class MetronomePlayerIos : MetronomePlayer {
         val player: AVAudioPlayerNode,
         val varispeed: AVAudioUnitVarispeed,
         val buffer: AVAudioPCMBuffer,
+        val accentBuffer: AVAudioPCMBuffer?,
     )
 
+    private val mutableFailures = MutableSharedFlow<Throwable>(extraBufferCapacity = 4)
+    override val failures: Flow<Throwable> = mutableFailures.asSharedFlow()
+    private val latestGeneration = MutableStateFlow(0L)
+    private var processingGeneration = 0L
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val commands = SerializedCommandQueue(
         scope = scope,
         handler = ::handleCommand,
         onFailure = { error ->
             Cedar.tag(TAG).e("Audio command failed: ${error.message ?: error::class.simpleName}")
+            if (processingGeneration == latestGeneration.value) mutableFailures.tryEmit(error)
         },
     )
 
+    private val sessionOwner = Any()
     private var graph: AudioGraph? = null
     private var requestedSound: ClickSound? = null
 
     override fun initialize(initialSound: ClickSound) {
-        commands.offer(AudioCommand.Initialize(initialSound))
+        latestGeneration.update { it + 1 }
+        commands.offer(AudioCommand.Initialize(initialSound, latestGeneration.value))
     }
 
     override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) {
-        commands.offer(AudioCommand.Play(beat, stereoLeft, stereoRight))
+        commands.offer(AudioCommand.Play(beat, stereoLeft, stereoRight, latestGeneration.value))
     }
 
     override fun stop() {
@@ -69,14 +78,22 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     override fun switchSound(sound: ClickSound) {
-        commands.offer(AudioCommand.SwitchSound(sound))
+        latestGeneration.update { it + 1 }
+        commands.offer(AudioCommand.SwitchSound(sound, latestGeneration.value))
     }
 
     override fun release() {
+        latestGeneration.update { it + 1 }
         commands.offer(AudioCommand.Release)
     }
 
     private fun handleCommand(command: AudioCommand) {
+        processingGeneration = when (command) {
+            is AudioCommand.Initialize -> command.generation
+            is AudioCommand.Play -> command.generation
+            is AudioCommand.SwitchSound -> command.generation
+            AudioCommand.Stop, AudioCommand.Release -> latestGeneration.value
+        }
         when (command) {
             is AudioCommand.Initialize -> initializeInternal(command.sound)
             is AudioCommand.Play -> playInternal(command.beat, command.left, command.right)
@@ -87,15 +104,27 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     private fun initializeInternal(initialSound: ClickSound) {
-        if (!configureSession() || !activateSession()) return
-        val replacement = createGraph(initialSound) ?: return
+        if (!activateSession()) {
+            reportFailure(IllegalStateException("Audio session is unavailable"))
+            return
+        }
+        val replacement = createGraph(initialSound)
+        if (replacement == null) {
+            if (graph == null) deactivateSession()
+            reportFailure(IllegalStateException("Sound resource could not be loaded"))
+            return
+        }
         installGraph(replacement, initialSound)
     }
 
     private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float) {
         val current = graph ?: return
-        if (!ensureRunning(current)) return
-        current.varispeed.rate = beat.rate
+        if (!ensureRunning(current)) {
+            reportFailure(IllegalStateException("Audio engine is unavailable"))
+            return
+        }
+        val accent = current.accentBuffer.takeIf { beat == Beat.HIGH }
+        current.varispeed.rate = if (accent == null) beat.rate else 1f
         current.player.volume = max(stereoLeft, stereoRight)
         current.player.pan = if (stereoLeft + stereoRight > 0f) {
             (stereoRight - stereoLeft) / max(stereoLeft, stereoRight)
@@ -104,7 +133,7 @@ class MetronomePlayerIos : MetronomePlayer {
         }
         if (!current.player.playing) current.player.play()
         current.player.scheduleBuffer(
-            current.buffer,
+            accent ?: current.buffer,
             atTime = null,
             options = AVAudioPlayerNodeBufferInterrupts,
             completionHandler = null,
@@ -119,8 +148,16 @@ class MetronomePlayerIos : MetronomePlayer {
 
     private fun switchSoundInternal(sound: ClickSound) {
         if (sound == requestedSound) return
-        if (!activateSession()) return
-        val replacement = createGraph(sound) ?: return
+        if (!activateSession()) {
+            reportFailure(IllegalStateException("Audio session is unavailable"))
+            return
+        }
+        val replacement = createGraph(sound)
+        if (replacement == null) {
+            if (graph == null) deactivateSession()
+            reportFailure(IllegalStateException("Sound resource could not be loaded"))
+            return
+        }
         installGraph(replacement, sound)
     }
 
@@ -152,7 +189,27 @@ class MetronomePlayerIos : MetronomePlayer {
             pCMFormat = audioFile.processingFormat,
             frameCapacity = audioFile.length.toUInt(),
         )
-        audioFile.readIntoBuffer(buffer, error = null)
+        if (!audioFile.readIntoBuffer(buffer, error = null)) {
+            Cedar.tag(TAG).e("Audio resource could not be decoded: $name.$ext")
+            return null
+        }
+        val accentBuffer = accentFileName(sound)?.let { accentName ->
+            val accentUrl = NSBundle.mainBundle.URLForResource(accentName, withExtension = "wav")
+            if (accentUrl == null) {
+                Cedar.tag(TAG).e("Audio resource not found: $accentName.wav")
+                return null
+            }
+            val accentFile = AVAudioFile(forReading = accentUrl, error = null)
+            val loaded = AVAudioPCMBuffer(
+                pCMFormat = accentFile.processingFormat,
+                frameCapacity = accentFile.length.toUInt(),
+            )
+            if (!accentFile.readIntoBuffer(loaded, error = null)) {
+                Cedar.tag(TAG).e("Audio resource could not be decoded: $accentName.wav")
+                return null
+            }
+            loaded
+        }
 
         val engine = AVAudioEngine()
         val player = AVAudioPlayerNode()
@@ -164,7 +221,7 @@ class MetronomePlayerIos : MetronomePlayer {
         engine.prepare()
         if (!startEngine(engine)) return null
         player.play()
-        return AudioGraph(engine, player, varispeed, buffer)
+        return AudioGraph(engine, player, varispeed, buffer, accentBuffer)
     }
 
     private fun ensureRunning(current: AudioGraph): Boolean {
@@ -174,30 +231,14 @@ class MetronomePlayerIos : MetronomePlayer {
         return true
     }
 
-    private fun configureSession(): Boolean = memScoped {
-        val error = alloc<ObjCObjectVar<NSError?>>()
-        val configured = AVAudioSession.sharedInstance().setCategory(
-            AVAudioSessionCategoryPlayback,
-            withOptions = AVAudioSessionCategoryOptionMixWithOthers,
-            error = error.ptr,
-        )
-        if (!configured) Cedar.tag(TAG).e("setCategory failed: ${describe(error.value)}")
-        configured
+    private fun reportFailure(error: Throwable) {
+        if (processingGeneration == latestGeneration.value) mutableFailures.tryEmit(error)
     }
 
-    private fun activateSession(): Boolean = memScoped {
-        val error = alloc<ObjCObjectVar<NSError?>>()
-        val activated = AVAudioSession.sharedInstance().setActive(true, error = error.ptr)
-        if (!activated) Cedar.tag(TAG).e("setActive failed: ${describe(error.value)}")
-        activated
-    }
+    private fun activateSession(): Boolean = IosAudioSessionLease.acquire(sessionOwner)
 
     private fun deactivateSession() {
-        memScoped {
-            val error = alloc<ObjCObjectVar<NSError?>>()
-            val deactivated = AVAudioSession.sharedInstance().setActive(false, error = error.ptr)
-            if (!deactivated) Cedar.tag(TAG).e("setActive(false) failed: ${describe(error.value)}")
-        }
+        IosAudioSessionLease.release(sessionOwner)
     }
 
     private fun startEngine(engine: AVAudioEngine): Boolean = memScoped {
@@ -214,6 +255,18 @@ class MetronomePlayerIos : MetronomePlayer {
         ClickSound.WOOD -> "wood" to "mp3"
         ClickSound.CLICK -> "click" to "mp3"
         ClickSound.CLASSIC -> "metronome" to "wav"
+        ClickSound.SOFT -> "soft" to "wav"
+        ClickSound.RIM -> "rim" to "wav"
+        ClickSound.CLAVE -> "clave" to "wav"
+        ClickSound.STUDIO -> "studio" to "wav"
+    }
+
+    private fun accentFileName(sound: ClickSound): String? = when (sound) {
+        ClickSound.WOOD, ClickSound.CLICK, ClickSound.CLASSIC -> null
+        ClickSound.SOFT -> "soft_accent"
+        ClickSound.RIM -> "rim_accent"
+        ClickSound.CLAVE -> "clave_accent"
+        ClickSound.STUDIO -> "studio_accent"
     }
 
     private companion object {

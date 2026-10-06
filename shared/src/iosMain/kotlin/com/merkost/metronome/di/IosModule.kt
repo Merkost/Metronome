@@ -14,14 +14,17 @@ import com.merkost.metronome.platform.IosAudioFocusController
 import com.merkost.metronome.platform.IosPlatformActions
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.createDataStore
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val iosModule = module {
     single<ReleaseLogTreeProvider> { ReleaseLogTreeProvider { CrashlyticsTree() } }
     single { createDataStore() }
     single<MetronomePlayer> { MetronomePlayerIos() }
+    single<MetronomePlayer>(named("soundPreview")) { MetronomePlayerIos() }
     single<PlatformActions> { IosPlatformActions() }
     single<AppVersionProvider> { IosAppVersionProvider() }
     single<HapticProvider> { HapticProviderIos() }
     single<AudioFocusController> { IosAudioFocusController() }
+    single<AudioFocusController>(named("soundPreview")) { IosAudioFocusController() }
 }

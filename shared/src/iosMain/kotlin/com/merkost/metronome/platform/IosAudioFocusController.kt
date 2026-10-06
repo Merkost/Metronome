@@ -1,12 +1,13 @@
 package com.merkost.metronome.platform
 
+import com.merkost.metronome.engine.IosAudioSessionLease
 import com.merkost.metronome.engine.AudioSessionEvent
 import com.merkost.metronome.engine.shouldStopPlaybackFor
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.ObjCObjectVar
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import platform.AVFAudio.AVAudioSession
 import platform.AVFAudio.AVAudioSessionInterruptionNotification
 import platform.AVFAudio.AVAudioSessionInterruptionTypeBegan
@@ -14,13 +15,13 @@ import platform.AVFAudio.AVAudioSessionInterruptionTypeKey
 import platform.AVFAudio.AVAudioSessionRouteChangeNotification
 import platform.AVFAudio.AVAudioSessionRouteChangeReasonKey
 import platform.AVFAudio.AVAudioSessionRouteChangeReasonOldDeviceUnavailable
-import platform.AVFAudio.setActive
-import platform.Foundation.NSError
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSNumber
 
 @OptIn(ExperimentalForeignApi::class)
 class IosAudioFocusController : AudioFocusController {
+    private val sessionOwner = Any()
+    private val mainScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val notificationCenter = NSNotificationCenter.defaultCenter
     private var onLost: (() -> Unit)? = null
 
@@ -58,19 +59,13 @@ class IosAudioFocusController : AudioFocusController {
         this.onLost = onLost
     }
 
-    override fun requestFocus(): Boolean = memScoped {
-        val error = alloc<ObjCObjectVar<NSError?>>()
-        AVAudioSession.sharedInstance().setActive(true, error = error.ptr)
-    }
+    override fun requestFocus(): Boolean = IosAudioSessionLease.acquire(sessionOwner)
 
     override fun abandonFocus() {
-        memScoped {
-            val error = alloc<ObjCObjectVar<NSError?>>()
-            AVAudioSession.sharedInstance().setActive(false, error = error.ptr)
-        }
+        IosAudioSessionLease.release(sessionOwner)
     }
 
     private fun notifyIfPlaybackShouldStop(event: AudioSessionEvent) {
-        if (shouldStopPlaybackFor(event)) onLost?.invoke()
+        if (shouldStopPlaybackFor(event)) mainScope.launch { onLost?.invoke() }
     }
 }

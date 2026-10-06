@@ -85,6 +85,10 @@ internal class SoundLoadState {
         return null
     }
 
+    fun clearQueuedPlay() {
+        pendingPlay = null
+    }
+
     fun reset() {
         activeSound = null
         activeSampleId = null

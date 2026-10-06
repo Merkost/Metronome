@@ -4,8 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -31,25 +32,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.ChevronDown
+import com.composables.icons.lucide.ChevronRight
+import com.composables.icons.lucide.Headphones
+import com.composables.icons.lucide.Sparkles
 import com.composables.icons.lucide.Minus
 import com.composables.icons.lucide.Plus
 import com.composables.icons.lucide.Settings
@@ -58,10 +72,9 @@ import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.VolumeX
 import com.merkost.metronome.components.AppIconButton
-import com.merkost.metronome.components.CoachMarksOverlay
+import com.merkost.metronome.components.MetronomeMark
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.AppSlider
-import com.merkost.metronome.components.DropdownSelector
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
@@ -76,7 +89,6 @@ import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.Subdivision
-import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.presets.PracticePresetDraft
 import com.merkost.metronome.practiceSets.PracticeSessionStartResult
 import com.merkost.metronome.ui.AnimatedNumberText
@@ -85,6 +97,10 @@ import com.merkost.metronome.ui.BallSize
 import com.merkost.metronome.ui.BallSizeCompact
 import com.merkost.metronome.ui.CircleSize
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.cornerRadiusLarge
+import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.pressableSurface
+import com.merkost.metronome.engine.SoundPreviewController
 import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.pulseOnChange
 import com.merkost.metronome.ui.spacingLarge
@@ -121,8 +137,11 @@ import metronome.shared.generated.resources.structured_practice_replace_confirm
 import metronome.shared.generated.resources.structured_practice_replace_title
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,14 +163,25 @@ fun MainScreen(
     val recentPracticeSet by viewModel.recentPracticeSet.collectAsState()
     val selectedIndex by viewModel.index.collectAsState()
 
-    val onboardingStep by viewModel.onboardingStep.collectAsState()
     val whatsNewVersion by viewModel.whatsNewVersion.collectAsState()
-    var beatBallsBounds by remember { mutableStateOf<Rect?>(null) }
-    var tempoSectionBounds by remember { mutableStateOf<Rect?>(null) }
     var bottomControlsBounds by remember { mutableStateOf<Rect?>(null) }
-    val spotlightTargets = remember(beatBallsBounds, tempoSectionBounds, bottomControlsBounds) {
-        listOfNotNull(beatBallsBounds, tempoSectionBounds, bottomControlsBounds)
-    }
+    val soundPreviewController: SoundPreviewController = koinInject()
+    val selectedSound by viewModel.selectedSound.collectAsState()
+    val previewSound by soundPreviewController.activeSound.collectAsState()
+    val previewError by soundPreviewController.errorMessage.collectAsState()
+    val clickVolume by viewModel.clickVolume.collectAsState()
+    val soundSelectionError by viewModel.soundSelectionError.collectAsState()
+    val stereoPan by viewModel.stereoPan.collectAsState()
+    var showSoundPicker by remember { mutableStateOf(false) }
+    var pendingSoundPreview by remember { mutableStateOf<Job?>(null) }
+    val soundPreviewScope = rememberCoroutineScope()
+    var showPracticeHub by remember { mutableStateOf(false) }
+    var showExactTempo by remember { mutableStateOf(false) }
+    var showRhythmSheet by remember { mutableStateOf(false) }
+    var showPracticeData by remember { mutableStateOf(false) }
+    var showResetPracticeConfirmation by remember { mutableStateOf(false) }
+    val practiceSetCount by viewModel.practiceSetCount.collectAsState()
+    var pendingPracticeAction by remember { mutableStateOf<(() -> Unit)?>(null) }
 
     val practiceTimerGoal by viewModel.practiceTimerGoal.collectAsState()
     val practiceTimerRemaining by viewModel.practiceTimerRemaining.collectAsState()
@@ -168,6 +198,9 @@ fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var presetEditorDraft by remember { mutableStateOf<PracticePresetDraft?>(null) }
     var showPresetSaveChoice by remember { mutableStateOf(false) }
+    LaunchedEffect(soundSelectionError) {
+        soundSelectionError?.let { snackbarHostState.showSnackbar(it) }
+    }
 
     val gradualTempoConfig by viewModel.gradualTempoConfig.collectAsState()
     val gradualTempoCurrentBar by viewModel.gradualTempoCurrentBar.collectAsState()
@@ -256,8 +289,6 @@ fun MainScreen(
         }
     }
 
-    var tsExpanded by remember { mutableStateOf(false) }
-
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val countInRemaining by viewModel.countInRemaining.collectAsState()
 
@@ -287,25 +318,32 @@ fun MainScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(
-                            text = stringResource(Res.string.app_name),
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        Row(
                             modifier = Modifier.widthIn(max = 260.dp),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            autoSize = TextAutoSize.StepBased(
-                                minFontSize = 8.sp,
-                                maxFontSize = 22.sp,
-                            ),
-                        )
+                            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            MetronomeMark(Modifier.size(28.dp), MaterialTheme.colorScheme.primary)
+                            Text(
+                                text = stringResource(Res.string.app_name),
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                modifier = Modifier.weight(1f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                autoSize = TextAutoSize.StepBased(minFontSize = 12.sp, maxFontSize = 22.sp),
+                            )
+                        }
                     },
                     actions = {
-                        TimeSignatureSelector(
-                            expanded = tsExpanded,
-                            selected = metronomeState.timeSignature,
-                            onExpandedChange = { tsExpanded = it },
-                            onSelect = viewModel::onTimeSignatureChanged,
-                        )
+                        PillChip(onClick = { showRhythmSheet = true }, showDropdownIcon = false) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(metronomeState.timeSignature.label, style = MaterialTheme.typography.labelLarge)
+                                Icon(Lucide.ChevronDown, contentDescription = "Open rhythm", modifier = Modifier.size(16.dp))
+                            }
+                        }
                         Spacer(Modifier.size(spacingSmall))
                         AppIconButton(onClick = onSettingsClicked) {
                             Icon(Lucide.Settings, Lucide.Settings.name)
@@ -342,10 +380,7 @@ fun MainScreen(
                             label = "beatDisplay",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = spacingLarge)
-                                .onGloballyPositioned { coordinates ->
-                                    beatBallsBounds = coordinates.boundsInRoot()
-                                },
+                                .padding(bottom = spacingLarge),
                         ) { style ->
                             when (style) {
                                 BeatDisplayStyle.PENDULUM -> Pendulum(
@@ -365,7 +400,7 @@ fun MainScreen(
                                             .fillMaxWidth()
                                             .animateContentSize(AppAnimations.emphasized())
                                             .padding(horizontal = horizontalPadding),
-                                        selectedIndex = selectedIndex.coerceIn(beats.indices),
+                                        selectedIndex = selectedIndex,
                                         beats = beats,
                                         isPlaying = isPlaying,
                                         animSpec = beatIndicatorSpec,
@@ -381,10 +416,7 @@ fun MainScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = horizontalPadding)
-                                .onGloballyPositioned { coordinates ->
-                                    tempoSectionBounds = coordinates.boundsInRoot()
-                                },
+                                .padding(horizontal = horizontalPadding),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(spacingSmall)
                         ) {
@@ -460,23 +492,31 @@ fun MainScreen(
                                     onClick = viewModel::onSliderValueDecreased
                                 )
                                 val countingIn = countInRemaining > 0
-                                AnimatedNumberText(
-                                    value = if (countingIn) countInRemaining else metronomeState.rhythm,
-                                    style = MaterialTheme.typography.displayLarge.copy(
-                                        fontWeight = FontWeight.ExtraBold,
-                                        fontSize = tempoDisplaySize
-                                    ),
-                                    color = if (countingIn) {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurface
-                                    },
-                                    modifier = Modifier.weight(1f).pulseOnChange(
-                                        if (countingIn) countInRemaining else metronomeState.rhythm,
-                                        peakScale = if (countingIn) 1.04f else 1.02f
-                                    ),
-                                    autoSize = TextAutoSize.StepBased(30.sp, tempoDisplaySize),
-                                )
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                        .semantics { contentDescription = "Tempo ${metronomeState.rhythm} BPM. Enter exact tempo" }
+                                        .pressableSurface(
+                                            onClick = { showExactTempo = true },
+                                            pressedScale = 1f,
+                                        ),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    AnimatedNumberText(
+                                        value = if (countingIn) countInRemaining else metronomeState.rhythm,
+                                        style = MaterialTheme.typography.displayLarge.copy(
+                                            fontWeight = FontWeight.ExtraBold,
+                                            fontSize = tempoDisplaySize,
+                                        ),
+                                        color = if (countingIn) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        autoSize = TextAutoSize.StepBased(30.sp, tempoDisplaySize),
+                                    )
+                                    Text(
+                                        text = if (countingIn) "Count in" else "BPM",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
                                 MyIconButton(
                                     Lucide.Plus,
                                     onClick = viewModel::onSliderValueIncreased
@@ -501,7 +541,25 @@ fun MainScreen(
                             MySecondaryTextButton(text = "+ 5", onClick = viewModel::onPlusFive)
                         }
 
-                        Spacer(modifier = Modifier.size(spacingLarge))
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
+                            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+                        ) {
+                            MainShortcut(
+                                icon = Lucide.Sparkles,
+                                title = "Practice",
+                                caption = "Timer & trainers",
+                                onClick = { showPracticeHub = true },
+                                modifier = Modifier.weight(1f),
+                            )
+                            MainShortcut(
+                                icon = Lucide.Headphones,
+                                title = "Sound",
+                                caption = selectedSound.displayName,
+                                onClick = { showSoundPicker = true },
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
                     }
 
                     Column(
@@ -635,25 +693,147 @@ fun MainScreen(
                 }
         )
 
-        AnimatedVisibility(
-            visible = onboardingStep >= 0 && spotlightTargets.size == 3,
-            enter = fadeIn(AppAnimations.standard()),
-            exit = fadeOut(AppAnimations.quick())
-        ) {
-            CoachMarksOverlay(
-                step = onboardingStep,
-                targetBounds = spotlightTargets,
-                onNext = viewModel::onOnboardingNext,
-                onBack = viewModel::onOnboardingBack,
-                onDismiss = viewModel::onOnboardingDismiss,
-            )
-        }
     }
 
     whatsNewVersion?.let { version ->
         WhatsNewSheet(
             version = version,
             onDismiss = viewModel::onWhatsNewDismissed,
+        )
+    }
+
+    LaunchedEffect(showSoundPicker, showPracticeHub, showExactTempo, showRhythmSheet, showPracticeData) {
+        viewModel.setCompanionSheetVisible(showSoundPicker || showPracticeHub || showExactTempo || showRhythmSheet || showPracticeData)
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            pendingSoundPreview?.cancel()
+            soundPreviewController.stop()
+            viewModel.setCompanionSheetVisible(false)
+        }
+    }
+
+    if (showSoundPicker) {
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(lifecycleOwner, soundPreviewController) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                    pendingSoundPreview?.cancel()
+                    soundPreviewController.stop()
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+                pendingSoundPreview?.cancel()
+                soundPreviewController.stop()
+            }
+        }
+        SoundPickerSheet(
+            selectedSound = selectedSound,
+            previewSound = previewSound,
+            onSelect = {
+                pendingSoundPreview?.cancel()
+                soundPreviewController.stop()
+                viewModel.onSoundSelected(it)
+            },
+            onPreview = { sound ->
+                pendingSoundPreview?.cancel()
+                if (previewSound == sound) soundPreviewController.stop()
+                else {
+                    pendingSoundPreview = soundPreviewScope.launch {
+                        val paused = viewModel.pauseForSoundPreview()
+                        if (paused && showSoundPicker && lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                            soundPreviewController.preview(sound, volume = clickVolume, pan = stereoPan)
+                        }
+                    }
+                }
+            },
+            onDismiss = {
+                pendingSoundPreview?.cancel()
+                soundPreviewController.stop()
+                showSoundPicker = false
+            },
+            errorMessage = previewError,
+        )
+    }
+
+    if (showPracticeHub) {
+        PracticeHubSheet(
+            presetCount = presetsUiState.presets.size,
+            practiceSetCount = practiceSetCount,
+            timerMinutes = practiceTimerGoal?.let { (it / 60_000L).toInt() } ?: lastTimerMinutes,
+            todayPracticeTime = todayPracticeTime,
+            practiceStreak = practiceStreak,
+            totalPracticeTime = totalPracticeTime,
+            onOpenTimer = { pendingPracticeAction = { showTimerSheet = true } },
+            onOpenTempoTrainer = {
+                pendingPracticeAction = {
+                    tempoSheetSection = TempoSheetSection.TRAINER
+                    showTempoSheet = true
+                }
+            },
+            onOpenGapTrainer = {
+                pendingPracticeAction = {
+                    tempoSheetSection = TempoSheetSection.GAP
+                    showTempoSheet = true
+                }
+            },
+            onOpenPresets = { pendingPracticeAction = onPresetsClicked },
+            onOpenPracticeSets = { pendingPracticeAction = onPracticeSetsClicked },
+            onOpenPracticeData = { pendingPracticeAction = { showPracticeData = true } },
+            onDismiss = {
+                showPracticeHub = false
+                val action = pendingPracticeAction
+                pendingPracticeAction = null
+                action?.invoke()
+            },
+        )
+    }
+
+    if (showExactTempo) {
+        ExactTempoSheet(
+            currentBpm = metronomeState.rhythm,
+            onApply = { viewModel.onSliderValueChanged(it.toFloat()) },
+            onDismiss = { showExactTempo = false },
+        )
+    }
+
+    if (showRhythmSheet) {
+        RhythmSheet(
+            state = metronomeState,
+            selectedIndex = selectedIndex,
+            countInEnabled = countInEnabled,
+            onCountInChanged = viewModel::onCountInChanged,
+            onTimeSignatureChanged = viewModel::onTimeSignatureChanged,
+            onSubdivisionChanged = viewModel::onSubdivisionChanged,
+            onBeatChanged = viewModel::onBallClicked,
+            onDismiss = { showRhythmSheet = false },
+        )
+    }
+
+    if (showPracticeData) {
+        SettingsPracticeSheet(
+            todayTime = todayPracticeTime,
+            totalTime = totalPracticeTime,
+            practiceStreak = practiceStreak,
+            playing = isPlaying,
+            onReset = { showResetPracticeConfirmation = true },
+            onDismiss = { showPracticeData = false },
+        )
+    }
+
+    if (showResetPracticeConfirmation) {
+        AppDialog(
+            title = "Reset practice statistics?",
+            text = "Clear today’s practice time, your streak and total time. Your presets and practice sets are kept.",
+            confirmLabel = "Reset statistics",
+            dismissLabel = "Cancel",
+            onConfirm = {
+                viewModel.resetPracticeStatistics()
+                showResetPracticeConfirmation = false
+            },
+            onDismiss = { showResetPracticeConfirmation = false },
         )
     }
 
@@ -816,47 +996,41 @@ fun MainScreen(
 }
 
 @Composable
-private fun TimeSignatureSelector(
-    expanded: Boolean,
-    selected: TimeSignature,
-    onExpandedChange: (Boolean) -> Unit,
-    onSelect: (TimeSignature) -> Unit,
+private fun MainShortcut(
+    icon: ImageVector,
+    title: String,
+    caption: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    DropdownSelector(
-        expanded = expanded,
-        onDismiss = { onExpandedChange(false) },
-        items = TimeSignature.entries.toList(),
-        selectedItem = selected,
-        onSelect = {
-            onSelect(it)
-            onExpandedChange(false)
-        },
-        itemContent = { timeSignature, _ ->
-            Column {
-                Text(
-                    text = timeSignature.label,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                )
-                Text(
-                    text = "${timeSignature.defaultBeats.size} beats",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+    Row(
+        modifier = modifier.heightIn(min = minimumTouchTargetSize)
+            .clip(RoundedCornerShape(cornerRadiusLarge))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .pressableSurface(onClick)
+            .padding(spacingMedium),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+    ) {
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(title, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold))
+            AnimatedContent(
+                targetState = caption,
+                transitionSpec = { AppAnimations.fadeThrough },
+                label = "mainShortcutCaption",
+            ) { text ->
+                Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-        },
-        anchor = {
-            PillChip(onClick = { onExpandedChange(true) }) {
-                Text(
-                    text = selected.label,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    autoSize = TextAutoSize.StepBased(
-                        minFontSize = 10.sp,
-                        maxFontSize = 16.sp,
-                    ),
-                )
-            }
-        },
-    )
+        }
+        Icon(Lucide.ChevronRight, contentDescription = null, modifier = Modifier.size(16.dp))
+    }
+}
+
+@Preview
+@Composable
+private fun MainShortcutPreview() {
+    MaterialTheme {
+        MainShortcut(Lucide.Headphones, "Sound", "Wood", {})
+    }
 }

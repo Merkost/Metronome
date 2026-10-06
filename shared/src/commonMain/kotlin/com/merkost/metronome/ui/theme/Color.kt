@@ -10,3 +10,6 @@ val MintGreen = Color(0xFF9effae)
 val MintGreenDark = Color(0xFF1a8a2e)
 val PinkLace = Color(0xFFffcaea)
 val PinkLaceDark = Color(0xFFc4547e)
+
+internal val ContrastForegroundDark = Color.Black
+internal val ContrastForegroundLight = Color.White

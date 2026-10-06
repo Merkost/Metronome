@@ -10,6 +10,8 @@ import com.merkost.metronome.practiceSets.PracticeSetRepository
 import com.merkost.metronome.practiceSets.PracticeSetStep
 import com.merkost.metronome.practiceSets.PracticeSetValidationError
 import com.merkost.metronome.practiceSets.PracticeStepTarget
+import com.merkost.metronome.practiceSets.PracticeStarterRepository
+import com.merkost.metronome.practiceSets.PracticeStarterResult
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.presets.PracticePresetRepository
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +30,9 @@ data class PracticeSetEditorState(
     val steps: List<PracticeSetStep>,
     val isReordering: Boolean = false,
     val hasUnsavedChanges: Boolean = false,
+    val pendingPresets: List<PracticePreset> = emptyList(),
+    val isStarter: Boolean = false,
+    val isSaving: Boolean = false,
 )
 
 data class PracticeSetsUiState(
@@ -45,6 +50,7 @@ sealed interface PracticeSetUiEvent {
     data class Invalid(val error: PracticeSetValidationError) : PracticeSetUiEvent
     data object ActiveSetLocked : PracticeSetUiEvent
     data object LimitReached : PracticeSetUiEvent
+    data object PresetLimitReached : PracticeSetUiEvent
     data object Conflict : PracticeSetUiEvent
     data object StorageFailure : PracticeSetUiEvent
 }
@@ -55,6 +61,7 @@ class PracticeSetsViewModel(
     private val sessionController: PracticeSessionController,
     private val nextStepId: () -> String,
     scope: CoroutineScope? = null,
+    private val starterRepository: PracticeStarterRepository? = null,
 ) : ViewModel() {
     private val workerScope = scope ?: viewModelScope
     private val mutableUiState = MutableStateFlow(PracticeSetsUiState())
@@ -93,6 +100,25 @@ class PracticeSetsViewModel(
                     steps = emptyList(),
                 ),
             )
+        }
+    }
+
+    fun beginStarter() {
+        val repository = starterRepository ?: run {
+            emit(PracticeSetUiEvent.StorageFailure)
+            return
+        }
+        val draft = repository.draft(uiState.value.presets)
+        mutableUiState.update {
+            it.copy(editor = PracticeSetEditorState(
+                sourceId = null,
+                expectedUpdatedAtEpochMillis = null,
+                name = draft.name,
+                steps = draft.steps,
+                pendingPresets = draft.pendingPresets,
+                isStarter = true,
+                hasUnsavedChanges = true,
+            ))
         }
     }
 
@@ -168,17 +194,39 @@ class PracticeSetsViewModel(
     }
 
     fun cancelEditing() {
+        if (uiState.value.editor?.isSaving == true) return
         mutableUiState.update { it.copy(editor = null) }
     }
 
     fun save() {
         val editor = uiState.value.editor ?: return
+        if (editor.isSaving) return
         val draft = PracticeSetDraft(editor.name, editor.steps).normalized()
         draft.validationError?.let {
             emit(PracticeSetUiEvent.Invalid(it))
             return
         }
+        updateEditor { it.copy(isSaving = true) }
         workerScope.launch {
+            if (editor.isStarter) {
+                when (val result = starterRepository?.save(draft, editor.pendingPresets)) {
+                    is PracticeStarterResult.Saved -> {
+                        mutableUiState.update { it.copy(editor = null) }
+                        eventChannel.send(PracticeSetUiEvent.Saved(result.practiceSet))
+                    }
+                    else -> {
+                        updateEditor(allowWhileSaving = true) { it.copy(isSaving = false) }
+                        eventChannel.send(when (result) {
+                            PracticeStarterResult.PresetLimitReached -> PracticeSetUiEvent.PresetLimitReached
+                            PracticeStarterResult.SetLimitReached -> PracticeSetUiEvent.LimitReached
+                            PracticeStarterResult.MissingPreset -> PracticeSetUiEvent.Conflict
+                            is PracticeStarterResult.Invalid -> PracticeSetUiEvent.Invalid(result.error)
+                            else -> PracticeSetUiEvent.StorageFailure
+                        })
+                    }
+                }
+                return@launch
+            }
             val result = if (editor.sourceId == null) {
                 repository.create(draft)
             } else {
@@ -197,7 +245,10 @@ class PracticeSetsViewModel(
                         else PracticeSetUiEvent.Updated(saved),
                     )
                 }
-                else -> emitFailure(result)
+                else -> {
+                    updateEditor(allowWhileSaving = true) { it.copy(isSaving = false) }
+                    emitFailure(result)
+                }
             }
         }
     }
@@ -233,9 +284,9 @@ class PracticeSetsViewModel(
         mutableUiState.update { it.copy(isReordering = isReordering) }
     }
 
-    private fun updateEditor(transform: (PracticeSetEditorState) -> PracticeSetEditorState) {
+    private fun updateEditor(allowWhileSaving: Boolean = false, transform: (PracticeSetEditorState) -> PracticeSetEditorState) {
         mutableUiState.update { current ->
-            current.editor?.let { current.copy(editor = transform(it)) } ?: current
+            current.editor?.takeUnless { it.isSaving && !allowWhileSaving }?.let { current.copy(editor = transform(it)) } ?: current
         }
     }
 
