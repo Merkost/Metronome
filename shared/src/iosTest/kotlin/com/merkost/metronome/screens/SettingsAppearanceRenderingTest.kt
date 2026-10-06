@@ -45,6 +45,7 @@ import androidx.compose.ui.test.requestFocus
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.model.ThemeMode
@@ -69,6 +70,36 @@ class SettingsAppearanceRenderingTest {
     @Test
     fun paletteSelectionKeepsControlsLabelsAndFollowingContentInPlace(): TestResult = renderingTest { model ->
         assertPaletteSelectionGeometry(model)
+    }
+
+    @Test
+    fun paletteChoicesAlignToReadingStartInNarrowLtr(): TestResult = renderingTest { model ->
+        assertPaletteReadingStart(model, LayoutDirection.Ltr)
+    }
+
+    @Test
+    fun paletteChoicesAlignToReadingStartInNarrowRtl(): TestResult = renderingTest(direction = LayoutDirection.Rtl) { model ->
+        assertPaletteReadingStart(model, LayoutDirection.Rtl)
+    }
+
+    @Test
+    fun paletteChoicesAlignToReadingStartInWideLtr(): TestResult = renderingTest(width = 600.dp) { model ->
+        assertPaletteReadingStart(model, LayoutDirection.Ltr)
+    }
+
+    @Test
+    fun paletteChoicesAlignToReadingStartInWideRtl(): TestResult = renderingTest(width = 600.dp, direction = LayoutDirection.Rtl) { model ->
+        assertPaletteReadingStart(model, LayoutDirection.Rtl)
+    }
+
+    @Test
+    fun paletteChoicesAlignToReadingStartWithDoubleTextInWideLtr(): TestResult = renderingTest(width = 600.dp, fontScale = 2f) { model ->
+        assertPaletteReadingStart(model, LayoutDirection.Ltr)
+    }
+
+    @Test
+    fun paletteChoicesAlignToReadingStartWithDoubleTextInWideRtl(): TestResult = renderingTest(width = 600.dp, fontScale = 2f, direction = LayoutDirection.Rtl) { model ->
+        assertPaletteReadingStart(model, LayoutDirection.Rtl)
     }
 
     @Test
@@ -214,6 +245,34 @@ class SettingsAppearanceRenderingTest {
         assertUnchangedPixels(original, frame(), initial.getValue("following"))
     }
 
+    private fun ComposeUiTest.assertPaletteReadingStart(model: AppearanceFixtureModel, direction: LayoutDirection) {
+        val initial = geometry()
+        assertReadingStart(initial, direction)
+        assertContained(initial)
+        (palettes.drop(1) + palettes.take(1)).forEach { (scheme, name) ->
+            onNode(paletteNamed(scheme)).performClick()
+            advance(64)
+            val changing = geometry()
+            assertReadingStart(changing, direction)
+            assertGeometryEquals(initial, changing, "During start-aligned selection of $name")
+            assertEquals(scheme, model.state.value.colorScheme)
+            settle()
+            val settled = geometry()
+            assertReadingStart(settled, direction)
+            assertGeometryEquals(initial, settled, "After start-aligned selection of $name")
+        }
+    }
+
+    private fun assertReadingStart(geometry: Map<String, Rect>, direction: LayoutDirection) {
+        val panel = geometry.getValue("panel")
+        val firstChoice = geometry.getValue("palette.Mono")
+        if (direction == LayoutDirection.Ltr) {
+            assertEquals(panel.left, firstChoice.left, 0.5f, "The first swatch must begin at the panel's left edge")
+        } else {
+            assertEquals(panel.right, firstChoice.right, 0.5f, "The first swatch must begin at the panel's right edge in RTL")
+        }
+    }
+
     private fun ComposeUiTest.assertThemeSelectionGeometry(model: AppearanceFixtureModel) {
         val initial = geometry()
         assertContained(initial)
@@ -266,6 +325,7 @@ class SettingsAppearanceRenderingTest {
         direction: LayoutDirection = LayoutDirection.Ltr,
         fontScale: Float = 1f,
         motionScale: Float = 1f,
+        width: Dp = 360.dp,
         block: suspend ComposeUiTest.(AppearanceFixtureModel) -> Unit,
     ): TestResult = runComposeUiTest(
         effectContext = object : MotionDurationScale {
@@ -275,7 +335,7 @@ class SettingsAppearanceRenderingTest {
     ) {
         mainClock.autoAdvance = false
         val model = AppearanceFixtureModel()
-        setContent { AppearanceFixture(model, dark, direction, fontScale) }
+        setContent { AppearanceFixture(model, dark, direction, fontScale, width) }
         settle()
         block(model)
     }
@@ -411,6 +471,7 @@ private fun AppearanceFixture(
     dark: Boolean,
     direction: LayoutDirection,
     fontScale: Float,
+    width: Dp,
 ) {
     val colors = if (dark) AppColorScheme.MELROSE.darkColor else AppColorScheme.MELROSE.lightColor
     CompositionLocalProvider(
@@ -420,7 +481,7 @@ private fun AppearanceFixture(
     ) {
         MaterialTheme(colorScheme = colors, typography = Typography) {
             Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).testTag("frame")) {
-                Column(Modifier.width(360.dp).padding(18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(Modifier.width(width).padding(18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Box(Modifier.fillMaxWidth().testTag("appearance")) {
                         SettingsAppearancePanel(model.state.value, model.actions)
                     }

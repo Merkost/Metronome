@@ -201,7 +201,7 @@ internal fun SettingsAppearancePanel(state: SettingsUiState, actions: SettingsAc
                 Text(scheme.settingsName, style = nameStyle, color = MaterialTheme.colorScheme.onSurfaceVariant, softWrap = false, maxLines = 1)
             }
         }
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally)) {
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
             val palettes = if (state.supportsDynamicColor) listOf(AppColorScheme.MATERIAL3) + AppColorScheme.defaultValues() else AppColorScheme.defaultValues()
             palettes.forEach { palette ->
                 SettingsPaletteChoice(palette, state.colorScheme == palette, { actions.onColorScheme(palette) }, Modifier.widthIn(min = minimumTouchTargetSize))

@@ -1,0 +1,56 @@
+{
+  "native": {
+    "tests": 212,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidShared": {
+    "tests": 182,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "renderingTests": {
+    "tests": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "newCoverage": {
+    "paletteAlignment": 6,
+    "backupActions": 4
+  },
+  "paletteBaseline": {
+    "tests": 212,
+    "failures": 6,
+    "errors": 0,
+    "narrowOffsetPx": 26,
+    "wideOffsetPx": 146
+  },
+  "backupFeedbackBaseline": {
+    "tests": 212,
+    "failures": 1,
+    "errors": 0,
+    "enabledExportInk": 403.0673,
+    "disabledExportInkAt64ms": 403.0673
+  },
+  "platformGates": [
+    "Android debug build",
+    "iOS arm64 source compilation",
+    "Wasm compilation"
+  ],
+  "captures": "Native Compose raster fixtures rendering production panels; distinct from full UIKit app and physical-device screenshots",
+  "sourceSha256": {
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/PracticeBackupActions.kt": "6d5636c1c82ef9e985512e5d2febd99b68663783bbd0c71d07f64bf1e0237e5e",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/SettingsComponents.kt": "8b3bc56945599a039a745be1f9c84c72bd998c37e7acdd4fee9a15c40c959fd8",
+    "shared/src/androidMain/kotlin/com/merkost/metronome/platform/BackupFileActions.android.kt": "6a170cf3c59fb5f37049db6a9dd290463d9faf3e8973bafd6f84f85e913896dc",
+    "shared/src/iosMain/kotlin/com/merkost/metronome/platform/BackupFileActions.ios.kt": "3da9aab961223de08ac35fdd21b27b7af8258be31693b80549f1bba3093a1046",
+    "shared/src/wasmJsMain/kotlin/com/merkost/metronome/platform/BackupFileActions.wasmJs.kt": "11ddcb619418ddc6d13257ae2d7b86bd985b8d0fa419866c5251425501f5e10e",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/screens/SettingsAppearanceRenderingTest.kt": "54f0d8a9c3a7d9ef52737631f47fe26fd23ee1219135c8511fc2a2ad641263dc",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/components/PracticeBackupActionsRenderingTest.kt": "c15d04a260981c7ef7e037a81297b6f8153a7d1713c76246531845405ca9d670"
+  },
+  "limits": [
+    "Native document-provider and browser clipboard end-to-end operations were not rerun; their I/O and cancellation closures are unchanged"
+  ]
+}

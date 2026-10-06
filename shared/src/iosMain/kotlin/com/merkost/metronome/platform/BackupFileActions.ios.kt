@@ -1,7 +1,5 @@
 package com.merkost.metronome.platform
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -10,9 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import com.merkost.metronome.backup.MaximumBackupCharacters
-import com.merkost.metronome.components.MySecondaryButton
+import com.merkost.metronome.components.PracticeBackupActions
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -58,39 +55,42 @@ actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onI
     DisposableEffect(Unit) {
         onDispose { picker?.delegate = null; picker?.dismissViewControllerAnimated(false, null) }
     }
-    MySecondaryButton(onClick = {
-        working = true
-        scope.launch {
-            try {
-                val raw = export()
-                val file = NSURL.fileURLWithPath(NSTemporaryDirectory() + "Metronome-backup.txt")
-                require(NSString.create(string = raw).writeToURL(file, true, NSUTF8StringEncoding, null))
-                val presenter = backupPresenter() ?: error("No file picker is available.")
-                val controller = UIDocumentPickerViewController(forExportingURLs = listOf(file), asCopy = true)
+    PracticeBackupActions(
+        enabled = enabled && !working,
+        onExport = {
+            working = true
+            scope.launch {
+                try {
+                    val raw = export()
+                    val file = NSURL.fileURLWithPath(NSTemporaryDirectory() + "Metronome-backup.txt")
+                    require(NSString.create(string = raw).writeToURL(file, true, NSUTF8StringEncoding, null))
+                    val presenter = backupPresenter() ?: error("No file picker is available.")
+                    val controller = UIDocumentPickerViewController(forExportingURLs = listOf(file), asCopy = true)
+                    controller.delegate = delegate
+                    delegate.importing = false
+                    picker = controller
+                    presenter.presentViewController(controller, true, null)
+                } catch (cancelled: CancellationException) {
+                    working = false
+                    throw cancelled
+                } catch (_: Exception) {
+                    working = false
+                    messageAction("Couldn't export this backup.")
+                }
+            }
+        },
+        onImport = {
+            val presenter = backupPresenter()
+            if (presenter == null) messageAction("No file picker is available.") else {
+                working = true
+                delegate.importing = true
+                val controller = UIDocumentPickerViewController(documentTypes = listOf("public.plain-text"), inMode = UIDocumentPickerMode.UIDocumentPickerModeImport)
                 controller.delegate = delegate
-                delegate.importing = false
                 picker = controller
                 presenter.presentViewController(controller, true, null)
-            } catch (cancelled: CancellationException) {
-                working = false
-                throw cancelled
-            } catch (_: Exception) {
-                working = false
-                messageAction("Couldn't export this backup.")
             }
-        }
-    }, enabled = enabled && !working, modifier = Modifier.fillMaxWidth()) { Text("Export backup") }
-    MySecondaryButton(onClick = {
-        val presenter = backupPresenter()
-        if (presenter == null) messageAction("No file picker is available.") else {
-            working = true
-            delegate.importing = true
-            val controller = UIDocumentPickerViewController(documentTypes = listOf("public.plain-text"), inMode = UIDocumentPickerMode.UIDocumentPickerModeImport)
-            controller.delegate = delegate
-            picker = controller
-            presenter.presentViewController(controller, true, null)
-        }
-    }, enabled = enabled && !working, modifier = Modifier.fillMaxWidth()) { Text("Import backup") }
+        },
+    )
 }
 
 @OptIn(ExperimentalForeignApi::class)

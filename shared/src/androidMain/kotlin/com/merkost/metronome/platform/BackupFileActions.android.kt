@@ -2,9 +2,6 @@ package com.merkost.metronome.platform
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,15 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.merkost.metronome.backup.MaximumBackupCharacters
-import com.merkost.metronome.components.MySecondaryButton
+import com.merkost.metronome.components.PracticeBackupActions
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onImport: (String) -> Unit, onMessage: (String) -> Unit) {
@@ -73,31 +68,23 @@ actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onI
             } finally { working = false }
         }
     }
-    BackupButton("Export backup", enabled && !working) {
-        working = true
-        scope.launch {
-            try {
-                contents = export()
-                writer.launch("Metronome-backup.txt")
-            } catch (cancelled: CancellationException) {
-                working = false
-                throw cancelled
-            } catch (_: Exception) {
-                working = false
-                messageAction("Couldn't prepare this backup.")
+    PracticeBackupActions(
+        enabled = enabled && !working,
+        onExport = {
+            working = true
+            scope.launch {
+                try {
+                    contents = export()
+                    writer.launch("Metronome-backup.txt")
+                } catch (cancelled: CancellationException) {
+                    working = false
+                    throw cancelled
+                } catch (_: Exception) {
+                    working = false
+                    messageAction("Couldn't prepare this backup.")
+                }
             }
-        }
-    }
-    BackupButton("Import backup", enabled && !working) { working = true; reader.launch(arrayOf("text/plain", "application/octet-stream")) }
-}
-
-@Composable
-private fun BackupButton(label: String, enabled: Boolean, onClick: () -> Unit) {
-    MySecondaryButton(onClick = onClick, enabled = enabled, modifier = Modifier.fillMaxWidth()) { Text(label) }
-}
-
-@Preview
-@Composable
-private fun BackupButtonPreview() {
-    MaterialTheme { BackupButton("Export backup", true, {}) }
+        },
+        onImport = { working = true; reader.launch(arrayOf("text/plain", "application/octet-stream")) },
+    )
 }
