@@ -1,0 +1,36 @@
+{
+  "baseline": {
+    "tests": 215,
+    "failures": 3,
+    "errors": 0,
+    "normalWidthShiftPx": 22,
+    "largeTextWidthShiftPx": 44
+  },
+  "native": {
+    "tests": 215,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidShared": {
+    "tests": 182,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "renderingTests": 33,
+  "newSoundPreviewTests": 3,
+  "platformGates": [
+    "Android debug build",
+    "iOS arm64 compilation",
+    "Wasm compilation"
+  ],
+  "sourceSha256": {
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/SoundPreviewButton.kt": "93b8c6b5bf9f3ccbce859f3612f363e0c1226081046e95c8903cf6d093e71a74",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/SettingsComponents.kt": "c957cd105ea37d69fcfd433741f76423fbadf844d782fe84097e60791d674011",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/screens/SettingsSoundPreviewRenderingTest.kt": "2a9874dd279656510e31b78fb28f6927f4859ce35c2b72963f95dcad4dfd676a"
+  },
+  "captureType": "Production SettingsSoundPanel in native raster test fixture; distinct from full UIKit/physical-device screenshots",
+  "temporaryCaptureCodeRemoved": true,
+  "audioLogicChanged": false
+}

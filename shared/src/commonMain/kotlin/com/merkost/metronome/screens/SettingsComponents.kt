@@ -14,6 +14,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -34,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -52,16 +55,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.LayoutDirection
 import com.composables.icons.lucide.CalendarDays
 import com.composables.icons.lucide.Check
 import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.ChevronRight
+import com.composables.icons.lucide.ChevronLeft
 import com.composables.icons.lucide.ExternalLink
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Monitor
 import com.composables.icons.lucide.Palette
-import com.composables.icons.lucide.Pause
-import com.composables.icons.lucide.Play
 import com.composables.icons.lucide.Smartphone
 import com.composables.icons.lucide.Timer
 import com.composables.icons.lucide.Users
@@ -69,8 +72,11 @@ import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.Wallet
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppSlider
+import com.merkost.metronome.components.SoundPreviewButton
+import com.merkost.metronome.components.rememberSoundPreviewMetrics
 import com.merkost.metronome.components.AppSegmentedControl
 import com.merkost.metronome.model.ThemeMode
+import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.cornerRadiusMedium
@@ -86,6 +92,7 @@ import metronome.shared.generated.resources.suby_icon
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
+import kotlin.math.ceil
 
 @Composable
 internal fun SettingsSoundPanel(state: SettingsUiState, actions: SettingsActions) {
@@ -102,40 +109,7 @@ internal fun SettingsSoundPanel(state: SettingsUiState, actions: SettingsActions
                 SettingsGlyph(Lucide.Volume2)
                 Text("Find your click.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                Row(
-                    modifier = Modifier.weight(1f).clip(RoundedCornerShape(cornerRadiusLarge))
-                        .pressableSurface(actions.onSoundPicker)
-                        .heightIn(min = minimumTouchTargetSize)
-                        .padding(vertical = spacingSmall),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-                        AnimatedContent(state.selectedSound, transitionSpec = { AppAnimations.fadeThrough }, label = "settingsSound") { sound ->
-                            Text(sound.displayName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        }
-                        AnimatedContent(state.selectedSound, transitionSpec = { AppAnimations.fadeThrough }, label = "settingsSoundDescription") { sound ->
-                            Text(sound.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
-                    Icon(Lucide.ChevronRight, null, modifier = Modifier.size(20.dp))
-                }
-                val previewing = state.previewSound == state.selectedSound
-                Row(
-                    modifier = Modifier.clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .pressableSurface(actions.onPreview, enabled = !state.playing)
-                        .heightIn(min = minimumTouchTargetSize)
-                        .padding(horizontal = 12.dp, vertical = spacingSmall),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(spacingSmall / 2),
-                ) {
-                    AnimatedContent(previewing, transitionSpec = { AppAnimations.fadeScaleTransform }, label = "settingsPreview") { active ->
-                        Icon(if (active) Lucide.Pause else Lucide.Play, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(18.dp))
-                    }
-                    Text(if (previewing) "Stop" else "Preview", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                }
-            }
+            SettingsSoundSelectionRow(state, actions)
             AnimatedVisibility(state.playing, enter = AppAnimations.expandEnter, exit = AppAnimations.shrinkExit) {
                 Text("Pause playback to preview a click.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -175,6 +149,79 @@ internal fun SettingsSoundPanel(state: SettingsUiState, actions: SettingsActions
             }
         }
     }
+}
+
+@Composable
+private fun SettingsSoundSelectionRow(state: SettingsUiState, actions: SettingsActions) {
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val nameStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    val descriptionStyle = MaterialTheme.typography.bodySmall
+    val minimumTextWidth = remember(measurer, nameStyle, descriptionStyle) {
+        ClickSound.entries.maxOf { sound ->
+            maxOf(
+                measurer.measure(AnnotatedString(sound.displayName), nameStyle).multiParagraph.intrinsics.minIntrinsicWidth,
+                measurer.measure(AnnotatedString(sound.description), descriptionStyle).multiParagraph.intrinsics.minIntrinsicWidth,
+            )
+        }
+    }
+    val minimumPickerWidth = with(density) { ceil(minimumTextWidth).toInt().toDp() } + 20.dp
+    val previewWidth = rememberSoundPreviewMetrics().width
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        if (minimumPickerWidth + previewWidth + spacingSmall > maxWidth) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                SettingsSoundPicker(state, actions, Modifier.fillMaxWidth())
+                SoundPreviewButton(
+                    previewing = state.previewSound == state.selectedSound,
+                    onClick = actions.onPreview,
+                    enabled = !state.playing,
+                    modifier = Modifier.align(Alignment.End),
+                )
+            }
+        } else {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                SettingsSoundPicker(state, actions, Modifier.weight(1f))
+                SoundPreviewButton(
+                    previewing = state.previewSound == state.selectedSound,
+                    onClick = actions.onPreview,
+                    enabled = !state.playing,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsSoundPicker(state: SettingsUiState, actions: SettingsActions, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.clip(RoundedCornerShape(cornerRadiusLarge))
+            .pressableSurface(actions.onSoundPicker)
+            .heightIn(min = minimumTouchTargetSize)
+            .padding(vertical = spacingSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
+            AnimatedContent(state.selectedSound, transitionSpec = { AppAnimations.fadeThrough }, label = "settingsSound") { sound ->
+                Text(sound.displayName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+            AnimatedContent(state.selectedSound, transitionSpec = { AppAnimations.fadeThrough }, label = "settingsSoundDescription") { sound ->
+                Text(sound.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight, null, modifier = Modifier.size(20.dp))
+    }
+}
+
+@Preview
+@Composable
+private fun SettingsSoundSelectionRowPreview() {
+    MaterialTheme { SettingsSoundSelectionRow(SettingsUiState(), SettingsActions()) }
+}
+
+@Preview
+@Composable
+private fun SettingsSoundPickerPreview() {
+    MaterialTheme { SettingsSoundPicker(SettingsUiState(), SettingsActions()) }
 }
 
 @Composable
