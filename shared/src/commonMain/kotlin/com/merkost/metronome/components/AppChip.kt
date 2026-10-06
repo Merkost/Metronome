@@ -93,7 +93,7 @@ fun AppChip(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 ),
                 color = contentColor,
             )

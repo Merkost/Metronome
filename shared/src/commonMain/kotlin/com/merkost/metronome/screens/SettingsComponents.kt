@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -46,6 +49,8 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.CalendarDays
 import com.composables.icons.lucide.Check
@@ -64,6 +69,7 @@ import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.Wallet
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppSlider
+import com.merkost.metronome.components.AppSegmentedControl
 import com.merkost.metronome.model.ThemeMode
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
@@ -173,29 +179,40 @@ internal fun SettingsSoundPanel(state: SettingsUiState, actions: SettingsActions
 
 @Composable
 internal fun SettingsAppearancePanel(state: SettingsUiState, actions: SettingsActions) {
+    val measurer = rememberTextMeasurer()
+    val nameStyle = MaterialTheme.typography.labelLarge
+    val nameWidth = with(LocalDensity.current) {
+        AppColorScheme.entries.maxOf { measurer.measure(AnnotatedString(it.settingsName), nameStyle, softWrap = false, maxLines = 1).size.width }.toDp()
+    }
     Column(Modifier.fillMaxWidth().padding(vertical = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Set the mood.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+            Text("Set the mood.", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             SettingsGlyph(Lucide.Palette)
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("Colour scheme", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-            AnimatedContent(state.colorScheme, transitionSpec = { AppAnimations.fadeThrough }, label = "paletteName") { scheme ->
-                Text(scheme.settingsName, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            AnimatedContent(
+                state.colorScheme,
+                modifier = Modifier.width(nameWidth),
+                transitionSpec = { AppAnimations.fadeThroughFixedSize },
+                contentAlignment = Alignment.CenterEnd,
+                label = "paletteName",
+            ) { scheme ->
+                Text(scheme.settingsName, style = nameStyle, color = MaterialTheme.colorScheme.onSurfaceVariant, softWrap = false, maxLines = 1)
             }
         }
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally)) {
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally)) {
             val palettes = if (state.supportsDynamicColor) listOf(AppColorScheme.MATERIAL3) + AppColorScheme.defaultValues() else AppColorScheme.defaultValues()
             palettes.forEach { palette ->
-                SettingsPaletteChoice(palette, state.colorScheme == palette, { actions.onColorScheme(palette) }, Modifier.width(minimumTouchTargetSize))
+                SettingsPaletteChoice(palette, state.colorScheme == palette, { actions.onColorScheme(palette) }, Modifier.widthIn(min = minimumTouchTargetSize))
             }
         }
         SettingsRow("Appearance") {
-            SettingsChoiceRow {
-                ThemeMode.entries.forEach { mode ->
-                    AppChip(state.themeMode == mode, { actions.onTheme(mode) }, mode.label)
-                }
-            }
+            AppSegmentedControl(
+                options = ThemeMode.entries.map { it.label },
+                selectedIndex = ThemeMode.entries.indexOf(state.themeMode),
+                onSelect = { actions.onTheme(ThemeMode.entries[it]) },
+            )
         }
     }
 }
@@ -212,7 +229,7 @@ private fun SettingsPaletteChoice(
     val labelColor by animateColorAsState(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, AppAnimations.standard(), label = "paletteLabel")
     Column(
         modifier = modifier.clip(RoundedCornerShape(cornerRadiusMedium))
-            .pressableSurface(onClick, role = Role.RadioButton)
+            .pressableSurface(onClick, pressedScale = 1f, role = Role.RadioButton)
             .semantics { contentDescription = "${palette.settingsName} colour scheme"
                 selected = isSelected }
             .padding(vertical = spacingSmall),
@@ -229,7 +246,7 @@ private fun SettingsPaletteChoice(
                 }
             }
         }
-        Text(palette.settingsName, style = MaterialTheme.typography.labelSmall, color = labelColor, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium)
+        Text(palette.settingsName, style = MaterialTheme.typography.labelSmall, color = labelColor, fontWeight = FontWeight.SemiBold, softWrap = false, maxLines = 1)
     }
 }
 

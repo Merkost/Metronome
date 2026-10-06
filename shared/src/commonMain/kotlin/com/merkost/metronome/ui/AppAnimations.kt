@@ -146,6 +146,14 @@ object AppAnimations {
     val fadeThrough: ContentTransform =
         fadeIn(Standard).togetherWith(fadeOut(Quick))
 
+    val fadeThroughFixedSize: ContentTransform
+        get() = ContentTransform(
+            fadeThrough.targetContentEnter,
+            fadeThrough.initialContentExit,
+            fadeThrough.targetContentZIndex,
+            sizeTransform = null,
+        )
+
     val fadeScaleTransform: ContentTransform =
         (fadeIn(Standard) + scaleIn(initialScale = 0.96f, animationSpec = Emphasized))
             .togetherWith(fadeOut(Quick) + scaleOut(targetScale = 0.98f, animationSpec = Quick))
