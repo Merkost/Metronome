@@ -11,19 +11,97 @@ to. Newest first.
 ---
 
 ## 1.4.0 — Find your flow
+_2026-10-07 · Android versionCode 10 · iOS build 2_
+
+A feature and design release with a hands-on welcome, four new click sounds,
+redesigned Settings and easier access to everyday practice tools.
 
 **Highlights**
-- Interactive welcome with sound previews and a choice of starting pace.
-- Redesigned Settings with grouped audio, appearance, playback and beat controls.
-- Four new sounds: Soft, Rim, Clave and Studio, each with a distinct accent.
-- Shared theme transitions, custom sliders and tempo animation for changed digits.
-- Branded main header, exact BPM entry and dedicated Rhythm and Practice tools.
-- Preset and practice-set backup import/export, plus an editable starter routine.
-- Permanent More by Merkost section and a shortcut to the web app.
+- **Interactive welcome.** Hear a starting pace, try click sounds and choose a
+  setup before practising, or skip straight to the app.
+- **Four new sounds.** Soft, Rim, Clave and Studio, each with a distinct accent.
+  Quick previews and audio-derived tone profiles help compare the character of
+  all seven sounds.
+- **Redesigned Settings.** Audio, appearance, playback, beat feedback and practice
+  data have clearer groups, supporting text and expandable controls.
+- **Refreshed main screen.** A branded header, exact BPM entry and direct access
+  to dedicated Rhythm and Practice tools.
+- **Practice backups.** Export and import presets and practice sets using native
+  file pickers on Android and iOS. Imports add to existing setups and validate
+  the imported data.
+- **Starter routine.** Preview and customise an editable practice routine before
+  saving it as a Practice Set.
+- **More ways to reach the app.** A web-app shortcut in Settings and a permanent,
+  understated More by Merkost section featuring Suby.
 
-**Store message**
+**Motion and interaction**
+- Shared motion tokens drive Settings reveals, stereo-pan controls, appearance
+  and colour-scheme changes, sliders and press feedback.
+- Custom sliders keep their track, thumb and feedback consistent across platforms.
+- Tempo transitions animate only the digits that change.
+- The pendulum uses harmonic motion with smooth turning points and crosses the
+  centre on main clicks and count-in. Its phase follows native audio-submission
+  timestamps, including live tempo changes, pauses and restarts.
+- Unnumbered beat dots distinguish accents and mutes, with a separate outer ring
+  for the active beat.
 
-Find your flow with a fresh welcome and redesigned settings. Try four new click sounds — Soft, Rim, Clave and Studio — with quick previews to find your favorite. Enjoy smoother controls, easy access to rhythm and practice tools, and backup support for your presets and practice sets. A new starter routine helps you get going, at your own pace.
+**Fixes and layout polish**
+- iOS switches fade, move and clip with their Settings sections instead of
+  appearing over neighbouring content during reveal and hide transitions.
+- Appearance selections and sound-preview buttons keep stable dimensions when
+  their state changes. Colour choices are left-aligned.
+- Beat-haptics switch feedback stays inside its rounded shape.
+- Backup actions have clearer labels, supporting copy and busy-state feedback.
+- A shared bottom-sheet component respects top and side display cutouts and
+  bottom insets; long content remains scrollable.
+- The Rhythm sheet groups meter and beat editing, subdivisions and count-in.
+  Home's Practice and Sound shortcuts have matching heights, and the final
+  controls have extra bottom spacing.
+- First-run tips place Skip using the device's safe-area inset and provide a
+  full 48dp touch target. Round-button hover feedback stays inside the circle.
+
+**Under the hood**
+- Kotlin 2.4.20, Compose Multiplatform 1.12.1, AGP 9.3.3, Navigation 3 1.2.0 and
+  Navigation 3 UI 1.1.2, Firebase BoM 34.19.0, GitLive Crashlytics 2.7.0.
+- Platform-only dependencies moved out of `commonMain`.
+- Expanded regression coverage for Settings motion, stable layouts, sheet safe
+  areas, sound tone profiles, pendulum phase and practice backup handling.
+
+**Store message — Google Play** (395 of 500 characters)
+```
+What's new in 1.4.0
+
+• A fresh, interactive welcome with sound previews
+• Four new clicks: Soft, Rim, Clave and Studio, with distinct accents and visual tone profiles
+• Redesigned Settings and easier access to Rhythm and Practice
+• Exact BPM entry, preset and practice-set backups, and an editable starter routine
+• Smoother controls, more natural pendulum motion and better bottom-sheet layouts
+```
+
+**Store message — App Store** (1320 of 4000 characters)
+```
+Find your flow
+
+Metronome has a fresh look and a more hands-on welcome. Try a starting pace, hear different clicks and choose what feels right before you begin practising.
+
+FOUR NEW CLICK SOUNDS
+Soft, Rim, Clave and Studio join the sound collection, each with its own accent. Quick previews and visual tone profiles make it easier to compare sounds and find your favourite.
+
+CLEARER CONTROLS
+Redesigned Settings bring audio, appearance, playback and beat options into clear groups. On the main screen, enter an exact BPM or jump straight to Rhythm and Practice. The Rhythm sheet makes meter, beat accents, subdivisions and count-in easier to find.
+
+YOUR PRACTICE, READY TO GO
+Back up and restore your presets and practice sets. Try the new starter routine, adjust it to suit your practice and save it when you are ready.
+
+SMOOTHER THROUGHOUT
+• More natural pendulum motion that follows the beat
+• Smooth theme changes, custom sliders and tempo animation that moves only the digits you change
+• Stable appearance choices and sound-preview buttons
+• Better bottom-sheet spacing around screen cutouts and more breathing room on the main screen
+• iOS switches now fade and move with their Settings sections
+
+Settings also has a shortcut to Metronome on the web and a quiet More by Merkost section where you can explore Suby.
+```
 
 ---
 
