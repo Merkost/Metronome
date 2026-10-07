@@ -11,7 +11,7 @@ to. Newest first.
 ---
 
 ## 1.4.0 — Find your flow
-_2026-10-07 · Android versionCode 10 · iOS build 2_
+_2026-10-07 · Android versionCode 11 · iOS build 2_
 
 A feature and design release with a hands-on welcome, four new click sounds,
 redesigned Settings and easier access to everyday practice tools.
