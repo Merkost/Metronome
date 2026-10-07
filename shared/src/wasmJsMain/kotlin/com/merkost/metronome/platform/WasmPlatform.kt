@@ -13,7 +13,7 @@ class WasmPlatformActions : PlatformActions {
 }
 
 class WasmAppVersionProvider : AppVersionProvider {
-    override fun getAppVersion(): AppVersionInfo? = AppVersionInfo("1.4.0 (web)", 10)
+    override fun getAppVersion(): AppVersionInfo? = AppVersionInfo("1.4.0", 10)
 }
 
 private fun openUrl(url: String): Unit = js("window.open(url, '_blank')")
