@@ -58,6 +58,14 @@ jobs:
           rm -rf _site/app
           cp -R shared/build/dist/wasmJs/productionExecutable _site/app
           rm -f _site/app/*.map _site/app/*.LICENSE.txt
+          node - <<'JS'
+          const fs = require("node:fs");
+          const file = "_site/app/index.html";
+          const html = fs.readFileSync(file, "utf8");
+          const scripts = /src="(webAudio\.js|composeApp\.js)"/g;
+          if ([...html.matchAll(scripts)].length !== 2) throw new Error("Expected both web app scripts");
+          fs.writeFileSync(file, html.replace(scripts, `src="$1?v=${process.env.GITHUB_SHA}"`));
+          JS
           # CNAME is GitHub Pages' mechanism; Cloudflare uses its own domain binding.
           rm -f _site/CNAME
           du -sh _site
