@@ -72,6 +72,19 @@ class SoundLoadStateTest {
     }
 
     @Test
+    fun stoppedPreviewCannotPlayAQueuedBeatAfterLoadingFinishes() {
+        val state = SoundLoadState()
+        state.beginLoading(ClickSound.SOFT, sampleId = 1)
+        state.playOrQueue(firstBeat)
+        state.clearQueuedPlay()
+
+        val activated = assertIs<SoundLoadCompletion.Activated>(
+            state.complete(sampleId = 1, succeeded = true),
+        )
+        assertNull(activated.queuedPlay)
+    }
+
+    @Test
     fun selectingActiveSoundCancelsPendingReplacementWithoutReloading() {
         val state = SoundLoadState()
         state.beginLoading(ClickSound.WOOD, sampleId = 1)

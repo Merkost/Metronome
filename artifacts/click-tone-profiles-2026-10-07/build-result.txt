@@ -1,0 +1,14 @@
+Command: ANDROID_HOME=/Users/merkost/Library/Android/sdk ./gradlew :shared:iosSimulatorArm64Test -PiosTestSdkDirectory=/private/tmp/MetronomeIosTestSdk :androidApp:assembleDebug :shared:testDebugUnitTest :shared:compileKotlinIosArm64 :shared:compileKotlinWasmJs --console=plain
+
+> Task :shared:iosSimulatorArm64Test
+> Task :androidApp:assembleDebug UP-TO-DATE
+> Task :shared:testDebugUnitTest UP-TO-DATE
+> Task :shared:compileKotlinIosArm64 UP-TO-DATE
+> Task :shared:compileKotlinWasmJs UP-TO-DATE
+BUILD SUCCESSFUL in 54s
+105 actionable tasks: 9 executed, 96 up-to-date
+
+Native: 223 tests, zero failures/errors/skips. Android: 182 tests, zero failures/errors/skips. Rendering: 41 cases, including 4 new picker cases.
+The production Android/iOS/Web gates also ran successfully before the capture run (50 seconds); final platform tasks are up to date because production source did not change. Final native tests reran after temporary capture hooks were removed.
+Generator: current --check passes, analytic DSP checks pass, repeat generation is byte-identical and stale --check rejects without writing.
+Compiler deprecation/opt-in warnings remain.

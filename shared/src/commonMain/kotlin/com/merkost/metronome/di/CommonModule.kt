@@ -1,5 +1,7 @@
 package com.merkost.metronome.di
 
+import com.merkost.metronome.engine.DefaultSoundPreviewController
+import com.merkost.metronome.engine.SoundPreviewController
 import com.merkost.metronome.engine.LiveActivityObserver
 import com.merkost.metronome.engine.MetronomeEngine
 import com.merkost.metronome.logging.CedarSetup
@@ -24,17 +26,26 @@ import com.merkost.metronome.viewModels.PracticePresetsViewModel
 import com.merkost.metronome.viewModels.PracticeSetsViewModel
 import com.merkost.metronome.viewModels.SettingsViewModel
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import kotlin.random.Random
 
 val commonModule = module {
     single<AppDatastore> { AppDatastoreImpl(get()) }
+    single { com.merkost.metronome.backup.PracticeBackupRepository(get()) }
     single<PracticePresetRepository> {
         DataStorePracticePresetRepository(
             dataStore = get(),
             nextId = {
                 "preset-${currentTimeMillis()}-${Random.nextInt().toUInt().toString(16)}"
             },
+            nowMillis = ::currentTimeMillis,
+        )
+    }
+    single {
+        com.merkost.metronome.practiceSets.PracticeStarterRepository(
+            dataStore = get(),
+            nextId = { "starter-${currentTimeMillis()}-${Random.nextInt().toUInt().toString(16)}" },
             nowMillis = ::currentTimeMillis,
         )
     }
@@ -63,7 +74,15 @@ val commonModule = module {
     single { MetronomeViewModel(get(), get(), get(), get(), get(), get(), get()) }
     single {
         CedarSetup.initialize(isDebug(), get<ReleaseLogTreeProvider>().releaseTree())
-        MetronomeEngine(get(), get(), get(), get()).also { it.start() }
+        MetronomeEngine(get(), get(), get(), get(), get()).also { it.start() }
+    }
+    single<SoundPreviewController> {
+        DefaultSoundPreviewController(
+            player = get(named("soundPreview")),
+            audioFocus = get(named("soundPreview")),
+            isPlaybackActive = { get<MetronomeViewModel>().metronomeState.value.playing },
+            onFailure = { error -> org.kimplify.cedar.logging.Cedar.tag("SoundPreview").e("Preview failed: ${error.message}") },
+        )
     }
     single { LiveActivityObserver(get(), get(), get()) }
     viewModel { SettingsViewModel(get()) }
@@ -80,6 +99,7 @@ val commonModule = module {
             repository = get(),
             presetRepository = get(),
             sessionController = get(),
+            starterRepository = get(),
             nextStepId = {
                 "step-${currentTimeMillis()}-${Random.nextInt().toUInt().toString(16)}"
             },

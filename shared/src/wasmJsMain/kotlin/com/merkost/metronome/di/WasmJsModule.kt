@@ -16,16 +16,19 @@ import com.merkost.metronome.platform.WasmPlatformActions
 import com.merkost.metronome.review.InAppReviewRequester
 import com.merkost.metronome.review.WasmInAppReviewRequester
 import com.merkost.metronome.platform.createDataStore
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val wasmJsModule = module {
     single<ReleaseLogTreeProvider> { ReleaseLogTreeProvider { null } }
     single { createDataStore() }
     single<MetronomePlayer> { MetronomePlayerWasm() }
+    single<MetronomePlayer>(named("soundPreview")) { MetronomePlayerWasm("preview") }
     single<PlatformActions> { WasmPlatformActions() }
     single<AppVersionProvider> { WasmAppVersionProvider() }
     single<HapticProvider> { HapticProviderWasm() }
     single<AudioFocusController> { NoopAudioFocusController() }
+    single<AudioFocusController>(named("soundPreview")) { NoopAudioFocusController() }
     single<LiveActivityController> { WasmLiveActivityController() }
     single<InAppReviewRequester> { WasmInAppReviewRequester() }
 }

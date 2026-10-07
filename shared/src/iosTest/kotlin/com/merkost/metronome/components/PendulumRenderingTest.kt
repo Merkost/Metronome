@@ -1,0 +1,163 @@
+package com.merkost.metronome.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.MotionDurationScale
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.BeatPulse
+import com.merkost.metronome.ui.theme.AppColorScheme
+import kotlinx.coroutines.test.TestResult
+import kotlin.math.abs
+import kotlin.test.Test
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TestTimeSource
+
+@OptIn(ExperimentalTestApi::class)
+class PendulumRenderingTest {
+    @Test
+    fun audibleBeatCrossesTheCentreInsteadOfArrivingAtAnEdge(): TestResult = fixture { model ->
+        model.clock += 500.milliseconds
+        runOnUiThread { model.index.intValue = 1; model.pulse.value = BeatPulse(model.clock.markNow(), 500.milliseconds, 1L) }
+        frame()
+        assertCentred()
+        model.clock += 250.milliseconds
+        frame()
+        assertLeft()
+        model.clock += 250.milliseconds
+        runOnUiThread { model.index.intValue = 2; model.pulse.value = BeatPulse(model.clock.markNow(), 500.milliseconds, 2L) }
+        frame()
+        assertCentred()
+    }
+
+    @Test
+    fun repeatedIndicesAndOddBarsKeepAlternatingAtEveryPrimaryPulse(): TestResult = fixture { model ->
+        val expectedRight = listOf(true, false, true, false, true, false)
+        expectedRight.forEachIndexed { ordinal, right ->
+            if (ordinal > 0) model.clock += 250.milliseconds
+            runOnUiThread {
+                model.index.intValue = if (ordinal < 3) 0 else ordinal % 3
+                model.pulse.value = BeatPulse(model.clock.markNow(), 500.milliseconds, ordinal.toLong())
+            }
+            frame()
+            assertCentred()
+            model.clock += 250.milliseconds
+            frame()
+            if (right) assertRight() else assertLeft()
+        }
+    }
+
+    @Test
+    fun lateMountDroppedFramesTempoChangesAndPauseUseAudioPhase(): TestResult = fixture(initialElapsedMs = 375, dark = true) { model ->
+        val late = tip()
+        assertTrue(late > 166f && late < 184f, "A late mount must catch up to the current swing. tip=$late")
+        model.clock += 2000.milliseconds
+        frame()
+        assertTrue(abs(tip() - late) <= 1f, "Dropped render frames must not accumulate phase drift")
+        runOnUiThread { model.pulse.value = BeatPulse(model.clock.markNow(), 250.milliseconds, 5L); model.interval.intValue = 250 }
+        frame()
+        assertCentred()
+        model.clock += 125.milliseconds
+        frame()
+        assertLeft()
+        runOnUiThread { model.playing.value = false; model.pulse.value = null }
+        mainClock.advanceTimeBy(2000)
+        waitForIdle()
+        assertCentred()
+        model.clock += 1000.milliseconds
+        runOnUiThread { model.playing.value = true; model.pulse.value = BeatPulse(model.clock.markNow(), 500.milliseconds, 0L); model.interval.intValue = 500 }
+        frame()
+        assertCentred()
+    }
+
+    @Test
+    fun reducedMotionKeepsTheArmCentredWhileBeatStateChanges(): TestResult = fixture(scale = 0f) { model ->
+        repeat(3) { ordinal ->
+            runOnUiThread { model.index.intValue = ordinal; model.pulse.value = BeatPulse(model.clock.markNow(), 500.milliseconds, ordinal.toLong()) }
+            model.clock += 250.milliseconds
+            frame()
+            assertCentred()
+            model.clock += 250.milliseconds
+        }
+    }
+
+    @Test
+    fun anEntireCycleUsesStaticLayoutAndSymmetricCentreCrossings(): TestResult = fixture { model ->
+        val bounds = onNodeWithTag("pendulum").fetchSemanticsNode().boundsInRoot
+        for (step in 0..100) {
+            if (step > 0) model.clock += 10.milliseconds
+            if (step == 50 || step == 100) runOnUiThread {
+                model.index.intValue = step / 50
+                model.pulse.value = BeatPulse(model.clock.markNow(), 500.milliseconds, (step / 50).toLong())
+            }
+            frame()
+            assertTrue(onNodeWithTag("pendulum").fetchSemanticsNode().boundsInRoot == bounds, "Motion must not resize the instrument")
+            when (step) { 0, 50, 100 -> assertCentred(); 25 -> assertRight(); 75 -> assertLeft() }
+        }
+    }
+
+    private fun fixture(scale: Float = 1f, initialElapsedMs: Long = 0, dark: Boolean = false, block: suspend ComposeUiTest.(FixtureModel) -> Unit): TestResult = runComposeUiTest(
+        effectContext = object : MotionDurationScale { override val scaleFactor = scale },
+    ) {
+        mainClock.autoAdvance = false
+        val model = FixtureModel()
+        model.clock += initialElapsedMs.milliseconds
+        setContent {
+            val colors = if (dark) AppColorScheme.BLACKNWHITE.darkColor else AppColorScheme.BLACKNWHITE.lightColor
+            CompositionLocalProvider(LocalDensity provides Density(1f)) {
+                MaterialTheme(colorScheme = colors) {
+                    Box(Modifier.width(300.dp).background(colors.surface)) {
+                        Pendulum(model.index.intValue, List(4) { Beat.LOW }, model.playing.value, model.interval.intValue, model.pulse.value, Modifier.testTag("pendulum"))
+                    }
+                }
+            }
+        }
+        frame()
+        block(model)
+    }
+
+    private fun ComposeUiTest.frame() { mainClock.advanceTimeBy(32); waitForIdle() }
+    private fun ComposeUiTest.tip(): Float = tipCentre(onNodeWithTag("pendulum").captureToImage())
+    private fun ComposeUiTest.assertCentred() { val x = tip(); assertTrue(abs(x - 149.5f) <= 2f, "A click must cross the centre. tip=$x") }
+    private fun ComposeUiTest.assertRight() { val x = tip(); assertTrue(x >= 183f && x <= 192f, "The halfway swing must reach its right turning point. tip=$x") }
+    private fun ComposeUiTest.assertLeft() { val x = tip(); assertTrue(x >= 107f && x <= 116f, "The halfway swing must reach its left turning point. tip=$x") }
+}
+
+private class FixtureModel {
+    val clock = TestTimeSource()
+    val index = mutableIntStateOf(0)
+    val pulse = mutableStateOf<BeatPulse?>(BeatPulse(clock.markNow(), 500.milliseconds, 0L))
+    val playing = mutableStateOf(true)
+    val interval = mutableIntStateOf(500)
+}
+
+private fun tipCentre(image: ImageBitmap): Float {
+    val pixels = image.toPixelMap()
+    val background = pixels[0, 0]
+    var weightedX = 0f
+    var ink = 0f
+    for (y in 5 until 25) for (x in 0 until image.width) {
+        val color = pixels[x, y]
+        val difference = maxOf(abs(color.red - background.red), abs(color.green - background.green), abs(color.blue - background.blue))
+        if (difference > 0.2f) { weightedX += x * difference; ink += difference }
+    }
+    assertTrue(ink > 0f, "The pendulum tip must be visible")
+    return weightedX / ink
+}

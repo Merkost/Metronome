@@ -26,6 +26,14 @@
 		CDE04CA62F848C8800FBAFE7 /* wood.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CDE04CA22F848C8800FBAFE7 /* wood.mp3 */; };
 		CDE04CA82F84C9A900FBAFE7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDE04CA72F84C9A900FBAFE7 /* GoogleService-Info.plist */; };
 		FF2247E6F0B6B8FF0BC8930A /* MetronomeLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC15D45B80072E131120A44B /* MetronomeLiveActivityWidget.swift */; };
+		D5A020000000000000000000 /* soft.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000000 /* soft.wav */; };
+		D5A020000000000000000001 /* soft_accent.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000001 /* soft_accent.wav */; };
+		D5A020000000000000000002 /* rim.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000002 /* rim.wav */; };
+		D5A020000000000000000003 /* rim_accent.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000003 /* rim_accent.wav */; };
+		D5A020000000000000000004 /* clave.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000004 /* clave.wav */; };
+		D5A020000000000000000005 /* clave_accent.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000005 /* clave_accent.wav */; };
+		D5A020000000000000000006 /* studio.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000006 /* studio.wav */; };
+		D5A020000000000000000007 /* studio_accent.wav in Resources */ = {isa = PBXBuildFile; fileRef = D5A010000000000000000007 /* studio_accent.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +81,14 @@
 		CDE04CA22F848C8800FBAFE7 /* wood.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wood.mp3; sourceTree = "<group>"; };
 		CDE04CA72F84C9A900FBAFE7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DC15D45B80072E131120A44B /* MetronomeLiveActivityWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetronomeLiveActivityWidget.swift; sourceTree = "<group>"; };
+		D5A010000000000000000000 /* soft.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = soft.wav; sourceTree = "<group>"; };
+		D5A010000000000000000001 /* soft_accent.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = soft_accent.wav; sourceTree = "<group>"; };
+		D5A010000000000000000002 /* rim.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = rim.wav; sourceTree = "<group>"; };
+		D5A010000000000000000003 /* rim_accent.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = rim_accent.wav; sourceTree = "<group>"; };
+		D5A010000000000000000004 /* clave.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = clave.wav; sourceTree = "<group>"; };
+		D5A010000000000000000005 /* clave_accent.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = clave_accent.wav; sourceTree = "<group>"; };
+		D5A010000000000000000006 /* studio.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = studio.wav; sourceTree = "<group>"; };
+		D5A010000000000000000007 /* studio_accent.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = studio_accent.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +205,15 @@
 				CDE04CA02F848C8800FBAFE7 /* click.mp3 */,
 				CDE04CA12F848C8800FBAFE7 /* metronome.wav */,
 				CDE04CA22F848C8800FBAFE7 /* wood.mp3 */,
+				D5A010000000000000000000 /* soft.wav */,
+				D5A010000000000000000001 /* soft_accent.wav */,
+				D5A010000000000000000002 /* rim.wav */,
+				D5A010000000000000000003 /* rim_accent.wav */,
+				D5A010000000000000000004 /* clave.wav */,
+				D5A010000000000000000005 /* clave_accent.wav */,
+				D5A010000000000000000006 /* studio.wav */,
+				D5A010000000000000000007 /* studio_accent.wav */,
+
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -280,6 +305,15 @@
 				CDE04CA42F848C8800FBAFE7 /* metronome.wav in Resources */,
 				CDE04CA52F848C8800FBAFE7 /* click.mp3 in Resources */,
 				CDE04CA62F848C8800FBAFE7 /* wood.mp3 in Resources */,
+				D5A020000000000000000000 /* soft.wav in Resources */,
+				D5A020000000000000000001 /* soft_accent.wav in Resources */,
+				D5A020000000000000000002 /* rim.wav in Resources */,
+				D5A020000000000000000003 /* rim_accent.wav in Resources */,
+				D5A020000000000000000004 /* clave.wav in Resources */,
+				D5A020000000000000000005 /* clave_accent.wav in Resources */,
+				D5A020000000000000000006 /* studio.wav in Resources */,
+				D5A020000000000000000007 /* studio_accent.wav in Resources */,
+
 				A1B2C3D4E5F60001AABBCCDD /* wood.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,0 +1,6 @@
+> Task :shared:compileKotlinIosArm64
+> Task :shared:compileKotlinWasmJs
+> Task :shared:iosSimulatorArm64Test
+> Task :shared:testDebugUnitTest
+> Task :androidApp:assembleDebug
+BUILD SUCCESSFUL in 58s

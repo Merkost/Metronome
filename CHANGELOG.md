@@ -10,6 +10,23 @@ to. Newest first.
 
 ---
 
+## 1.4.0 — Find your flow
+
+**Highlights**
+- Interactive welcome with sound previews and a choice of starting pace.
+- Redesigned Settings with grouped audio, appearance, playback and beat controls.
+- Four new sounds: Soft, Rim, Clave and Studio, each with a distinct accent.
+- Shared theme transitions, custom sliders and tempo animation for changed digits.
+- Branded main header, exact BPM entry and dedicated Rhythm and Practice tools.
+- Preset and practice-set backup import/export, plus an editable starter routine.
+- Permanent More by Merkost section and a shortcut to the web app.
+
+**Store message**
+
+Find your flow with a fresh welcome and redesigned settings. Try four new click sounds — Soft, Rim, Clave and Studio — with quick previews to find your favorite. Enjoy smoother controls, easy access to rhythm and practice tools, and backup support for your presets and practice sets. A new starter routine helps you get going, at your own pace.
+
+---
+
 ## 1.3.0 — Structured practice
 _2026-09-03 · Android versionCode 8 · iOS build 1_
 

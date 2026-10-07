@@ -1,0 +1,44 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "sha256": "01c9619cb882b0ca67274c690c77b2d7cbcfb3f8a1fe8c25b99b56e4e7fb68f0",
+    "bytes": 28746
+  },
+  {
+    "path": "/app/",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "sha256": "35b0982e3e4ce3fc60c95c0372fbf6788bdb5d61ca5ba672d7163a7a78b9da09",
+    "bytes": 5122
+  },
+  {
+    "path": "/site.js",
+    "status": 200,
+    "type": "application/javascript",
+    "sha256": "f4e3246961229d992d44c13f39705e4c00b409bef46f3865125646ee28e7317d",
+    "bytes": 10818
+  },
+  {
+    "path": "/site.css",
+    "status": 200,
+    "type": "text/css; charset=utf-8",
+    "sha256": "e6a415b60b57528dde2f6b12ce617504a7af4338257a197c44006f0226c48d9f",
+    "bytes": 26348
+  },
+  {
+    "path": "/motion.js",
+    "status": 200,
+    "type": "application/javascript",
+    "sha256": "eee612b9dea51b1ddbe403167f4f3477bb9c9413dfc10cac1087299912585685",
+    "bytes": 4163
+  },
+  {
+    "path": "/app/composeApp.js",
+    "status": 200,
+    "type": "application/javascript",
+    "sha256": "c3a22443526d60ccaf226229c917526f3c3e669868af0b378995cdf57ecf0c18",
+    "bytes": 534231
+  }
+]

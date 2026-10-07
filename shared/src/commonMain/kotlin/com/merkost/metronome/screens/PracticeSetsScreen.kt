@@ -1,6 +1,9 @@
 package com.merkost.metronome.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -120,6 +123,7 @@ fun PracticeSetsScreen(
                 }
                 PracticeSetUiEvent.ActiveSetLocked -> getString(Res.string.practice_set_locked)
                 PracticeSetUiEvent.LimitReached -> getString(Res.string.practice_set_limit_reached)
+                PracticeSetUiEvent.PresetLimitReached -> getString(Res.string.preset_limit_reached)
                 PracticeSetUiEvent.Conflict -> getString(Res.string.practice_set_conflict)
                 PracticeSetUiEvent.StorageFailure -> getString(Res.string.practice_set_storage_failed)
             }
@@ -151,12 +155,14 @@ fun PracticeSetsScreen(
         snackbarHostState = snackbarHostState,
         onBack = {
             when {
+                editor?.isSaving == true -> Unit
                 editor?.hasUnsavedChanges == true -> showDiscardDialog = true
                 editor != null -> viewModel.cancelEditing()
                 else -> upPress()
             }
         },
         onCreate = viewModel::beginCreate,
+        onPreviewStarter = viewModel::beginStarter,
         onStart = { practiceSet ->
             if (metronomeViewModel.hasStructuredPracticeConflict()) {
                 pendingStart = practiceSet
@@ -212,7 +218,7 @@ fun PracticeSetsScreen(
 
     if (showPresetPicker) {
         PresetPickerSheet(
-            presets = uiState.presets,
+            presets = uiState.presets + editor?.pendingPresets.orEmpty(),
             onSelect = {
                 viewModel.addPreset(it)
                 showPresetPicker = false
@@ -247,6 +253,7 @@ private fun PracticeSetsContent(
     snackbarHostState: SnackbarHostState,
     onBack: () -> Unit,
     onCreate: () -> Unit,
+    onPreviewStarter: () -> Unit,
     onStart: (PracticeSet) -> Unit,
     onResume: () -> Unit,
     onRetryPersistence: () -> Unit,
@@ -278,6 +285,7 @@ private fun PracticeSetsContent(
                 snackbarHostState = snackbarHostState,
                 onBack = onBack,
                 onCreate = onCreate,
+                onPreviewStarter = onPreviewStarter,
                 onStart = onStart,
                 onResume = onResume,
                 onRetryPersistence = onRetryPersistence,
@@ -289,7 +297,7 @@ private fun PracticeSetsContent(
         } else {
             PracticeSetEditor(
                 editor = editor,
-                presets = uiState.presets,
+                presets = uiState.presets + editor.pendingPresets,
                 snackbarHostState = snackbarHostState,
                 onBack = onBack,
                 onNameChanged = onNameChanged,
@@ -312,6 +320,7 @@ private fun PracticeSetsLibrary(
     snackbarHostState: SnackbarHostState,
     onBack: () -> Unit,
     onCreate: () -> Unit,
+    onPreviewStarter: () -> Unit,
     onStart: (PracticeSet) -> Unit,
     onResume: () -> Unit,
     onRetryPersistence: () -> Unit,
@@ -357,10 +366,15 @@ private fun PracticeSetsLibrary(
                 label = "practiceSetsLibraryState",
             ) { isEmpty ->
                 if (isEmpty) {
-                    PracticeSetsEmptyState(
-                        onCreate = onCreate,
-                        modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
-                    )
+                    Column(
+                        Modifier.widthIn(max = maxContentWidth).fillMaxWidth()
+                            .verticalScroll(rememberScrollState()).navigationBarsPadding()
+                            .padding(start = horizontalPadding, end = horizontalPadding, bottom = spacingLarge),
+                        verticalArrangement = Arrangement.spacedBy(spacingMedium),
+                    ) {
+                        PracticeSetsEmptyState(onCreate = onCreate)
+                        PracticeStarterCard(onPreview = onPreviewStarter)
+                    }
                 } else {
                     LazyColumn(
                         modifier = Modifier.widthIn(max = maxContentWidth).fillMaxWidth(),
@@ -448,6 +462,14 @@ private fun PracticeSetsLibrary(
                                 onMoveDown = { onMove(set.id, index + 1) },
                             )
                         }
+                        if (!uiState.isReordering) {
+                            item(key = "starter-routine") {
+                                PracticeStarterCard(
+                                    onPreview = onPreviewStarter,
+                                    modifier = Modifier.animateItem().padding(vertical = spacingSmall),
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -484,12 +506,12 @@ private fun PracticeSetEditor(
                     )
                 },
                 navigationIcon = {
-                    AppIconButton(onClick = onBack) {
+                    AppIconButton(onClick = onBack, enabled = !editor.isSaving) {
                         Icon(Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
                     }
                 },
                 actions = {
-                    TextButton(onClick = onSave) {
+                    TextButton(onClick = onSave, enabled = !editor.isSaving) {
                         Text(stringResource(Res.string.save), fontWeight = FontWeight.Bold)
                     }
                 },
@@ -510,6 +532,16 @@ private fun PracticeSetEditor(
                 ),
                 verticalArrangement = Arrangement.spacedBy(spacingMedium),
             ) {
+                if (editor.isStarter) {
+                    item(key = "starter-explanation") {
+                        Text(
+                            "Make this warm-up your own. New setups are added only when you save the routine.",
+                            modifier = Modifier.animateItem(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
                 item(key = "name") {
                     AppTextField(
                         modifier = Modifier.animateItem().fillMaxWidth(),
@@ -574,7 +606,7 @@ private fun PracticeSetEditor(
 @Composable
 private fun PracticeSetsEmptyState(onCreate: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(top = spacingLarge * 2, bottom = spacingLarge),
+        modifier = modifier.fillMaxWidth().padding(top = spacingLarge, bottom = spacingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
@@ -686,6 +718,7 @@ private fun PracticeSetsScreenPreview() {
             snackbarHostState = SnackbarHostState(),
             onBack = {},
             onCreate = {},
+            onPreviewStarter = {},
             onStart = {},
             onResume = {},
             onRetryPersistence = {},

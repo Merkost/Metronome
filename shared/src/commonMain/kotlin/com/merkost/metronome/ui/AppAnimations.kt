@@ -27,6 +27,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.TextAutoSize
@@ -37,6 +40,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.MotionDurationScale
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -44,6 +53,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -55,6 +69,8 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object AppAnimations {
+
+    const val PendulumSwingDegrees = 20f
 
     private const val PressStiffness = 1600f
     private const val QuickStiffness = 1100f
@@ -118,10 +134,10 @@ object AppAnimations {
     )
 
     val expandEnter: EnterTransition =
-        expandVertically(EmphasizedSize) + fadeIn(Standard)
+        expandVertically(EmphasizedSize, expandFrom = Alignment.Top) + fadeIn(Standard)
 
     val shrinkExit: ExitTransition =
-        shrinkVertically(EmphasizedSize) + fadeOut(Quick)
+        shrinkVertically(EmphasizedSize, shrinkTowards = Alignment.Top) + fadeOut(Quick)
 
     val revealEnter: EnterTransition =
         expandHorizontally(EmphasizedSize) + fadeIn(Standard)
@@ -131,6 +147,14 @@ object AppAnimations {
 
     val fadeThrough: ContentTransform =
         fadeIn(Standard).togetherWith(fadeOut(Quick))
+
+    val fadeThroughFixedSize: ContentTransform
+        get() = ContentTransform(
+            fadeThrough.targetContentEnter,
+            fadeThrough.initialContentExit,
+            fadeThrough.targetContentZIndex,
+            sizeTransform = null,
+        )
 
     val fadeScaleTransform: ContentTransform =
         (fadeIn(Standard) + scaleIn(initialScale = 0.96f, animationSpec = Emphasized))
@@ -320,23 +344,38 @@ fun AnimatedNumberText(
     color: Color = LocalContentColor.current,
     autoSize: TextAutoSize? = null,
 ) {
-    AnimatedContent(
-        targetState = value,
-        transitionSpec = { AppAnimations.slideDigitTransform(targetState >= initialState) },
-        contentKey = { it },
-        label = "number",
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) { target ->
-        Text(
-            text = target.toString(),
-            style = style,
-            color = color,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            autoSize = autoSize,
-        )
+    var previousValue by remember { mutableIntStateOf(value) }
+    val towardsUp = remember(value) { value >= previousValue }
+    SideEffect { previousValue = value }
+    val text = value.toString()
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    BoxWithConstraints(modifier.clearAndSetSemantics { contentDescription = text }, contentAlignment = Alignment.Center) {
+        val measured = measurer.measure(AnnotatedString(text), style)
+        val fit = if (autoSize != null && constraints.hasBoundedWidth && measured.size.width > 0) {
+            (constraints.maxWidth.toFloat() / measured.size.width).coerceIn(0.5f, 1f)
+        } else 1f
+        val digitStyle = style.copy(fontSize = style.fontSize * fit, fontFeatureSettings = "tnum")
+        val digitWidth = with(density) {
+            measurer.measure(AnnotatedString("0"), digitStyle).size.width.toDp()
+        }
+        Row(Modifier.animateContentSize(AppAnimations.emphasized()), verticalAlignment = Alignment.CenterVertically) {
+            text.indices.forEach { index ->
+                val place = text.lastIndex - index
+                key(place) {
+                    AnimatedContent(
+                        targetState = text[index],
+                        transitionSpec = { AppAnimations.slideDigitTransform(towardsUp) },
+                        contentKey = { it },
+                        label = "digit-$place",
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.width(digitWidth),
+                    ) { digit ->
+                        Text(text = digit.toString(), style = digitStyle, color = color, textAlign = TextAlign.Center, maxLines = 1)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -357,3 +396,7 @@ private fun AnimatedNumberTextPreview() {
         }
     }
 }
+
+@Composable
+fun isAppMotionReduced(): Boolean =
+    (rememberCoroutineScope().coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f) == 0f

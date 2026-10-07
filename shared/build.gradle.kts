@@ -25,6 +25,15 @@ kotlin {
             isStatic = true
             binaryOption("bundleId", "com.merkost.metronome")
         }
+        if (iosTarget.name == "iosSimulatorArm64") {
+            providers.gradleProperty("iosTestSdkDirectory").orNull?.let { directory ->
+                val linkerOptions = file(directory).resolve("linker-options.txt")
+                require(linkerOptions.isFile) {
+                    "Prepare the real Xcode simulator SDK objects with tools/testing/package-ios-test-sdk.py before setting iosTestSdkDirectory"
+                }
+                iosTarget.binaries.getTest("DEBUG").linkerOpts(linkerOptions.readLines().filter(String::isNotBlank))
+            }
+        }
     }
 
 
@@ -82,6 +91,10 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.gitlive.crashlytics)
+        }
+
+        iosTest.dependencies {
+            implementation("org.jetbrains.compose.ui:ui-test:${libs.versions.composeMultiplatform.get()}")
         }
     }
 }

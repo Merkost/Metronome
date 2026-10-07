@@ -1,0 +1,44 @@
+{
+  "native": {
+    "tests": 219,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidShared": {
+    "tests": 182,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "renderingTests": 37,
+  "newBottomSheetTests": 4,
+  "sheetCallSites": 12,
+  "platformGates": [
+    "Android debug build",
+    "iOS arm64 compilation",
+    "Wasm compilation"
+  ],
+  "nativeAppBuild": "UIKit/Metal simulator application built and launched with temporary launch fixtures; fixture removed before final source gates",
+  "sourceSha256": {
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/AppBottomSheet.kt": "038e94ff1e3425a9fa20cf1d8c5f5e5ede0ef564d9404a43faafc7e8a8e89cdb",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/components/AppBottomSheetInsetsRenderingTest.kt": "0df89b9e221d6301e8d2355a6156cd3de9f998e29cadb8d7ff25024b649b0e47"
+  },
+  "captureTypes": [
+    "Actual UIKit/Metal iPhone and iPad portrait screenshots",
+    "Sampled native sheet opening recording",
+    "Native raster helper/body regression tests with synthetic insets and anchored placement"
+  ],
+  "actualIphoneSafeTopPx": 186,
+  "actualIphoneSafeBottomPx": 102,
+  "sampledOpeningModalFrames": 32,
+  "minimumOpeningPaintedTopPx": 186,
+  "actualAccessibilityFontScale": 1.8,
+  "temporaryCaptureCodeRemoved": true,
+  "simulatorTextSizeRestored": true,
+  "limits": [
+    "Native software-keyboard behavior unverified: Simulator hardware keyboard suppressed IME",
+    "Native landscape unverified: UIWindowScene rejected rotation in current window mode",
+    "No physical-device or exhaustive gesture acceptance"
+  ]
+}

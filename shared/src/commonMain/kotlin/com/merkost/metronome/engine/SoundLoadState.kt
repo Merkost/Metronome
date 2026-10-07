@@ -6,6 +6,7 @@ internal data class QueuedSoundPlay(
     val left: Float,
     val right: Float,
     val rate: Float,
+    val onSubmitted: (() -> Unit)? = null,
 )
 
 internal data class ReadySoundPlay(
@@ -83,6 +84,10 @@ internal class SoundLoadState {
         if (sampleId != null) return ReadySoundPlay(sampleId, play)
         pendingPlay = play
         return null
+    }
+
+    fun clearQueuedPlay() {
+        pendingPlay = null
     }
 
     fun reset() {

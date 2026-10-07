@@ -6,6 +6,8 @@ import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.BeatPulse
+import com.merkost.metronome.model.BeatClockState
 import com.merkost.metronome.model.bpmFromTapIntervals
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
@@ -34,6 +36,7 @@ import com.merkost.metronome.practiceSets.recordPracticeCompletion
 import com.merkost.metronome.review.ReviewPromptCoordinator
 import com.merkost.metronome.whatsnew.WhatsNewCoordinator
 import com.merkost.metronome.review.ReviewPromptSnapshot
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -52,7 +55,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -67,12 +72,14 @@ class MetronomeViewModel(
 ) : ViewModel() {
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val stereoPan = appDatastore.stereoSettings
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
     val currentStereo = appDatastore.stereo
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Pair(1f, 1f))
     val clickVolume = appDatastore.clickVolume
         .stateIn(viewModelScope, SharingStarted.Eagerly, 1f)
     val selectedSound = appDatastore.selectedSound
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ClickSound.WOOD)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, ClickSound.WOOD)
     val hapticEnabled = appDatastore.hapticEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val keepScreenAwake = appDatastore.keepScreenAwake
@@ -104,6 +111,9 @@ class MetronomeViewModel(
     ) { sets, sessionState ->
         practiceAgainSet(sets, sessionState.session?.sourceSetId)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    val practiceSetCount = (practiceSetRepository?.sets ?: flowOf(emptyList()))
+        .map { it.size }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
     private val mutablePracticeCompletionEvents = MutableSharedFlow<PracticeCompletionEvent>(
         extraBufferCapacity = 1,
     )
@@ -129,28 +139,114 @@ class MetronomeViewModel(
     val metronomeState = _metronomeState.asStateFlow()
 
     val index = MutableStateFlow(-1)
+    private val mutableBeatClock = MutableStateFlow(BeatClockState())
+    val beatClock = mutableBeatClock.asStateFlow()
 
-    val onboardingStep = MutableStateFlow(-1)
+    internal fun beginBeatSession(): Long = mutableBeatClock.updateAndGet {
+        BeatClockState(generation = it.generation + 1L)
+    }.generation
+
+    internal fun onBeatPulse(generation: Long, pulse: BeatPulse) {
+        mutableBeatClock.update { current ->
+            if (generation == current.generation && (current.pulse == null || pulse.ordinal > current.pulse.ordinal)) {
+                current.copy(pulse = pulse)
+            } else {
+                current
+            }
+        }
+    }
+
+    private val mutableOnboardingLoaded = MutableStateFlow(false)
+    val onboardingLoaded = mutableOnboardingLoaded.asStateFlow()
+    private val mutableOnboardingLoadError = MutableStateFlow<String?>(null)
+    val onboardingLoadError = mutableOnboardingLoadError.asStateFlow()
+    private var onboardingLoadJob: Job? = null
+    private val mutableOnboardingVisible = MutableStateFlow(false)
+    val onboardingVisible = mutableOnboardingVisible.asStateFlow()
+    private val mutableOnboardingInitialSound = MutableStateFlow(ClickSound.WOOD)
+    val onboardingInitialSound = mutableOnboardingInitialSound.asStateFlow()
+    private val mutableOnboardingSaving = MutableStateFlow(false)
+    val onboardingSaving = mutableOnboardingSaving.asStateFlow()
+    private val mutableOnboardingError = MutableStateFlow<String?>(null)
+    val onboardingError = mutableOnboardingError.asStateFlow()
+    private var allowPlaybackAfterOnboarding = false
 
     val whatsNewVersion = MutableStateFlow<String?>(null)
-
-
-    fun onOnboardingNext() {
-        onboardingStep.update { if (it < 2) it + 1 else it }
-    }
-
-    fun onOnboardingBack() {
-        onboardingStep.update { if (it > 0) it - 1 else it }
-    }
 
     fun onWhatsNewDismissed() {
         whatsNewVersion.value = null
         viewModelScope.launch { whatsNewCoordinator?.markSeen() }
     }
 
-    fun onOnboardingDismiss() {
-        onboardingStep.value = -1
-        viewModelScope.launch { appDatastore.saveOnboardingComplete(true) }
+    fun completeOnboarding(bpm: Int, sound: ClickSound, startPlaying: Boolean) {
+        if (!mutableOnboardingLoaded.value || mutableOnboardingSaving.value || !mutableOnboardingVisible.value) return
+        mutableOnboardingSaving.value = true
+        mutableOnboardingError.value = null
+        allowPlaybackAfterOnboarding = startPlaying
+        viewModelScope.launch {
+            try {
+                appDatastore.saveSelectedSound(sound)
+                appDatastore.saveOnboardingComplete(true)
+                _metronomeState.update {
+                    it.copy(
+                        rhythm = bpm.coerceIn(metronomeMinimum, metronomeMaximum),
+                        playing = startPlaying && allowPlaybackAfterOnboarding,
+                    )
+                }
+                mutableOnboardingVisible.value = false
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                mutableOnboardingError.value = "Couldn’t save your setup. Please try again."
+            } finally {
+                mutableOnboardingSaving.value = false
+            }
+        }
+    }
+
+    fun onOnboardingBackgrounded() {
+        allowPlaybackAfterOnboarding = false
+    }
+
+    private val mutableSoundSelectionError = MutableStateFlow<String?>(null)
+    val soundSelectionError = mutableSoundSelectionError.asStateFlow()
+
+    fun onSoundSelected(sound: ClickSound) {
+        mutableSoundSelectionError.value = null
+        viewModelScope.launch {
+            try {
+                appDatastore.saveSelectedSound(sound)
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                mutableSoundSelectionError.value = "Couldn’t save your click. Please try again."
+            }
+        }
+    }
+
+    fun onCountInChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                appDatastore.saveCountInEnabled(enabled)
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                mutableSoundSelectionError.value = "Couldn’t save count-in. Please try again."
+            }
+        }
+    }
+
+    fun resetPracticeStatistics() {
+        if (metronomeState.value.playing) return
+        viewModelScope.launch {
+            try {
+                appDatastore.resetTime()
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                mutableSoundSelectionError.value = "Couldn’t reset your statistics. Please try again."
+            }
+        }
     }
 
     val isPlaying = _metronomeState.map { it.playing }
@@ -175,6 +271,29 @@ class MetronomeViewModel(
             viewModelScope.launch { practiceSessionController?.pause() }
         } else {
             _metronomeState.update { it.copy(playing = false) }
+        }
+    }
+
+    suspend fun pauseForSoundPreview(): Boolean {
+        if (!metronomeState.value.playing) return true
+        suppressReviewForCurrentPause = true
+        return try {
+            if (practiceSessionState.value.session != null) {
+                practiceSessionController?.pause()
+            } else {
+                _metronomeState.update { it.copy(playing = false) }
+            }
+            val paused = withTimeoutOrNull(2_000L) {
+                metronomeState.first { !it.playing }
+                true
+            } ?: false
+            if (!paused) mutableSoundSelectionError.value = "Pause playback before previewing a click."
+            paused
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            mutableSoundSelectionError.value = "Couldn’t pause playback. Please try again."
+            false
         }
     }
 
@@ -218,8 +337,8 @@ class MetronomeViewModel(
                             hasActiveGapTrainer = gapTrainerConfig.value != null,
                             hasActivePracticeSession = practiceSessionState.value.session != null,
                             isTimerSheetVisible = timerSheetVisible,
-                            isTempoSheetVisible = tempoSheetVisible,
-                            isOnboardingVisible = onboardingStep.value >= 0,
+                            isTempoSheetVisible = tempoSheetVisible || companionSheetVisible,
+                            isOnboardingVisible = !onboardingLoaded.value || onboardingVisible.value,
                             isPresetManagementVisible = presetManagementVisible,
                         )
                     }
@@ -486,6 +605,12 @@ class MetronomeViewModel(
         viewModelScope.launch { appDatastore.saveLastTrainerConfig(config) }
     }
 
+    private var companionSheetVisible = false
+
+    fun setCompanionSheetVisible(visible: Boolean) {
+        companionSheetVisible = visible
+    }
+
     private var tempoSheetVisible = false
     private var presetManagementVisible = false
     private var trainerAutoDismissPending = false
@@ -710,29 +835,42 @@ class MetronomeViewModel(
         viewModelScope.launch { practiceSessionController?.markCurrentStepEdited() }
     }
 
+    fun retryOnboardingLoad() {
+        if (onboardingLoadJob?.isActive == true || onboardingLoaded.value) return
+        mutableOnboardingLoadError.value = null
+        onboardingLoadJob = viewModelScope.launch {
+            try {
+                val ts = appDatastore.timeSignature.first()
+                val subdivision = appDatastore.subdivision.first()
+                val complete = appDatastore.onboardingComplete.first()
+                mutableOnboardingInitialSound.value = appDatastore.selectedSound.first()
+                _metronomeState.update {
+                    it.copy(timeSignature = ts, beats = ts.defaultBeats, subdivision = subdivision)
+                }
+                mutableOnboardingVisible.value = !complete
+                mutableOnboardingLoaded.value = true
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                mutableOnboardingLoadError.value = "Couldn’t load your setup. Please try again."
+                return@launch
+            }
+            try {
+                whatsNewCoordinator?.let { coordinator ->
+                    if (coordinator.shouldShow() && !onboardingVisible.value) {
+                        whatsNewVersion.value = coordinator.currentVersion()
+                    }
+                }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                whatsNewVersion.value = null
+            }
+        }
+    }
+
     init {
-        viewModelScope.launch {
-            val ts = appDatastore.timeSignature.first()
-            _metronomeState.update { it.copy(timeSignature = ts, beats = ts.defaultBeats) }
-        }
-        viewModelScope.launch {
-            val subdivision = appDatastore.subdivision.first()
-            _metronomeState.update { it.copy(subdivision = subdivision) }
-        }
-        viewModelScope.launch {
-            appDatastore.onboardingComplete.first().let { complete ->
-                if (!complete) {
-                    onboardingStep.value = 0
-                }
-            }
-        }
-        viewModelScope.launch {
-            whatsNewCoordinator?.let { coordinator ->
-                if (coordinator.shouldShow()) {
-                    whatsNewVersion.value = coordinator.currentVersion()
-                }
-            }
-        }
+        retryOnboardingLoad()
         viewModelScope.launch {
             appDatastore.countInEnabled.collect { enabled ->
                 val active = activePresetState.value.active

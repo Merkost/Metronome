@@ -1,0 +1,87 @@
+{
+  "productionChange": "Rounded clip precedes toggleable in shared SettingsSwitch",
+  "sourceSha256": "8ab0e1d58bd063e997d2a6a8c61a99102fb0e17ace7384e56482233060cb5a18",
+  "baselineProbes": {
+    "tests": 2,
+    "failures": 2,
+    "errors": 0
+  },
+  "fixedProbes": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0
+  },
+  "finalNative": {
+    "tests": 212,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidShared": {
+    "tests": 182,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "platformGates": [
+    "Android debug build",
+    "iOS arm64 compilation",
+    "Wasm compilation"
+  ],
+  "pixels": {
+    "before-light": {
+      "cornerDelta": [
+        0.10196078431372549,
+        0.10196078431372549,
+        0.10196078431372549,
+        0.10196078431372549
+      ],
+      "imageSize": [
+        324,
+        84
+      ],
+      "rowHeight": 48
+    },
+    "after-light": {
+      "cornerDelta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "imageSize": [
+        324,
+        84
+      ],
+      "rowHeight": 48
+    },
+    "before-2xfont": {
+      "cornerDelta": [
+        0.10196078431372549,
+        0.10196078431372549,
+        0.10196078431372549,
+        0.10196078431372549
+      ],
+      "imageSize": [
+        324,
+        110
+      ],
+      "rowHeight": 74
+    },
+    "after-2xfont": {
+      "cornerDelta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "imageSize": [
+        324,
+        110
+      ],
+      "rowHeight": 74
+    }
+  },
+  "evidenceType": "Native Compose raster fixtures, real held label-area press; not full UIKit or physical-device screenshots",
+  "temporaryProbeRemoved": true
+}

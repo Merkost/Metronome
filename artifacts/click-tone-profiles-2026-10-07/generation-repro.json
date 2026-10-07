@@ -1,0 +1,7 @@
+{
+  "repeatGenerationByteIdentical": true,
+  "generatedDataMatchesRepository": true,
+  "staleCheckExitsOneWithoutWriting": true,
+  "unsupportedPythonReportsRequirementWithoutTraceback": true,
+  "generatedDataSha256": "e3b117c815c5919b75f1b279caaa9d2f9f3d774c2fef0cfc5179f7b0a6448798"
+}
