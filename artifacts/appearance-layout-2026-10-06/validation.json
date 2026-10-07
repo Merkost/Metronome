@@ -1,0 +1,56 @@
+{
+  "baseline": {
+    "revision": "f42e61625839672662debb62b145b557e3065a67",
+    "nativeTests": 199,
+    "failures": 5,
+    "errors": 0,
+    "regression": "Selected font weight changes intrinsic chip and palette-label bounds"
+  },
+  "native": {
+    "tests": 202,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidShared": {
+    "tests": 182,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "appearanceRenderingTests": [
+    "themeSelectionKeepsControlsLabelsAndFollowingContentInPlace[iosSimulatorArm64]",
+    "paletteSelectionKeepsControlsLabelsAndFollowingContentInPlace[iosSimulatorArm64]",
+    "appearanceSelectionStaysStableAtNarrowRtlWithLargerText[iosSimulatorArm64]",
+    "appearanceSelectionStaysStableWithDoubleSizeText[iosSimulatorArm64]",
+    "appearanceGroupsExposeExactlyOneSelectedRadioAndEmitOneSelection[iosSimulatorArm64]",
+    "rapidThemeAndPaletteReversalsKeepGeometryAndFinishOnTheLastChoices[iosSimulatorArm64]",
+    "reducedMotionSelectionsKeepGeometryAndRenderTheFinalChoicesImmediately[iosSimulatorArm64]",
+    "keyboardFocusAndSpaceSelectEachThemeOnceWithoutMovingControls[iosSimulatorArm64]"
+  ],
+  "nativeRenderingTests": 20,
+  "platformGates": [
+    "Android debug build",
+    "iOS arm64 source compilation",
+    "Wasm source compilation"
+  ],
+  "captures": {
+    "type": "Native Compose raster test fixture rendering the production SettingsAppearancePanel",
+    "cases": [
+      "Light, normal text",
+      "Dark, RTL, font scale 1.5",
+      "Light, font scale 2.0"
+    ],
+    "limits": "These are raster fixture captures, not full UIKit app or physical-device screenshots"
+  },
+  "sourceSha256": {
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/AppChip.kt": "d68a6320048ed16e5898414aab0b6a4e76412693154d74e87273918e0c26daf5",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/AppSegmentedControl.kt": "47bc1775fe24d3ead6e59800d6311edc152b696276bbebf3d6a7ffe748196a1e",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/SettingsComponents.kt": "4cad50e73b1f6fad9c0b3c0d2c8b2f900459ebf38924d901ea791269d1aa3bdb",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/ui/AppAnimations.kt": "7667cb027dab9a83b210e726948753524d2196c8b500fb23966c804be54810fd",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/screens/SettingsAppearanceRenderingTest.kt": "85d676e529e12a765d9ee16a9da3a2905a5b7b62bc5e1b3306f1a99b4497c0d5"
+  },
+  "limits": [
+    "Physical-device VoiceOver and hardware gesture acceptance are not established by these tests"
+  ]
+}

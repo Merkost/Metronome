@@ -1,5 +1,9 @@
 # Release Notes
 
+## v1.4.0
+
+Find your flow with a fresh welcome and redesigned settings. Try four new click sounds — Soft, Rim, Clave and Studio — with quick previews to find your favorite. Enjoy smoother controls, easy access to rhythm and practice tools, and backup support for your presets and practice sets. A new starter routine helps you get going, at your own pace.
+
 ## v1.1.0
 
 - Gradual tempo increase for practice sessions

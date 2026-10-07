@@ -6,8 +6,8 @@ import androidx.compose.ui.unit.sp
 // Beat balls
 val BallSize = 40.dp
 val BallSizeCompact = 32.dp
-val CircleSize = BallSize + 32.dp
-val CircleWeight = 5.dp
+val CircleSize = BallSize + 16.dp
+val CircleWeight = 2.5.dp
 
 // Buttons
 val defaultPlayButtonSize = 85.dp

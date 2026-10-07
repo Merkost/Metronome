@@ -1,0 +1,23 @@
+# iOS switch source review
+
+Reviewed the working changes against `3596f18` on 2026-10-06. No remaining confirmed P1/P2 production-code findings. The initial cancellation and off-thumb contrast findings are resolved.
+
+- All six production settings use the shared `SettingsSwitch` boundary: Beat haptics, Count-in, Keep screen awake, Background playback, Live Activity, and Beat flash. The iOS actual now renders the track and thumb inside Compose, allowing ancestor alpha, translation, clipping, and scrim/sheet ordering to apply to their pixels.
+- `detectHorizontalDragGestures` has separate completion and cancellation paths. Cancellation clears the transient thumb position without changing the model. Completion emits only a changed value. Current model, callback, animated position, density, and RTL direction are read through updated state. Tap callbacks and state remain hoisted.
+- Off thumbs use `onSurface`; on thumbs use `onPrimary`. The existing readability helper chooses a contrasting foreground against the actual animated track. The track, thumb, and border use theme roles. The outer switch is 64dp by the existing 48dp minimum; mirrored placement and drag direction agree.
+- The row exposes one labelled `Role.Switch`, value, and click action, while the visual child's semantics are cleared. Android and wasm retain their platform switch implementations. The production iOS entry point selects the regression fixture only when both the debug-binary check and explicit launch argument succeed.
+- Compose Foundation/UI 1.12.1 source inspection confirms distinct detector end/cancel callbacks and UIKit touch cancellation forwarding to `scene.cancelPointerInput()`. The cancellation test exercises that scene path. The simulator-test linker helper archives 19 real Xcode SDK objects, checks arm64/simulator provenance, and supplies options only to the debug simulator test binary.
+
+Existing native XML reports contain 193 tests, with zero failures, errors, or skipped tests. The switch suite contains 11 passing tests, including rendered fade/clip frames, reversals, merged semantics, taps, external updates, LTR/RTL drags, scene cancellation, and off-thumb pixels in every bundled light/dark palette. No builds or tests were run by this reviewer; `git diff --check 3596f18` passed.
+
+Inspected native screenshots show five escaped baseline controls at ancestor alpha zero and none in the fixed frame. Fixed partial-clip, scrim, and sheet frames show the expected pixel placement and ordering. At review time, `fixed/visible.png` was blank and its stored green-pixel count was zero; replace that initial-launch capture before using it as the full-visible comparison reference.
+
+Limits: merged Compose semantics do not prove VoiceOver announcements or focus traversal. Hardware-keyboard traversal remains untested; both row and child have toggleable modifiers, and semantics clearing alone does not establish a single keyboard focus stop. Physical-device cancellation, simultaneous external updates during an active drag, and asynchronous DataStore callback latency remain untested. The final shared-framework build was still in progress when this review was recorded.
+
+## Final re-review
+
+No remaining confirmed P1/P2 findings after the focus and capture corrections. The child wrapper now sets `focusProperties { canFocus = false }`, preserving row keyboard ownership while leaving pointer interaction available. The new test activates Count-in with Space exactly once, verifies its labelled switch semantics, then tabs directly to Keep screen awake and Background playback. The current native XML reports independently confirm 194 tests with zero failures, errors, or skipped tests, including 12 switch rendering tests.
+
+The replacement `fixed/visible.png` was inspected: it shows the actual fixture at 9000ms, full ancestor opacity, and all five fixture settings. The measurements now contain 19,560 colored reference pixels, zero colored pixels in the fixed zero-alpha and zero-clip frames, and a half-alpha energy ratio of 0.500115. The earlier blank-reference concern is resolved. The keyboard-focus and capture limits above are superseded by this final re-review.
+
+The coordinating implementation run reports successful final Android debug, wasm, and iOS arm64 compile checks. No builds or tests were launched by this reviewer. `git diff --check 3596f18` still passes. Remaining acceptance limits are physical-device VoiceOver announcements and gesture mediation, simultaneous external changes during an active drag, and asynchronous DataStore callback latency; the existing source review and automated/native evidence do not establish those results.

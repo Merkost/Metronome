@@ -1,6 +1,6 @@
 package com.merkost.metronome.whatsnew
 
-const val RELEASE_NOTES_VERSION = "1.3.0"
+const val RELEASE_NOTES_VERSION = "1.4.0"
 
 fun shouldShowWhatsNew(
     currentVersion: String?,

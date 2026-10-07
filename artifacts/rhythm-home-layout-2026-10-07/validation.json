@@ -1,0 +1,48 @@
+{
+  "native": {
+    "tests": 247,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidShared": {
+    "tests": 196,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "renderingTests": 51,
+  "newLayoutTests": 5,
+  "baseline": {
+    "nativeTests": 244,
+    "failures": 2,
+    "practiceHeightPx": 86,
+    "soundHeightPx": 70,
+    "scrollEndGapPx": 0
+  },
+  "homeScrollEndPaddingDp": 32,
+  "shortcutSizing": "Shared measured title/caption slots, reserved for all sounds; layout adapts before words break",
+  "sourceSha256": {
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/MainScreen.kt": "6cd05681f5c43f291a5f748ed37ec6e90eaa59eb0d7240632c9b963ecc69f494",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/MainShortcuts.kt": "5f5510bc04227e63dbd0cbaeca02ca032d96ecc83a6c55edaf1e5c799dfd0208",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/RhythmSheet.kt": "32016526b0d5f433e59411fbdc5c9eace93792b35276c93d053525b2fec7f459",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/screens/HomeRhythmLayoutTest.kt": "35c6f4fe3459f1fb772597350b314328816e2bed17cf313617714ff4fa65458a"
+  },
+  "platformGates": [
+    "Android debug build",
+    "iOS arm64 compilation",
+    "Wasm compilation"
+  ],
+  "captureType": "Production MainShortcuts and RhythmContent in native Compose raster fixtures; not full MainScreen/UIKit/device captures",
+  "captureConfigurations": [
+    "Light density1 normal font",
+    "Narrow dark RTL density1 fontScale2"
+  ],
+  "temporaryCaptureCodeRemoved": true,
+  "limits": [
+    "Actual UIKit modal/device safe-area acceptance is separate",
+    "No full-app dynamic type or VoiceOver/TalkBack traversal claim",
+    "Dark ink regression is not WCAG contrast certification"
+  ],
+  "playbackAndSettingsActionsChanged": false
+}

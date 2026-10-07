@@ -1,0 +1,280 @@
+[
+  {
+    "capture": "baseline-tall-measured",
+    "window": {
+      "kind": "native-window",
+      "index": 1,
+      "widthPoints": 402.0,
+      "heightPoints": 874.0,
+      "topPoints": 62.0,
+      "leftPoints": 0.0,
+      "bottomPoints": 34.0,
+      "rightPoints": 0.0
+    },
+    "contentInsets": {
+      "kind": "content-insets",
+      "density": 3.0,
+      "fontScale": 1.0,
+      "safeTopPx": 186,
+      "safeBottomPx": 102,
+      "imeBottomPx": 0
+    },
+    "lastRelevantBounds": {
+      "content-start": {
+        "kind": "bounds",
+        "name": "content-start",
+        "leftPx": 54.0,
+        "topPx": 462.0,
+        "rightPx": 1152.0,
+        "bottomPx": 2520.0
+      },
+      "first-label": {
+        "kind": "bounds",
+        "name": "first-label",
+        "leftPx": 54.0,
+        "topPx": 462.0,
+        "rightPx": 666.0,
+        "bottomPx": 534.0
+      },
+      "field": {
+        "kind": "bounds",
+        "name": "field",
+        "leftPx": 54.0,
+        "topPx": 582.0,
+        "rightPx": 1152.0,
+        "bottomPx": 774.0
+      },
+      "end-action": {
+        "kind": "bounds",
+        "name": "end-action",
+        "leftPx": 0.0,
+        "topPx": 0.0,
+        "rightPx": 0.0,
+        "bottomPx": 0.0
+      }
+    }
+  },
+  {
+    "capture": "fixed-tall",
+    "window": {
+      "kind": "native-window",
+      "index": 1,
+      "widthPoints": 402.0,
+      "heightPoints": 874.0,
+      "topPoints": 62.0,
+      "leftPoints": 0.0,
+      "bottomPoints": 34.0,
+      "rightPoints": 0.0
+    },
+    "contentInsets": {
+      "kind": "content-insets",
+      "density": 3.0,
+      "fontScale": 1.0,
+      "safeTopPx": 186,
+      "safeBottomPx": 102,
+      "imeBottomPx": 0
+    },
+    "lastRelevantBounds": {
+      "content-start": {
+        "kind": "bounds",
+        "name": "content-start",
+        "leftPx": 54.0,
+        "topPx": 462.0,
+        "rightPx": 1152.0,
+        "bottomPx": 2520.0
+      },
+      "first-label": {
+        "kind": "bounds",
+        "name": "first-label",
+        "leftPx": 54.0,
+        "topPx": 462.0,
+        "rightPx": 666.0,
+        "bottomPx": 534.0
+      },
+      "field": {
+        "kind": "bounds",
+        "name": "field",
+        "leftPx": 54.0,
+        "topPx": 582.0,
+        "rightPx": 1152.0,
+        "bottomPx": 774.0
+      },
+      "end-action": {
+        "kind": "bounds",
+        "name": "end-action",
+        "leftPx": 0.0,
+        "topPx": 0.0,
+        "rightPx": 0.0,
+        "bottomPx": 0.0
+      }
+    }
+  },
+  {
+    "capture": "fixed-end",
+    "window": {
+      "kind": "native-window",
+      "index": 1,
+      "widthPoints": 402.0,
+      "heightPoints": 874.0,
+      "topPoints": 62.0,
+      "leftPoints": 0.0,
+      "bottomPoints": 34.0,
+      "rightPoints": 0.0
+    },
+    "contentInsets": {
+      "kind": "content-insets",
+      "density": 3.0,
+      "fontScale": 1.0,
+      "safeTopPx": 186,
+      "safeBottomPx": 102,
+      "imeBottomPx": 0
+    },
+    "lastRelevantBounds": {
+      "content-start": {
+        "kind": "bounds",
+        "name": "content-start",
+        "leftPx": 54.0,
+        "topPx": 330.0,
+        "rightPx": 1152.0,
+        "bottomPx": 2520.0
+      },
+      "first-label": {
+        "kind": "bounds",
+        "name": "first-label",
+        "leftPx": 0.0,
+        "topPx": 0.0,
+        "rightPx": 0.0,
+        "bottomPx": 0.0
+      },
+      "field": {
+        "kind": "bounds",
+        "name": "field",
+        "leftPx": 0.0,
+        "topPx": 0.0,
+        "rightPx": 0.0,
+        "bottomPx": 0.0
+      },
+      "end-action": {
+        "kind": "bounds",
+        "name": "end-action",
+        "leftPx": 54.0,
+        "topPx": 2352.0,
+        "rightPx": 1152.0,
+        "bottomPx": 2520.0
+      }
+    }
+  },
+  {
+    "capture": "fixed-accessibility-end",
+    "window": {
+      "kind": "native-window",
+      "index": 1,
+      "widthPoints": 402.0,
+      "heightPoints": 874.0,
+      "topPoints": 62.0,
+      "leftPoints": 0.0,
+      "bottomPoints": 34.0,
+      "rightPoints": 0.0
+    },
+    "contentInsets": {
+      "kind": "content-insets",
+      "density": 3.0,
+      "fontScale": 1.8,
+      "safeTopPx": 186,
+      "safeBottomPx": 102,
+      "imeBottomPx": 0
+    },
+    "lastRelevantBounds": {
+      "content-start": {
+        "kind": "bounds",
+        "name": "content-start",
+        "leftPx": 54.0,
+        "topPx": 330.0,
+        "rightPx": 1152.0,
+        "bottomPx": 2520.0
+      },
+      "first-label": {
+        "kind": "bounds",
+        "name": "first-label",
+        "leftPx": 0.0,
+        "topPx": 0.0,
+        "rightPx": 0.0,
+        "bottomPx": 0.0
+      },
+      "field": {
+        "kind": "bounds",
+        "name": "field",
+        "leftPx": 0.0,
+        "topPx": 0.0,
+        "rightPx": 0.0,
+        "bottomPx": 0.0
+      },
+      "end-action": {
+        "kind": "bounds",
+        "name": "end-action",
+        "leftPx": 54.0,
+        "topPx": 2304.0,
+        "rightPx": 1152.0,
+        "bottomPx": 2520.0
+      }
+    }
+  },
+  {
+    "capture": "fixed-ipad-portrait",
+    "window": {
+      "kind": "native-window",
+      "index": 1,
+      "widthPoints": 744.0,
+      "heightPoints": 1133.0,
+      "topPoints": 32.0,
+      "leftPoints": 0.0,
+      "bottomPoints": 20.0,
+      "rightPoints": 0.0
+    },
+    "contentInsets": {
+      "kind": "content-insets",
+      "density": 2.0,
+      "fontScale": 1.0,
+      "safeTopPx": 64,
+      "safeBottomPx": 40,
+      "imeBottomPx": 0
+    },
+    "lastRelevantBounds": {
+      "content-start": {
+        "kind": "bounds",
+        "name": "content-start",
+        "leftPx": 300.0,
+        "topPx": 248.0,
+        "rightPx": 1188.0,
+        "bottomPx": 2226.0
+      },
+      "first-label": {
+        "kind": "bounds",
+        "name": "first-label",
+        "leftPx": 300.0,
+        "topPx": 248.0,
+        "rightPx": 708.0,
+        "bottomPx": 296.0
+      },
+      "field": {
+        "kind": "bounds",
+        "name": "field",
+        "leftPx": 300.0,
+        "topPx": 328.0,
+        "rightPx": 1188.0,
+        "bottomPx": 456.0
+      },
+      "end-action": {
+        "kind": "bounds",
+        "name": "end-action",
+        "leftPx": 0.0,
+        "topPx": 0.0,
+        "rightPx": 0.0,
+        "bottomPx": 0.0
+      }
+    },
+    "orientationRequested": "landscape",
+    "orientationVerified": "portrait",
+    "rotationLimitation": "The current windowing mode does not allow for programmatic changes to interface orientation."
+  }
+]

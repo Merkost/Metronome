@@ -5,7 +5,10 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 
-class AndroidAudioFocusController(context: Context) : AudioFocusController {
+class AndroidAudioFocusController(
+    context: Context,
+    focusGain: Int = AudioManager.AUDIOFOCUS_GAIN,
+) : AudioFocusController {
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var onLost: (() -> Unit)? = null
 
@@ -17,7 +20,7 @@ class AndroidAudioFocusController(context: Context) : AudioFocusController {
         }
     }
 
-    private val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+    private val request = AudioFocusRequest.Builder(focusGain)
         .setAudioAttributes(
             AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)

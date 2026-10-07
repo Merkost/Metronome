@@ -1,0 +1,297 @@
+{
+  "name": "fixed-tall",
+  "nativeFrameCount": 140,
+  "sampledModalFrames": 32,
+  "minimumPaintedTopPx": 186,
+  "lastTopPx": 186,
+  "frames": [
+    {
+      "frameIndex": 108,
+      "topPxAtX150": 1404,
+      "backdropRgb": [
+        214,
+        214,
+        214
+      ]
+    },
+    {
+      "frameIndex": 109,
+      "topPxAtX150": 1404,
+      "backdropRgb": [
+        211,
+        211,
+        211
+      ]
+    },
+    {
+      "frameIndex": 110,
+      "topPxAtX150": 967,
+      "backdropRgb": [
+        196,
+        196,
+        196
+      ]
+    },
+    {
+      "frameIndex": 111,
+      "topPxAtX150": 967,
+      "backdropRgb": [
+        196,
+        196,
+        196
+      ]
+    },
+    {
+      "frameIndex": 112,
+      "topPxAtX150": 715,
+      "backdropRgb": [
+        187,
+        187,
+        187
+      ]
+    },
+    {
+      "frameIndex": 113,
+      "topPxAtX150": 715,
+      "backdropRgb": [
+        185,
+        185,
+        185
+      ]
+    },
+    {
+      "frameIndex": 114,
+      "topPxAtX150": 531,
+      "backdropRgb": [
+        180,
+        180,
+        180
+      ]
+    },
+    {
+      "frameIndex": 115,
+      "topPxAtX150": 531,
+      "backdropRgb": [
+        179,
+        179,
+        179
+      ]
+    },
+    {
+      "frameIndex": 116,
+      "topPxAtX150": 531,
+      "backdropRgb": [
+        176,
+        176,
+        176
+      ]
+    },
+    {
+      "frameIndex": 117,
+      "topPxAtX150": 295,
+      "backdropRgb": [
+        171,
+        171,
+        171
+      ]
+    },
+    {
+      "frameIndex": 118,
+      "topPxAtX150": 227,
+      "backdropRgb": [
+        167,
+        167,
+        167
+      ]
+    },
+    {
+      "frameIndex": 119,
+      "topPxAtX150": 205,
+      "backdropRgb": [
+        167,
+        167,
+        167
+      ]
+    },
+    {
+      "frameIndex": 120,
+      "topPxAtX150": 192,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 121,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 122,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 123,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 124,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 125,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 126,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 127,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 128,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 129,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 130,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 131,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 132,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 133,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 134,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 135,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 136,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 137,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 138,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    },
+    {
+      "frameIndex": 139,
+      "topPxAtX150": 186,
+      "backdropRgb": [
+        166,
+        166,
+        166
+      ]
+    }
+  ]
+}

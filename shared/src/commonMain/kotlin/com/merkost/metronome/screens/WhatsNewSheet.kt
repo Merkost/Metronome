@@ -19,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.composables.icons.lucide.Bookmark
-import com.composables.icons.lucide.ListMusic
+import com.composables.icons.lucide.Folder
+import com.composables.icons.lucide.Settings
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.RotateCcw
+import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.Sparkles
 import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.ui.appearIn
@@ -52,10 +52,10 @@ private data class ReleaseHighlight(
 )
 
 private val RELEASE_HIGHLIGHTS = listOf(
-    ReleaseHighlight(Lucide.Bookmark, Res.string.whats_new_presets_title, Res.string.whats_new_presets_body),
-    ReleaseHighlight(Lucide.ListMusic, Res.string.whats_new_sets_title, Res.string.whats_new_sets_body),
-    ReleaseHighlight(Lucide.RotateCcw, Res.string.whats_new_again_title, Res.string.whats_new_again_body),
-    ReleaseHighlight(Lucide.Sparkles, Res.string.whats_new_motion_title, Res.string.whats_new_motion_body),
+    ReleaseHighlight(Lucide.Sparkles, Res.string.whats_new_presets_title, Res.string.whats_new_presets_body),
+    ReleaseHighlight(Lucide.Settings, Res.string.whats_new_sets_title, Res.string.whats_new_sets_body),
+    ReleaseHighlight(Lucide.Volume2, Res.string.whats_new_again_title, Res.string.whats_new_again_body),
+    ReleaseHighlight(Lucide.Folder, Res.string.whats_new_motion_title, Res.string.whats_new_motion_body),
 )
 
 private const val HIGHLIGHT_STAGGER_MILLIS = 55

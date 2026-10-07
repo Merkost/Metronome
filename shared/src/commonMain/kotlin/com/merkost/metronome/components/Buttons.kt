@@ -17,6 +17,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.TextAutoSize
@@ -84,6 +85,7 @@ fun MySecondaryButton(
     modifier: Modifier = Modifier,
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
     shape: Shape = CircleShape,
+    enabled: Boolean = true,
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -91,9 +93,11 @@ fun MySecondaryButton(
 
     OutlinedCard(
         border = border,
+        enabled = enabled,
         colors = CardDefaults.outlinedCardColors(),
         modifier = modifier
             .clip(shape)
+            .heightIn(min = com.merkost.metronome.ui.minimumTouchTargetSize)
             .pressScale(interactionSource, PressedScaleSurface),
         onClick = onClick,
         shape = shape,

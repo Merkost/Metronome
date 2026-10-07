@@ -1,9 +1,7 @@
 package com.merkost.metronome.components
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,8 +9,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -22,10 +22,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.BeatPulse
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.pendulumHeight
+import com.merkost.metronome.ui.isAppMotionReduced
+import kotlinx.coroutines.isActive
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
-private const val SWING_DEGREES = 20f
 private const val MIN_BPM = 40f
 private const val MAX_BPM = 240f
 
@@ -35,25 +38,24 @@ fun Pendulum(
     beats: List<Beat>,
     isPlaying: Boolean,
     intervalMs: Int,
+    beatPulse: BeatPulse?,
     modifier: Modifier = Modifier,
 ) {
-    val angle = remember { Animatable(0f) }
-    val direction = remember { mutableStateOf(1f) }
-    val lastBeatIndex = remember { mutableStateOf(-1) }
+    val angle = remember { mutableFloatStateOf(0f) }
+    val currentPulse by rememberUpdatedState(beatPulse)
+    val reducedMotion = isAppMotionReduced()
 
-    LaunchedEffect(selectedIndex, isPlaying) {
-        if (isPlaying && selectedIndex >= 0) {
-            if (selectedIndex != lastBeatIndex.value) {
-                direction.value = -direction.value
-                lastBeatIndex.value = selectedIndex
+    LaunchedEffect(isPlaying, reducedMotion) {
+        if (isPlaying && !reducedMotion) {
+            while (isActive) {
+                withFrameNanos {
+                    angle.floatValue = (currentPulse?.pendulumDisplacement() ?: 0f) * AppAnimations.PendulumSwingDegrees
+                }
             }
-            angle.animateTo(
-                targetValue = direction.value * SWING_DEGREES,
-                animationSpec = tween(durationMillis = intervalMs, easing = FastOutSlowInEasing)
-            )
         } else {
-            lastBeatIndex.value = -1
-            angle.animateTo(0f, AppAnimations.Calm)
+            animate(angle.floatValue, 0f, animationSpec = AppAnimations.calm()) { value, _ ->
+                angle.floatValue = value
+            }
         }
     }
 
@@ -97,7 +99,7 @@ fun Pendulum(
         }
         drawPath(body, bodyColor)
 
-        rotate(degrees = angle.value, pivot = pivot) {
+        rotate(degrees = angle.floatValue, pivot = pivot) {
             val tip = Offset(pivot.x, pivot.y - armLength)
             drawLine(
                 color = armColor,
@@ -137,4 +139,10 @@ fun Pendulum(
         )
         drawCircle(color = pivotColor, radius = 5.5.dp.toPx(), center = pivot)
     }
+}
+
+@Preview
+@Composable
+private fun PendulumPreview() {
+    MaterialTheme { Pendulum(-1, List(4) { Beat.LOW }, false, 750, null) }
 }

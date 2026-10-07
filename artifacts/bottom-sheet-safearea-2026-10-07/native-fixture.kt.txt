@@ -1,0 +1,118 @@
+package com.merkost.metronome
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import com.merkost.metronome.components.AppBottomSheet
+import com.merkost.metronome.components.AppTextField
+import com.merkost.metronome.components.MySecondaryButton
+import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.spacingMedium
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
+import kotlinx.coroutines.delay
+import platform.Foundation.NSProcessInfo
+import platform.UIKit.UIApplication
+import platform.UIKit.UIInterfaceOrientationMaskLandscapeLeft
+import platform.UIKit.UIWindow
+import platform.UIKit.UIWindowScene
+import platform.UIKit.UIWindowSceneGeometryPreferencesIOS
+
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+internal fun SheetSafeAreaRegressionScreen() {
+    val arguments = remember { NSProcessInfo.processInfo.arguments.filterIsInstance<String>() }
+    val keyboard = arguments.contains("--sheet-safearea-keyboard")
+    val revealEnd = arguments.contains("--sheet-safearea-end")
+    val landscape = arguments.contains("--sheet-safearea-landscape")
+    val compact = keyboard || arguments.contains("--sheet-safearea-compact")
+    val density = LocalDensity.current
+    val fontScale = arguments.firstOrNull { it.startsWith("--sheet-safearea-font-scale=") }
+        ?.substringAfter('=')?.toFloatOrNull() ?: density.fontScale
+    var visible by remember { mutableStateOf(true) }
+    var value by remember { mutableStateOf("Practice notes") }
+    val focus = remember { FocusRequester() }
+    val end = remember { BringIntoViewRequester() }
+    val measurements = remember { mutableMapOf<String, String>() }
+    fun measured(name: String): Modifier = Modifier.onGloballyPositioned { coordinates ->
+        val bounds = coordinates.boundsInWindow()
+        val data = "{\"kind\":\"bounds\",\"name\":\"$name\",\"leftPx\":${bounds.left},\"topPx\":${bounds.top},\"rightPx\":${bounds.right},\"bottomPx\":${bounds.bottom}}"
+        if (measurements[name] != data) {
+            measurements[name] = data
+            println("sheet-safearea-regression $data")
+        }
+    }
+    LaunchedEffect(Unit) {
+        delay(1_000L)
+        val scenes = UIApplication.sharedApplication.connectedScenes.filterIsInstance<UIWindowScene>()
+        if (landscape) {
+            scenes.firstOrNull()?.requestGeometryUpdateWithPreferences(
+                UIWindowSceneGeometryPreferencesIOS(UIInterfaceOrientationMaskLandscapeLeft),
+                errorHandler = { println("sheet-safearea-regression geometry-error ${it?.localizedDescription}") },
+            )
+        }
+        repeat(6) {
+            delay(1_000L)
+            scenes.flatMap { it.windows.filterIsInstance<UIWindow>() }.forEachIndexed { index, window ->
+                val dimensions = window.bounds.useContents { "\"widthPoints\":${size.width},\"heightPoints\":${size.height}" }
+                val safe = window.safeAreaInsets.useContents { "\"topPoints\":$top,\"leftPoints\":$left,\"bottomPoints\":$bottom,\"rightPoints\":$right" }
+                println("sheet-safearea-regression {\"kind\":\"native-window\",\"index\":$index,$dimensions,$safe}")
+            }
+        }
+    }
+    CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainerLow)) {
+            if (visible) {
+                AppBottomSheet("Sheet safe-area review", onDismiss = { visible = false }) { dismiss ->
+                    val insideDensity = LocalDensity.current
+                    val safe = WindowInsets.safeDrawing
+                    val ime = WindowInsets.ime
+                    LaunchedEffect(safe.getTop(insideDensity), safe.getBottom(insideDensity), ime.getBottom(insideDensity)) {
+                        println("sheet-safearea-regression {\"kind\":\"content-insets\",\"density\":${insideDensity.density},\"fontScale\":${insideDensity.fontScale},\"safeTopPx\":${safe.getTop(insideDensity)},\"safeBottomPx\":${safe.getBottom(insideDensity)},\"imeBottomPx\":${ime.getBottom(insideDensity)}}")
+                    }
+                    Column(Modifier.fillMaxWidth().then(measured("content-start")), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
+                        Text("Everything stays in reach.", modifier = measured("first-label"), style = MaterialTheme.typography.titleMedium)
+                        AppTextField(value, { value = it }, label = "Practice name", modifier = Modifier.fillMaxWidth().focusRequester(focus).then(measured("field")))
+                        repeat(if (compact) 2 else 24) { index ->
+                            Text("Practice item ${index + 1} · Keep your rhythm steady.", modifier = Modifier.fillMaxWidth().padding(vertical = spacingMedium).then(measured("row-${index + 1}")), style = MaterialTheme.typography.bodyLarge)
+                        }
+                        MySecondaryButton(onClick = dismiss, shape = RoundedCornerShape(horizontalPadding), modifier = Modifier.fillMaxWidth().bringIntoViewRequester(end).then(measured("end-action"))) {
+                            Text("Done", modifier = Modifier.padding(horizontalPadding), style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
+                    LaunchedEffect(keyboard, revealEnd) {
+                        delay(2_500L)
+                        if (keyboard) focus.requestFocus()
+                        if (revealEnd) end.bringIntoView()
+                    }
+                }
+            }
+        }
+    }
+}

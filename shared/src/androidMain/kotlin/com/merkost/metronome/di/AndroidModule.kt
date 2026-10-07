@@ -20,17 +20,20 @@ import com.merkost.metronome.review.AndroidInAppReviewRequester
 import com.merkost.metronome.review.CurrentActivityProvider
 import com.merkost.metronome.review.InAppReviewRequester
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val androidModule = module {
     single<ReleaseLogTreeProvider> { ReleaseLogTreeProvider { CrashlyticsTree() } }
     single { createDataStore(androidContext()) }
     single<MetronomePlayer> { MetronomePlayerAndroid(androidContext()) }
+    single<MetronomePlayer>(named("soundPreview")) { MetronomePlayerAndroid(androidContext()) }
     single<PlatformActions> { AndroidPlatformActions(androidContext()) }
     single<AppVersionProvider> { AndroidAppVersionProvider(androidContext()) }
     single<HapticProvider> { HapticProviderAndroid(androidContext()) }
     single<LiveActivityController> { NoopLiveActivityController() }
     single<AudioFocusController> { AndroidAudioFocusController(androidContext()) }
+    single<AudioFocusController>(named("soundPreview")) { AndroidAudioFocusController(androidContext(), android.media.AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK) }
     single { CurrentActivityProvider(androidContext() as android.app.Application) }
     single<InAppReviewRequester> { AndroidInAppReviewRequester(get()) }
 }
