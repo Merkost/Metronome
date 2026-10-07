@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="iosSimulatorArm64Test.com.merkost.metronome.screens.HomeRhythmLayoutTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-07T05:20:46.922Z" hostname="MacBook-Pro---Merkost.local" time="1.004">
+  <properties/>
+  <testcase name="practiceAndSoundHaveEqualHeightWhenThePracticeCaptionWraps[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.screens.HomeRhythmLayoutTest" time="0.0"/>
+  <testcase name="scrollEndKeepsBreathingRoomBelowTheLastHomeControls[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.screens.HomeRhythmLayoutTest" time="0.0"/>
+  <testcase name="shortcutSizingSurvivesSoundChangesAndLargeRtlText[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.screens.HomeRhythmLayoutTest" time="0.001"/>
+  <testcase name="rhythmControlsKeepTheirOrderAndSeparateSelectionActions[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.screens.HomeRhythmLayoutTest" time="1.003"/>
+  <testcase name="largeRtlRhythmRemainsScrollableWithReachableCountIn[iosSimulatorArm64]" classname="iosSimulatorArm64Test.com.merkost.metronome.screens.HomeRhythmLayoutTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -8,11 +8,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,7 +51,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.Lifecycle
@@ -81,12 +82,14 @@ import com.merkost.metronome.components.MyIconButton
 import com.merkost.metronome.components.MySecondaryTextButton
 import com.merkost.metronome.components.Pendulum
 import com.merkost.metronome.components.PillChip
+import com.merkost.metronome.components.MainShortcuts
 import com.merkost.metronome.components.StatusStrip
 import com.merkost.metronome.components.PresetNameDialog
 import com.merkost.metronome.components.PresetSaveChoiceDialog
 import com.merkost.metronome.components.PracticeSessionStrip
 import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.model.BeatDisplayStyle
+import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.presets.PracticePresetDraft
@@ -363,15 +366,7 @@ fun MainScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState())
-                            .padding(top = spacingLarge),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(spacingLarge)
-                    ) {
+                    MainScrollableContent(Modifier.fillMaxWidth().weight(1f)) {
 
                         val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
                         AnimatedContent(
@@ -545,25 +540,12 @@ fun MainScreen(
                             MySecondaryTextButton(text = "+ 5", onClick = viewModel::onPlusFive)
                         }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
-                            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-                        ) {
-                            MainShortcut(
-                                icon = Lucide.Sparkles,
-                                title = "Practice",
-                                caption = "Timer & trainers",
-                                onClick = { showPracticeHub = true },
-                                modifier = Modifier.weight(1f),
-                            )
-                            MainShortcut(
-                                icon = Lucide.Headphones,
-                                title = "Sound",
-                                caption = selectedSound.displayName,
-                                onClick = { showSoundPicker = true },
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
+                        MainShortcuts(
+                            selectedSound = selectedSound,
+                            onPractice = { showPracticeHub = true },
+                            onSound = { showSoundPicker = true },
+                            modifier = Modifier.padding(horizontal = horizontalPadding),
+                        )
                     }
 
                     Column(
@@ -1000,41 +982,17 @@ fun MainScreen(
 }
 
 @Composable
-private fun MainShortcut(
-    icon: ImageVector,
-    title: String,
-    caption: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.heightIn(min = minimumTouchTargetSize)
-            .clip(RoundedCornerShape(cornerRadiusLarge))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-            .pressableSurface(onClick)
-            .padding(spacingMedium),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-    ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(title, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold))
-            AnimatedContent(
-                targetState = caption,
-                transitionSpec = { AppAnimations.fadeThrough },
-                label = "mainShortcutCaption",
-            ) { text ->
-                Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-        Icon(Lucide.ChevronRight, contentDescription = null, modifier = Modifier.size(16.dp))
-    }
+internal fun MainScrollableContent(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = modifier.verticalScroll(rememberScrollState()).padding(vertical = spacingLarge),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacingLarge),
+        content = content,
+    )
 }
 
 @Preview
 @Composable
-private fun MainShortcutPreview() {
-    MaterialTheme {
-        MainShortcut(Lucide.Headphones, "Sound", "Wood", {})
-    }
+private fun MainScrollableContentPreview() {
+    MaterialTheme { MainScrollableContent(Modifier.height(320.dp)) { MainShortcuts(ClickSound.WOOD, {}, {}) } }
 }
