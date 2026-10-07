@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Metronome — Find your rhythm.</title>
+    <meta
+      name="description"
+      content="A free, ad-free metronome with tempo and gap trainers, practice sets and playful colour themes. Open the web app or get it for iPhone and Android."
+    />
+    <link rel="canonical" href="https://metronome.merkost.dev/" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme:light)"
+    />
+    <meta
+      name="theme-color"
+      content="#101010"
+      media="(prefers-color-scheme:dark)"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Metronome" />
+    <meta property="og:title" content="Metronome — Find your rhythm." />
+    <meta
+      property="og:description"
+      content="A free, ad-free metronome with tempo and gap trainers, practice sets and playful colour themes. Open the web app or get it for iPhone and Android."
+    />
+    <meta property="og:url" content="https://metronome.merkost.dev/" />
+    <meta
+      property="og:image"
+      content="https://metronome.merkost.dev/screenshots/og-card.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:image"
+      content="https://metronome.merkost.dev/screenshots/og-card.png"
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/roboto-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/site.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Metronome: Practice & Tempo",
+        "operatingSystem": "iOS, Android, Web",
+        "applicationCategory": "MusicApplication",
+        "softwareVersion": "1.3.0",
+        "description": "A free metronome with practice presets, tempo and gap trainers. Core practice works offline in the installed apps.",
+        "url": "https://metronome.merkost.dev/",
+        "author": {
+          "@type": "Person",
+          "name": "Merkost",
+          "url": "https://merkost.dev"
+        },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "downloadUrl": [
+          "https://apps.apple.com/app/id6761737690",
+          "https://play.google.com/store/apps/details?id=com.merkost.metronome"
+        ]
+      }
+    </script>
+    <script type="module" src="/site.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a
+    ><svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M7 17 17 7M7 7h10v10" />
+      </symbol>
+      <symbol id="i-right" viewBox="0 0 24 24">
+        <path d="m9 5 7 7-7 7M4 12h12" />
+      </symbol>
+      <symbol id="i-play" viewBox="0 0 24 24">
+        <path d="m6 3 14 9-14 9V3Z" />
+      </symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24">
+        <rect x="5" y="5" width="14" height="14" rx="2" />
+      </symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" />
+        <path
+          d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+        />
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24">
+        <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-wifi-off" viewBox="0 0 24 24">
+        <path
+          d="m2 2 20 20M8.5 16.5a5 5 0 0 1 7 0M12 20h.01M5 12.5a10 10 0 0 1 5-2.3M16 10.7a10 10 0 0 1 3 1.8M2 8.8a15 15 0 0 1 4-2.3M10 5.1a15 15 0 0 1 12 3.7"
+        />
+      </symbol>
+      <symbol id="i-user" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21v-2a8 8 0 0 1 16 0v2" />
+      </symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24">
+        <path
+          d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"
+        />
+      </symbol>
+      <symbol id="i-volume" viewBox="0 0 24 24">
+        <path
+          d="m11 5-6 4H2v6h3l6 4V5ZM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"
+        />
+      </symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M2 12h20M12 2a18 18 0 0 1 0 20 18 18 0 0 1 0-20" />
+      </symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24">
+        <rect x="6" y="2" width="12" height="20" rx="2" />
+        <path d="M11 18h2" />
+      </symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24">
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <path d="m2 6 10 7 10-7" />
+      </symbol>
+      <symbol id="i-back" viewBox="0 0 24 24">
+        <path d="m12 5-7 7 7 7M5 12h14" />
+      </symbol>
+    </svg>
+    <header class="site-header">
+      <div class="header-inner wrap">
+        <a class="brand" href="/" aria-label="Metronome home"
+          ><svg
+            class="brand-mark"
+            viewBox="1130 1100 5600 5400"
+            aria-hidden="true"
+          >
+            <path
+              d="M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z"
+            /></svg
+          ><span>Metronome</span></a
+        >
+        <nav class="nav" aria-label="Main navigation">
+          <a href="/#practice">Practice tools</a><a href="/#get">Get the app</a
+          ><a href="/support.html">Support</a>
+        </nav>
+        <div class="header-actions">
+          <button
+            class="icon-button theme-toggle"
+            aria-label="Change appearance"
+            aria-pressed="false"
+          >
+            <svg class="icon sun" aria-hidden="true"><use href="#i-sun" /></svg
+            ><svg class="icon moon" aria-hidden="true">
+              <use href="#i-moon" />
+            </svg></button
+          ><a class="button small" href="/app/"
+            >Open web app
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg
+          ></a>
+        </div>
+      </div>
+    </header>
+    <main id="main">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow marker">A little focus. A lot of rhythm.</p>
+          <h1 id="hero-title">
+            Find your<br /><span class="highlight">rhythm.</span>
+          </h1>
+          <p class="lede">
+            A precise beat. Playful practice tools.<br />Everything you need to
+            keep getting better.
+          </p>
+          <div class="actions">
+            <a class="button" href="/app/"
+              >Open web app
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-arrow" /></svg></a
+            ><a class="button secondary" href="#get"
+              >Get the app
+              <svg class="icon" aria-hidden="true"><use href="#i-phone" /></svg
+            ></a>
+          </div>
+          <p class="caption">Free to play. No ads. No account.</p>
+        </div>
+        <div class="beat-lab" aria-label="Interactive beat preview">
+          <div class="lab-top">
+            <span class="eyebrow">Meet your beat</span
+            ><span class="label-pill">4 / 4</span>
+          </div>
+          <div class="pulse-art" aria-hidden="true">
+            <span class="pulse-note">Go on, give it a play.</span
+            ><span class="pulse-dot is-accent"></span><span class="pulse-dot"></span
+            ><span class="pulse-dot"></span><span class="pulse-dot"></span>
+          </div>
+          <div class="tempo-line">
+            <div
+              class="tempo-readout"
+              aria-label="80 beats per minute"
+              role="img"
+            >
+              <span class="digit" aria-hidden="true"><span> </span></span
+              ><span class="digit" aria-hidden="true"><span>8</span></span
+              ><span class="digit" aria-hidden="true"><span>0</span></span>
+            </div>
+            <span class="tempo-unit">BPM</span>
+          </div>
+          <p class="tempo-marking">Andante</p>
+          <div class="slider">
+            <span class="slider-rail" aria-hidden="true"
+              ><span class="slider-fill" style="display: block"></span></span
+            ><span class="slider-thumb" aria-hidden="true"></span
+            ><input
+              type="range"
+              min="40"
+              max="220"
+              value="80"
+              step="1"
+              aria-label="Preview tempo in beats per minute"
+            />
+          </div>
+          <div class="slider-labels" aria-hidden="true">
+            <span>40</span><span>220</span>
+          </div>
+          <div class="demo-actions">
+            <button class="button brand-button demo-play" aria-pressed="false">
+              <svg class="icon play-icon" aria-hidden="true">
+                <use href="#i-play" /></svg
+              ><svg class="icon stop-icon" aria-hidden="true">
+                <use href="#i-stop" /></svg
+              ><span class="play-label">Play a beat</span>
+            </button>
+          </div>
+          <div class="sound-choices" role="group" aria-label="Preview sound">
+            <button class="sound-choice" data-sound="wood" aria-pressed="true">
+              Wood</button
+            ><button
+              class="sound-choice"
+              data-sound="click"
+              aria-pressed="false"
+            >
+              Click</button
+            ><button
+              class="sound-choice"
+              data-sound="classic"
+              aria-pressed="false"
+            >
+              Classic
+            </button>
+          </div>
+          <p class="preview-error" role="status" hidden></p>
+          <p class="lab-foot">
+            <svg class="icon" aria-hidden="true"><use href="#i-volume" /></svg>A
+            small taste. The full instrument is one tap away.
+          </p>
+        </div>
+      </section>
+      <div class="promise-strip wrap" aria-label="App benefits">
+        <span class="promise"
+          ><svg class="icon" aria-hidden="true"><use href="#i-heart" /></svg
+          >Free, without ads</span
+        ><span class="promise"
+          ><svg class="icon" aria-hidden="true"><use href="#i-user" /></svg>No
+          account needed</span
+        ><span class="promise"
+          ><svg class="icon" aria-hidden="true"><use href="#i-wifi-off" /></svg
+          >Offline on iOS &amp; Android</span
+        ><span class="promise"
+          ><svg class="icon" aria-hidden="true"><use href="#i-check" /></svg
+          >40–220 BPM</span
+        >
+      </div>
+      <section class="section wrap" id="practice">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">More than a steady click</p>
+            <h2>Make every<br />practice count.</h2>
+          </div>
+          <p>
+            Build speed. Hold the pulse. Give your next session a little more
+            direction.
+          </p>
+        </div>
+        <div class="tool-tabs" role="tablist" aria-label="Practice tools">
+          <span class="tab-indicator" aria-hidden="true"></span
+          ><button
+            class="tool-tab"
+            id="tab-tempo"
+            role="tab"
+            aria-selected="true"
+            tabindex="0"
+            aria-controls="panel-tempo"
+          >
+            Build speed</button
+          ><button
+            class="tool-tab"
+            id="tab-gap"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="panel-gap"
+          >
+            Find your pulse</button
+          ><button
+            class="tool-tab"
+            id="tab-sets"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="panel-sets"
+          >
+            Plan a session
+          </button>
+        </div>
+        <div
+          class="tool-panel"
+          id="panel-tempo"
+          role="tabpanel"
+          aria-labelledby="tab-tempo"
+          tabindex="0"
+        >
+          <div class="tool-copy">
+            <h3>Small steps.<br />Stronger playing.</h3>
+            <p>
+              Pick a start, a target, and a step. The Tempo Trainer changes the
+              BPM as you play, so you can focus on the passage.
+            </p>
+            <a class="text-link" href="/app/"
+              >Try Tempo Trainer
+              <svg class="icon" aria-hidden="true"><use href="#i-right" /></svg
+            ></a>
+          </div>
+          <div class="tool-art">
+            <span class="tool-art-label">An example climb</span>
+            <div
+              class="climb"
+              aria-label="Tempo increasing from 80 to 86 BPM in steps of two"
+            >
+              <span class="climb-step">80</span
+              ><span class="climb-step">82</span
+              ><span class="climb-step">84</span
+              ><span class="climb-step">86</span>
+            </div>
+            <span class="climb-caption">+2 BPM · every 4 bars</span>
+          </div>
+        </div>
+        <div
+          class="tool-panel"
+          id="panel-gap"
+          role="tabpanel"
+          aria-labelledby="tab-gap"
+          tabindex="0"
+          hidden
+        >
+          <div class="tool-copy">
+            <h3>Keep the beat.<br />Even in the quiet.</h3>
+            <p>
+              Play a few bars. Then let the click fall silent. The Gap Trainer
+              keeps time underneath while you build your internal pulse.
+            </p>
+            <a class="text-link" href="/app/"
+              >Try Gap Trainer
+              <svg class="icon" aria-hidden="true"><use href="#i-right" /></svg
+            ></a>
+          </div>
+          <div class="tool-art mint">
+            <span class="tool-art-label">An example gap cycle</span>
+            <div
+              class="gap-pattern"
+              aria-label="Four audible bars followed by two silent bars"
+            >
+              <span class="gap-beat">1</span><span class="gap-beat">2</span
+              ><span class="gap-beat">3</span><span class="gap-beat">4</span
+              ><span class="gap-beat silent">5</span
+              ><span class="gap-beat silent">6</span>
+            </div>
+            <span class="climb-caption">4 bars on · 2 bars quiet</span>
+          </div>
+        </div>
+        <div
+          class="tool-panel"
+          id="panel-sets"
+          role="tabpanel"
+          aria-labelledby="tab-sets"
+          tabindex="0"
+          hidden
+        >
+          <div class="tool-copy">
+            <h3>A plan you’ll<br />want to play.</h3>
+            <p>
+              Save your favourite setups as presets. Arrange them into a
+              practice set with time or bar goals. Move on when you’re ready.
+            </p>
+            <a class="text-link" href="/app/"
+              >Explore practice sets
+              <svg class="icon" aria-hidden="true"><use href="#i-right" /></svg
+            ></a>
+          </div>
+          <div class="tool-art pink">
+            <span class="tool-art-label">Your next session, for example</span>
+            <div class="set-example">
+              <div class="mini-step">
+                <span class="step-number">1</span><span>Warm-up</span
+                ><small>80 BPM</small>
+              </div>
+              <div class="mini-step current">
+                <span class="step-number">2</span><span>Scales</span
+                ><small>100 BPM</small>
+              </div>
+              <div class="mini-step">
+                <span class="step-number">3</span><span>That tricky bit</span
+                ><small>120 BPM</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-line">
+          <span
+            ><svg class="icon" aria-hidden="true"><use href="#i-check" /></svg
+            >Tap tempo</span
+          ><span
+            ><svg class="icon" aria-hidden="true"><use href="#i-check" /></svg
+            >Subdivisions &amp; accents</span
+          ><span
+            ><svg class="icon" aria-hidden="true"><use href="#i-check" /></svg
+            >Count-in &amp; timer</span
+          ><span
+            ><svg class="icon" aria-hidden="true"><use href="#i-check" /></svg
+            >Practice stats on your device</span
+          >
+        </div>
+      </section>
+      <section class="section theme-section wrap" aria-labelledby="theme-title">
+        <div class="theme-copy">
+          <p class="eyebrow">A beat with personality</p>
+          <h2 id="theme-title">Your practice.<br />Your colour.</h2>
+          <p>
+            Light or dark. Quiet monochrome or a little colour. Make your
+            instrument feel like you.
+          </p>
+          <div class="swatches" role="group" aria-label="Colour preview">
+            <button
+              class="swatch"
+              style="--swatch: #dedede"
+              data-name="Monochrome"
+              aria-label="Preview Monochrome"
+              aria-pressed="false"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-check" />
+              </svg></button
+            ><button
+              class="swatch"
+              style="--swatch: var(--violet)"
+              data-name="Violet"
+              aria-label="Preview Violet"
+              aria-pressed="true"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-check" />
+              </svg></button
+            ><button
+              class="swatch"
+              style="--swatch: var(--blue)"
+              data-name="Blue"
+              aria-label="Preview Blue"
+              aria-pressed="false"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-check" />
+              </svg></button
+            ><button
+              class="swatch"
+              style="--swatch: var(--mint)"
+              data-name="Mint"
+              aria-label="Preview Mint"
+              aria-pressed="false"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use href="#i-check" />
+              </svg></button
+            ><button
+              class="swatch"
+              style="--swatch: var(--pink)"
+              data-name="Pink"
+              aria-label="Preview Pink"
+              aria-pressed="false"
+            >
+              <svg class="icon" aria-hidden="true"><use href="#i-check" /></svg>
+            </button>
+          </div>
+          <p class="theme-name" id="theme-name" aria-live="polite">
+            Violet · preview
+          </p>
+        </div>
+        <div class="theme-card" aria-label="Appearance preview">
+          <div class="theme-card-top">
+            <span class="theme-card-name">Violet</span
+            ><button
+              class="icon-button theme-toggle"
+              aria-label="Change appearance"
+              aria-pressed="false"
+            >
+              <svg class="icon sun" aria-hidden="true">
+                <use href="#i-sun" /></svg
+              ><svg class="icon moon" aria-hidden="true">
+                <use href="#i-moon" />
+              </svg>
+            </button>
+          </div>
+          <div class="colour-preview" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="theme-card-bottom">
+            <span>Less noise. More you.</span><span>5 colour schemes</span>
+          </div>
+        </div>
+      </section>
+      <section class="section get-section wrap" id="get">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Wherever you practise</p>
+            <h2>Pick your stage.</h2>
+          </div>
+          <p>Jump in on the web. Keep your practice with you on your phone.</p>
+        </div>
+        <div class="get-grid">
+          <article class="web-card">
+            <svg class="icon platform-icon" aria-hidden="true">
+              <use href="#i-globe" />
+            </svg>
+            <h3>Right here. Right now.</h3>
+            <p>
+              Open the full metronome in your browser. Try the trainers and find
+              your rhythm before you install.
+            </p>
+            <div class="actions">
+              <a class="button" href="/app/"
+                >Open web app
+                <svg class="icon" aria-hidden="true">
+                  <use href="#i-arrow" /></svg
+              ></a>
+            </div>
+            <p class="caption">
+              Browser settings and presets reset when you reload. For saved
+              practice, use the installed app.
+            </p>
+            <p class="browser-note">
+              Safari 18.2+, Chrome 119+, or Firefox 120+.
+            </p>
+          </article>
+          <article class="mobile-card">
+            <svg class="icon platform-icon" aria-hidden="true">
+              <use href="#i-phone" />
+            </svg>
+            <h3>A little practice, anywhere.</h3>
+            <p>
+              Keep your presets, practice sets and stats on your device.
+              Practise offline, with background playback and beat haptics.
+            </p>
+            <div class="actions">
+              <a
+                class="button brand-button"
+                href="https://apps.apple.com/app/id6761737690"
+                >iPhone &amp; iPad
+                <svg class="icon" aria-hidden="true">
+                  <use href="#i-arrow" /></svg></a
+              ><a
+                class="button secondary"
+                href="https://play.google.com/store/apps/details?id=com.merkost.metronome"
+                >Android
+                <svg class="icon" aria-hidden="true">
+                  <use href="#i-arrow" /></svg
+              ></a>
+            </div>
+            <p class="caption">
+              On Android, enable Background Play in Settings.<br />Live
+              Activities on supported iPhones.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section class="section questions wrap" id="questions">
+        <div class="question-intro">
+          <p class="eyebrow">Good questions</p>
+          <h2>A few things<br />to know.</h2>
+          <p>Something else on your mind?</p>
+          <a class="text-link" href="/support.html"
+            >We’re here to help
+            <svg class="icon" aria-hidden="true"><use href="#i-right" /></svg
+          ></a>
+        </div>
+        <div class="faq">
+          <details class="faq-item">
+            <summary>
+              Is it really free?<svg class="icon" aria-hidden="true">
+                <use href="#i-plus" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Yes. All the practice features are free. No advertisements, no
+                subscription, and no account to create.
+              </p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary>
+              Can I practise offline?<svg class="icon" aria-hidden="true">
+                <use href="#i-plus" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Yes, with the installed iOS and Android apps. Core practice
+                works without a network connection, and your settings and
+                practice activity are stored on your device. The browser version
+                needs a connection to load.
+              </p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary>
+              Will it play with my screen off?<svg
+                class="icon"
+                aria-hidden="true"
+              >
+                <use href="#i-plus" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                On iPhone, playback continues with the screen off or another app
+                open. On Android, first enable Background Play in Settings and
+                allow its notification permission.
+              </p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary>
+              Does the web app remember my practice?<svg
+                class="icon"
+                aria-hidden="true"
+              >
+                <use href="#i-plus" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                The browser version currently resets settings, presets and
+                practice sets when you reload. Install the mobile app to keep
+                them between sessions and use background playback and haptics.
+              </p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary>
+              Can I change the meter and sound?<svg
+                class="icon"
+                aria-hidden="true"
+              >
+                <use href="#i-plus" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Absolutely. Choose from 2/4, 3/4, 4/4, 5/4, 6/8 and 7/8, add
+                subdivisions, and accent or mute individual beats. Wood, Click
+                and Classic sounds are available in Settings.
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer-top">
+          <div>
+            <a class="brand" href="/" aria-label="Metronome home"
+              ><svg
+                class="brand-mark"
+                viewBox="1130 1100 5600 5400"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4l0,0H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z"
+                /></svg
+              ><span>Metronome</span></a
+            >
+            <p class="footer-tagline">Precise timing. Better practice.</p>
+          </div>
+          <a
+            class="studio-card"
+            href="https://subyapp.com/"
+            aria-label="Explore Suby, a subscription manager by Merkost"
+            ><img
+              src="/images/suby-icon.png"
+              alt=""
+              width="52"
+              height="52"
+              loading="lazy" /><span class="studio-copy"
+              ><small>More by Merkost</small><strong>Suby</strong
+              ><span>Subscriptions, a little more sorted.</span></span
+            ><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg
+          ></a>
+        </div>
+        <div class="footer-bottom">
+          <nav class="footer-links" aria-label="Footer">
+            <a href="/support.html">Support</a
+            ><a href="/privacy.html">Privacy</a><a href="/app/">Web app</a
+            ><a href="https://merkost.dev"
+              >Made by Merkost
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg
+            ></a>
+          </nav>
+          <p>© 2026 Merkost</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

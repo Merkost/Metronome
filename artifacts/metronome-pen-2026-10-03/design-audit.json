@@ -1,0 +1,1013 @@
+{
+  "roots": [
+    {
+      "id": "bi8Au",
+      "name": "00 · Metronome / Start here",
+      "b": {
+        "x": 0,
+        "y": 0,
+        "width": 1200,
+        "height": 1044
+      }
+    },
+    {
+      "id": "eG4Bc",
+      "name": "01 · Foundation / Tokens & themes",
+      "b": {
+        "x": 1320,
+        "y": 0,
+        "width": 1200,
+        "height": 1099
+      }
+    },
+    {
+      "id": "hrEeD",
+      "name": "04 · Components / Controls & navigation",
+      "b": {
+        "x": 0,
+        "y": 1260,
+        "width": 1680,
+        "height": 1200
+      }
+    },
+    {
+      "id": "TRPQX",
+      "name": "05 · Components / App content & Settings",
+      "b": {
+        "x": 1800,
+        "y": 1260,
+        "width": 1680,
+        "height": 1532
+      }
+    },
+    {
+      "id": "VMKbv",
+      "name": "02 · Motion / Tokens & behavior",
+      "b": {
+        "x": 2640,
+        "y": 0,
+        "width": 1200,
+        "height": 1169
+      }
+    },
+    {
+      "id": "n3BHFh",
+      "name": "03 · UX / Flow & Settings hierarchy",
+      "b": {
+        "x": 3960,
+        "y": 0,
+        "width": 1480,
+        "height": 924
+      }
+    },
+    {
+      "id": "v8EM2",
+      "name": "06 · States / Accessibility & adoption",
+      "b": {
+        "x": 3600,
+        "y": 1260,
+        "width": 1840,
+        "height": 801
+      }
+    },
+    {
+      "id": "E8RB3",
+      "name": "07 · Welcome / Hello rhythm",
+      "b": {
+        "x": 0,
+        "y": 3100,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "hIdAt",
+      "name": "08 · Instrument / Stopped",
+      "b": {
+        "x": 477,
+        "y": 3100,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "sAn2g",
+      "name": "09 · Instrument / Playing",
+      "b": {
+        "x": 954,
+        "y": 3100,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "UbVh3",
+      "name": "10 · Practice / Your toolkit",
+      "b": {
+        "x": 1431,
+        "y": 3100,
+        "width": 393,
+        "height": 1014
+      }
+    },
+    {
+      "id": "yczSa",
+      "name": "11 · Rhythm / Meter subdivision accents",
+      "b": {
+        "x": 1908,
+        "y": 3100,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "Hxy81",
+      "name": "12 · Sound library / Voices",
+      "b": {
+        "x": 2385,
+        "y": 3100,
+        "width": 393,
+        "height": 1032
+      }
+    },
+    {
+      "id": "SrIyw",
+      "name": "13 · Optional first-use / Sound review",
+      "b": {
+        "x": 2862,
+        "y": 3100,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "Cvsyi",
+      "name": "14 · Presets / Saved rhythms",
+      "b": {
+        "x": 0,
+        "y": 4400,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "P3pu1f",
+      "name": "15 · Presets / Empty",
+      "b": {
+        "x": 477,
+        "y": 4400,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "kjh9G",
+      "name": "16 · Practice sets / Starter",
+      "b": {
+        "x": 954,
+        "y": 4400,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "ui6FX",
+      "name": "17 · Practice sets / Library",
+      "b": {
+        "x": 1431,
+        "y": 4400,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "u60xT",
+      "name": "18 · Practice set / Editor",
+      "b": {
+        "x": 1908,
+        "y": 4400,
+        "width": 393,
+        "height": 1179
+      }
+    },
+    {
+      "id": "awTY2",
+      "name": "19 · Practice set / New editor",
+      "b": {
+        "x": 2385,
+        "y": 4400,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "GmiOh",
+      "name": "20 · Routine / Paused",
+      "b": {
+        "x": 0,
+        "y": 5800,
+        "width": 393,
+        "height": 1033
+      }
+    },
+    {
+      "id": "hpPIp",
+      "name": "21 · Routine / Playing",
+      "b": {
+        "x": 477,
+        "y": 5800,
+        "width": 393,
+        "height": 1033
+      }
+    },
+    {
+      "id": "lZ2RN",
+      "name": "22 · Practice timer / Setup",
+      "b": {
+        "x": 954,
+        "y": 5800,
+        "width": 393,
+        "height": 941
+      }
+    },
+    {
+      "id": "JjW8Y",
+      "name": "23 · Tempo trainer / Setup",
+      "b": {
+        "x": 1431,
+        "y": 5800,
+        "width": 393,
+        "height": 956
+      }
+    },
+    {
+      "id": "GwLto",
+      "name": "24 · Gap trainer / Setup",
+      "b": {
+        "x": 1908,
+        "y": 5800,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "E4Elf",
+      "name": "25 · Practice data / Overview",
+      "b": {
+        "x": 2385,
+        "y": 5800,
+        "width": 393,
+        "height": 957
+      }
+    },
+    {
+      "id": "KSrCa",
+      "name": "26 · Help & about",
+      "b": {
+        "x": 2862,
+        "y": 5800,
+        "width": 393,
+        "height": 958
+      }
+    },
+    {
+      "id": "ifEGW",
+      "name": "27 · Settings / Light",
+      "b": {
+        "x": 0,
+        "y": 7300,
+        "width": 393,
+        "height": 2264
+      }
+    },
+    {
+      "id": "iiVxA",
+      "name": "28 · Settings / Dark",
+      "b": {
+        "x": 477,
+        "y": 7300,
+        "width": 393,
+        "height": 2264
+      }
+    },
+    {
+      "id": "jAuo4",
+      "name": "29 · Settings / All controls revealed",
+      "b": {
+        "x": 954,
+        "y": 7300,
+        "width": 393,
+        "height": 2894
+      }
+    },
+    {
+      "id": "Fy0Uj",
+      "name": "30 · Settings / Android 427dp",
+      "b": {
+        "x": 1431,
+        "y": 7300,
+        "width": 427,
+        "height": 2239
+      }
+    },
+    {
+      "id": "OkTAZ",
+      "name": "31 · Settings / Web & studio detail",
+      "b": {
+        "x": 1908,
+        "y": 7300,
+        "width": 393,
+        "height": 1200
+      }
+    },
+    {
+      "id": "J9GR4",
+      "name": "32 · DS / Interaction & theme states",
+      "b": {
+        "x": 2500,
+        "y": 7300,
+        "width": 1600,
+        "height": 1232
+      }
+    },
+    {
+      "id": "h9j6L8",
+      "name": "33 · Sheet / Exact tempo",
+      "b": {
+        "x": 0,
+        "y": 10500,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "TNoLs",
+      "name": "34 · Sheet / Tempo validation",
+      "b": {
+        "x": 477,
+        "y": 10500,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "EtDif",
+      "name": "35 · Sheet / Save preset",
+      "b": {
+        "x": 954,
+        "y": 10500,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "CvQwP",
+      "name": "36 · Sheet / Add a preset",
+      "b": {
+        "x": 1431,
+        "y": 10500,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "flukT",
+      "name": "37 · Sheet / Finish practice",
+      "b": {
+        "x": 1908,
+        "y": 10500,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "VaH6A",
+      "name": "38 · Sheet / Reset statistics",
+      "b": {
+        "x": 0,
+        "y": 11600,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "kr8FA",
+      "name": "39 · Sheet / Import backup",
+      "b": {
+        "x": 477,
+        "y": 11600,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "UZEvi",
+      "name": "40 · Sheet / What's new",
+      "b": {
+        "x": 954,
+        "y": 11600,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "rpcXG",
+      "name": "41 · Sheet / Practice guide",
+      "b": {
+        "x": 1431,
+        "y": 11600,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "BumHV",
+      "name": "42 · Sheet / Click sound",
+      "b": {
+        "x": 1908,
+        "y": 11600,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "txIPi",
+      "name": "43 · Presets / Inline actions",
+      "b": {
+        "x": 0,
+        "y": 12700,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "M7dzgP",
+      "name": "44 · Instrument / Active timer",
+      "b": {
+        "x": 477,
+        "y": 12700,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "VqdBg",
+      "name": "45 · Routine / Recover paused",
+      "b": {
+        "x": 954,
+        "y": 12700,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "o44PqY",
+      "name": "46 · Preset / Save failure",
+      "b": {
+        "x": 1431,
+        "y": 12700,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "e3XYrA",
+      "name": "47 · Practice set / Missing preset repair",
+      "b": {
+        "x": 1908,
+        "y": 12700,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "tfe1x",
+      "name": "48 · Rhythm / Compound & mute",
+      "b": {
+        "x": 2385,
+        "y": 12700,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "v731fj",
+      "name": "49 · Practice set / Reorder",
+      "b": {
+        "x": 2862,
+        "y": 12700,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "SFdc6",
+      "name": "50 · Settings / Android controls revealed",
+      "b": {
+        "x": 0,
+        "y": 14000,
+        "width": 427,
+        "height": 2793
+      }
+    },
+    {
+      "id": "AQtLo",
+      "name": "51 · Instrument / Pendulum",
+      "b": {
+        "x": 511,
+        "y": 14000,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "RdTqE",
+      "name": "52 · Practice set / Manual & bars goals",
+      "b": {
+        "x": 988,
+        "y": 14000,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "U0lUUG",
+      "name": "53 · Instrument / Dark Violet",
+      "b": {
+        "x": 1465,
+        "y": 14000,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "jnSxQ",
+      "name": "54 · Welcome / Dark",
+      "b": {
+        "x": 1942,
+        "y": 14000,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "E7OCK",
+      "name": "55 · Practice timer / Complete",
+      "b": {
+        "x": 2419,
+        "y": 14000,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "jkhmb",
+      "name": "56 · Routine / Final step",
+      "b": {
+        "x": 2896,
+        "y": 14000,
+        "width": 393,
+        "height": 852
+      }
+    },
+    {
+      "id": "xsy5B",
+      "name": "57 · Handoff / Coverage & adoption",
+      "b": {
+        "x": 4220,
+        "y": 7300,
+        "width": 1220,
+        "height": 1111
+      }
+    },
+    {
+      "id": "wwA11",
+      "name": "58 · References / Latest interactive proposal",
+      "b": {
+        "x": 4220,
+        "y": 8489,
+        "width": 1220,
+        "height": 1110
+      }
+    },
+    {
+      "id": "tdKiE",
+      "name": "59 · Overview / Metronome design",
+      "b": {
+        "x": 4220,
+        "y": 9699,
+        "width": 1680,
+        "height": 1124
+      }
+    },
+    {
+      "id": "J8foEM",
+      "name": "60 · Website / Reusable components",
+      "b": {
+        "x": 0,
+        "y": 16893,
+        "width": 1680,
+        "height": 3161
+      }
+    },
+    {
+      "id": "gV0NC",
+      "name": "61 · Website / Homepage / Desktop light",
+      "b": {
+        "x": 0,
+        "y": 20134,
+        "width": 1440,
+        "height": 3408
+      }
+    },
+    {
+      "id": "EawVf",
+      "name": "62 · Website / Homepage / Desktop dark",
+      "b": {
+        "x": 1540,
+        "y": 20134,
+        "width": 1440,
+        "height": 3408
+      }
+    },
+    {
+      "id": "ffFB4",
+      "name": "63 · Website / Homepage / Mobile light",
+      "b": {
+        "x": 3080,
+        "y": 20134,
+        "width": 393,
+        "height": 4720
+      }
+    },
+    {
+      "id": "J9kWpN",
+      "name": "64 · Website / Homepage / Mobile dark",
+      "b": {
+        "x": 3573,
+        "y": 20134,
+        "width": 393,
+        "height": 4720
+      }
+    },
+    {
+      "id": "iH2S3",
+      "name": "65 · Website / Support / Desktop",
+      "b": {
+        "x": 4066,
+        "y": 20134,
+        "width": 1440,
+        "height": 1416
+      }
+    },
+    {
+      "id": "YhEGv",
+      "name": "66 · Website / Support / Mobile",
+      "b": {
+        "x": 5606,
+        "y": 20134,
+        "width": 393,
+        "height": 1453
+      }
+    },
+    {
+      "id": "qY61n",
+      "name": "67 · Website / Privacy / Desktop",
+      "b": {
+        "x": 6099,
+        "y": 20134,
+        "width": 1440,
+        "height": 1993
+      }
+    },
+    {
+      "id": "D0Vodd",
+      "name": "68 · Website / Privacy / Mobile",
+      "b": {
+        "x": 7639,
+        "y": 20134,
+        "width": 393,
+        "height": 2398
+      }
+    },
+    {
+      "id": "jaAq3",
+      "name": "69 · Website / 404 / Desktop",
+      "b": {
+        "x": 8132,
+        "y": 20134,
+        "width": 1440,
+        "height": 898
+      }
+    },
+    {
+      "id": "hORn2",
+      "name": "70 · Website / 404 / Mobile",
+      "b": {
+        "x": 9672,
+        "y": 20134,
+        "width": 393,
+        "height": 932
+      }
+    },
+    {
+      "id": "MmMlv",
+      "name": "71 · Website / Interaction states & motion",
+      "b": {
+        "x": 0,
+        "y": 24954,
+        "width": 1840,
+        "height": 1330
+      }
+    },
+    {
+      "id": "db87g",
+      "name": "72 · Website / Responsive foundations & handoff",
+      "b": {
+        "x": 0,
+        "y": 26384,
+        "width": 1360,
+        "height": 1073
+      }
+    },
+    {
+      "id": "w4IXz",
+      "name": "73 · Overview / App & website",
+      "b": {
+        "x": 0,
+        "y": 27557,
+        "width": 1680,
+        "height": 1202
+      }
+    }
+  ],
+  "appScreens": 49,
+  "webPages": 10,
+  "reusable": [
+    {
+      "id": "jLU5b",
+      "name": "MT / Action / Primary"
+    },
+    {
+      "id": "YjRNV",
+      "name": "MT / Action / Secondary"
+    },
+    {
+      "id": "G8kqnU",
+      "name": "MT / Action / Icon"
+    },
+    {
+      "id": "YPOaa",
+      "name": "MT / Tempo / Step"
+    },
+    {
+      "id": "s9oZEL",
+      "name": "MT / Playback / Stopped"
+    },
+    {
+      "id": "ofOQs",
+      "name": "MT / Playback / Playing"
+    },
+    {
+      "id": "Fedsz",
+      "name": "MT / Choice / Rest"
+    },
+    {
+      "id": "qnIlV",
+      "name": "MT / Choice / Selected"
+    },
+    {
+      "id": "HqKsX",
+      "name": "MT / Slider / Linear"
+    },
+    {
+      "id": "t8A7D",
+      "name": "MT / Slider / Centred"
+    },
+    {
+      "id": "KwZJo",
+      "name": "MT / Field / Text"
+    },
+    {
+      "id": "q7ncSX",
+      "name": "MT / Value / Stepper"
+    },
+    {
+      "id": "m2nKO",
+      "name": "MT / Row / Navigation"
+    },
+    {
+      "id": "MB6fc",
+      "name": "MT / Switch / Off"
+    },
+    {
+      "id": "c7TkSw",
+      "name": "MT / Switch / On"
+    },
+    {
+      "id": "I1j2mR",
+      "name": "MT / Row / Toggle"
+    },
+    {
+      "id": "YcB41",
+      "name": "MT / Disclosure / Heading"
+    },
+    {
+      "id": "NCITP",
+      "name": "MT / Beat / Normal"
+    },
+    {
+      "id": "rUyp0",
+      "name": "MT / Beat / Accent"
+    },
+    {
+      "id": "O5fom",
+      "name": "MT / Beat / Mute"
+    },
+    {
+      "id": "CstC2",
+      "name": "MT / Header / Root"
+    },
+    {
+      "id": "JeBEs",
+      "name": "MT / Header / Back"
+    },
+    {
+      "id": "v3TW2",
+      "name": "MT / Status / Active mode"
+    },
+    {
+      "id": "hHe5q",
+      "name": "MT / Data / Summary"
+    },
+    {
+      "id": "zJD1q",
+      "name": "MT / Choice / Appearance"
+    },
+    {
+      "id": "UT8ND",
+      "name": "MT / Sound / Voice row"
+    },
+    {
+      "id": "GMqFh",
+      "name": "MT / Colour / Swatch"
+    },
+    {
+      "id": "GBPz7",
+      "name": "MT / Welcome / Pace"
+    },
+    {
+      "id": "u1ovc",
+      "name": "MT / Welcome / Listen"
+    },
+    {
+      "id": "wDQGU",
+      "name": "MT / Sound / Panel"
+    },
+    {
+      "id": "X7zyN",
+      "name": "MT / Settings / Web app"
+    },
+    {
+      "id": "wgfCc",
+      "name": "MT / Settings / Studio"
+    },
+    {
+      "id": "H5DBPd",
+      "name": "MT / Preset / Row"
+    },
+    {
+      "id": "f615W",
+      "name": "MT / Routine / Starter"
+    },
+    {
+      "id": "bHFGw",
+      "name": "MT / Routine / Step"
+    },
+    {
+      "id": "mBACq",
+      "name": "MT / Hint / Inline"
+    },
+    {
+      "id": "H6Ulb",
+      "name": "MT / Empty / Library"
+    },
+    {
+      "id": "YoPwm",
+      "name": "MT / Feedback / Toast"
+    },
+    {
+      "id": "qSJJd",
+      "name": "MT / Feedback / Error"
+    },
+    {
+      "id": "VI7Yi",
+      "name": "MT / Playback / Dock"
+    },
+    {
+      "id": "CAaxV",
+      "name": "MT / Tempo / Digit"
+    },
+    {
+      "id": "A7ycDj",
+      "name": "MT / Sheet / Header"
+    },
+    {
+      "id": "G1ai4I",
+      "name": "MT / Field / Validation"
+    },
+    {
+      "id": "CIFC8",
+      "name": "MT / Tempo / Readout"
+    },
+    {
+      "id": "OKBMf",
+      "name": "MT / Beat / Pendulum"
+    },
+    {
+      "id": "VUW09",
+      "name": "MT / Brand / Mark"
+    },
+    {
+      "id": "Iz8t6",
+      "name": "WT / Hero / Beat lab"
+    },
+    {
+      "id": "GrAAZ",
+      "name": "WT / Appearance / Preview"
+    },
+    {
+      "id": "z4AWR",
+      "name": "WT / Studio / Permanent"
+    },
+    {
+      "id": "Bxn40",
+      "name": "WT / FAQ / Collapsed"
+    },
+    {
+      "id": "IiSC4",
+      "name": "WT / FAQ / Expanded"
+    },
+    {
+      "id": "n2Peo3",
+      "name": "WT / Availability / Web"
+    },
+    {
+      "id": "J5y2Be",
+      "name": "WT / Availability / Mobile"
+    },
+    {
+      "id": "Ry4WI",
+      "name": "WT / Hero / Beat lab / Mobile"
+    },
+    {
+      "id": "uPcqq",
+      "name": "WT / Practice / Tempo"
+    },
+    {
+      "id": "D7un3",
+      "name": "WT / Practice / Gap"
+    },
+    {
+      "id": "m8dHoK",
+      "name": "WT / Practice / Set"
+    },
+    {
+      "id": "gEwI5",
+      "name": "WT / Header / Desktop"
+    },
+    {
+      "id": "qijJH",
+      "name": "WT / Header / Mobile"
+    }
+  ],
+  "variables": 89,
+  "refs": 614,
+  "overlaps": [],
+  "invalidRefs": [],
+  "problems": [
+    {
+      "id": "N1OwyS",
+      "name": "Intentional Settings preview crop",
+      "problem": "partially clipped",
+      "intentional": true
+    }
+  ],
+  "placeholders": [],
+  "unnamed": [],
+  "missingTextFill": [],
+  "assets": [
+    "artifacts/design-exploration-2026-10-03/public/metronome-icon.png",
+    "artifacts/design-exploration-2026-10-03/public/suby-icon.png",
+    "artifacts/design-exploration-2026-10-03/public/captures/welcome-distinct-light.png",
+    "artifacts/design-exploration-2026-10-03/public/captures/main-brand-slider-light.png",
+    "artifacts/design-exploration-2026-10-03/public/captures/settings-web-light.png",
+    "artifacts/metronome-pen-2026-10-03/exports/E8RB3.png",
+    "artifacts/metronome-pen-2026-10-03/exports/U0lUUG.png",
+    "artifacts/metronome-pen-2026-10-03/exports/ifEGW.png",
+    "artifacts/metronome-pen-2026-10-03/exports/OkTAZ.png",
+    "docs/images/suby-icon.png",
+    "artifacts/website-refresh-2026-10-03/pen-exports/mDnBP.png",
+    "artifacts/website-refresh-2026-10-03/pen-exports/fPjby.png"
+  ]
+}

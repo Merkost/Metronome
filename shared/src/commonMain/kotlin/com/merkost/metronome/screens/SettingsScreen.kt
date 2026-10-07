@@ -1,598 +1,338 @@
 package com.merkost.metronome.screens
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import com.composables.icons.lucide.ArrowLeft
-import com.composables.icons.lucide.ChevronRight
+import com.composables.icons.lucide.CircleHelp
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.SlidersHorizontal
 import com.composables.icons.lucide.Sparkles
-import com.composables.icons.lucide.Mail
-import com.composables.icons.lucide.Smartphone
-import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Timer
-import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppDialog
-import com.merkost.metronome.components.AppSlider
-import com.merkost.metronome.components.MySecondaryButton
+import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
+import com.merkost.metronome.engine.SoundPreviewController
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.ThemeMode
-import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.AppVersionProvider
-import com.merkost.metronome.ui.AppAnimations
-import com.merkost.metronome.ui.minimumTouchTargetSize
-import com.merkost.metronome.ui.pressableSurface
-import com.merkost.metronome.ui.cornerRadiusMedium
-import com.merkost.metronome.ui.emojiSize
+import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
+import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.theme.AppColorScheme
+import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.SettingsViewModel
-import metronome.shared.generated.resources.Res
-import metronome.shared.generated.resources.settings
-import metronome.shared.generated.resources.settings_whats_new
-import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.math.roundToInt
 
+internal data class SettingsUiState(
+    val colorScheme: AppColorScheme = AppColorScheme.BLACKNWHITE,
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val colorFlash: Boolean = false,
+    val backgroundPlay: Boolean = false,
+    val hapticEnabled: Boolean = false,
+    val keepScreenAwake: Boolean = true,
+    val countInEnabled: Boolean = false,
+    val liveActivityEnabled: Boolean = true,
+    val beatDisplayStyle: BeatDisplayStyle = BeatDisplayStyle.DOTS,
+    val stereo: Int = 0,
+    val volume: Float = 1f,
+    val selectedSound: ClickSound = ClickSound.WOOD,
+    val previewSound: ClickSound? = null,
+    val playing: Boolean = false,
+    val supportsDynamicColor: Boolean = false,
+    val version: String = "",
+    val previewError: String? = null,
+)
 
-@OptIn(ExperimentalMaterial3Api::class)
+internal data class SettingsActions(
+    val onColorScheme: (AppColorScheme) -> Unit = {},
+    val onTheme: (ThemeMode) -> Unit = {},
+    val onColorFlash: (Boolean) -> Unit = {},
+    val onBackgroundPlay: (Boolean) -> Unit = {},
+    val onHaptic: (Boolean) -> Unit = {},
+    val onKeepScreenAwake: (Boolean) -> Unit = {},
+    val onCountIn: (Boolean) -> Unit = {},
+    val onLiveActivity: (Boolean) -> Unit = {},
+    val onBeatDisplay: (BeatDisplayStyle) -> Unit = {},
+    val onStereo: (Float) -> Unit = {},
+    val onVolume: (Float) -> Unit = {},
+    val onSoundPicker: () -> Unit = {},
+    val onPreview: () -> Unit = {},
+    val onPractice: () -> Unit = {},
+    val onWhatsNew: () -> Unit = {},
+    val onAbout: () -> Unit = {},
+    val onWeb: () -> Unit = {},
+    val onSuby: () -> Unit = {},
+)
+
 @Composable
 fun SettingsScreen(upPress: () -> Unit) {
     val viewModel: SettingsViewModel = koinViewModel()
+    val metronome: MetronomeViewModel = koinInject()
     val platformActions: PlatformActions = koinInject()
-
-    val appColorScheme by viewModel.colorScheme.collectAsState()
+    val appVersionProvider: AppVersionProvider = koinInject()
+    val soundPreview: SoundPreviewController = koinInject()
+    val uriHandler = LocalUriHandler.current
+    val colorScheme by viewModel.colorScheme.collectAsState()
+    val themeMode by viewModel.themeMode.collectAsState()
     val colorFlash by viewModel.colorFlash.collectAsState()
     val backgroundPlay by viewModel.backgroundPlay.collectAsState()
     val hapticEnabled by viewModel.hapticEnabled.collectAsState()
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val countInEnabled by viewModel.countInEnabled.collectAsState()
     val liveActivityEnabled by viewModel.liveActivityEnabled.collectAsState()
-    val practiceStreak by viewModel.practiceStreak.collectAsState()
     val beatDisplayStyle by viewModel.beatDisplayStyle.collectAsState()
-    val themeMode by viewModel.themeMode.collectAsState()
     val totalTime by viewModel.totalTime.collectAsState()
+    val todayTime by viewModel.todayTime.collectAsState()
+    val practiceStreak by viewModel.practiceStreak.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val clickVolume by viewModel.clickVolume.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
+    val previewSound by soundPreview.activeSound.collectAsState()
+    val previewError by soundPreview.errorMessage.collectAsState()
+    val playing by metronome.isPlaying.collectAsState()
+    var activeSheet by rememberSaveable { mutableStateOf<String?>(null) }
+    var showResetConfirmation by rememberSaveable { mutableStateOf(false) }
+    var showBackgroundPlayPermission by rememberSaveable { mutableStateOf(false) }
+    val version = appVersionProvider.getAppVersion()?.versionName.orEmpty()
 
-    var showBackgroundPlayPermission by remember { mutableStateOf(false) }
-    if (showBackgroundPlayPermission) {
+    DisposableEffect(soundPreview) {
+        onDispose { soundPreview.stop() }
+    }
+    LaunchedEffect(playing) {
+        if (playing) soundPreview.stop()
+    }
+    LaunchedEffect(clickVolume, currentStereo) {
+        soundPreview.updateOutput(clickVolume, currentStereo)
+    }
+    if (showBackgroundPlayPermission && backgroundPlay) {
         BackgroundPlayPermissionCheck(true)
     }
 
-    val appVersionProvider: AppVersionProvider = koinInject()
-    var showWhatsNew by remember { mutableStateOf(false) }
-    if (showWhatsNew) {
-        WhatsNewSheet(
-            version = appVersionProvider.getAppVersion()?.versionName.orEmpty(),
-            onDismiss = { showWhatsNew = false },
-        )
+    val preview: (ClickSound) -> Unit = { sound ->
+        if (previewSound == sound) soundPreview.stop()
+        else if (!playing) soundPreview.preview(sound, volume = clickVolume, pan = currentStereo)
     }
-
-    var showResetConfirmation by remember { mutableStateOf(false) }
+    when (activeSheet) {
+        "sounds" -> SoundPickerSheet(
+            selectedSound = selectedSound,
+            previewSound = previewSound,
+            errorMessage = previewError,
+            onSelect = { soundPreview.stop(); viewModel.onSoundChanged(it) },
+            onPreview = preview,
+            onDismiss = {
+                soundPreview.stop()
+                activeSheet = null
+            },
+        )
+        "practice" -> SettingsPracticeSheet(
+            todayTime = todayTime,
+            totalTime = totalTime,
+            practiceStreak = practiceStreak,
+            playing = playing,
+            onReset = { showResetConfirmation = true },
+            onDismiss = { activeSheet = null },
+        )
+        "about" -> SettingsAboutSheet(
+            version = version,
+            onGuide = { activeSheet = "guide" },
+            onWhatsNew = { activeSheet = "whats-new" },
+            onContact = platformActions::contactSupport,
+            onRate = platformActions::rateApp,
+            onWebsite = { uriHandler.openUri("https://metronome.merkost.dev/") },
+            onPrivacy = { uriHandler.openUri("https://metronome.merkost.dev/privacy.html") },
+            onDismiss = { activeSheet = null },
+        )
+        "guide" -> SettingsGuideSheet(onDismiss = { activeSheet = null })
+        "whats-new" -> WhatsNewSheet(version = version, onDismiss = { activeSheet = null })
+    }
     if (showResetConfirmation) {
         AppDialog(
-            title = "Reset practice time?",
-            text = "This clears your total practice time of " +
-                "${TimestampMillisecondsFormatter.formatHuman(totalTime)} " +
-                "and your streak. This can't be undone.",
-            confirmLabel = "Reset",
+            title = "Reset practice statistics?",
+            text = "This clears your today, total practice time of ${TimestampMillisecondsFormatter.formatHuman(totalTime)} and streak. Your presets and practice sets are kept. This can't be undone.",
+            confirmLabel = "Reset statistics",
             onConfirm = {
-                viewModel.resetTotalTime()
+                if (!playing) viewModel.resetTotalTime()
                 showResetConfirmation = false
             },
             onDismiss = { showResetConfirmation = false },
         )
     }
 
+    SettingsScreenContent(
+        state = SettingsUiState(
+            colorScheme = colorScheme,
+            themeMode = themeMode,
+            colorFlash = colorFlash,
+            backgroundPlay = backgroundPlay,
+            hapticEnabled = hapticEnabled,
+            keepScreenAwake = keepScreenAwake,
+            countInEnabled = countInEnabled,
+            liveActivityEnabled = liveActivityEnabled,
+            beatDisplayStyle = beatDisplayStyle,
+            stereo = currentStereo,
+            volume = clickVolume,
+            selectedSound = selectedSound,
+            previewSound = previewSound,
+            playing = playing,
+            supportsDynamicColor = platformActions.isDynamicColorSupported(),
+            version = version,
+            previewError = previewError,
+        ),
+        actions = SettingsActions(
+            onColorScheme = viewModel::onColorSchemeChanged,
+            onTheme = viewModel::onThemeModeChanged,
+            onColorFlash = viewModel::onColorFlashChanged,
+            onBackgroundPlay = {
+                viewModel.onBackgroundPlayChanged(it)
+                showBackgroundPlayPermission = it
+            },
+            onHaptic = viewModel::onHapticChanged,
+            onKeepScreenAwake = viewModel::onKeepScreenAwakeChanged,
+            onCountIn = viewModel::onCountInChanged,
+            onLiveActivity = viewModel::onLiveActivityChanged,
+            onBeatDisplay = viewModel::onBeatDisplayStyleChanged,
+            onStereo = viewModel::onStereoChanged,
+            onVolume = viewModel::onClickVolumeChanged,
+            onSoundPicker = {
+                soundPreview.stop()
+                activeSheet = "sounds"
+            },
+            onPreview = { preview(selectedSound) },
+            onPractice = { activeSheet = "practice" },
+            onWhatsNew = { activeSheet = "whats-new" },
+            onAbout = { activeSheet = "about" },
+            onWeb = { uriHandler.openUri("https://metronome.merkost.dev/app/") },
+            onSuby = { uriHandler.openUri("https://subyapp.com/") },
+        ),
+        upPress = upPress,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun SettingsScreenContent(
+    state: SettingsUiState,
+    actions: SettingsActions,
+    upPress: () -> Unit,
+) {
     Scaffold(
         topBar = {
-            TopAppBar(title = {
-                Text(
-                    text = stringResource(Res.string.settings),
-                    style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
-                )
-            }, navigationIcon = {
-                AppIconButton(onClick = upPress) {
-                    Icon(Lucide.ArrowLeft, "Back")
-                }
-            })
-        }
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
-            contentAlignment = Alignment.TopCenter
-        ) {
-        Column(
-            Modifier
-                .widthIn(max = maxContentWidth)
-                .verticalScroll(rememberScrollState())
-                .navigationBarsPadding()
-                .padding(horizontalPadding),
-            verticalArrangement = Arrangement.spacedBy(spacingMedium)
-        ) {
-
-            AppInfoCard()
-
-            Row(
+            TopAppBar(
+                title = { Text("Settings", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    AppIconButton(onClick = upPress) { Icon(Lucide.ArrowLeft, "Back") }
+                },
+            )
+        },
+    ) { insets ->
+        Box(Modifier.fillMaxSize().padding(top = insets.calculateTopPadding()), contentAlignment = Alignment.TopCenter) {
+            Column(
                 modifier = Modifier
+                    .widthIn(max = maxContentWidth)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(cornerRadiusMedium))
-                    .pressableSurface(onClick = { showWhatsNew = true })
-                    .heightIn(min = minimumTouchTargetSize)
-                    .padding(vertical = spacingSmall),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+                    .verticalScroll(rememberScrollState())
+                    .navigationBarsPadding()
+                    .padding(horizontal = horizontalPadding)
+                    .padding(bottom = spacingLarge),
+                verticalArrangement = Arrangement.spacedBy(spacingMedium),
             ) {
-                Icon(Lucide.Sparkles, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                Text(
-                    text = stringResource(Res.string.settings_whats_new),
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.weight(1f),
-                )
-                Icon(
-                    Lucide.ChevronRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
-            SettingsSectionHeader("Sound")
-
-            SettingsRow(title = "Click Sound") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                Column(Modifier.padding(vertical = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
+                    Text("Make it yours.", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold)
+                    Text("A little tweak. A better groove.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                SettingsSoundPanel(state, actions)
+                SettingsAppearancePanel(state, actions)
+                SettingsDisclosure(
+                    title = "Keep your flow.",
+                    description = "Practice & playback",
+                    icon = Lucide.Timer,
                 ) {
-                    ClickSound.entries.forEach { sound ->
-                        val isSelected = sound == selectedSound
-                        val borderWidth by animateDpAsState(
-                            targetValue = if (isSelected) 2.5.dp else 0.dp,
-                            animationSpec = AppAnimations.emphasized(),
-                            label = "soundBorderWidth",
-                        )
-                        val borderColor by animateColorAsState(
-                            targetValue = if (isSelected) MaterialTheme.colorScheme.primary
-                            else Color.Transparent,
-                            animationSpec = AppAnimations.standard(),
-                            label = "soundBorderColor",
-                        )
-                        val containerColor by animateColorAsState(
-                            targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
-                            else Color.Transparent,
-                            animationSpec = AppAnimations.standard(),
-                            label = "soundContainer",
-                        )
-                        MySecondaryButton(
-                            onClick = { viewModel.onSoundChanged(sound) },
-                            border = BorderStroke(borderWidth, borderColor),
-                            shape = RoundedCornerShape(cornerRadiusMedium),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(containerColor)
-                                    .padding(vertical = 12.dp, horizontal = 8.dp)
-                            ) {
-                                Text(
-                                    text = sound.emoji,
-                                    fontSize = emojiSize
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = sound.displayName,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.onSurface
-                                )
+                    SettingsSwitch("Count-in", state.countInEnabled, actions.onCountIn, "One bar to ease you in")
+                    SettingsSwitch("Keep screen awake", state.keepScreenAwake, actions.onKeepScreenAwake, "While the beat is playing")
+                    SettingsSwitch("Background playback", state.backgroundPlay, actions.onBackgroundPlay, "Keep going when you leave the app")
+                    LiveActivitySettingsRow(state.liveActivityEnabled, actions.onLiveActivity)
+                }
+                SettingsDisclosure(
+                    title = "See the beat.",
+                    description = "Beat display & motion",
+                    icon = Lucide.SlidersHorizontal,
+                ) {
+                    SettingsRow("Beat display") {
+                        SettingsChoiceRow {
+                            BeatDisplayStyle.entries.forEach { style ->
+                                AppChip(state.beatDisplayStyle == style, { actions.onBeatDisplay(style) }, style.label)
                             }
                         }
                     }
+                    SettingsSwitch("Beat flash", state.colorFlash, actions.onColorFlash, "A little pulse while you play")
+                    Text("Animations follow your device's motion preference.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-            }
-
-            SettingsSlider(
-                title = "Volume",
-                value = "${(clickVolume * 100).roundToInt()}%",
-            ) {
-                AppSlider(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = clickVolume,
-                    onValueChange = viewModel::onClickVolumeChanged,
-                    valueRange = 0f..1f,
-                    accessibilityLabel = "Click volume, ${(clickVolume * 100).roundToInt()} percent",
-                )
-            }
-
-            val stereoLabel = when {
-                currentStereo < 0 -> "L${-currentStereo}"
-                currentStereo > 0 -> "R$currentStereo"
-                else -> "Center"
-            }
-            SettingsSlider(title = "Stereo Panning", value = stereoLabel) {
-                AppSlider(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = currentStereo.toFloat(),
-                    onValueChange = viewModel::onStereoChanged,
-                    valueRange = -5f..5f,
-                    steps = 9,
-                    showActiveTicks = true,
-                    accessibilityLabel = "Stereo panning, $stereoLabel",
-                )
-            }
-
-            SettingsSwitch("Haptic Feedback", hapticEnabled, viewModel::onHapticChanged, subtitle = "Vibrate on each beat")
-
-            SettingsSectionHeader("Appearance")
-
-            SettingsRow(title = "Theme") {
-                Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    ThemeMode.entries.forEach { mode ->
-                        AppChip(
-                            selected = themeMode == mode,
-                            onClick = { viewModel.onThemeModeChanged(mode) },
-                            label = mode.label,
-                        )
-                    }
+                Column(Modifier.padding(top = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                    Text("A little more.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    SettingsLink("Your practice", "Time, backups & data", Lucide.Timer, actions.onPractice)
+                    SettingsLink("What's new", "Fresh additions for your practice", Lucide.Sparkles, actions.onWhatsNew)
+                    SettingsLink("Help & about", "A hand when you need it", Lucide.CircleHelp, actions.onAbout)
                 }
-            }
-
-            SettingsRow(title = "Color Scheme") {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(spacingSmall)
-                ) {
-                    if (platformActions.isDynamicColorSupported()) {
-                        item {
-                            ColorSecondaryButton(
-                                label = "System color scheme",
-                                content = {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(55.dp)
-                                            .padding(6.dp)
-                                            .clip(CircleShape),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            Lucide.Smartphone,
-                                            contentDescription = null
-                                        )
-                                    }
-                                },
-                                isSelected = appColorScheme == AppColorScheme.MATERIAL3,
-                                onClick = { viewModel.onColorSchemeChanged(AppColorScheme.MATERIAL3) })
-                        }
-                    }
-
-                    items(AppColorScheme.defaultValues()) { colorScheme ->
-                        ColorSecondaryButton(
-                            label = colorScheme.displayName,
-                            content = {
-                                Box(
-                                    modifier = Modifier
-                                        .size(55.dp)
-                                        .padding(6.dp)
-                                        .clip(CircleShape)
-                                        .background(
-                                            Brush.horizontalGradient(
-                                                listOf(
-                                                    colorScheme.lightColor.primary,
-                                                    colorScheme.darkColor.primary
-                                                ),
-                                                tileMode = TileMode.Repeated
-                                            )
-                                        ),
-                                )
-                            },
-                            isSelected = colorScheme == appColorScheme,
-                            onClick = { viewModel.onColorSchemeChanged(colorScheme) })
-                    }
-                }
-            }
-
-            SettingsSectionHeader("Practice")
-
-            SettingsRow(
-                title = "Total Practice Time",
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(Lucide.Timer, contentDescription = null)
-                        Text(
-                            text = buildString {
-                                append(TimestampMillisecondsFormatter.formatHuman(totalTime))
-                                if (practiceStreak > 0) {
-                                    append(" · $practiceStreak-day streak")
-                                }
-                            },
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
-                        )
-                    }
-                    TextButton(onClick = { showResetConfirmation = true }) {
-                        Text(text = "Reset")
-                    }
-                }
-            }
-
-            SettingsSwitch("Color Flash", colorFlash, viewModel::onColorFlashChanged)
-
-            SettingsSwitch(
-                "Keep Screen Awake",
-                keepScreenAwake,
-                viewModel::onKeepScreenAwakeChanged,
-                subtitle = "While the metronome plays",
-            )
-
-            SettingsSwitch(
-                "Count-in",
-                countInEnabled,
-                viewModel::onCountInChanged,
-                subtitle = "One bar before playback starts",
-            )
-
-            SettingsRow(title = "Beat Display") {
-                Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    BeatDisplayStyle.entries.forEach { style ->
-                        AppChip(
-                            selected = beatDisplayStyle == style,
-                            onClick = { viewModel.onBeatDisplayStyleChanged(style) },
-                            label = style.label,
-                        )
-                    }
-                }
-            }
-
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-            SettingsSwitch(
-                "Background Play",
-                backgroundPlay,
-                onCheckedChange = { enabled ->
-                    viewModel.onBackgroundPlayChanged(enabled)
-                    if (enabled) showBackgroundPlayPermission = true
-                }
-            )
-
-            LiveActivitySettingsRow(liveActivityEnabled, viewModel::onLiveActivityChanged)
-
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(spacingSmall)
-            ) {
-                SettingsBigButton("Contact support", icon = Lucide.Mail) {
-                    platformActions.contactSupport()
-                }
-                SettingsBigButton("Rate the App", icon = Lucide.Star) {
-                    platformActions.rateApp()
-                }
-            }
-        }
-        }
-    }
-}
-
-@Composable
-fun SettingsBigButton(
-    text: String,
-    icon: ImageVector? = null,
-    onClick: () -> Unit,
-) {
-    MySecondaryButton(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick,
-        shape = CircleShape
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-            Text(
-                text = text,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                autoSize = TextAutoSize.StepBased(10.sp, 16.sp),
-            )
-        }
-    }
-}
-
-@Composable
-fun ColorSecondaryButton(
-    label: String,
-    content: @Composable () -> Unit,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val borderDp by animateDpAsState(
-        targetValue = if (isSelected) 6.dp else 1.dp,
-        animationSpec = AppAnimations.emphasized(),
-        label = "colorSchemeBorder",
-    )
-
-    MySecondaryButton(
-        modifier = Modifier.semantics {
-            contentDescription = label
-            selected = isSelected
-        },
-        onClick = onClick,
-        border = BorderStroke(borderDp, MaterialTheme.colorScheme.primary)
-    ) {
-        content()
-    }
-}
-
-@Composable
-private fun SettingsSectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.labelMedium.copy(
-            fontWeight = FontWeight.SemiBold,
-            letterSpacing = 0.8.sp,
-        ),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = spacingMedium),
-    )
-}
-
-@Composable
-private fun SettingsSlider(
-    title: String,
-    value: String,
-    slider: @Composable () -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        slider()
-    }
-}
-
-@Composable
-fun SettingsRow(
-    title: String,
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(spacingMedium),
-    content: @Composable () -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = verticalArrangement
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-        )
-        content()
-    }
-}
-
-@Composable
-fun SettingsSwitch(
-    title: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    subtitle: String? = null,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics(mergeDescendants = true) {},
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-            )
-            if (subtitle != null) {
+                SettingsWebCard(actions.onWeb)
+                SettingsSubyCard(actions.onSuby)
                 Text(
-                    text = subtitle,
+                    "Made for your next good practice.\nMetronome${state.version.takeIf { it.isNotBlank() }?.let { " · $it" }.orEmpty()}",
+                    modifier = Modifier.fillMaxWidth().padding(top = spacingSmall),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
-        PlatformSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
-private val AppColorScheme.displayName: String
-    get() = when (this) {
-        AppColorScheme.MATERIAL3 -> "System"
-        AppColorScheme.BLACKNWHITE -> "Monochrome"
-        AppColorScheme.MELROSE -> "Melrose"
-        AppColorScheme.PERIWINKLE -> "Periwinkle"
-        AppColorScheme.MINT_GREEN -> "Mint green"
-        AppColorScheme.PINK_LACE -> "Pink lace"
+@Preview
+@Composable
+private fun SettingsScreenPreview() {
+    MaterialTheme(colorScheme = AppColorScheme.MELROSE.lightColor) {
+        SettingsScreenContent(SettingsUiState(colorScheme = AppColorScheme.MELROSE, version = "1.4.0"), SettingsActions(), {})
     }
+}
+
+@Preview
+@Composable
+private fun SettingsScreenDarkPreview() {
+    MaterialTheme(colorScheme = AppColorScheme.MELROSE.darkColor) {
+        SettingsScreenContent(SettingsUiState(colorScheme = AppColorScheme.MELROSE, version = "1.4.0"), SettingsActions(), {})
+    }
+}

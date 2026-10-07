@@ -1,0 +1,12 @@
+# Cloudflare Pages applies EVERY matching rule and concatenates same-named
+# headers, so a /* catch-all does not lose to a more specific path -- it gets
+# appended to it, producing "max-age=31536000, immutable, max-age=3600".
+# Only name paths that need something other than the default here.
+
+# Content-hashed, so it can never go stale.
+/app/*.wasm
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fixed filename, rewritten every build: must not be cached long.
+/app/composeApp.js
+  Cache-Control: public, max-age=300

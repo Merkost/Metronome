@@ -1,0 +1,28 @@
+{
+  "durationInFrames": 465,
+  "timing": { "s1": 60, "s2": 120, "s3": 180, "gap": 240, "s4": 300, "end": 390, "final": 420 },
+  "layout": {
+    "ballsX": [0.2273, 0.4091, 0.5909, 0.7727],
+    "ballsY": 0.2029,
+    "bpmY": 0.4027,
+    "highColor": "#000000",
+    "lowColor": "#E1E1E1"
+  },
+  "s1": { "beatSrc": 189.5 },
+  "s2": { "downbeats": [195.5, 329.5, 452.5, 565.5, 670.5] },
+  "s3": { "beatSrc": 177.5 },
+  "s4": {
+    "beatSrc": 1433.5,
+    "states": [
+      { "f": 0, "pattern": "HMLH" },
+      { "f": 1446, "pattern": "HHLH" },
+      { "f": 1471, "pattern": "HHLL" },
+      { "f": 1505, "pattern": "HHLM" }
+    ],
+    "taps": [
+      { "f": 1444, "x": 180, "y": 194 },
+      { "f": 1469, "x": 340, "y": 194 },
+      { "f": 1503, "x": 340, "y": 194 }
+    ]
+  }
+}

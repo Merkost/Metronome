@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.X
+import androidx.compose.ui.semantics.stateDescription
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,9 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
@@ -59,14 +61,19 @@ fun MetronomeBalls(
     onBallClicked: (index: Int, Beat) -> Unit,
 ) {
     val indicatorIndex = remember { Animatable(selectedIndex.coerceAtLeast(0).toFloat()) }
-    LaunchedEffect(selectedIndex) {
-        if (selectedIndex >= 0) {
-            indicatorIndex.animateTo(selectedIndex.toFloat(), animSpec)
+    val wasVisible = remember { booleanArrayOf(false) }
+    LaunchedEffect(selectedIndex, isPlaying, beats.size) {
+        val visible = isPlaying && selectedIndex in beats.indices
+        val continuing = wasVisible[0]
+        wasVisible[0] = visible
+        if (visible) {
+            if (continuing) indicatorIndex.animateTo(selectedIndex.toFloat(), animSpec)
+            else indicatorIndex.snapTo(selectedIndex.toFloat())
         }
     }
 
     val indicatorAlpha by animateFloatAsState(
-        targetValue = if (selectedIndex >= 0) 1f else 0f,
+        targetValue = if (isPlaying && selectedIndex in beats.indices) 1f else 0f,
         animationSpec = AppAnimations.Standard,
         label = "indicatorAlpha"
     )
@@ -187,18 +194,6 @@ private fun Ball(
     )
     val outlineColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    val glowAlpha by animateFloatAsState(
-        targetValue = if (isActive) 0.26f else 0f,
-        animationSpec = AppAnimations.Quick,
-        label = "ballGlowAlpha"
-    )
-
-    val beatScale by animateFloatAsState(
-        targetValue = if (isActive) 1.12f else 1f,
-        animationSpec = AppAnimations.Quick,
-        label = "ballBeatScale"
-    )
-
     val interactionSource = remember { MutableInteractionSource() }
     val haptics = rememberAppHaptics()
     val beatDescription = when (beat) {
@@ -221,6 +216,7 @@ private fun Ball(
             }
             .semantics {
                 contentDescription = "Beat ${index + 1}: $beatDescription"
+                stateDescription = if (isActive) "Current beat" else beatDescription
                 role = Role.Button
             },
         contentAlignment = Alignment.Center,
@@ -228,33 +224,14 @@ private fun Ball(
         Box(
             modifier = Modifier
                 .size(ballSize)
-                .graphicsLayer {
-                    scaleX = beatScale
-                    scaleY = beatScale
-                }
-                .drawBehind {
-                    if (glowAlpha > 0f) {
-                        val center = Offset(size.width / 2f, size.height / 2f)
-                        val radius = size.maxDimension / 2f * 1.15f
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    primaryColor.copy(alpha = glowAlpha),
-                                    primaryColor.copy(alpha = 0f)
-                                ),
-                                center = center,
-                                radius = radius
-                            ),
-                            radius = radius,
-                            center = center
-                        )
-                    }
-                }
                 .padding(2.dp)
                 .clip(CircleShape)
                 .background(color)
-                .border(1.5.dp, outlineColor.copy(alpha = outlineAlpha * 0.5f), CircleShape)
-        )
+                .border(1.5.dp, outlineColor.copy(alpha = outlineAlpha * 0.5f), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (beat == Beat.MUTE) Icon(Lucide.X, null, tint = outlineColor, modifier = Modifier.size(ballSize / 2))
+        }
     }
 }
 
@@ -265,4 +242,10 @@ fun OutlinedCircle(color: Color, size: Dp = CircleSize) {
             .size(size)
             .border(CircleWeight, color, CircleShape)
     )
+}
+
+@Preview
+@Composable
+private fun MetronomeBallsPreview() {
+    MaterialTheme { MetronomeBalls(1, listOf(Beat.HIGH, Beat.LOW, Beat.MUTE, Beat.LOW), true, AppAnimations.Standard, onBallClicked = { _, _ -> }) }
 }

@@ -1,0 +1,13 @@
+Command: ANDROID_HOME=/Users/merkost/Library/Android/sdk ./gradlew :shared:iosSimulatorArm64Test -PiosTestSdkDirectory=/private/tmp/MetronomeIosTestSdk :androidApp:assembleDebug :shared:testDebugUnitTest :shared:compileKotlinIosArm64 :shared:compileKotlinWasmJs --console=plain
+
+> Task :shared:iosSimulatorArm64Test
+> Task :shared:compileKotlinIosArm64
+> Task :shared:testDebugUnitTest
+> Task :shared:compileKotlinWasmJs
+> Task :androidApp:assembleDebug
+BUILD SUCCESSFUL in 1m 10s
+
+247 native tests, 196 Android tests, 51 native rendering cases: zero failures/errors/skips. Five new layout cases.
+Baseline layout regressions failed for 86px vs 70px controls and 0px scroll-end padding. An extraction preview import was fixed before baseline execution.
+Visual review found inherited dark titles/chevrons; explicit semantic colors and a rendered ink regression corrected that issue before final gates.
+Temporary exporters removed; existing compiler warnings remain.

@@ -1,0 +1,23 @@
+{
+  "base": "8ba7a65684e3035d44de395e8ea0cc6079964c0d",
+  "branch": "feature/native-design-implementation",
+  "tests": 182,
+  "failures": 0,
+  "errors": 0,
+  "androidVersion": "1.4.0",
+  "androidVersionCode": 10,
+  "iosVersion": "1.4.0",
+  "iosBuild": "2",
+  "sharedVerification": "Android debug build; shared tests; iOS simulator/arm64 source compilation; Wasm source compilation",
+  "frameworkVerification": "iOS simulator debug framework linked successfully",
+  "iosApplicationVerification": "Final Xcode simulator app built and launched; final welcome screenshot inspected",
+  "webAudioTests": 6,
+  "review": "No unresolved P1/P2 after independent source review",
+  "acceptanceLimits": [
+    "Physical-device audio output and Bluetooth latency",
+    "VoiceOver/TalkBack and full text-size matrix",
+    "File-provider and recreation manual acceptance"
+  ],
+  "sourceRevision": "b424a07a3560105b358929a3afd4873345cba240",
+  "layoutVerification": "Android debug build and iOS simulator compilation passed after default welcome spacing adjustment"
+}

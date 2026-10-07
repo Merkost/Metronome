@@ -10,6 +10,7 @@ import com.merkost.metronome.ui.theme.AppColorScheme
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 class SettingsViewModel(
     private val appDatastore: AppDatastore
@@ -23,6 +24,8 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val backgroundPlay = appDatastore.backgroundPlay
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val todayTime = appDatastore.todayPracticeTime
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
     val totalTime = appDatastore.totalTime
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0L)
     val currentStereo = appDatastore.stereoSettings
@@ -110,7 +113,7 @@ class SettingsViewModel(
 
     fun onStereoChanged(stereo: Float) {
         viewModelScope.launch {
-            appDatastore.saveStereo(stereo.toInt().coerceIn(-5, 5))
+            appDatastore.saveStereo(stereo.roundToInt().coerceIn(-5, 5))
         }
     }
 

@@ -4,11 +4,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,18 +27,31 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import com.merkost.metronome.ui.cornerRadiusXLarge
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBottomSheet(
     title: String,
     onDismiss: () -> Unit,
+    content: @Composable ColumnScope.(dismissAnimated: () -> Unit) -> Unit,
+) {
+    AppBottomSheetUi(title, onDismiss, content = content)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AppBottomSheetUi(
+    title: String,
+    onDismiss: () -> Unit,
+    safeInsets: @Composable () -> WindowInsets = { WindowInsets.safeDrawing },
     content: @Composable ColumnScope.(dismissAnimated: () -> Unit) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -41,33 +59,48 @@ fun AppBottomSheet(
     val dismissAnimated: () -> Unit = {
         scope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() }
     }
-
     ModalBottomSheet(
+        modifier = Modifier.appBottomSheetSafeArea(safeInsets()) {
+            if (sheetState.hasExpandedState) sheetState.requireOffset() else 0f
+        },
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = cornerRadiusXLarge, topEnd = cornerRadiusXLarge),
         containerColor = MaterialTheme.colorScheme.surface,
+        contentWindowInsets = { safeInsets().only(WindowInsetsSides.Bottom) },
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.TopCenter,
+        AppBottomSheetBody(title, dismissAnimated, content = content)
+    }
+}
+
+internal fun Modifier.appBottomSheetSafeArea(insets: WindowInsets, rawOffset: () -> Float): Modifier =
+    windowInsetsPadding(insets.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+        .offset { IntOffset(0, -rawOffset().roundToInt().coerceAtMost(0)) }
+
+@Composable
+internal fun AppBottomSheetBody(
+    title: String,
+    onDismissAnimated: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.(dismissAnimated: () -> Unit) -> Unit,
+) {
+    Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Column(
+            modifier = Modifier.widthIn(max = maxContentWidth)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = horizontalPadding),
         ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = maxContentWidth)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .navigationBarsPadding()
-                    .padding(horizontal = horizontalPadding)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                )
-                Spacer(Modifier.height(spacingMedium))
-                content(dismissAnimated)
-                Spacer(Modifier.height(spacingLarge))
-            }
+            Text(title, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+            Spacer(Modifier.height(spacingMedium))
+            content(onDismissAnimated)
+            Spacer(Modifier.height(spacingLarge))
         }
     }
+}
+
+@Preview
+@Composable
+private fun AppBottomSheetBodyPreview() {
+    MaterialTheme { AppBottomSheetBody("Pick your click.", {}) { Text("Preview a sound to find your rhythm.") } }
 }

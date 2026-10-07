@@ -1,0 +1,19 @@
+{
+  "nativeTests": 194,
+  "failures": 0,
+  "errors": 0,
+  "renderingTests": 12,
+  "nativeCapture": "Full UIKit/Metal iOS Simulator screen, original UISwitch vs fixed Compose control",
+  "fixture": "Debug binary only; --switch-motion-regression",
+  "nativePixelChecks": "Zero switch pixels at zero alpha and zero clip; half-alpha intensity ratio0.5",
+  "additionalBuilds": [
+    "Android debug",
+    "Wasm compilation",
+    "iOS arm64 compilation",
+    "Xcode iOS simulator app build"
+  ],
+  "review": "No remaining confirmed P1/P2 findings",
+  "limits": [
+    "Physical-device VoiceOver announcements and gesture mediation not exercised"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "captures": [
+    {
+      "variant": "baseline",
+      "phase": "alpha-half",
+      "greenPixelCount": 23220,
+      "greenEnergy": 8078.870588235294,
+      "opaqueGreenPixelCount": 22002
+    },
+    {
+      "variant": "baseline",
+      "phase": "clip-half",
+      "greenPixelCount": 23220,
+      "greenEnergy": 8079.066666666667,
+      "opaqueGreenPixelCount": 22010
+    },
+    {
+      "variant": "baseline",
+      "phase": "clipped",
+      "greenPixelCount": 23220,
+      "greenEnergy": 8079.082352941176,
+      "opaqueGreenPixelCount": 21978
+    },
+    {
+      "variant": "baseline",
+      "phase": "invisible",
+      "greenPixelCount": 23220,
+      "greenEnergy": 8079.082352941176,
+      "opaqueGreenPixelCount": 21978
+    },
+    {
+      "variant": "baseline",
+      "phase": "scrim",
+      "greenPixelCount": 23208,
+      "greenEnergy": 8079.435294117648,
+      "opaqueGreenPixelCount": 22086
+    },
+    {
+      "variant": "baseline",
+      "phase": "sheet",
+      "greenPixelCount": 30952,
+      "greenEnergy": 10772.439215686274,
+      "opaqueGreenPixelCount": 29432
+    },
+    {
+      "variant": "baseline",
+      "phase": "visible",
+      "greenPixelCount": 23220,
+      "greenEnergy": 8079.058823529412,
+      "opaqueGreenPixelCount": 22026
+    },
+    {
+      "variant": "fixed",
+      "phase": "alpha-half",
+      "greenPixelCount": 19128,
+      "greenEnergy": 3374.7764705882355,
+      "opaqueGreenPixelCount": 0
+    },
+    {
+      "variant": "fixed",
+      "phase": "clip-half",
+      "greenPixelCount": 13040,
+      "greenEnergy": 4498.666666666666,
+      "opaqueGreenPixelCount": 12288
+    },
+    {
+      "variant": "fixed",
+      "phase": "clipped",
+      "greenPixelCount": 0,
+      "greenEnergy": 0.0,
+      "opaqueGreenPixelCount": 0
+    },
+    {
+      "variant": "fixed",
+      "phase": "invisible",
+      "greenPixelCount": 0,
+      "greenEnergy": 0.0,
+      "opaqueGreenPixelCount": 0
+    },
+    {
+      "variant": "fixed",
+      "phase": "scrim",
+      "greenPixelCount": 18792,
+      "greenEnergy": 2713.364705882353,
+      "opaqueGreenPixelCount": 0
+    },
+    {
+      "variant": "fixed",
+      "phase": "sheet",
+      "greenPixelCount": 19048,
+      "greenEnergy": 4058.2431372549017,
+      "opaqueGreenPixelCount": 6144
+    },
+    {
+      "variant": "fixed",
+      "phase": "visible",
+      "greenPixelCount": 19560,
+      "greenEnergy": 6747.999999999999,
+      "opaqueGreenPixelCount": 18432
+    }
+  ],
+  "fixedHalfAlphaEnergyRatio": 0.5001150667735975,
+  "checksPassed": [
+    "Fully visible fixed control pixels observed",
+    "Baseline pixels escape zero opacity and zero clip",
+    "Fixed has zero switch-colored pixels at zero opacity and zero clip",
+    "Fixed switch pixels fade proportionally at half alpha"
+  ],
+  "capture": "Full native iOS simulator display; includes UIKit/Metal layers",
+  "regions": "Right control band: x67\u201394%, y18\u201380% of screen; original native pixels"
+}
