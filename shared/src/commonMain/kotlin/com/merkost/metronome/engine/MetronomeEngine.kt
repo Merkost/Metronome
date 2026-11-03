@@ -118,6 +118,7 @@ class MetronomeEngine(
                                 if (index == 0) viewModel.onBarStarted(barNumber)
                                 val muted = viewModel.isGapBarMuted(barNumber)
                                 val interval = state.beatDuration
+                                timeline.markBeat(interval)
                                 viewModel.index.update { index }
 
                                 val events = beatEvents(

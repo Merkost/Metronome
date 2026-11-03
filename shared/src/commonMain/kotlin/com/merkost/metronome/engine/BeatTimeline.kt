@@ -10,6 +10,12 @@ internal class BeatTimeline(
     var deadline: ComparableTimeMark = timeSource.markNow()
         private set
 
+    private var lastInterval: Duration = Duration.ZERO
+
+    fun markBeat(interval: Duration) {
+        lastInterval = interval
+    }
+
     fun advance(interval: Duration) {
         require(interval > Duration.ZERO)
         val scheduled = deadline + interval
@@ -24,6 +30,8 @@ internal class BeatTimeline(
     }
 
     fun resumeAfterRestart() {
-        if (deadline.elapsedNow() >= Duration.ZERO) reanchor()
+        if (deadline.elapsedNow() < Duration.ZERO) return
+        val next = deadline + lastInterval
+        if (lastInterval > Duration.ZERO && next.elapsedNow() < Duration.ZERO) deadline = next else reanchor()
     }
 }

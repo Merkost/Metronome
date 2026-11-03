@@ -37,6 +37,7 @@ import com.merkost.metronome.practiceSets.recordPracticeCompletion
 import com.merkost.metronome.review.ReviewPromptCoordinator
 import com.merkost.metronome.whatsnew.WhatsNewCoordinator
 import com.merkost.metronome.review.ReviewPromptSnapshot
+import kotlin.concurrent.Volatile
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -596,6 +597,7 @@ class MetronomeViewModel(
 
     private fun beginPracticeTimer(minutes: Int) {
         if (!acceptPlaybackRequest()) return
+        pendingStopAtBarEnd = false
         practiceTimerJob?.cancel()
         practiceTimerDoneJob?.cancel()
         val goalMs = minutes * 60_000L
@@ -755,20 +757,31 @@ class MetronomeViewModel(
     val lastGapConfig = appDatastore.lastGapConfig
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private var gapLeadInMuted = false
+    private class GapPlan(val config: GapTrainerConfig, val startBar: Int, val leadInMuted: Boolean)
+
+    @Volatile
+    private var gapPlan: GapPlan? = null
+
+    @Volatile
+    private var currentBarStarted = false
 
     fun isGapBarMuted(barNumber: Int): Boolean {
-        val config = _gapTrainerConfig.value ?: return false
-        val gapBar = barNumber - _gapTrainerStartBar.value
-        return if (gapBar < 0) gapLeadInMuted else config.isMuted(gapBar)
+        val plan = gapPlan ?: return false
+        val gapBar = barNumber - plan.startBar
+        return if (gapBar < 0) plan.leadInMuted else plan.config.isMuted(gapBar)
     }
 
     private fun rebaseGapTrainer(config: GapTrainerConfig) {
         val playing = _metronomeState.value.playing
         val mutedNow = playing && isGapBarMuted(_currentBar.value)
+        val startBar = when {
+            !playing -> 0
+            currentBarStarted -> _currentBar.value + 1
+            else -> _currentBar.value
+        }
+        gapPlan = GapPlan(config, startBar, mutedNow)
         _gapTrainerConfig.value = config
-        gapLeadInMuted = mutedNow
-        _gapTrainerStartBar.value = if (playing) _currentBar.value + 1 else 0
+        _gapTrainerStartBar.value = startBar
     }
 
     fun startGapTrainer(config: GapTrainerConfig) {
@@ -784,16 +797,19 @@ class MetronomeViewModel(
     }
 
     fun stopGapTrainer() {
+        gapPlan = null
         _gapTrainerConfig.value = null
     }
 
     fun onBarReset() {
         _currentBar.value = 0
         _gapTrainerStartBar.value = 0
-        gapLeadInMuted = false
+        currentBarStarted = false
+        gapPlan = gapPlan?.let { GapPlan(it.config, 0, false) }
     }
 
     fun onBarStarted(barNumber: Int) {
+        currentBarStarted = true
         _currentBar.value = barNumber
     }
 
@@ -938,7 +954,7 @@ class MetronomeViewModel(
             PracticeSessionCommand.PausePlayback -> {
                 _metronomeState.update { it.copy(playing = false) }
                 val session = controller.state.value.session
-                if (session?.playbackIntent == PracticePlaybackIntent.Paused) {
+                if (!applicationExitRequested && session?.playbackIntent == PracticePlaybackIntent.Paused) {
                     session.pendingStepIndex?.let { pendingIndex ->
                         activePresetTracker.consumePendingAtBarBoundary()?.let { preset ->
                             commitPracticePreset(preset)

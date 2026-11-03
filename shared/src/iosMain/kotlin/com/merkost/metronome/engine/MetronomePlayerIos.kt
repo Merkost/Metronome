@@ -92,6 +92,7 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     override fun stop() {
+        outputWarm = false
         commands.offer(AudioCommand.Stop)
     }
 
@@ -101,6 +102,7 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     override fun release() {
+        outputWarm = false
         latestGeneration.update { it + 1 }
         commands.offer(AudioCommand.Release)
     }

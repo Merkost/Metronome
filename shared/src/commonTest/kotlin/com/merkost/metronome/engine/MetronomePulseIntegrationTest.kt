@@ -472,6 +472,44 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun aMeterChangeBetweenSubdivisionClicksStaysOnTheBeatGrid() = runTest {
+        fixture { state ->
+            state.viewModel.onSubdivisionChanged(Subdivision.EIGHTH)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            step(state, 100)
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            step(state, 399)
+            assertEquals(1, state.player.beats.size)
+            step(state, 1)
+            assertEquals(2, state.player.beats.size)
+            assertEquals(Beat.HIGH, state.player.beats.last())
+        }
+    }
+
+    @Test
+    fun aGapTrainerStartedDuringCountInStartsTheCycleAtTheFirstBar() = runTest {
+        fixture(countIn = true) { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            repeat(3) { step(state, 500) }
+            assertEquals(4, state.player.beats.size)
+            repeat(2) { step(state, 500) }
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(5, state.player.beats.size)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)

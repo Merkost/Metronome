@@ -166,7 +166,7 @@ class PracticeStepFlowTest {
     }
 
     @Test
-    fun dismissingTheTimerBeforeItEndsCancelsAPendingStop() = runTest {
+    fun dismissingTheTimerAfterItEndsCancelsAPendingStop() = runTest {
         withFixture { fixture ->
             fixture.viewModel.onStopWhenTimerEndsChanged(true)
             runCurrent()
@@ -175,6 +175,23 @@ class PracticeStepFlowTest {
             advanceTimeBy(61_000L)
             runCurrent()
             fixture.viewModel.dismissPracticeTimer()
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            assertTrue(fixture.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun extendingTheTimerAfterItEndsCancelsAPendingStop() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.onStopWhenTimerEndsChanged(true)
+            runCurrent()
+            fixture.viewModel.startPracticeTimer(1)
+            runCurrent()
+            advanceTimeBy(61_000L)
+            runCurrent()
+            fixture.viewModel.extendPracticeTimer(5)
+            runCurrent()
             fixture.viewModel.onBarCompleted(1)
             runCurrent()
             assertTrue(fixture.viewModel.metronomeState.value.playing)
