@@ -92,6 +92,7 @@ import com.merkost.metronome.components.PracticeSessionStrip
 import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.navigation.AppPresentation
 import com.merkost.metronome.navigation.LocalAppPresentation
+import com.merkost.metronome.model.flashEnabledFor
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
@@ -321,7 +322,7 @@ fun MainScreen(
 
     if (colorFlash) {
         LaunchedEffect(selectedIndex) {
-            if (metronomeState.playing) {
+            if (metronomeState.playing && flashEnabledFor(metronomeState.rhythm, selectedIndex, metronomeState.beats.size)) {
                 boxColorAnimation.animateTo(0.28f, AppAnimations.quick())
                 boxColorAnimation.animateTo(0f, AppAnimations.standard())
             } else {
