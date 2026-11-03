@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.X
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.stateDescription
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.ripple
@@ -88,9 +90,15 @@ fun MetronomeBalls(
                     Ball(
                         index = index,
                         beat = beat,
-                        isActive = isPlaying && index == selectedIndex,
                         ballSize = ballSize,
-                        onClick = { onBallClicked(index, beat) }
+                        onClick = { onBallClicked(index, beat) },
+                        onSetBeat = { target ->
+                            var current = beat
+                            repeat(beat.clicksTo(target)) {
+                                onBallClicked(index, current)
+                                current = current.next()
+                            }
+                        },
                     )
                 }
             }
@@ -167,13 +175,19 @@ fun MetronomeBalls(
     }
 }
 
+private fun beatLabel(beat: Beat): String = when (beat) {
+    Beat.HIGH -> "accented"
+    Beat.LOW -> "normal"
+    Beat.MUTE -> "muted"
+}
+
 @Composable
 private fun Ball(
     index: Int,
     beat: Beat,
-    isActive: Boolean = false,
     ballSize: Dp = BallSize,
     onClick: () -> Unit,
+    onSetBeat: (Beat) -> Unit,
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
 
@@ -196,11 +210,7 @@ private fun Ball(
 
     val interactionSource = remember { MutableInteractionSource() }
     val haptics = rememberAppHaptics()
-    val beatDescription = when (beat) {
-        Beat.HIGH -> "accented"
-        Beat.LOW -> "normal"
-        Beat.MUTE -> "muted"
-    }
+    val beatDescription = beatLabel(beat)
 
     Box(
         modifier = Modifier
@@ -216,8 +226,14 @@ private fun Ball(
             }
             .semantics {
                 contentDescription = "Beat ${index + 1}: $beatDescription"
-                stateDescription = if (isActive) "Current beat" else beatDescription
+                stateDescription = beatDescription
                 role = Role.Button
+                customActions = Beat.entries.filter { it != beat }.map { target ->
+                    CustomAccessibilityAction("Set beat ${index + 1} to ${beatLabel(target)}") {
+                        onSetBeat(target)
+                        true
+                    }
+                }
             },
         contentAlignment = Alignment.Center,
     ) {
