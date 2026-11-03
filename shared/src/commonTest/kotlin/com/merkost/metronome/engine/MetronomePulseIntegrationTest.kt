@@ -369,6 +369,78 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun theBarNumberAdvancesAtTheDownbeatAndNotAtTheLastBeat() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(0, state.viewModel.currentBar.value)
+            step(state, 500)
+            assertEquals(0, state.viewModel.currentBar.value)
+            step(state, 500)
+            assertEquals(1, state.viewModel.currentBar.value)
+        }
+    }
+
+    @Test
+    fun aGapTrainerStartedMidBarKeepsThatBarAudibleAndStartsTheCycleOnTheNextBar() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            step(state, 500)
+            assertEquals(3, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(5, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun aLiveGapEditDuringAMuteKeepsThatBarMutedAndRebasesOnTheNextBar() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            step(state, 500)
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            step(state, 100)
+            state.viewModel.updateGapTrainer(GapTrainerConfig(1, 3))
+            step(state, 400)
+            assertEquals(2, state.player.beats.size)
+            step(state, 500)
+            assertEquals(3, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            repeat(6) { step(state, 500) }
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(5, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun aGapTrainerStartedWhilePausedStartsTheCycleAtBarZero() = runTest {
+        fixture { state ->
+            state.viewModel.startGapTrainer(GapTrainerConfig(2, 1))
+            assertEquals(0, state.viewModel.gapTrainerStartBar.value)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)

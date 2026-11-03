@@ -113,8 +113,8 @@ class MetronomeEngine(
                                 val beat = state.beats[index]
                                 val stereo = viewModel.currentStereo.value
                                 val volume = viewModel.clickVolume.value
-                                val gapBar = (barNumber - viewModel.gapTrainerStartBar.value).coerceAtLeast(0)
-                                val muted = viewModel.gapTrainerConfig.value?.isMuted(gapBar) == true
+                                if (index == 0) viewModel.onBarStarted(barNumber)
+                                val muted = viewModel.isGapBarMuted(barNumber)
                                 val interval = state.beatDuration
                                 viewModel.index.update { index }
 

@@ -743,17 +743,31 @@ class MetronomeViewModel(
     val lastGapConfig = appDatastore.lastGapConfig
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    private var gapLeadInMuted = false
+
+    fun isGapBarMuted(barNumber: Int): Boolean {
+        val config = _gapTrainerConfig.value ?: return false
+        val gapBar = barNumber - _gapTrainerStartBar.value
+        return if (gapBar < 0) gapLeadInMuted else config.isMuted(gapBar)
+    }
+
+    private fun rebaseGapTrainer(config: GapTrainerConfig) {
+        val playing = _metronomeState.value.playing
+        val mutedNow = playing && isGapBarMuted(_currentBar.value)
+        _gapTrainerConfig.value = config
+        gapLeadInMuted = mutedNow
+        _gapTrainerStartBar.value = if (playing) _currentBar.value + 1 else 0
+    }
+
     fun startGapTrainer(config: GapTrainerConfig) {
         if (!acceptPlaybackRequest()) return
-        _gapTrainerConfig.value = config
-        _gapTrainerStartBar.value = _currentBar.value
+        rebaseGapTrainer(config)
         _metronomeState.update { it.copy(playing = true) }
         viewModelScope.launch { appDatastore.saveLastGapConfig(config) }
     }
 
     fun updateGapTrainer(config: GapTrainerConfig) {
-        _gapTrainerConfig.value = config
-        _gapTrainerStartBar.value = _currentBar.value
+        rebaseGapTrainer(config)
         viewModelScope.launch { appDatastore.saveLastGapConfig(config) }
     }
 
@@ -764,6 +778,11 @@ class MetronomeViewModel(
     fun onBarReset() {
         _currentBar.value = 0
         _gapTrainerStartBar.value = 0
+        gapLeadInMuted = false
+    }
+
+    fun onBarStarted(barNumber: Int) {
+        _currentBar.value = barNumber
     }
 
     fun onBarCompleted(barNumber: Int) {
@@ -776,7 +795,6 @@ class MetronomeViewModel(
                 if (appliedPreset != null) pendingSessionIndex?.let { controller.onStepApplied(it) }
             }
         }
-        _currentBar.value = barNumber
         if (_gradualTempoConfig.value != null) {
             incrementGradualTempo()
         }

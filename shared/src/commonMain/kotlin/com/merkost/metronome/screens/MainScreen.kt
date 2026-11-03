@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -79,7 +82,6 @@ import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.MainButtonsRow
 import com.merkost.metronome.components.MetronomeBalls
 import com.merkost.metronome.components.MyIconButton
-import com.merkost.metronome.components.MySecondaryTextButton
 import com.merkost.metronome.components.Pendulum
 import com.merkost.metronome.components.PillChip
 import com.merkost.metronome.components.MainShortcuts
@@ -88,6 +90,8 @@ import com.merkost.metronome.components.PresetNameDialog
 import com.merkost.metronome.components.PresetSaveChoiceDialog
 import com.merkost.metronome.components.PracticeSessionStrip
 import androidx.compose.ui.keepScreenOn
+import com.merkost.metronome.navigation.AppPresentation
+import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
@@ -96,6 +100,7 @@ import com.merkost.metronome.presets.PracticePresetDraft
 import com.merkost.metronome.practiceSets.PracticeSessionStartResult
 import com.merkost.metronome.ui.AnimatedNumberText
 import com.merkost.metronome.ui.AppAnimations
+import com.merkost.metronome.ui.desktopInstrumentKeys
 import com.merkost.metronome.ui.BallSize
 import com.merkost.metronome.ui.BallSizeCompact
 import com.merkost.metronome.ui.CircleSize
@@ -154,6 +159,20 @@ fun MainScreen(
     onPracticeSetsClicked: () -> Unit,
 ) {
     val viewModel: MetronomeViewModel = koinInject()
+    val presentation = LocalAppPresentation.current
+    val desktop = presentation == AppPresentation.Desktop
+    val instrumentFocusRequester = remember { FocusRequester() }
+    LaunchedEffect(desktop) {
+        if (desktop) instrumentFocusRequester.requestFocus()
+    }
+    val desktopKeyboard = if (desktop) {
+        Modifier.desktopInstrumentKeys(
+            presentation = presentation,
+            onTogglePlayback = { viewModel.onPlayPauseClicked(viewModel.isPlaying.value) },
+            onIncreaseTempo = viewModel::onSliderValueIncreased,
+            onDecreaseTempo = viewModel::onSliderValueDecreased,
+        ).focusRequester(instrumentFocusRequester).focusable()
+    } else Modifier
     val presetsViewModel: PracticePresetsViewModel = koinViewModel()
     koinInject<com.merkost.metronome.engine.MetronomeEngine>()
     val colorFlash by viewModel.colorFlash.collectAsState()
@@ -314,14 +333,15 @@ fun MainScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .then(if (isPlaying && keepScreenAwake) Modifier.keepScreenOn() else Modifier)
+            .then(desktopKeyboard)
+            .then(if (!desktop && isPlaying && keepScreenAwake) Modifier.keepScreenOn() else Modifier)
     ) {
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
                     title = {
-                        Row(
+                        if (!desktop) Row(
                             modifier = Modifier.widthIn(max = 260.dp),
                             horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                             verticalAlignment = Alignment.CenterVertically,
@@ -347,9 +367,11 @@ fun MainScreen(
                                 Icon(Lucide.ChevronDown, contentDescription = "Open rhythm", modifier = Modifier.size(16.dp))
                             }
                         }
-                        Spacer(Modifier.size(spacingSmall))
-                        AppIconButton(onClick = onSettingsClicked) {
-                            Icon(Lucide.Settings, Lucide.Settings.name)
+                        if (!desktop) {
+                            Spacer(Modifier.size(spacingSmall))
+                            AppIconButton(onClick = onSettingsClicked) {
+                                Icon(Lucide.Settings, Lucide.Settings.name)
+                            }
                         }
                     }
                 )
@@ -424,11 +446,12 @@ fun MainScreen(
                             } else {
                                 "${metronomeState.tempoName} · ${metronomeState.subdivision.label}"
                             }
-                            PillChip(
+                            TextButton(
                                 onClick = {
                                     tempoSheetSection = null
                                     showTempoSheet = true
-                                }
+                                },
+                                modifier = Modifier.heightIn(min = minimumTouchTargetSize),
                             ) {
                                 AnimatedContent(
                                     targetState = tempoLabel,
@@ -437,17 +460,17 @@ fun MainScreen(
                                 ) { label ->
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         textAlign = TextAlign.Center,
                                         maxLines = 2,
                                         autoSize = TextAutoSize.StepBased(
-                                            minFontSize = 10.sp,
-                                            maxFontSize = 18.sp,
+                                            minFontSize = 12.sp,
+                                            maxFontSize = 16.sp,
                                         ),
                                     )
                                 }
+                                Icon(Lucide.ChevronDown, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = spacingSmall / 2).size(16.dp))
                             }
 
                             val presetStatus = activePresetState.pending?.let {
@@ -530,16 +553,6 @@ fun MainScreen(
                             steps = viewModel.steps,
                             accessibilityLabel = "Tempo, ${metronomeState.rhythm} BPM",
                         )
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            MySecondaryTextButton(text = "- 5", onClick = viewModel::onMinusFive)
-                            MySecondaryTextButton(text = "÷ 2", onClick = viewModel::divideByTwo)
-                            MySecondaryTextButton(text = "× 2", onClick = viewModel::multiplyByTwo)
-                            MySecondaryTextButton(text = "+ 5", onClick = viewModel::onPlusFive)
-                        }
-
                         MainShortcuts(
                             selectedSound = selectedSound,
                             onPractice = { showPracticeHub = true },
@@ -602,7 +615,7 @@ fun MainScreen(
                             val config = gapTrainerConfig ?: lastShownGapConfig
                             if (config != null) {
                                 val gapBar = (currentBar - gapTrainerStartBar).coerceAtLeast(0)
-                                val muted = config.isMuted(gapBar)
+                                val muted = viewModel.isGapBarMuted(currentBar)
                                 StatusStrip(
                                     icon = if (muted) {
                                         Lucide.VolumeX
