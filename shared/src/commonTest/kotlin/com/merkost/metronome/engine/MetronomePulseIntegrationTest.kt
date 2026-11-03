@@ -171,6 +171,7 @@ class MetronomePulseIntegrationTest {
             runCurrent()
             assertTrue(state.viewModel.beatClock.value.generation > beforeMeter)
             assertNull(state.viewModel.beatClock.value.pulse)
+            step(state, 500)
             state.player.submit(2)
             assertNull(state.viewModel.beatClock.value.pulse)
             state.player.submit(3)
@@ -265,9 +266,51 @@ class MetronomePulseIntegrationTest {
             step(state, 200)
             step(state, 500)
             assertEquals(2, state.player.beats.size)
+            val keepAlivesAtStart = state.player.keepAlives
             state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
             runCurrent()
+            step(state, 500)
             assertEquals(3, state.player.beats.size)
+            assertEquals(keepAlivesAtStart, state.player.keepAlives)
+        }
+    }
+
+    @Test
+    fun aMeterChangeRightAfterABeatWaitsForTheNextBeatInsteadOfStackingOnTheLastOne() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            assertEquals(2, state.player.beats.size)
+            step(state, 499)
+            assertEquals(2, state.player.beats.size)
+            step(state, 1)
+            assertEquals(3, state.player.beats.size)
+            assertEquals(Beat.HIGH, state.player.beats.last())
+        }
+    }
+
+    @Test
+    fun aMeterChangeInTheMiddleOfABeatStaysOnTheBeatGrid() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 700)
+            assertEquals(2, state.player.beats.size)
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            assertEquals(2, state.player.beats.size)
+            step(state, 299)
+            assertEquals(2, state.player.beats.size)
+            step(state, 1)
+            assertEquals(3, state.player.beats.size)
+            step(state, 499)
+            assertEquals(3, state.player.beats.size)
+            step(state, 1)
+            assertEquals(4, state.player.beats.size)
         }
     }
 

@@ -22,4 +22,8 @@ internal class BeatTimeline(
     fun reanchor() {
         deadline = timeSource.markNow()
     }
+
+    fun resumeAfterRestart() {
+        if (deadline.elapsedNow() >= Duration.ZERO) reanchor()
+    }
 }

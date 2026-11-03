@@ -57,6 +57,7 @@ class MetronomeEngine(
                         return@collectLatest
                     }
                     var isRestart = false
+                    var activeTimeline: BeatTimeline? = null
                     var pulseOrdinal = 0L
                     viewModel.metronomeState
                         .map { it.beats.size }
@@ -75,7 +76,9 @@ class MetronomeEngine(
                                 if (lead > Duration.ZERO) delay(lead)
                             }
 
-                            val timeline = BeatTimeline(timeSource)
+                            val timeline = activeTimeline?.also { it.resumeAfterRestart() }
+                                ?: BeatTimeline(timeSource)
+                            activeTimeline = timeline
                             val playbackContext = currentCoroutineContext()
                             fun submittedPulse(interval: Duration, ordinal: Long) {
                                 if (playbackContext.isActive && viewModel.metronomeState.value.playing) {
