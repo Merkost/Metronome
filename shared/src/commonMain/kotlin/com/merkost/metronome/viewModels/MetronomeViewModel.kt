@@ -977,6 +977,7 @@ class MetronomeViewModel(
         practiceSessionController?.let { controller ->
             viewModelScope.launch {
                 controller.recover()
+                onboardingLoaded.first { it }
                 controller.state.value.session?.currentStep?.preset?.let(::commitPracticePreset)
             }
             viewModelScope.launch {

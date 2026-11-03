@@ -10,12 +10,15 @@ import com.merkost.metronome.platform.AppVersionInfo
 import com.merkost.metronome.platform.AppVersionProvider
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.practiceSets.ActivePracticeSession
+import com.merkost.metronome.practiceSets.PracticePlaybackIntent
 import com.merkost.metronome.practiceSets.PracticeSessionController
+import com.merkost.metronome.practiceSets.ResolvedPracticeStep
 import com.merkost.metronome.practiceSets.PracticeSessionRepository
 import com.merkost.metronome.practiceSets.PracticeSet
 import com.merkost.metronome.practiceSets.PracticeSetStep
 import com.merkost.metronome.practiceSets.PracticeStepTarget
 import com.merkost.metronome.presets.DataStorePracticePresetRepository
+import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.presets.InMemoryPreferencesDataStore
 import com.merkost.metronome.presets.PracticePresetDraft
 import com.merkost.metronome.review.InAppReviewRequester
@@ -26,9 +29,13 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -78,6 +85,29 @@ class PracticeStepFlowTest {
         }
     }
 
+    @Test
+    fun recoveredSessionKeepsItsStepAccentPatternWhenOnboardingLoadFinishesLast() = runTest {
+        val accents = listOf(Beat.HIGH, Beat.MUTE, Beat.LOW, Beat.LOW)
+        val preset = PracticePreset(
+            id = "recovered", name = "Recovered", createdAtEpochMillis = 0L, lastUsedAtEpochMillis = null,
+            isFavourite = false, sortPosition = 0, bpm = 90, timeSignature = TimeSignature.FOUR_FOUR,
+            subdivision = Subdivision.QUARTER, beats = accents, countInEnabled = false,
+        )
+        val session = ActivePracticeSession(
+            id = "recovered-session", sourceSetId = "set", setName = "Daily",
+            steps = listOf(ResolvedPracticeStep("step", preset, PracticeStepTarget.None)),
+            currentStepIndex = 0, pendingStepIndex = null, elapsedMillis = 0L, completedBars = 0,
+            playbackIntent = PracticePlaybackIntent.Paused, targetReached = false, currentStepEdited = false,
+            startedAtEpochMillis = 1L, lastCheckpointAtEpochMillis = 1L,
+        )
+        withFixture(initialSession = session, slowTimeSignatureMillis = 100L) { fixture ->
+            advanceTimeBy(500L)
+            runCurrent()
+            assertEquals(accents, fixture.viewModel.metronomeState.value.beats)
+            assertEquals(90, fixture.viewModel.metronomeState.value.rhythm)
+        }
+    }
+
     private fun twoStepSet() = PracticeSet(
         "set", "Daily practice", 0L, 0L, null, null, 0,
         listOf(
@@ -86,19 +116,19 @@ class PracticeStepFlowTest {
         ),
     )
 
-    private suspend fun TestScope.withFixture(countInFirstStep: Boolean = false, block: suspend TestScope.(Fixture) -> Unit) {
+    private suspend fun TestScope.withFixture(countInFirstStep: Boolean = false, initialSession: ActivePracticeSession? = null, slowTimeSignatureMillis: Long = 0L, block: suspend TestScope.(Fixture) -> Unit) {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         var viewModel: MetronomeViewModel? = null
         var fixture: Fixture? = null
         try {
             val preferences = InMemoryPreferencesDataStore()
-            val store = GatedStore(AppDatastoreImpl(preferences))
+            val store = GatedStore(AppDatastoreImpl(preferences), slowTimeSignatureMillis)
             store.saveOnboardingComplete(true)
             var counter = 0
             val presets = DataStorePracticePresetRepository(preferences, { "preset-${++counter}" }, { 0L })
             presets.create(PracticePresetDraft("Slow four", 100, TimeSignature.FOUR_FOUR, Subdivision.QUARTER, listOf(Beat.HIGH, Beat.LOW, Beat.LOW, Beat.LOW), countInFirstStep))
             presets.create(PracticePresetDraft("Fast three", 140, TimeSignature.THREE_FOUR, Subdivision.QUARTER, listOf(Beat.HIGH, Beat.LOW, Beat.LOW), false))
-            val sessions = MemorySessionRepository()
+            val sessions = MemorySessionRepository().also { it.session.value = initialSession }
             val controller = PracticeSessionController(sessions, { "step-session" }, { testScheduler.currentTime })
             val current = Fixture(store, sessions)
             fixture = current
@@ -139,8 +169,10 @@ class PracticeStepFlowTest {
         lateinit var viewModel: MetronomeViewModel
     }
 
-    private class GatedStore(private val delegate: AppDatastore) : AppDatastore by delegate {
+    private class GatedStore(private val delegate: AppDatastore, private val timeSignatureDelay: Long = 0L) : AppDatastore by delegate {
         var countInGate: CompletableDeferred<Unit>? = null
+
+        override val timeSignature: Flow<TimeSignature> = delegate.timeSignature.onEach { if (timeSignatureDelay > 0L) delay(timeSignatureDelay) }
 
         override suspend fun saveCountInEnabled(enabled: Boolean) {
             countInGate?.await()
