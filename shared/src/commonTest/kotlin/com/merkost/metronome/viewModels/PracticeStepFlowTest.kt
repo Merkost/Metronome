@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.AppDatastoreImpl
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.GapTrainerConfig
+import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.platform.AppVersionInfo
@@ -105,6 +107,30 @@ class PracticeStepFlowTest {
             runCurrent()
             assertEquals(accents, fixture.viewModel.metronomeState.value.beats)
             assertEquals(90, fixture.viewModel.metronomeState.value.rhythm)
+        }
+    }
+
+    @Test
+    fun applyingAPresetKeepsTheGapTrainerAndStopsTheTempoTrainer() = runTest {
+        withFixture { fixture ->
+            val preset = PracticePreset(
+                id = "manual", name = "Manual", createdAtEpochMillis = 0L, lastUsedAtEpochMillis = null,
+                isFavourite = false, sortPosition = 0, bpm = 80, timeSignature = TimeSignature.FOUR_FOUR,
+                subdivision = Subdivision.QUARTER, beats = listOf(Beat.HIGH, Beat.LOW, Beat.LOW, Beat.LOW),
+                countInEnabled = false,
+            )
+            fixture.viewModel.startGapTrainer(GapTrainerConfig(3, 1))
+            fixture.viewModel.startGradualTempo(GradualTempoConfig(startBpm = 90, endBpm = 120))
+            runCurrent()
+            fixture.viewModel.onStopClicked()
+            runCurrent()
+
+            fixture.viewModel.applyPracticePreset(preset)
+            runCurrent()
+
+            assertEquals(GapTrainerConfig(3, 1), fixture.viewModel.gapTrainerConfig.value)
+            assertNull(fixture.viewModel.gradualTempoConfig.value)
+            assertEquals(80, fixture.viewModel.metronomeState.value.rhythm)
         }
     }
 

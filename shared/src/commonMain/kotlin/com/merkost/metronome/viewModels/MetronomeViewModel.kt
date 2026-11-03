@@ -557,7 +557,6 @@ class MetronomeViewModel(
 
     private fun commitPracticePreset(preset: PracticePreset) {
         stopGradualTempo()
-        stopGapTrainer()
         _metronomeState.update { it.applyPracticePreset(preset) }
         index.value = -1
         _countInEnabled.value = preset.countInEnabled
