@@ -69,6 +69,12 @@ class MetronomeEngine(
                             viewModel.onBarReset()
                             viewModel.onCountInTick(0)
 
+                            if (!isRestart) {
+                                val lead = player.warmUpLead
+                                player.keepAlive()
+                                if (lead > Duration.ZERO) delay(lead)
+                            }
+
                             val timeline = BeatTimeline(timeSource)
                             val playbackContext = currentCoroutineContext()
                             fun submittedPulse(interval: Duration, ordinal: Long) {
@@ -126,6 +132,7 @@ class MetronomeEngine(
                                 if (events.firstOrNull()?.offset != Duration.ZERO) {
                                     viewModel.onBeatPulse(pulseGeneration, BeatPulse(beatStart, interval, ordinal))
                                 }
+                                if (events.none { it.offset == Duration.ZERO }) player.keepAlive()
                                 for (event in events) {
                                     val eventDeadline = beatStart + event.offset
                                     delayUntil(eventDeadline)

@@ -220,13 +220,91 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun mutedGapBarsKeepTheOutputAwakeOnEveryScheduledBeat() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            val atStart = state.player.keepAlives
+            step(state, 500)
+            assertEquals(atStart, state.player.keepAlives)
+            step(state, 500)
+            assertEquals(atStart + 1, state.player.keepAlives)
+            step(state, 500)
+            assertEquals(atStart + 2, state.player.keepAlives)
+            step(state, 500)
+            assertEquals(atStart + 2, state.player.keepAlives)
+            assertEquals(listOf(Beat.HIGH, Beat.LOW, Beat.HIGH), state.player.beats)
+        }
+    }
+
+    @Test
+    fun theFirstClickWaitsForTheWarmUpLeadAndTheSecondFollowsOneFullInterval() = runTest {
+        fixture(warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.keepAlives)
+            assertTrue(state.player.beats.isEmpty())
+            step(state, 199)
+            assertTrue(state.player.beats.isEmpty())
+            step(state, 1)
+            assertEquals(listOf(Beat.HIGH), state.player.beats)
+            step(state, 499)
+            assertEquals(listOf(Beat.HIGH), state.player.beats)
+            step(state, 1)
+            assertEquals(listOf(Beat.HIGH, Beat.LOW), state.player.beats)
+        }
+    }
+
+    @Test
+    fun aMeterRestartDoesNotRepeatTheWarmUpLead() = runTest {
+        fixture(warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 200)
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            assertEquals(3, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun stoppingDuringTheWarmUpLeadPlaysNothing() = runTest {
+        fixture(warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 100)
+            state.viewModel.onStopClicked()
+            runCurrent()
+            step(state, 500)
+            assertTrue(state.player.beats.isEmpty())
+        }
+    }
+
+    @Test
+    fun countInStartsAfterTheWarmUpLead() = runTest {
+        fixture(countIn = true, warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 199)
+            assertTrue(state.player.beats.isEmpty())
+            step(state, 1)
+            assertEquals(listOf(Beat.HIGH), state.player.beats)
+            step(state, 500)
+            assertEquals(listOf(Beat.HIGH, Beat.HIGH), state.player.beats)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)
         runCurrent()
     }
 
-    private suspend fun TestScope.fixture(deferred: Boolean = false, countIn: Boolean = false, haptics: Boolean = false, block: suspend TestScope.(Fixture) -> Unit) {
+    private suspend fun TestScope.fixture(deferred: Boolean = false, countIn: Boolean = false, haptics: Boolean = false, warmUpLead: Duration = Duration.ZERO, block: suspend TestScope.(Fixture) -> Unit) {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         val preferences = InMemoryPreferencesDataStore()
         val store = AppDatastoreImpl(preferences)
@@ -235,7 +313,7 @@ class MetronomePulseIntegrationTest {
         store.saveHapticEnabled(haptics)
         val haptic = TestHaptics()
         val source = InterceptedClock()
-        val player = SubmissionPlayer(deferred)
+        val player = SubmissionPlayer(deferred, warmUpLead)
         val version = object : AppVersionProvider {
             override fun getAppVersion() = AppVersionInfo("1.4.0", 10L)
         }
@@ -278,8 +356,10 @@ class MetronomePulseIntegrationTest {
         }
     }
 
-    private class SubmissionPlayer(private val deferred: Boolean) : MetronomePlayer {
+    private class SubmissionPlayer(private val deferred: Boolean, override val warmUpLead: Duration = Duration.ZERO) : MetronomePlayer {
         val beats = mutableListOf<Beat>()
+        var keepAlives = 0
+        override fun keepAlive() { keepAlives++ }
         val pending = mutableListOf<() -> Unit>()
         override fun initialize(initialSound: ClickSound) = Unit
         override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) { beats += beat }

@@ -9,6 +9,13 @@ import com.merkost.metronome.model.ClickSound
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
+
+private val OUTPUT_WARM_WINDOW = 2.seconds
+private val OUTPUT_WAKE_LEAD = 200.milliseconds
 
 class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
     private val mutableFailures = MutableSharedFlow<Throwable>(extraBufferCapacity = 4)
@@ -19,6 +26,23 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
     private val loadOwners = mutableMapOf<Int, SoundLoadState>()
     private val streams = ArrayDeque<Int>()
     private var soundPool: SoundPool? = null
+    private var lastOutputActivity: TimeSource.Monotonic.ValueTimeMark? = null
+
+    override val warmUpLead: Duration
+        get() = synchronized(lock) {
+            val last = lastOutputActivity
+            if (last != null && last.elapsedNow() < OUTPUT_WARM_WINDOW) Duration.ZERO else OUTPUT_WAKE_LEAD
+        }
+
+    override fun keepAlive() {
+        synchronized(lock) {
+            val pool = soundPool ?: return
+            val sampleId = accentLoadState.activeSampleId ?: loadState.activeSampleId ?: return
+            if (pool.play(sampleId, 0f, 0f, 0, 0, 1f) != 0) {
+                lastOutputActivity = TimeSource.Monotonic.markNow()
+            }
+        }
+    }
 
     override fun initialize(initialSound: ClickSound) {
         synchronized(lock) {
@@ -150,6 +174,7 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
             ready.play.rate,
         )
         if (stream != 0) {
+            lastOutputActivity = TimeSource.Monotonic.markNow()
             ready.play.onSubmitted?.invoke()
             streams.addLast(stream)
             if (streams.size > 4) streams.removeFirst()
