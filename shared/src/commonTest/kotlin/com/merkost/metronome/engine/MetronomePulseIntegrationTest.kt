@@ -136,18 +136,32 @@ class MetronomePulseIntegrationTest {
 
     @Test
     fun stalePrimariesAreSkippedAndTheNextSubmittedClickHasFreshCentreTiming() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            state.source.time += 1000.milliseconds
+            advanceTimeBy(500)
+            runCurrent()
+            assertEquals(2, state.player.beats.size)
+            assertEquals(Beat.LOW, state.player.beats.last())
+            val pulse = assertNotNull(state.viewModel.beatClock.value.pulse)
+            assertEquals(2L, pulse.ordinal)
+            assertEquals(Duration.ZERO, pulse.startedAt.elapsedNow())
+            assertEquals(0f, pulse.pendulumDisplacement())
+        }
+    }
+
+    @Test
+    fun hapticsFollowTheClick() = runTest {
         fixture(haptics = true) { state ->
+            var beatsWhenHapticFired = -1
             state.haptic.onBeat = {
-                state.haptic.onBeat = null
-                state.source.time += 1000.milliseconds
+                if (beatsWhenHapticFired < 0) beatsWhenHapticFired = state.player.beats.size
             }
             state.viewModel.onPlayPauseClicked(false)
             runCurrent()
-            assertEquals(listOf(Beat.LOW), state.player.beats)
-            val pulse = assertNotNull(state.viewModel.beatClock.value.pulse)
-            assertEquals(1L, pulse.ordinal)
-            assertEquals(Duration.ZERO, pulse.startedAt.elapsedNow())
-            assertEquals(0f, pulse.pendulumDisplacement())
+            assertEquals(1, beatsWhenHapticFired)
         }
     }
 
@@ -338,6 +352,20 @@ class MetronomePulseIntegrationTest {
             assertEquals(listOf(Beat.HIGH), state.player.beats)
             step(state, 500)
             assertEquals(listOf(Beat.HIGH, Beat.HIGH), state.player.beats)
+        }
+    }
+
+    @Test
+    fun hapticsFireWithThePrimaryClickEvenWhenSubdivisionsFollow() = runTest {
+        fixture(haptics = true) { state ->
+            var fired = 0
+            state.haptic.onBeat = { fired++ }
+            state.viewModel.onSubdivisionChanged(Subdivision.EIGHTH)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, fired)
+            assertEquals(1, state.player.beats.size)
         }
     }
 

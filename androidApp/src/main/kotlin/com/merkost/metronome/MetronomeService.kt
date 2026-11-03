@@ -49,8 +49,6 @@ class MetronomeService : Service(), KoinComponent {
     }
 
     override fun onCreate() {
-        // Audio playback is handled by MetronomeEngine (shared across platforms).
-        // This service only manages the foreground notification.
         job = coroutineScope.launch {
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
