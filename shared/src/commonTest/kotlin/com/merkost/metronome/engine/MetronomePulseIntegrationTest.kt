@@ -441,6 +441,37 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun slowTemposKeepTheOutputAwakeHalfwayThroughLongBeatGaps() = runTest {
+        fixture { state ->
+            state.viewModel.onSliderValueChanged(30f)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            val atStart = state.player.keepAlives
+            repeat(3) { step(state, 250) }
+            assertEquals(atStart, state.player.keepAlives)
+            repeat(1) { step(state, 250) }
+            assertEquals(atStart + 1, state.player.keepAlives)
+            repeat(4) { step(state, 250) }
+            assertEquals(atStart + 1, state.player.keepAlives)
+            assertEquals(2, state.player.beats.size)
+            repeat(4) { step(state, 250) }
+            assertEquals(atStart + 2, state.player.keepAlives)
+        }
+    }
+
+    @Test
+    fun fastTemposDoNotAddMidGapKeepAlives() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            val atStart = state.player.keepAlives
+            repeat(4) { step(state, 250) }
+            assertEquals(atStart, state.player.keepAlives)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)

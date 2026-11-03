@@ -22,9 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.ComparableTimeMark
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
 private const val SUB_CLICK_VOLUME = 0.35f
+private val LONG_BEAT_GAP = 1500.milliseconds
 
 class MetronomeEngine(
     private val player: MetronomePlayer,
@@ -161,6 +163,11 @@ class MetronomeEngine(
                                     beatCount = 0
                                     barNumber++
                                     viewModel.onBarCompleted(barNumber)
+                                }
+
+                                if (interval > LONG_BEAT_GAP && state.subdivision.clicksPerBeat == 1) {
+                                    delayUntil(beatStart + interval / 2)
+                                    player.keepAlive()
                                 }
                             }
                         }

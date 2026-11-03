@@ -26,7 +26,10 @@ import platform.AVFAudio.AVAudioPlayerNodeBufferInterrupts
 import platform.AVFAudio.AVAudioUnitVarispeed
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
+import kotlin.concurrent.Volatile
 import kotlin.math.max
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 class MetronomePlayerIos : MetronomePlayer {
@@ -34,6 +37,7 @@ class MetronomePlayerIos : MetronomePlayer {
         data class Initialize(val sound: ClickSound, val generation: Long) : AudioCommand
         data class Play(val beat: Beat, val left: Float, val right: Float, val generation: Long, val onSubmitted: (() -> Unit)? = null) : AudioCommand
         data object Stop : AudioCommand
+        data object KeepAlive : AudioCommand
         data class SwitchSound(val sound: ClickSound, val generation: Long) : AudioCommand
         data object Release : AudioCommand
     }
@@ -63,6 +67,16 @@ class MetronomePlayerIos : MetronomePlayer {
     private val sessionOwner = Any()
     private var graph: AudioGraph? = null
     private var requestedSound: ClickSound? = null
+
+    @Volatile
+    private var outputWarm = false
+
+    override val warmUpLead: Duration
+        get() = if (outputWarm) Duration.ZERO else COLD_START_LEAD
+
+    override fun keepAlive() {
+        commands.offer(AudioCommand.KeepAlive)
+    }
 
     override fun initialize(initialSound: ClickSound) {
         latestGeneration.update { it + 1 }
@@ -96,12 +110,13 @@ class MetronomePlayerIos : MetronomePlayer {
             is AudioCommand.Initialize -> command.generation
             is AudioCommand.Play -> command.generation
             is AudioCommand.SwitchSound -> command.generation
-            AudioCommand.Stop, AudioCommand.Release -> latestGeneration.value
+            AudioCommand.Stop, AudioCommand.Release, AudioCommand.KeepAlive -> latestGeneration.value
         }
         when (command) {
             is AudioCommand.Initialize -> initializeInternal(command.sound)
             is AudioCommand.Play -> playInternal(command.beat, command.left, command.right, command.onSubmitted)
             AudioCommand.Stop -> stopInternal()
+            AudioCommand.KeepAlive -> keepAliveInternal()
             is AudioCommand.SwitchSound -> switchSoundInternal(command.sound)
             AudioCommand.Release -> releaseInternal()
         }
@@ -136,6 +151,7 @@ class MetronomePlayerIos : MetronomePlayer {
             0f
         }
         if (!current.player.playing) current.player.play()
+        outputWarm = true
         current.player.scheduleBuffer(
             accent ?: current.buffer,
             atTime = null,
@@ -146,9 +162,17 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     private fun stopInternal() {
+        outputWarm = false
         graph?.player?.stop()
         graph?.engine?.stop()
         deactivateSession()
+    }
+
+    private fun keepAliveInternal() {
+        val current = graph ?: return
+        if (!ensureRunning(current)) return
+        if (!current.player.playing) current.player.play()
+        outputWarm = true
     }
 
     private fun switchSoundInternal(sound: ClickSound) {
@@ -167,6 +191,7 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     private fun releaseInternal() {
+        outputWarm = false
         graph?.player?.stop()
         graph?.engine?.stop()
         graph = null
@@ -178,6 +203,7 @@ class MetronomePlayerIos : MetronomePlayer {
         val previous = graph
         graph = replacement
         requestedSound = sound
+        outputWarm = true
         previous?.player?.stop()
         previous?.engine?.stop()
     }
@@ -276,5 +302,6 @@ class MetronomePlayerIos : MetronomePlayer {
 
     private companion object {
         const val TAG = "MetronomePlayerIos"
+        val COLD_START_LEAD = 120.milliseconds
     }
 }
