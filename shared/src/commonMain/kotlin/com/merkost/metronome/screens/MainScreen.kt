@@ -238,6 +238,7 @@ fun MainScreen(
     val gapTrainerConfig by viewModel.gapTrainerConfig.collectAsState()
     val gapTrainerStartBar by viewModel.gapTrainerStartBar.collectAsState()
     val currentBar by viewModel.currentBar.collectAsState()
+    val stopWhenTimerEnds by viewModel.stopWhenTimerEnds.collectAsState()
     val lastGapConfig by viewModel.lastGapConfig.collectAsState()
     var lastShownGapConfig by remember { mutableStateOf(gapTrainerConfig) }
     LaunchedEffect(gapTrainerConfig) {
@@ -845,6 +846,8 @@ fun MainScreen(
             todayPracticeTime = todayPracticeTime,
             practiceStreak = practiceStreak,
             totalPracticeTime = totalPracticeTime,
+            stopWhenTimerEnds = stopWhenTimerEnds,
+            onStopWhenTimerEndsChange = viewModel::onStopWhenTimerEndsChanged,
             onStart = { minutes ->
                 if (practiceSessionState.session != null) {
                     pendingStructuredAction = { viewModel.replacePracticeSessionWithTimer(minutes) }
@@ -854,7 +857,7 @@ fun MainScreen(
             },
             onExtend = viewModel::extendPracticeTimer,
             onRestart = viewModel::restartPracticeTimer,
-            onStop = viewModel::dismissPracticeTimer,
+            onStop = { viewModel.dismissPracticeTimer() },
             onDismiss = { showTimerSheet = false },
         )
     }

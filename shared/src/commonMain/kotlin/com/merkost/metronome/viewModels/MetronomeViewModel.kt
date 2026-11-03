@@ -571,6 +571,13 @@ class MetronomeViewModel(
     val lastTimerMinutes = appDatastore.lastTimerMinutes
         .stateIn(viewModelScope, SharingStarted.Eagerly, 15)
 
+    val stopWhenTimerEnds = appDatastore.stopWhenTimerEnds
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun onStopWhenTimerEndsChanged(enabled: Boolean) {
+        viewModelScope.launch { appDatastore.saveStopWhenTimerEnds(enabled) }
+    }
+
     val lastTrainerConfig = appDatastore.lastTrainerConfig
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
@@ -606,17 +613,22 @@ class MetronomeViewModel(
                 if (hapticEnabled.value) {
                     hapticProvider.playConfirmHaptic()
                 }
+                if (stopWhenTimerEnds.value && practiceSessionState.value.session == null) {
+                    pendingStopAtBarEnd = true
+                }
                 practiceTimerDoneJob = viewModelScope.launch {
                     delay(8000L)
                     if (timerSheetVisible) {
                         timerAutoDismissPending = true
                     } else {
-                        dismissPracticeTimer()
+                        dismissPracticeTimer(cancelPendingStop = false)
                     }
                 }
             }
         }
     }
+
+    private var pendingStopAtBarEnd = false
 
     private var timerSheetVisible = false
     private var timerAutoDismissPending = false
@@ -625,7 +637,7 @@ class MetronomeViewModel(
         timerSheetVisible = visible
         if (!visible && timerAutoDismissPending) {
             timerAutoDismissPending = false
-            dismissPracticeTimer()
+            dismissPracticeTimer(cancelPendingStop = false)
         }
     }
 
@@ -646,7 +658,8 @@ class MetronomeViewModel(
         beginPracticeTimer((goal / 60_000L).toInt().coerceAtLeast(1))
     }
 
-    fun dismissPracticeTimer() {
+    fun dismissPracticeTimer(cancelPendingStop: Boolean = true) {
+        if (cancelPendingStop) pendingStopAtBarEnd = false
         practiceTimerJob?.cancel()
         practiceTimerJob = null
         practiceTimerDoneJob?.cancel()
@@ -785,6 +798,10 @@ class MetronomeViewModel(
     }
 
     fun onBarCompleted(barNumber: Int) {
+        if (pendingStopAtBarEnd) {
+            pendingStopAtBarEnd = false
+            onStopClicked()
+        }
         val pendingSessionIndex = practiceSessionState.value.session?.pendingStepIndex
         val appliedPreset = activePresetTracker.consumePendingAtBarBoundary()
         appliedPreset?.let(::commitPracticePreset)
@@ -982,6 +999,11 @@ class MetronomeViewModel(
         retryOnboardingLoad()
         viewModelScope.launch {
             appDatastore.countInEnabled.distinctUntilChanged().collect { _countInEnabled.value = it }
+        }
+        viewModelScope.launch {
+            _metronomeState.map { it.playing }.distinctUntilChanged().collect { playing ->
+                if (!playing) pendingStopAtBarEnd = false
+            }
         }
         viewModelScope.launch {
             appDatastore.countInEnabled.collect { enabled ->

@@ -35,6 +35,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val TRAINER_INCREMENT = intPreferencesKey("TRAINER_INCREMENT")
         private val TRAINER_BARS_PER_STEP = intPreferencesKey("TRAINER_BARS_PER_STEP")
         private val LAST_TIMER_MINUTES = intPreferencesKey("LAST_TIMER_MINUTES")
+        private val STOP_WHEN_TIMER_ENDS = booleanPreferencesKey("STOP_WHEN_TIMER_ENDS")
         private val SUBDIVISION = stringPreferencesKey("SUBDIVISION")
         private val GAP_PLAY_BARS = intPreferencesKey("GAP_PLAY_BARS")
         private val GAP_MUTE_BARS = intPreferencesKey("GAP_MUTE_BARS")
@@ -290,6 +291,15 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
     override suspend fun saveLastTimerMinutes(minutes: Int) {
         dataStore.edit { preferences ->
             preferences[LAST_TIMER_MINUTES] = minutes
+        }
+    }
+
+    override val stopWhenTimerEnds: Flow<Boolean> = dataStore.data
+        .map { preferences -> preferences[STOP_WHEN_TIMER_ENDS] ?: false }
+
+    override suspend fun saveStopWhenTimerEnds(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[STOP_WHEN_TIMER_ENDS] = enabled
         }
     }
 

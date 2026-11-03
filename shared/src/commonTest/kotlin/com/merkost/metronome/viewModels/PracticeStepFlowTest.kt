@@ -44,6 +44,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -131,6 +132,52 @@ class PracticeStepFlowTest {
             assertEquals(GapTrainerConfig(3, 1), fixture.viewModel.gapTrainerConfig.value)
             assertNull(fixture.viewModel.gradualTempoConfig.value)
             assertEquals(80, fixture.viewModel.metronomeState.value.rhythm)
+        }
+    }
+
+    @Test
+    fun theTimerEndingStopsPlaybackAfterTheCurrentBarWhenTheOptionIsOn() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.onStopWhenTimerEndsChanged(true)
+            runCurrent()
+            fixture.viewModel.startPracticeTimer(1)
+            runCurrent()
+            advanceTimeBy(61_000L)
+            runCurrent()
+            assertEquals(0L, fixture.viewModel.practiceTimerRemaining.value)
+            assertTrue(fixture.viewModel.metronomeState.value.playing)
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            assertFalse(fixture.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun theTimerEndingKeepsPlayingWhenTheOptionIsOff() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.startPracticeTimer(1)
+            runCurrent()
+            advanceTimeBy(61_000L)
+            runCurrent()
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            assertTrue(fixture.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun dismissingTheTimerBeforeItEndsCancelsAPendingStop() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.onStopWhenTimerEndsChanged(true)
+            runCurrent()
+            fixture.viewModel.startPracticeTimer(1)
+            runCurrent()
+            advanceTimeBy(61_000L)
+            runCurrent()
+            fixture.viewModel.dismissPracticeTimer()
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            assertTrue(fixture.viewModel.metronomeState.value.playing)
         }
     }
 
