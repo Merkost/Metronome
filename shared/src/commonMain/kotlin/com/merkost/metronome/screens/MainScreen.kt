@@ -92,7 +92,7 @@ import com.merkost.metronome.components.PracticeSessionStrip
 import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.navigation.AppPresentation
 import com.merkost.metronome.navigation.LocalAppPresentation
-import com.merkost.metronome.model.flashEnabledFor
+import com.merkost.metronome.model.beatFlashVisible
 import com.merkost.metronome.model.gapStripState
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
@@ -107,6 +107,7 @@ import com.merkost.metronome.ui.BallSize
 import com.merkost.metronome.ui.BallSizeCompact
 import com.merkost.metronome.ui.CircleSize
 import com.merkost.metronome.ui.horizontalPadding
+import com.merkost.metronome.ui.isAppMotionReduced
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.pressableSurface
@@ -316,14 +317,16 @@ fun MainScreen(
 
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val countInRemaining by viewModel.countInRemaining.collectAsState()
+    val practiceTimerStoppedPlayback by viewModel.practiceTimerStoppedPlayback.collectAsState()
 
     val beatIndicatorSpec = AppAnimations.Emphasized
 
     val boxColorAnimation = remember { Animatable(0f) }
 
+    val reducedMotion = isAppMotionReduced()
     if (colorFlash) {
         LaunchedEffect(selectedIndex) {
-            if (metronomeState.playing && flashEnabledFor(metronomeState.rhythm, selectedIndex, metronomeState.beats.size)) {
+            if (beatFlashVisible(colorFlash, metronomeState.playing, reducedMotion, metronomeState.rhythm, selectedIndex, metronomeState.beats.size)) {
                 boxColorAnimation.animateTo(0.28f, AppAnimations.quick())
                 boxColorAnimation.animateTo(0f, AppAnimations.standard())
             } else {
@@ -432,6 +435,7 @@ fun MainScreen(
                                         indicatorSize = indicatorSize,
                                         ballSize = ballSize,
                                         onBallClicked = viewModel::onBallClicked,
+                                        onSetBeat = viewModel::setBeat,
                                     )
                                 }
                             }
@@ -847,6 +851,7 @@ fun MainScreen(
             totalPracticeTime = totalPracticeTime,
             stopWhenTimerEnds = stopWhenTimerEnds,
             onStopWhenTimerEndsChange = viewModel::onStopWhenTimerEndsChanged,
+            stoppedPlayback = practiceTimerStoppedPlayback,
             onStart = { minutes ->
                 if (practiceSessionState.session != null) {
                     pendingStructuredAction = { viewModel.replacePracticeSessionWithTimer(minutes) }

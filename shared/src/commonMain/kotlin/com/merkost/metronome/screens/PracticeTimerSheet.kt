@@ -23,6 +23,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +41,7 @@ import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 
 private val DURATION_PRESETS = listOf(5, 10, 15, 20, 30)
+private const val STOP_WHEN_TIME_IS_UP_SUBTITLE = "Finishes the bar in progress, then stops"
 
 @Composable
 fun PracticeTimerSheet(
@@ -50,6 +54,7 @@ fun PracticeTimerSheet(
     totalPracticeTime: Long,
     stopWhenTimerEnds: Boolean,
     onStopWhenTimerEndsChange: (Boolean) -> Unit,
+    stoppedPlayback: Boolean,
     onStart: (minutes: Int) -> Unit,
     onExtend: (minutes: Int) -> Unit,
     onRestart: () -> Unit,
@@ -78,6 +83,9 @@ fun PracticeTimerSheet(
                         onStop()
                         dismissAnimated()
                     },
+                    stopWhenTimerEnds = stopWhenTimerEnds,
+                    onStopWhenTimerEndsChange = onStopWhenTimerEndsChange,
+                    stoppedPlayback = stoppedPlayback,
                 )
             } else {
                 ConfigTimerContent(
@@ -154,7 +162,7 @@ internal fun ConfigTimerContent(
             title = "Stop when time is up",
             checked = stopWhenTimerEnds,
             onCheckedChange = onStopWhenTimerEndsChange,
-            subtitle = "Finishes the bar in progress, then stops.",
+            subtitle = STOP_WHEN_TIME_IS_UP_SUBTITLE,
         )
 
         Button(
@@ -215,6 +223,9 @@ internal fun ActiveTimerContent(
     onExtend: (minutes: Int) -> Unit,
     onRestart: () -> Unit,
     onStop: () -> Unit,
+    stopWhenTimerEnds: Boolean = false,
+    onStopWhenTimerEndsChange: (Boolean) -> Unit = {},
+    stoppedPlayback: Boolean = false,
 ) {
     val done = timerRemaining <= 0L
 
@@ -241,12 +252,14 @@ internal fun ActiveTimerContent(
             ) { (finished, playing) ->
                 Text(
                     text = when {
+                        finished && stoppedPlayback -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced · stopped"
                         finished -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced"
                         playing -> "of ${TimestampMillisecondsFormatter.format(timerGoal)}"
                         else -> "paused — counts down while playing"
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = if (finished) Modifier.semantics { liveRegion = LiveRegionMode.Polite } else Modifier,
                 )
             }
         }
@@ -261,6 +274,15 @@ internal fun ActiveTimerContent(
             TextButton(onClick = onRestart) {
                 Text("Restart", fontWeight = FontWeight.Bold)
             }
+        }
+
+        if (!done) {
+            SettingsSwitch(
+                title = "Stop when time is up",
+                checked = stopWhenTimerEnds,
+                onCheckedChange = onStopWhenTimerEndsChange,
+                subtitle = STOP_WHEN_TIME_IS_UP_SUBTITLE,
+            )
         }
 
         Button(

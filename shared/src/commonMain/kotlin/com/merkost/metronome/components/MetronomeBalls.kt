@@ -61,6 +61,7 @@ fun MetronomeBalls(
     ballSize: Dp = BallSize,
     modifier: Modifier = Modifier,
     onBallClicked: (index: Int, Beat) -> Unit,
+    onSetBeat: ((index: Int, Beat) -> Unit)? = null,
 ) {
     val indicatorIndex = remember { Animatable(selectedIndex.coerceAtLeast(0).toFloat()) }
     val wasVisible = remember { booleanArrayOf(false) }
@@ -93,10 +94,14 @@ fun MetronomeBalls(
                         ballSize = ballSize,
                         onClick = { onBallClicked(index, beat) },
                         onSetBeat = { target ->
-                            var current = beat
-                            repeat(beat.clicksTo(target)) {
-                                onBallClicked(index, current)
-                                current = current.next()
+                            if (onSetBeat != null) {
+                                onSetBeat(index, target)
+                            } else {
+                                var current = beat
+                                repeat(beat.clicksTo(target)) {
+                                    onBallClicked(index, current)
+                                    current = current.next()
+                                }
                             }
                         },
                     )
@@ -219,13 +224,14 @@ private fun Ball(
             .clip(CircleShape)
             .clickable(
                 interactionSource = interactionSource,
-                indication = ripple(bounded = true)
+                indication = ripple(bounded = true),
+                onClickLabel = "Change to ${beatLabel(beat.next())}",
             ) {
                 haptics.select()
                 onClick()
             }
             .semantics {
-                contentDescription = "Beat ${index + 1}: $beatDescription"
+                contentDescription = "Beat ${index + 1}"
                 stateDescription = beatDescription
                 role = Role.Button
                 customActions = Beat.entries.filter { it != beat }.map { target ->
