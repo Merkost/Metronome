@@ -1,0 +1,9 @@
+Metronome, now on your Mac.
+
+• A resizable workspace with quick access to your instrument, saved tempos, practice sets and Settings
+• Keyboard controls for playback, tap tempo and navigation
+• Your click sounds, accents, subdivisions, tempo training, gap training and timers
+• Native file panels to import and export practice backups
+• Light and dark appearances, your color schemes and smooth transitions
+
+Requires an Apple silicon Mac with macOS 13 or later.

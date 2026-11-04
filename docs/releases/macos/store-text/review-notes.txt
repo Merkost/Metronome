@@ -1,0 +1,3 @@
+Metronome is a free music practice utility. No sign-in or purchase is required. The core metronome and practice tools work offline. To test audio, open the instrument and press Play. To test structured practice, open Practice, then the timer or a trainer. Import and export use the Mac's native file panels and require the user to choose a file or destination.
+
+The app includes its own arm64 Java runtime, native rendering libraries and audio resources. It does not require a separate Java installation, download executable code, install shared components, run an updater or request microphone access. The JVM JIT entitlement supports the bundled runtime. User-selected file access supports import and export. The application is sandboxed.
