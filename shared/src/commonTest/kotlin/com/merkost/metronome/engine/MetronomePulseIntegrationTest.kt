@@ -10,6 +10,8 @@ import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.platform.AppVersionInfo
 import com.merkost.metronome.platform.AppVersionProvider
 import com.merkost.metronome.platform.HapticProvider
+import com.merkost.metronome.platform.AudioFocusController
+import com.merkost.metronome.platform.AudioFocusEvent
 import com.merkost.metronome.platform.NoopAudioFocusController
 import com.merkost.metronome.presets.DataStorePracticePresetRepository
 import com.merkost.metronome.presets.InMemoryPreferencesDataStore
@@ -567,6 +569,68 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun duckedFocusDipsTheClickToFortyPercentAndGainRestoresIt() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            assertEquals(1f, state.player.lefts.last())
+            state.focus.fire(AudioFocusEvent.LOSS_TRANSIENT_CAN_DUCK)
+            step(state, 500)
+            assertEquals(0.4f, state.player.lefts.last())
+            state.focus.fire(AudioFocusEvent.GAIN)
+            step(state, 500)
+            assertEquals(1f, state.player.lefts.last())
+            assertEquals(true, state.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun transientFocusLossPausesTheClickAndGainResumesItWithinTheWindow() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            val abandonedBefore = state.focus.abandoned
+            state.focus.fire(AudioFocusEvent.LOSS_TRANSIENT)
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+            assertEquals(abandonedBefore, state.focus.abandoned)
+            step(state, 10_000)
+            state.focus.fire(AudioFocusEvent.GAIN)
+            runCurrent()
+            assertEquals(true, state.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun gainAfterTheWindowLeavesTheClickPaused() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            state.focus.fire(AudioFocusEvent.LOSS_TRANSIENT)
+            runCurrent()
+            step(state, 31_000)
+            state.focus.fire(AudioFocusEvent.GAIN)
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun permanentFocusLossStopsTheClickAndReleasesFocus() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            val abandonedBefore = state.focus.abandoned
+            state.focus.fire(AudioFocusEvent.LOSS)
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+            assertEquals(abandonedBefore + 1, state.focus.abandoned)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)
@@ -596,14 +660,15 @@ class MetronomePulseIntegrationTest {
             nowMillis = { 0L },
         )
         val viewModel = MetronomeViewModel(store, haptic, review, DataStorePracticePresetRepository(preferences, { "pulse-test" }, { 0L }))
-        val engine = MetronomeEngine(player, viewModel, haptic, NoopAudioFocusController(), coroutineScope = backgroundScope, timeSource = source)
+        val focus = FakeFocus()
+        val engine = MetronomeEngine(player, viewModel, haptic, focus, coroutineScope = backgroundScope, timeSource = source)
         try {
             runCurrent()
             viewModel.onSliderValueChanged(120f)
             runCurrent()
             engine.start()
             runCurrent()
-            block(Fixture(viewModel, engine, source, player, haptic))
+            block(Fixture(viewModel, engine, source, player, haptic, focus))
         } finally {
             engine.release()
             viewModel.viewModelScope.cancel()
@@ -612,7 +677,17 @@ class MetronomePulseIntegrationTest {
         }
     }
 
-    private data class Fixture(val viewModel: MetronomeViewModel, val engine: MetronomeEngine, val source: InterceptedClock, val player: SubmissionPlayer, val haptic: TestHaptics)
+    private data class Fixture(val viewModel: MetronomeViewModel, val engine: MetronomeEngine, val source: InterceptedClock, val player: SubmissionPlayer, val haptic: TestHaptics, val focus: FakeFocus)
+
+    private class FakeFocus : AudioFocusController {
+        private var listener: ((AudioFocusEvent) -> Unit)? = null
+        var abandoned = 0
+        override fun setOnFocusLost(onLost: () -> Unit) = Unit
+        override fun setOnFocusEvent(listener: (AudioFocusEvent) -> Unit) { this.listener = listener }
+        override fun requestFocus() = true
+        override fun abandonFocus() { abandoned++ }
+        fun fire(event: AudioFocusEvent) { listener?.invoke(event) }
+    }
 
     private class InterceptedClock : TimeSource.WithComparableMarks {
         val time = TestTimeSource()
@@ -627,13 +702,14 @@ class MetronomePulseIntegrationTest {
 
     private class SubmissionPlayer(private val deferred: Boolean, override val warmUpLead: Duration = Duration.ZERO) : MetronomePlayer {
         val beats = mutableListOf<Beat>()
+        val lefts = mutableListOf<Float>()
         var keepAlives = 0
         override fun keepAlive() { keepAlives++ }
         val pending = mutableListOf<() -> Unit>()
         override fun initialize(initialSound: ClickSound) = Unit
-        override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) { beats += beat }
+        override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) { beats += beat; lefts += stereoLeft }
         override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: () -> Unit) {
-            if (deferred) pending += { beats += beat; onSubmitted() } else { beats += beat; onSubmitted() }
+            if (deferred) pending += { beats += beat; lefts += stereoLeft; onSubmitted() } else { beats += beat; lefts += stereoLeft; onSubmitted() }
         }
         fun submit(index: Int) = pending[index]()
         override fun stop() = Unit

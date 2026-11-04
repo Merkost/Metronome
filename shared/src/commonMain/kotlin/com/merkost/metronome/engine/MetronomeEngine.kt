@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.concurrent.Volatile
 import kotlin.time.ComparableTimeMark
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -43,10 +44,21 @@ class MetronomeEngine(
     private var beatCount = 0
     private var barNumber = 0
 
+    @Volatile
+    private var focusGain = 1f
+    private val clockOrigin = timeSource.markNow()
+    private val focusCoordinator = PlaybackFocusCoordinator(
+        isPlaying = { viewModel.metronomeState.value.playing },
+        stop = viewModel::onStopClicked,
+        resume = { viewModel.onPlayPauseClicked(false) },
+        setDuckGain = { focusGain = it },
+        nowMillis = { clockOrigin.elapsedNow().inWholeMilliseconds },
+    )
+
     fun start() {
         val initialSound = viewModel.selectedSound.value
         player.initialize(initialSound)
-        audioFocus.setOnFocusLost { viewModel.onStopClicked() }
+        audioFocus.setOnFocusEvent(focusCoordinator::onEvent)
         job = coroutineScope.launch {
             launch {
                 viewModel.selectedSound.collectLatest { sound ->
@@ -54,6 +66,7 @@ class MetronomeEngine(
                 }
             }
             viewModel.isPlaying.collectLatest { playing ->
+                focusCoordinator.onPlayingChanged(playing)
                 if (playing) {
                     withContext(Dispatchers.Main.immediate) { soundPreview?.stop() }
                     if (!requestPlaybackFocus(audioFocus, viewModel::onStopClicked)) {
@@ -94,7 +107,7 @@ class MetronomeEngine(
                                     delayUntil(timeline.deadline)
                                     viewModel.onCountInTick(remaining)
                                     val stereo = viewModel.currentStereo.value
-                                    val volume = viewModel.clickVolume.value
+                                    val volume = viewModel.clickVolume.value * focusGain
                                     val interval = viewModel.metronomeState.value.beatDuration
                                     val ordinal = pulseOrdinal++
                                     player.play(Beat.HIGH, stereo.first * volume, stereo.second * volume) {
@@ -115,7 +128,7 @@ class MetronomeEngine(
                                 val state = viewModel.metronomeState.value
                                 val beat = phraseBeat(state.beats[index], index, barNumber, viewModel.phraseLength.value)
                                 val stereo = viewModel.currentStereo.value
-                                val volume = viewModel.clickVolume.value
+                                val volume = viewModel.clickVolume.value * focusGain
                                 if (index == 0) viewModel.onBarStarted(barNumber)
                                 val muted = viewModel.isGapBarMuted(barNumber)
                                 val interval = state.beatDuration
@@ -174,7 +187,7 @@ class MetronomeEngine(
                             }
                         }
                 } else {
-                    audioFocus.abandonFocus()
+                    if (!focusCoordinator.waitingToResume) audioFocus.abandonFocus()
                     player.stop()
                     viewModel.beginBeatSession()
                     viewModel.index.update { -1 }
