@@ -37,6 +37,8 @@ import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.pulseOnAppear
 import com.merkost.metronome.ui.pulseOnChange
 import com.merkost.metronome.ui.sheetButtonHeight
+import com.merkost.metronome.model.streakDayLine
+import com.merkost.metronome.model.timerFinishedHeadline
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 
@@ -86,6 +88,7 @@ fun PracticeTimerSheet(
                     stopWhenTimerEnds = stopWhenTimerEnds,
                     onStopWhenTimerEndsChange = onStopWhenTimerEndsChange,
                     stoppedPlayback = stoppedPlayback,
+                    practiceStreak = practiceStreak,
                 )
             } else {
                 ConfigTimerContent(
@@ -226,6 +229,7 @@ internal fun ActiveTimerContent(
     stopWhenTimerEnds: Boolean = false,
     onStopWhenTimerEndsChange: (Boolean) -> Unit = {},
     stoppedPlayback: Boolean = false,
+    practiceStreak: Int = 0,
 ) {
     val done = timerRemaining <= 0L
 
@@ -240,7 +244,7 @@ internal fun ActiveTimerContent(
                 label = "timerHeadline",
             ) { finished ->
                 Text(
-                    text = if (finished) "Time's up" else TimestampMillisecondsFormatter.format(timerRemaining),
+                    text = if (finished) timerFinishedHeadline((timerGoal / 60_000L).toInt()) else TimestampMillisecondsFormatter.format(timerRemaining),
                     style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold),
                     modifier = if (finished) Modifier.pulseOnAppear(peakScale = 1.06f) else Modifier,
                 )
@@ -252,8 +256,8 @@ internal fun ActiveTimerContent(
             ) { (finished, playing) ->
                 Text(
                     text = when {
-                        finished && stoppedPlayback -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced · stopped"
-                        finished -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced"
+                        finished && stoppedPlayback -> "${TimestampMillisecondsFormatter.format(timerGoal)} practised · stopped"
+                        finished -> listOfNotNull("${TimestampMillisecondsFormatter.format(timerGoal)} practised", streakDayLine(practiceStreak)).joinToString(" · ")
                         playing -> "of ${TimestampMillisecondsFormatter.format(timerGoal)}"
                         else -> "paused — counts down while playing"
                     },

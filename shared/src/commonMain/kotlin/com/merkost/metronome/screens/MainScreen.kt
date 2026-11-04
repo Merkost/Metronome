@@ -106,7 +106,10 @@ import com.merkost.metronome.model.beatFlashVisible
 import com.merkost.metronome.model.indicatorCrossfades
 import com.merkost.metronome.model.indicatorStiffnessFor
 import androidx.compose.animation.core.SpringSpec
+import com.merkost.metronome.model.countInWord
+import com.merkost.metronome.model.gapClickResting
 import com.merkost.metronome.model.gapStripState
+import com.merkost.metronome.model.tempoMarking
 import com.merkost.metronome.model.phraseBarLabel
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
@@ -555,6 +558,14 @@ fun MainScreen(
                                     onClick = viewModel::onSliderValueDecreased
                                 )
                                 val countingIn = countInRemaining > 0
+                                val clickResting = gapClickResting(
+                                    gapActive = gapTrainerConfig != null,
+                                    currentBar = currentBar,
+                                    startBar = gapTrainerStartBar,
+                                    muted = viewModel.isGapBarMuted(currentBar),
+                                    isPlaying = isPlaying,
+                                    countInRemaining = countInRemaining,
+                                )
                                 Column(
                                     modifier = Modifier.weight(1f)
                                         .semantics { contentDescription = "Tempo ${metronomeState.rhythm} BPM. Enter exact tempo" }
@@ -564,18 +575,35 @@ fun MainScreen(
                                         ),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                 ) {
-                                    AnimatedNumberText(
-                                        value = if (countingIn) countInRemaining else metronomeState.rhythm,
-                                        style = MaterialTheme.typography.displayLarge.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                            fontSize = tempoDisplaySize,
-                                        ),
-                                        color = if (countingIn) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        autoSize = TextAutoSize.StepBased(30.sp, tempoDisplaySize),
+                                    val tempoStyle = MaterialTheme.typography.displayLarge.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = tempoDisplaySize,
                                     )
+                                    if (countingIn || clickResting) {
+                                        Text(
+                                            text = if (countingIn) countInWord(countInRemaining) else "Listen",
+                                            style = tempoStyle,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            textAlign = TextAlign.Center,
+                                            maxLines = 1,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            autoSize = TextAutoSize.StepBased(30.sp, tempoDisplaySize),
+                                        )
+                                    } else {
+                                        AnimatedNumberText(
+                                            value = metronomeState.rhythm,
+                                            style = tempoStyle,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            autoSize = TextAutoSize.StepBased(30.sp, tempoDisplaySize),
+                                        )
+                                    }
                                     Text(
-                                        text = if (countingIn) "Count in" else "BPM",
+                                        text = when {
+                                            countingIn -> "${metronomeState.rhythm} BPM · ${tempoMarking(metronomeState.rhythm)}"
+                                            clickResting -> "The click is resting. Keep the pulse."
+                                            else -> "BPM · ${tempoMarking(metronomeState.rhythm)}"
+                                        },
                                         style = MaterialTheme.typography.labelLarge,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )

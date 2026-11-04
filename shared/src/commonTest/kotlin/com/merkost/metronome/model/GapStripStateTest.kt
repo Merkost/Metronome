@@ -67,4 +67,14 @@ class GapStripStateTest {
         assertEquals("Gap trainer, new cycle next bar", state(currentBar = 2, startBar = 3).description)
         assertEquals("Gap trainer, paused", state(currentBar = 0, isPlaying = false).description)
     }
+
+    @Test
+    fun clickRestsOnlyWhilePlayingInASilentBarOfTheCycle() {
+        assertTrue(gapClickResting(true, currentBar = 5, startBar = 3, muted = true, isPlaying = true, countInRemaining = 0))
+        assertFalse(gapClickResting(false, currentBar = 5, startBar = 3, muted = true, isPlaying = true, countInRemaining = 0))
+        assertFalse(gapClickResting(true, currentBar = 5, startBar = 3, muted = false, isPlaying = true, countInRemaining = 0))
+        assertFalse(gapClickResting(true, currentBar = 5, startBar = 3, muted = true, isPlaying = false, countInRemaining = 0))
+        assertFalse(gapClickResting(true, currentBar = 5, startBar = 3, muted = true, isPlaying = true, countInRemaining = 2))
+        assertFalse(gapClickResting(true, currentBar = 2, startBar = 3, muted = true, isPlaying = true, countInRemaining = 0))
+    }
 }

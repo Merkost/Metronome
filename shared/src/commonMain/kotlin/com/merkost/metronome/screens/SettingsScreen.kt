@@ -57,6 +57,7 @@ import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.theme.AppColorScheme
+import com.merkost.metronome.model.practiceSummaryLine
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -82,6 +83,7 @@ internal data class SettingsUiState(
     val supportsHaptics: Boolean = true,
     val version: String = "",
     val previewError: String? = null,
+    val practiceSummary: String? = null,
 )
 
 internal data class SettingsActions(
@@ -222,6 +224,7 @@ fun SettingsScreen(upPress: () -> Unit) {
             supportsHaptics = !desktop,
             version = version,
             previewError = previewError,
+            practiceSummary = practiceSummaryLine(totalTime, practiceStreak),
         ),
         actions = SettingsActions(
             onColorScheme = viewModel::onColorSchemeChanged,
@@ -286,6 +289,13 @@ internal fun SettingsScreenContent(
                     .padding(bottom = spacingLarge),
                 verticalArrangement = Arrangement.spacedBy(spacingMedium),
             ) {
+                state.practiceSummary?.let { summary ->
+                    Text(
+                        summary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 SettingsSoundPanel(state, actions)
                 SettingsAppearancePanel(state, actions)
                 SettingsDisclosure(
