@@ -59,6 +59,21 @@ class WhatsNewCoordinatorTest {
     }
 
     @Test
+    fun upgradingFrom140Shows150HighlightsOnce() = runTest {
+        val store = InMemoryPreferencesDataStore()
+        val datastore = AppDatastoreImpl(store)
+        datastore.saveOnboardingComplete(true)
+        datastore.saveLastSeenReleaseVersion("1.4.0")
+        val coordinator = coordinator(store, version = "1.5.0")
+
+        assertTrue(coordinator.shouldShow())
+        coordinator.markSeen()
+
+        assertFalse(coordinator.shouldShow())
+        assertEquals("1.5.0", datastore.lastSeenReleaseVersion.first())
+    }
+
+    @Test
     fun anUnknownVersionNeverShowsTheSheet() = runTest {
         val store = InMemoryPreferencesDataStore()
         val coordinator = coordinator(store, version = null)

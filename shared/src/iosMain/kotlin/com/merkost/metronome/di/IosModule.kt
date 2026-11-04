@@ -12,6 +12,10 @@ import com.merkost.metronome.platform.HapticProviderIos
 import com.merkost.metronome.platform.IosAppVersionProvider
 import com.merkost.metronome.platform.IosAudioFocusController
 import com.merkost.metronome.platform.IosPlatformActions
+import com.merkost.metronome.platform.AudioOutputStatus
+import com.merkost.metronome.platform.IosMotionPreferences
+import com.merkost.metronome.platform.MotionPreferences
+import com.merkost.metronome.platform.IosAudioOutputStatus
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.createDataStore
 import org.koin.core.qualifier.named
@@ -22,6 +26,8 @@ val iosModule = module {
     single { createDataStore() }
     single<MetronomePlayer> { MetronomePlayerIos() }
     single<MetronomePlayer>(named("soundPreview")) { MetronomePlayerIos() }
+    single<AudioOutputStatus> { IosAudioOutputStatus() }
+    single<MotionPreferences> { IosMotionPreferences() }
     single<PlatformActions> { IosPlatformActions() }
     single<AppVersionProvider> { IosAppVersionProvider() }
     single<HapticProvider> { HapticProviderIos() }

@@ -1,5 +1,7 @@
 package com.merkost.metronome.di
 
+import com.merkost.metronome.platform.WasmMotionPreferences
+import com.merkost.metronome.platform.MotionPreferences
 import com.merkost.metronome.engine.MetronomePlayer
 import com.merkost.metronome.engine.MetronomePlayerWasm
 import com.merkost.metronome.logging.ReleaseLogTreeProvider
@@ -27,6 +29,7 @@ val wasmJsModule = module {
     single<PlatformActions> { WasmPlatformActions() }
     single<AppVersionProvider> { WasmAppVersionProvider() }
     single<HapticProvider> { HapticProviderWasm() }
+    single<MotionPreferences> { WasmMotionPreferences() }
     single<AudioFocusController> { NoopAudioFocusController() }
     single<AudioFocusController>(named("soundPreview")) { NoopAudioFocusController() }
     single<LiveActivityController> { WasmLiveActivityController() }

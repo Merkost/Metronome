@@ -1,0 +1,13 @@
+{
+  "source": "/private/tmp/MetronomeMacBuild/gradle-home/caches/modules-2/files-2.1/org.jetbrains.skiko/skiko-awt-runtime-macos-arm64/0.150.1/22e0f09cd9c161686d6fba382e82fd9dd18ed919/skiko-awt-runtime-macos-arm64-0.150.1.jar",
+  "sourceSha256": "bd186dd6bf8736eb69be190107e1b3ab7bd2452ae917faaa516ef513217a5f33",
+  "prepared": "/private/tmp/metronome-skiko-preparation-check/skiko-awt-runtime-macos-arm64-0.150.1.jar",
+  "preparedSha256": "922475a07d31139375a0322f4322378467ed2e9a00e18d619551688271bb8c73",
+  "retainedRenderer": "libskiko-macos-arm64.dylib",
+  "retainedRendererSha256": "4b22275236c861e1288750f3022a5851440f1ba7dec227e6d428b5ee0899175a",
+  "removedEntries": [
+    "libskiko-macos-x64.dylib",
+    "libskiko-macos-x64.dylib.sha256"
+  ],
+  "stage": "Dependency preparation before Compose renderer extraction and code signing"
+}

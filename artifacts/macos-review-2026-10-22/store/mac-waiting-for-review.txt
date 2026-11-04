@@ -1,0 +1,109 @@
+Window: "App Store Connect", App: Google Chrome.
+0 standard window App Store Connect - Google Chrome - Konstantin (Merkost), Secondary Actions: Raise, URL: appstoreconnect.apple.com/apps/6761737690/distribution/reviewsubmissions/details/d8f0ecac-ab77-4fae-b2df-80b49ddde8f1
+	1 container App Store Connect - Google Chrome - Konstantin (Merkost), URL: appstoreconnect.apple.com/apps/6761737690/distribution/reviewsubmissions/details/d8f0ecac-ab77-4fae-b2df-80b49ddde8f1
+		2 container
+			3 toolbar
+				4 button Back
+				5 button (disabled) Forward
+				6 button Reload
+				7 container
+					8 pop up button View site information
+					9 text field (settable) Address and search bar, Placeholder: Search Google or type a URL, Value: appstoreconnect.apple.com/apps/6761737690/distribution/reviewsubmissions/details/d8f0ecac-ab77-4fae-b2df-80b49ddde8f1
+					10 button Install App Store Connect
+					11 button Bookmark this tab
+				12 pop up button Extensions
+				13 button Konstantin (Merkost)
+				14 pop up button Chrome
+			15 container
+				16 scroll area
+					17 HTML content App Store Connect, URL: appstoreconnect.apple.com/apps/6761737690/distribution/reviewsubmissions/details/d8f0ecac-ab77-4fae-b2df-80b49ddde8f1
+						18 container
+							19 container App Store Connect
+								20 container
+									21 heading App Store Connect, Value: 1
+										22 link App Store Connect, Value: appstoreconnect.apple.com/
+									23 container Global
+										24 content list
+											25 link Apps, Value: appstoreconnect.apple.com/apps
+											26 link Xcode Cloud, Value: appstoreconnect.apple.com/teams/52373690-e1e4-482b-afd5-97b8a412aae1/xcode-cloud
+											27 link Trends, Value: appstoreconnect.apple.com/trends
+											28 link Reports, Value: appstoreconnect.apple.com/itc/payments_and_financial_reports
+											29 link Business, Value: appstoreconnect.apple.com/business
+											30 link Users and Access, Value: appstoreconnect.apple.com/access/users
+									31 button Konstantin Merenkov Konstantin Merenkov Account name menu
+							32 container
+							33 container
+								34 pop up button Apps menu, Metronome: Practice & Tempo, selected
+									35 container
+										36 image Metronome: Practice & Tempo
+										37 text Metronome: Practice & Tempo
+									38 image
+								39 container Apps
+									40 content list
+										41 link Distribution, Value: appstoreconnect.apple.com/apps/6761737690/distribution
+										42 link Analytics, Value: appstoreconnect.apple.com/apps/6761737690/analytics
+										43 link TestFlight, Value: appstoreconnect.apple.com/teams/52373690-e1e4-482b-afd5-97b8a412aae1/apps/6761737690/testflight
+							44 container
+								45 container
+									46 link App Review, Value: appstoreconnect.apple.com/apps/6761737690/distribution/reviewsubmissions
+									47 heading macOS Submission, Value: 2
+										48 text macOS Submission
+									49 image
+									50 text Waiting for Review
+									51 heading Items Submitted (1), Value: 3
+										52 text Items Submitted (1)
+									53 table
+										54 row
+											55 column header
+												56 text ITEM
+											57 column header
+												58 text TYPE
+											59 column header
+												60 text REVIEW STATUS
+											61 column header
+										62 row
+											63 cell
+												64 image App Icon
+												65 text macOS App 1.5.0
+												66 link 1.5.0 (1), Value: appstoreconnect.apple.com/apps/6761737690/testflight/macos/7b4d96ec-3a00-41f0-9216-ff867ee62dba/metadata
+											67 cell
+												68 text App Version
+											69 cell
+												70 text Waiting for Review
+									71 text Date Submitted Oct 22, 2026 at 10:17 PM Submission ID d8f0ecac-ab77-4fae-b2df-80b49ddde8f1 Submitted By Konstantin Merenkov
+									72 button Cancel Submission
+							73 content list
+								74 link App Store Connect, Value: appstoreconnect.apple.com/apps
+							75 content list
+								76 container
+									77 text Copyright © 2026 Apple Inc. All rights reserved. |
+								78 container
+									79 link Terms of Service, Value: appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/wa/termsOfService
+									80 text |
+								81 container
+									82 link Privacy Policy, Value: apple.com/legal/privacy
+									83 text |
+								84 link Contact Us, Value: appstoreconnect.apple.com/contact-us
+			85 pop up button Tab search
+			86 container
+				87 tab group
+					88 tab (selected, settable, boolean) App Store Connect - Memory usage - 257 MB, Value: on
+						89 button Close
+			90 button New Tab
+			91 button Open Gemini in Chrome
+	92 close button
+	93 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	94 minimize button
+95 menu bar
+	96 Chrome
+	97 File
+	98 Edit
+	99 View
+	100 History
+	101 Bookmarks
+	102 Profiles
+	103 Tab
+	104 Window
+	105 Help
+
+The focused UI element is 17 HTML content App Store Connect, URL: appstoreconnect.apple.com/apps/6761737690/distribution/reviewsubmissions/details/d8f0ecac-ab77-4fae-b2df-80b49ddde8f1

@@ -1,0 +1,46 @@
+{
+  "version": "1.5.0",
+  "build": "1",
+  "bundleIdentifier": "com.merkost.metronome",
+  "team": "P47X2292CM",
+  "archivePath": "artifacts/releases/1.5.0/macos/Metronome-1.5.0-1.xcarchive",
+  "archiveBuildSucceeded": true,
+  "verifiedArchiveApp": true,
+  "independentPayloadComparisonPassed": true,
+  "organizerArchiveType": "macOS App Archive",
+  "uploadSummary": {
+    "profile": null,
+    "architectures": [
+      "arm64"
+    ],
+    "certificate": "Mac App Distribution",
+    "symbolsIncluded": true,
+    "manageVersionAndBuildNumber": false,
+    "entitlements": [
+      "com.apple.security.app-sandbox",
+      "com.apple.security.cs.allow-jit",
+      "com.apple.security.files.user-selected.read-write"
+    ]
+  },
+  "uploadStarted": true,
+  "uploadAccepted": true,
+  "status": "UPLOAD_COMPLETED_WITH_WARNINGS",
+  "updatedAt": "2026-10-22T11:16:50.323615+00:00",
+  "evidence": [
+    "xcode-mac-archive.jpg",
+    "xcode-upload-summary.jpg",
+    "xcode-upload-completed.jpg",
+    "xcode-upload-completed.txt"
+  ],
+  "warnings": [
+    "Profileless production build is not eligible for TestFlight.",
+    "dSYM files were not provided for the launcher, Skiko and bundled Java runtime. Native crash symbolication is limited."
+  ],
+  "exportedPackage": "Metronome-Mac-1.5.0-1-upload/Metronome.pkg",
+  "exportedPackageSha256": "d89eff4de1ddaa5423e4a0e9a9711d80827e96ab949d47ee714fc253a1658273",
+  "exportedPackageBytes": 76138858,
+  "appStoreBuildId": "7b4d96ec-3a00-41f0-9216-ff867ee62dba",
+  "processedByAppStoreConnect": true,
+  "submissionId": "d8f0ecac-ab77-4fae-b2df-80b49ddde8f1",
+  "submissionStatus": "WAITING_FOR_REVIEW"
+}

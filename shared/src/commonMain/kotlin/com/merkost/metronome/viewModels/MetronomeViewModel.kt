@@ -17,13 +17,20 @@ import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.SavedTempo
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.model.Subdivision
+import com.merkost.metronome.model.TempoStepMode
+import com.merkost.metronome.model.gapCycleStepDue
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.platform.AudioOutputStatus
 import com.merkost.metronome.platform.HapticProvider
+import com.merkost.metronome.platform.UnknownAudioOutputStatus
+import com.merkost.metronome.model.NoSoundHint
+import com.merkost.metronome.model.noSoundHint
 import com.merkost.metronome.platform.currentTimeMillis
 import com.merkost.metronome.presets.ActivePresetTracker
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.presets.PracticePresetRepository
 import com.merkost.metronome.presets.applyPracticePreset
+import com.merkost.metronome.practiceSets.PracticePlaybackIntent
 import com.merkost.metronome.practiceSets.PracticeSessionCommand
 import com.merkost.metronome.practiceSets.PracticeSessionController
 import com.merkost.metronome.practiceSets.PracticeSessionFinishReason
@@ -36,8 +43,11 @@ import com.merkost.metronome.practiceSets.recordPracticeCompletion
 import com.merkost.metronome.review.ReviewPromptCoordinator
 import com.merkost.metronome.whatsnew.WhatsNewCoordinator
 import com.merkost.metronome.review.ReviewPromptSnapshot
+import kotlin.concurrent.Volatile
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +57,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -57,9 +68,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.seconds
 
+
+private val TEMPO_TRAINER_NOTICE_MIN = 2.seconds
 
 class MetronomeViewModel(
     private val appDatastore: AppDatastore,
@@ -69,6 +85,8 @@ class MetronomeViewModel(
     private val practiceSessionController: PracticeSessionController? = null,
     private val practiceSetRepository: PracticeSetRepository? = null,
     private val whatsNewCoordinator: WhatsNewCoordinator? = null,
+    private val nowMillis: () -> Long = ::currentTimeMillis,
+    private val audioOutputStatus: AudioOutputStatus = UnknownAudioOutputStatus,
 ) : ViewModel() {
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
@@ -85,8 +103,8 @@ class MetronomeViewModel(
     val keepScreenAwake = appDatastore.keepScreenAwake
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    val countInEnabled = appDatastore.countInEnabled
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private val _countInEnabled = MutableStateFlow(false)
+    val countInEnabled: StateFlow<Boolean> = _countInEnabled.asStateFlow()
 
     val beatDisplayStyle = appDatastore.beatDisplayStyle
         .stateIn(viewModelScope, SharingStarted.Eagerly, BeatDisplayStyle.DOTS)
@@ -94,6 +112,12 @@ class MetronomeViewModel(
     private val _countInRemaining = MutableStateFlow(0)
     val countInRemaining: StateFlow<Int> = _countInRemaining
     private var suppressReviewForCurrentPause = false
+    private var applicationExitRequested = false
+    private val applicationExitMutex = Mutex()
+    private val practiceTimeMutex = Mutex()
+    private val timerPaused = MutableStateFlow(false)
+    private var sessionBaseMillis = 0L
+    private var quietPauseReviewJob: Job? = null
 
     private val activePresetTracker = ActivePresetTracker()
     val activePresetState = activePresetTracker.state
@@ -180,24 +204,25 @@ class MetronomeViewModel(
 
     fun completeOnboarding(bpm: Int, sound: ClickSound, startPlaying: Boolean) {
         if (!mutableOnboardingLoaded.value || mutableOnboardingSaving.value || !mutableOnboardingVisible.value) return
+        if (!acceptPlaybackRequest()) return
         mutableOnboardingSaving.value = true
         mutableOnboardingError.value = null
         allowPlaybackAfterOnboarding = startPlaying
         viewModelScope.launch {
             try {
-                appDatastore.saveSelectedSound(sound)
+                if (sound != mutableOnboardingInitialSound.value) appDatastore.saveSelectedSound(sound)
                 appDatastore.saveOnboardingComplete(true)
                 _metronomeState.update {
                     it.copy(
                         rhythm = bpm.coerceIn(metronomeMinimum, metronomeMaximum),
-                        playing = startPlaying && allowPlaybackAfterOnboarding,
+                        playing = startPlaying && allowPlaybackAfterOnboarding && !applicationExitRequested,
                     )
                 }
                 mutableOnboardingVisible.value = false
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                mutableOnboardingError.value = "Couldn’t save your setup. Please try again."
+                mutableOnboardingError.value = "Couldn’t finish the welcome. Please try again."
             } finally {
                 mutableOnboardingSaving.value = false
             }
@@ -227,6 +252,7 @@ class MetronomeViewModel(
     fun onCountInChanged(enabled: Boolean) {
         viewModelScope.launch {
             try {
+                _countInEnabled.value = enabled
                 appDatastore.saveCountInEnabled(enabled)
             } catch (error: CancellationException) {
                 throw error
@@ -264,6 +290,27 @@ class MetronomeViewModel(
         }
     }
 
+    suspend fun prepareForApplicationExit() {
+        applicationExitMutex.withLock {
+            applicationExitRequested = true
+            allowPlaybackAfterOnboarding = false
+            suppressReviewForCurrentPause = true
+            pendingAfterSessionFinish = null
+            quietPauseReviewJob?.cancelAndJoin()
+            quietPauseReviewJob = null
+            _metronomeState.update { it.copy(playing = false) }
+            practiceSessionController?.let { controller ->
+                controller.pause()
+                check(!controller.state.value.persistenceWarning || controller.retryPersistence()) {
+                    "Couldn’t save your practice session. Please try again."
+                }
+            }
+            metronomeState.first { !it.playing }
+            timerPaused.first { it }
+            persistPracticeTime()
+        }
+    }
+
     fun pauseForPresetManagement() {
         if (!_metronomeState.value.playing) return
         suppressReviewForCurrentPause = true
@@ -297,19 +344,38 @@ class MetronomeViewModel(
         }
     }
 
-    private var sessionBaseMillis = 0L
+    private suspend fun persistPracticeTime(): Long = practiceTimeMutex.withLock {
+        withContext(NonCancellable) {
+            val elapsed = metronomeState.value.stopWatchState.elapsedTime.coerceAtLeast(sessionBaseMillis)
+            val delta = elapsed - sessionBaseMillis
+            if (delta > 0L) appDatastore.addTotalTime(delta)
+            sessionBaseMillis = elapsed
+            elapsed
+        }
+    }
+
+    private fun acceptPlaybackRequest(): Boolean {
+        if (applicationExitMutex.isLocked) return false
+        applicationExitRequested = false
+        return true
+    }
 
     private suspend fun startTimerCoroutine() {
         isPlaying.collectLatest { isPlaying ->
-            if (isPlaying) {
-                val beginTimeMillis = currentTimeMillis()
+            quietPauseReviewJob?.cancel()
+            quietPauseReviewJob = null
+            val shouldPlay = isPlaying && !applicationExitRequested
+            timerPaused.value = !shouldPlay
+            if (shouldPlay) {
+                val beginTimeMillis = nowMillis()
+                val resumedElapsedMillis = metronomeState.value.stopWatchState.elapsedTime.coerceAtLeast(sessionBaseMillis)
                 var lastProgressMillis = beginTimeMillis
                 while (true) {
-                    val now = currentTimeMillis()
+                    val now = nowMillis()
                     _metronomeState.update {
                         it.copy(
                             stopWatchState = StopWatchState(
-                                beginTimeMillis, sessionBaseMillis + now - beginTimeMillis
+                                beginTimeMillis, resumedElapsedMillis + now - beginTimeMillis
                             )
                         )
                     }
@@ -321,26 +387,33 @@ class MetronomeViewModel(
                     delay(1000)
                 }
             } else {
-                val elapsed = metronomeState.value.stopWatchState.elapsedTime
-                appDatastore.addTotalTime(elapsed - sessionBaseMillis)
-                sessionBaseMillis = elapsed
-                if (suppressReviewForCurrentPause) {
+                val elapsed = try {
+                    persistPracticeTime()
+                } catch (error: CancellationException) {
+                    throw error
+                } catch (error: Exception) {
+                    mutableSoundSelectionError.value = "Couldn’t save your practice time. Please try again."
+                    return@collectLatest
+                }
+                if (suppressReviewForCurrentPause || applicationExitRequested) {
                     suppressReviewForCurrentPause = false
                 } else {
-                    reviewPromptCoordinator.requestAfterQuietPause {
-                        ReviewPromptSnapshot(
-                            totalPracticeMillis = appDatastore.totalTime.first(),
-                            sessionPracticeMillis = elapsed,
-                            isPlaying = metronomeState.value.playing,
-                            hasActiveTimer = practiceTimerGoal.value != null,
-                            hasActiveTempoTrainer = gradualTempoConfig.value != null,
-                            hasActiveGapTrainer = gapTrainerConfig.value != null,
-                            hasActivePracticeSession = practiceSessionState.value.session != null,
-                            isTimerSheetVisible = timerSheetVisible,
-                            isTempoSheetVisible = tempoSheetVisible || companionSheetVisible,
-                            isOnboardingVisible = !onboardingLoaded.value || onboardingVisible.value,
-                            isPresetManagementVisible = presetManagementVisible,
-                        )
+                    quietPauseReviewJob = viewModelScope.launch {
+                        reviewPromptCoordinator.requestAfterQuietPause {
+                            ReviewPromptSnapshot(
+                                totalPracticeMillis = appDatastore.totalTime.first(),
+                                sessionPracticeMillis = elapsed,
+                                isPlaying = metronomeState.value.playing,
+                                hasActiveTimer = practiceTimerGoal.value != null,
+                                hasActiveTempoTrainer = gradualTempoConfig.value != null,
+                                hasActiveGapTrainer = gapTrainerConfig.value != null,
+                                hasActivePracticeSession = practiceSessionState.value.session != null,
+                                isTimerSheetVisible = timerSheetVisible,
+                                isTempoSheetVisible = tempoSheetVisible || companionSheetVisible,
+                                isOnboardingVisible = !onboardingLoaded.value || onboardingVisible.value,
+                                isPresetManagementVisible = presetManagementVisible,
+                            )
+                        }
                     }
                 }
             }
@@ -349,8 +422,11 @@ class MetronomeViewModel(
 
 
     fun onPlayPauseClicked(isPlaying: Boolean) {
+        if (!acceptPlaybackRequest()) return
+        if (!isPlaying) _audioUnavailable.value = false
         if (practiceSessionState.value.session != null) {
             viewModelScope.launch {
+                if (applicationExitRequested) return@launch
                 if (isPlaying) practiceSessionController?.pause() else practiceSessionController?.resume()
             }
         } else {
@@ -418,9 +494,13 @@ class MetronomeViewModel(
     }
 
     fun onBallClicked(index: Int, beat: Beat) {
+        setBeat(index, beat.next())
+    }
+
+    fun setBeat(index: Int, beat: Beat) {
+        if (_metronomeState.value.beats.getOrNull(index) == beat) return
         markConfigurationEdited()
-        val newBeat = beat.next()
-        _metronomeState.update { it.copy(beats = it.beats.toMutableList().apply { set(index, newBeat) }) }
+        _metronomeState.update { it.copy(beats = it.beats.toMutableList().apply { set(index, beat) }) }
     }
 
     fun onTimeSignatureChanged(ts: TimeSignature) {
@@ -490,11 +570,56 @@ class MetronomeViewModel(
         activePresetTracker.removed(id)
     }
 
+    private val _audioUnavailable = MutableStateFlow(false)
+    val audioUnavailable: StateFlow<Boolean> = _audioUnavailable.asStateFlow()
+
+    fun onAudioUnavailable() {
+        if (!_metronomeState.value.playing) return
+        _audioUnavailable.value = true
+        onStopClicked()
+    }
+
+    fun dismissAudioUnavailable() {
+        _audioUnavailable.value = false
+    }
+
+    private val _noSoundHint = MutableStateFlow<NoSoundHint?>(null)
+    val noSoundHint: StateFlow<NoSoundHint?> = _noSoundHint.asStateFlow()
+
+    val canShowVolumeControls: Boolean get() = audioOutputStatus.canShowVolumeControls
+
+    fun showVolumeControls() {
+        audioOutputStatus.showVolumeControls()
+    }
+
+    private val _tempoTrainerStoppedNotice = MutableStateFlow(false)
+    val tempoTrainerStoppedNotice: StateFlow<Boolean> = _tempoTrainerStoppedNotice.asStateFlow()
+    private var tempoTrainerNoticeJob: Job? = null
+
+    private fun showTempoTrainerStoppedNotice() {
+        tempoTrainerNoticeJob?.cancel()
+        _tempoTrainerStoppedNotice.value = true
+        val state = _metronomeState.value
+        val hold = maxOf(state.beatDuration * state.beats.size, TEMPO_TRAINER_NOTICE_MIN)
+        tempoTrainerNoticeJob = viewModelScope.launch {
+            delay(hold)
+            _tempoTrainerStoppedNotice.value = false
+        }
+    }
+
+    private fun clearTempoTrainerStoppedNotice() {
+        tempoTrainerNoticeJob?.cancel()
+        tempoTrainerNoticeJob = null
+        _tempoTrainerStoppedNotice.value = false
+    }
+
     private fun commitPracticePreset(preset: PracticePreset) {
+        val hadTempoTrainer = _gradualTempoConfig.value != null
         stopGradualTempo()
-        stopGapTrainer()
         _metronomeState.update { it.applyPracticePreset(preset) }
+        if (hadTempoTrainer) showTempoTrainerStoppedNotice()
         index.value = -1
+        _countInEnabled.value = preset.countInEnabled
         viewModelScope.launch {
             appDatastore.saveTimeSignature(preset.timeSignature)
             appDatastore.saveSubdivision(preset.subdivision)
@@ -505,6 +630,20 @@ class MetronomeViewModel(
 
     val lastTimerMinutes = appDatastore.lastTimerMinutes
         .stateIn(viewModelScope, SharingStarted.Eagerly, 15)
+
+    val stopWhenTimerEnds = appDatastore.stopWhenTimerEnds
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun onStopWhenTimerEndsChanged(enabled: Boolean) {
+        viewModelScope.launch { appDatastore.saveStopWhenTimerEnds(enabled) }
+    }
+
+    val phraseLength: StateFlow<Int> = appDatastore.phraseLength
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
+    fun onPhraseLengthChanged(bars: Int) {
+        viewModelScope.launch { appDatastore.savePhraseLength(bars) }
+    }
 
     val lastTrainerConfig = appDatastore.lastTrainerConfig
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -517,11 +656,15 @@ class MetronomeViewModel(
     private var practiceTimerDoneJob: Job? = null
 
     fun startPracticeTimer(minutes: Int) {
+        if (!acceptPlaybackRequest()) return
         viewModelScope.launch { appDatastore.saveLastTimerMinutes(minutes) }
         beginPracticeTimer(minutes)
     }
 
     private fun beginPracticeTimer(minutes: Int) {
+        if (!acceptPlaybackRequest()) return
+        pendingStopAtBarEnd = false
+        _practiceTimerStoppedPlayback.value = false
         practiceTimerJob?.cancel()
         practiceTimerDoneJob?.cancel()
         val goalMs = minutes * 60_000L
@@ -539,17 +682,25 @@ class MetronomeViewModel(
                 if (hapticEnabled.value) {
                     hapticProvider.playConfirmHaptic()
                 }
+                if (stopWhenTimerEnds.value && practiceSessionState.value.session == null) {
+                    pendingStopAtBarEnd = true
+                }
                 practiceTimerDoneJob = viewModelScope.launch {
                     delay(8000L)
                     if (timerSheetVisible) {
                         timerAutoDismissPending = true
                     } else {
-                        dismissPracticeTimer()
+                        dismissPracticeTimer(cancelPendingStop = false)
                     }
                 }
             }
         }
     }
+
+    private var pendingStopAtBarEnd = false
+
+    private val _practiceTimerStoppedPlayback = MutableStateFlow(false)
+    val practiceTimerStoppedPlayback: StateFlow<Boolean> = _practiceTimerStoppedPlayback.asStateFlow()
 
     private var timerSheetVisible = false
     private var timerAutoDismissPending = false
@@ -558,7 +709,7 @@ class MetronomeViewModel(
         timerSheetVisible = visible
         if (!visible && timerAutoDismissPending) {
             timerAutoDismissPending = false
-            dismissPracticeTimer()
+            dismissPracticeTimer(cancelPendingStop = false)
         }
     }
 
@@ -579,7 +730,9 @@ class MetronomeViewModel(
         beginPracticeTimer((goal / 60_000L).toInt().coerceAtLeast(1))
     }
 
-    fun dismissPracticeTimer() {
+    fun dismissPracticeTimer(cancelPendingStop: Boolean = true) {
+        if (cancelPendingStop) pendingStopAtBarEnd = false
+        _practiceTimerStoppedPlayback.value = false
         practiceTimerJob?.cancel()
         practiceTimerJob = null
         practiceTimerDoneJob?.cancel()
@@ -596,7 +749,9 @@ class MetronomeViewModel(
     private var gradualTempoDismissJob: Job? = null
 
     fun startGradualTempo(config: GradualTempoConfig) {
+        if (!acceptPlaybackRequest()) return
         markConfigurationEdited()
+        clearTempoTrainerStoppedNotice()
         gradualTempoDismissJob?.cancel()
         gradualTempoDismissJob = null
         _gradualTempoConfig.value = config
@@ -639,27 +794,54 @@ class MetronomeViewModel(
         }
     }
 
-    fun incrementGradualTempo() {
+    fun incrementGradualTempo(completedBars: Int) {
         val config = _gradualTempoConfig.value ?: return
         _gradualTempoCurrentBar.update { it + 1 }
         val currentBar = _gradualTempoCurrentBar.value
-        if (currentBar > 0 && currentBar % config.barsPerStep == 0) {
-            val newBpm = config.nextBpmFrom(_metronomeState.value.rhythm)
-            _metronomeState.update { it.copy(rhythm = newBpm) }
-            if (config.isComplete(newBpm) && gradualTempoDismissJob == null) {
-                if (hapticEnabled.value) {
-                    hapticProvider.playConfirmHaptic()
-                }
-                gradualTempoDismissJob = viewModelScope.launch {
-                    delay(5000)
-                    if (tempoSheetVisible) {
-                        trainerAutoDismissPending = true
-                    } else {
-                        stopGradualTempo()
-                    }
+        val barCountDue = currentBar > 0 && currentBar % config.barsPerStep == 0
+        val stepDue = when (config.stepMode) {
+            TempoStepMode.MANUAL -> false
+            TempoStepMode.BARS -> barCountDue
+            TempoStepMode.GAP_CYCLE -> {
+                val plan = gapPlan
+                if (plan == null) barCountDue else gapCycleStepDue(completedBars, plan.startBar, plan.config.cycleBars)
+            }
+        }
+        if (!stepDue) return
+        val newBpm = config.nextBpmFrom(_metronomeState.value.rhythm)
+        _metronomeState.update { it.copy(rhythm = newBpm) }
+        if (config.isComplete(newBpm) && gradualTempoDismissJob == null) {
+            if (hapticEnabled.value) {
+                hapticProvider.playConfirmHaptic()
+            }
+            gradualTempoDismissJob = viewModelScope.launch {
+                delay(5000)
+                if (tempoSheetVisible) {
+                    trainerAutoDismissPending = true
+                } else {
+                    stopGradualTempo()
                 }
             }
         }
+    }
+
+    fun stepTempoTrainerForward() {
+        val config = _gradualTempoConfig.value ?: return
+        if (config.stepMode != TempoStepMode.MANUAL) return
+        val before = _metronomeState.value.rhythm
+        if (config.isComplete(before)) return
+        val newBpm = config.nextBpmFrom(before)
+        _metronomeState.update { it.copy(rhythm = newBpm) }
+        if (config.isComplete(newBpm) && hapticEnabled.value) {
+            hapticProvider.playConfirmHaptic()
+        }
+    }
+
+    fun stepTempoTrainerBack() {
+        val config = _gradualTempoConfig.value ?: return
+        if (config.stepMode != TempoStepMode.MANUAL) return
+        val newBpm = config.previousBpmFrom(_metronomeState.value.rhythm)
+        _metronomeState.update { it.copy(rhythm = newBpm) }
     }
 
     private val _gapTrainerConfig = MutableStateFlow<GapTrainerConfig?>(null)
@@ -674,40 +856,79 @@ class MetronomeViewModel(
     val lastGapConfig = appDatastore.lastGapConfig
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    fun startGapTrainer(config: GapTrainerConfig) {
+    private class GapPlan(val config: GapTrainerConfig, val startBar: Int, val leadInMuted: Boolean)
+
+    @Volatile
+    private var gapPlan: GapPlan? = null
+
+    @Volatile
+    private var currentBarStarted = false
+
+    fun isGapBarMuted(barNumber: Int): Boolean {
+        val plan = gapPlan ?: return false
+        val gapBar = barNumber - plan.startBar
+        return if (gapBar < 0) plan.leadInMuted else plan.config.isMuted(gapBar)
+    }
+
+    private fun rebaseGapTrainer(config: GapTrainerConfig) {
+        val playing = _metronomeState.value.playing
+        val mutedNow = playing && isGapBarMuted(_currentBar.value)
+        val startBar = when {
+            !playing -> 0
+            currentBarStarted -> _currentBar.value + 1
+            else -> _currentBar.value
+        }
+        gapPlan = GapPlan(config, startBar, mutedNow)
         _gapTrainerConfig.value = config
-        _gapTrainerStartBar.value = _currentBar.value
+        _gapTrainerStartBar.value = startBar
+    }
+
+    fun startGapTrainer(config: GapTrainerConfig) {
+        if (!acceptPlaybackRequest()) return
+        rebaseGapTrainer(config)
         _metronomeState.update { it.copy(playing = true) }
         viewModelScope.launch { appDatastore.saveLastGapConfig(config) }
     }
 
     fun updateGapTrainer(config: GapTrainerConfig) {
-        _gapTrainerConfig.value = config
-        _gapTrainerStartBar.value = _currentBar.value
+        rebaseGapTrainer(config)
         viewModelScope.launch { appDatastore.saveLastGapConfig(config) }
     }
 
     fun stopGapTrainer() {
+        gapPlan = null
         _gapTrainerConfig.value = null
     }
 
     fun onBarReset() {
         _currentBar.value = 0
         _gapTrainerStartBar.value = 0
+        currentBarStarted = false
+        gapPlan = gapPlan?.let { GapPlan(it.config, 0, false) }
+    }
+
+    fun onBarStarted(barNumber: Int) {
+        currentBarStarted = true
+        _currentBar.value = barNumber
     }
 
     fun onBarCompleted(barNumber: Int) {
+        if (pendingStopAtBarEnd) {
+            pendingStopAtBarEnd = false
+            _practiceTimerStoppedPlayback.value = true
+            onStopClicked()
+        }
         val pendingSessionIndex = practiceSessionState.value.session?.pendingStepIndex
-        activePresetTracker.consumePendingAtBarBoundary()?.let(::commitPracticePreset)
+        val appliedPreset = activePresetTracker.consumePendingAtBarBoundary()
+        appliedPreset?.let(::commitPracticePreset)
         practiceSessionController?.let { controller ->
             viewModelScope.launch {
                 controller.onBarCompleted()
-                pendingSessionIndex?.let { controller.onStepApplied(it) }
+                if (appliedPreset != null) pendingSessionIndex?.let { controller.onStepApplied(it) }
             }
         }
-        _currentBar.value = barNumber
         if (_gradualTempoConfig.value != null) {
-            incrementGradualTempo()
+            incrementGradualTempo(barNumber)
         }
     }
 
@@ -722,6 +943,7 @@ class MetronomeViewModel(
             gapTrainerConfig.value != null
 
     fun startPracticeSet(practiceSet: PracticeSet) {
+        if (!acceptPlaybackRequest()) return
         val controller = practiceSessionController
         if (controller == null) {
             mutablePracticeSessionStartResults.tryEmit(PracticeSessionStartResult.PersistenceFailed)
@@ -736,7 +958,9 @@ class MetronomeViewModel(
         stopGradualTempo()
         stopGapTrainer()
         viewModelScope.launch {
-            val result = controller.start(practiceSet, practicePresetRepository.presets.first())
+            val presets = practicePresetRepository.presets.first()
+            if (applicationExitRequested) return@launch
+            val result = controller.start(practiceSet, presets)
             when (result) {
                 is PracticeSessionStartResult.Started -> practiceSetRepository?.markStarted(practiceSet.id)
                 else -> Unit
@@ -746,7 +970,10 @@ class MetronomeViewModel(
     }
 
     fun resumePracticeSession() {
-        viewModelScope.launch { practiceSessionController?.resume() }
+        if (!acceptPlaybackRequest()) return
+        viewModelScope.launch {
+            if (!applicationExitRequested) practiceSessionController?.resume()
+        }
     }
 
     fun retryPracticeSessionPersistence() {
@@ -766,7 +993,9 @@ class MetronomeViewModel(
     }
 
     fun togglePracticeSessionPlayback() {
+        if (!acceptPlaybackRequest()) return
         viewModelScope.launch {
+            if (applicationExitRequested) return@launch
             val session = practiceSessionState.value.session ?: return@launch
             if (session.playbackIntent == com.merkost.metronome.practiceSets.PracticePlaybackIntent.Running) {
                 practiceSessionController?.pause()
@@ -819,8 +1048,21 @@ class MetronomeViewModel(
                     controller.onStepApplied(command.index)
                 }
             }
-            PracticeSessionCommand.StartPlayback -> _metronomeState.update { it.copy(playing = true) }
-            PracticeSessionCommand.PausePlayback -> _metronomeState.update { it.copy(playing = false) }
+            PracticeSessionCommand.StartPlayback -> {
+                if (!applicationExitRequested) _metronomeState.update { it.copy(playing = true) }
+            }
+            PracticeSessionCommand.PausePlayback -> {
+                _metronomeState.update { it.copy(playing = false) }
+                val session = controller.state.value.session
+                if (!applicationExitRequested && session?.playbackIntent == PracticePlaybackIntent.Paused) {
+                    session.pendingStepIndex?.let { pendingIndex ->
+                        activePresetTracker.consumePendingAtBarBoundary()?.let { preset ->
+                            commitPracticePreset(preset)
+                            controller.onStepApplied(pendingIndex)
+                        }
+                    }
+                }
+            }
             is PracticeSessionCommand.SessionFinished -> {
                 if (!recordPracticeCompletion(command, practiceSetRepository)) {
                     mutablePracticeCompletionEvents.emit(PracticeCompletionEvent.StorageFailure)
@@ -872,6 +1114,34 @@ class MetronomeViewModel(
     init {
         retryOnboardingLoad()
         viewModelScope.launch {
+            _metronomeState.map { it.playing }.distinctUntilChanged().collectLatest { playing ->
+                if (!playing || audioOutputStatus === UnknownAudioOutputStatus) {
+                    _noSoundHint.value = null
+                    return@collectLatest
+                }
+                try {
+                    while (true) {
+                        _noSoundHint.value = noSoundHint(
+                            playing = true,
+                            mediaVolumeOff = audioOutputStatus.isMediaVolumeOff(),
+                            clickVolume = clickVolume.value,
+                        )
+                        delay(1000)
+                    }
+                } finally {
+                    _noSoundHint.value = null
+                }
+            }
+        }
+        viewModelScope.launch {
+            appDatastore.countInEnabled.distinctUntilChanged().collect { _countInEnabled.value = it }
+        }
+        viewModelScope.launch {
+            _metronomeState.map { it.playing }.distinctUntilChanged().collect { playing ->
+                if (!playing) pendingStopAtBarEnd = false
+            }
+        }
+        viewModelScope.launch {
             appDatastore.countInEnabled.collect { enabled ->
                 val active = activePresetState.value.active
                 if (active != null && active.countInEnabled != enabled) {
@@ -882,6 +1152,7 @@ class MetronomeViewModel(
         practiceSessionController?.let { controller ->
             viewModelScope.launch {
                 controller.recover()
+                onboardingLoaded.first { it }
                 controller.state.value.session?.currentStep?.preset?.let(::commitPracticePreset)
             }
             viewModelScope.launch {

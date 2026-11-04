@@ -19,14 +19,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.asSharedFlow
 import org.kimplify.cedar.logging.Cedar
 import platform.AVFAudio.AVAudioEngine
+import platform.AVFAudio.AVAudioEngineConfigurationChangeNotification
 import platform.AVFAudio.AVAudioFile
 import platform.AVFAudio.AVAudioPCMBuffer
 import platform.AVFAudio.AVAudioPlayerNode
 import platform.AVFAudio.AVAudioPlayerNodeBufferInterrupts
+import platform.AVFAudio.AVAudioSessionMediaServicesWereResetNotification
 import platform.AVFAudio.AVAudioUnitVarispeed
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
+import platform.Foundation.NSNotificationCenter
+import kotlin.concurrent.Volatile
 import kotlin.math.max
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 class MetronomePlayerIos : MetronomePlayer {
@@ -34,6 +40,7 @@ class MetronomePlayerIos : MetronomePlayer {
         data class Initialize(val sound: ClickSound, val generation: Long) : AudioCommand
         data class Play(val beat: Beat, val left: Float, val right: Float, val generation: Long, val onSubmitted: (() -> Unit)? = null) : AudioCommand
         data object Stop : AudioCommand
+        data object KeepAlive : AudioCommand
         data class SwitchSound(val sound: ClickSound, val generation: Long) : AudioCommand
         data object Release : AudioCommand
     }
@@ -64,6 +71,38 @@ class MetronomePlayerIos : MetronomePlayer {
     private var graph: AudioGraph? = null
     private var requestedSound: ClickSound? = null
 
+    @Volatile
+    private var outputWarm = false
+
+    @Volatile
+    private var needsRebuild = false
+
+    private val configurationObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+        name = AVAudioEngineConfigurationChangeNotification,
+        `object` = null,
+        queue = null,
+    ) {
+        Cedar.tag(TAG).w("Audio engine configuration changed; graph will be rebuilt on next use")
+        needsRebuild = true
+    }
+
+    private val mediaServicesResetObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+        name = AVAudioSessionMediaServicesWereResetNotification,
+        `object` = null,
+        queue = null,
+    ) {
+        Cedar.tag(TAG).w("Media services were reset; session and graph will be rebuilt on next use")
+        IosAudioSessionLease.invalidate()
+        needsRebuild = true
+    }
+
+    override val warmUpLead: Duration
+        get() = if (outputWarm) Duration.ZERO else COLD_START_LEAD
+
+    override fun keepAlive() {
+        commands.offer(AudioCommand.KeepAlive)
+    }
+
     override fun initialize(initialSound: ClickSound) {
         latestGeneration.update { it + 1 }
         commands.offer(AudioCommand.Initialize(initialSound, latestGeneration.value))
@@ -78,6 +117,7 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     override fun stop() {
+        outputWarm = false
         commands.offer(AudioCommand.Stop)
     }
 
@@ -87,6 +127,7 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     override fun release() {
+        outputWarm = false
         latestGeneration.update { it + 1 }
         commands.offer(AudioCommand.Release)
     }
@@ -96,12 +137,13 @@ class MetronomePlayerIos : MetronomePlayer {
             is AudioCommand.Initialize -> command.generation
             is AudioCommand.Play -> command.generation
             is AudioCommand.SwitchSound -> command.generation
-            AudioCommand.Stop, AudioCommand.Release -> latestGeneration.value
+            AudioCommand.Stop, AudioCommand.Release, AudioCommand.KeepAlive -> latestGeneration.value
         }
         when (command) {
             is AudioCommand.Initialize -> initializeInternal(command.sound)
             is AudioCommand.Play -> playInternal(command.beat, command.left, command.right, command.onSubmitted)
             AudioCommand.Stop -> stopInternal()
+            AudioCommand.KeepAlive -> keepAliveInternal()
             is AudioCommand.SwitchSound -> switchSoundInternal(command.sound)
             AudioCommand.Release -> releaseInternal()
         }
@@ -122,7 +164,12 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: (() -> Unit)?) {
-        val current = graph ?: return
+        rebuildIfStale()
+        val current = graph
+        if (current == null) {
+            reportFailure(IllegalStateException("Audio graph is unavailable"))
+            return
+        }
         if (!ensureRunning(current)) {
             reportFailure(IllegalStateException("Audio engine is unavailable"))
             return
@@ -136,6 +183,7 @@ class MetronomePlayerIos : MetronomePlayer {
             0f
         }
         if (!current.player.playing) current.player.play()
+        outputWarm = true
         current.player.scheduleBuffer(
             accent ?: current.buffer,
             atTime = null,
@@ -146,9 +194,18 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     private fun stopInternal() {
+        outputWarm = false
         graph?.player?.stop()
         graph?.engine?.stop()
         deactivateSession()
+    }
+
+    private fun keepAliveInternal() {
+        rebuildIfStale()
+        val current = graph ?: return
+        if (!ensureRunning(current)) return
+        if (!current.player.playing) current.player.play()
+        outputWarm = true
     }
 
     private fun switchSoundInternal(sound: ClickSound) {
@@ -166,7 +223,29 @@ class MetronomePlayerIos : MetronomePlayer {
         installGraph(replacement, sound)
     }
 
+    private fun rebuildIfStale() {
+        if (!needsRebuild) return
+        val sound = requestedSound ?: return
+        needsRebuild = false
+        val stale = graph
+        stale?.player?.stop()
+        stale?.engine?.stop()
+        graph = null
+        if (!activateSession()) {
+            reportFailure(IllegalStateException("Audio session is unavailable"))
+            return
+        }
+        val replacement = createGraph(sound)
+        if (replacement == null) {
+            reportFailure(IllegalStateException("Audio graph could not be rebuilt"))
+            return
+        }
+        installGraph(replacement, sound)
+    }
+
     private fun releaseInternal() {
+        needsRebuild = false
+        outputWarm = false
         graph?.player?.stop()
         graph?.engine?.stop()
         graph = null
@@ -178,6 +257,7 @@ class MetronomePlayerIos : MetronomePlayer {
         val previous = graph
         graph = replacement
         requestedSound = sound
+        outputWarm = true
         previous?.player?.stop()
         previous?.engine?.stop()
     }
@@ -276,5 +356,6 @@ class MetronomePlayerIos : MetronomePlayer {
 
     private companion object {
         const val TAG = "MetronomePlayerIos"
+        val COLD_START_LEAD = 120.milliseconds
     }
 }

@@ -1,0 +1,15 @@
+More space for your rhythm
+
+Metronome 1.5.0 brings a cleaner, calmer experience, from the first welcome to your next practice session.
+
+A SIMPLE START
+A single illustrated welcome introduces tempo, sound and practice in a few short highlights. Get started or skip straight to the instrument, with no setup steps or automatic playback.
+
+A CLEARER INSTRUMENT
+The main screen gives the beat and BPM more room. Quick tempo adjustments now live in Set tempo: add or subtract 5 BPM, halve or double the value, then apply it when you're ready. Rhythm, sound and Settings are easier to scan.
+
+SMOOTHER PRACTICE
+Refined preset, routine, timer and trainer layouts keep the next action clear. Controls stay steady as their state changes, and transitions follow the app's shared motion style.
+
+MORE COMFORTABLE LAYOUTS
+Improved large-text layouts, scrolling and bottom-sheet spacing keep actions within reach. Numbers and navigation now display correctly in right-to-left layouts.

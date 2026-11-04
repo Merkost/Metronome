@@ -1,0 +1,43 @@
+{
+  "version": "1.5.0",
+  "build": "1",
+  "platform": "macOS Apple silicon",
+  "result": "passed",
+  "productionApp": "desktopApp/build/compose/binaries/main/app/Metronome.app",
+  "checks": [
+    "Native production app launch with bundled runtime",
+    "Space start/stop and advancing beat indicators",
+    "Exact tempo input at 96 BPM",
+    "Navigation shortcuts and sidebar",
+    "Light/dark appearance and colour selection",
+    "All seven click sounds visible with preview controls",
+    "Escape dismisses sound, rhythm, exact tempo and About dialogs",
+    "Escape dismisses practice data after native save/open panels",
+    "Dirty practice-set editor blocks navigation and Quit until confirmation",
+    "Starter routine creates three presets and one set",
+    "Native populated backup export and test-file overwrite",
+    "Fresh single-screen welcome fits 1000x780 and 520x600 windows",
+    "Get started completes welcome; relaunch does not repeat it",
+    "Native backup import restores three presets and one practice set",
+    "Imported presets, set and Mint/Dark appearance survive Quit and relaunch"
+  ],
+  "freshDataFixture": "acceptance/Metronome Welcome Acceptance Final.app",
+  "freshDataFixtureProvenance": "acceptance/welcome-final-provenance.json",
+  "fixtureBoundary": "Fresh-data checks use an isolated signed sandbox identity with identical production JARs and resources; this fixture is not the upload artifact.",
+  "unverified": [
+    "human-audible output assessment",
+    "speaker onset latency",
+    "audio route changes",
+    "sleep/wake timing",
+    "full VoiceOver audit"
+  ],
+  "evidence": [
+    "native/01-playing-dark.png",
+    "native/07-fresh-welcome-qa.jpg",
+    "native/08-compact-welcome-qa.jpg",
+    "native/09-import-backup-qa.jpg",
+    "native/10-restored-settings-qa.jpg",
+    "store/screenshots/manifest.json"
+  ],
+  "notes": "Import success and exact restored counts were verified in the native accessibility tree. The import screenshot shows the bounded dialog, with success text below the captured viewport."
+}

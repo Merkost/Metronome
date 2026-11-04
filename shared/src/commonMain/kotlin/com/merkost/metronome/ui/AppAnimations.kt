@@ -37,6 +37,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.MotionDurationScale
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,11 +58,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -69,6 +73,12 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object AppAnimations {
+
+    var motionReduced: Boolean = false
+
+    private const val SnapStiffness = 100000f
+
+    private fun snapped(stiffness: Float): Float = if (motionReduced) SnapStiffness else stiffness
 
     const val PendulumSwingDegrees = 20f
 
@@ -85,67 +95,72 @@ object AppAnimations {
     private const val Lively = 0.66f
 
     fun <T> press(): SpringSpec<T> =
-        SpringSpec(dampingRatio = Flat, stiffness = PressStiffness)
+        SpringSpec(dampingRatio = Flat, stiffness = snapped(PressStiffness))
 
     fun <T> quick(): SpringSpec<T> =
-        SpringSpec(dampingRatio = Flat, stiffness = QuickStiffness)
+        SpringSpec(dampingRatio = Flat, stiffness = snapped(QuickStiffness))
 
     fun <T> standard(): SpringSpec<T> =
-        SpringSpec(dampingRatio = Flat, stiffness = StandardStiffness)
+        SpringSpec(dampingRatio = Flat, stiffness = snapped(StandardStiffness))
 
     fun <T> emphasized(): SpringSpec<T> =
-        SpringSpec(dampingRatio = NearlyFlat, stiffness = EmphasizedStiffness)
+        SpringSpec(dampingRatio = NearlyFlat, stiffness = snapped(EmphasizedStiffness))
 
     fun <T> calm(): SpringSpec<T> =
-        SpringSpec(dampingRatio = Flat, stiffness = CalmStiffness)
+        SpringSpec(dampingRatio = Flat, stiffness = snapped(CalmStiffness))
 
     fun <T> expressive(): SpringSpec<T> =
-        SpringSpec(dampingRatio = Lively, stiffness = ExpressiveStiffness)
+        SpringSpec(dampingRatio = Lively, stiffness = snapped(ExpressiveStiffness))
 
-    val Press = press<Float>()
-    val Quick = quick<Float>()
-    val Standard = standard<Float>()
-    val Emphasized = emphasized<Float>()
-    val Calm = calm<Float>()
-    val Expressive = expressive<Float>()
+    val Press: SpringSpec<Float> get() = press()
+    val Quick: SpringSpec<Float> get() = quick()
+    val Standard: SpringSpec<Float> get() = standard()
+    val Emphasized: SpringSpec<Float> get() = emphasized()
+    val Calm: SpringSpec<Float> get() = calm()
+    val Expressive: SpringSpec<Float> get() = expressive()
 
-    private val StandardOffset = SpringSpec(
+    private val StandardOffset get() = SpringSpec(
         dampingRatio = Flat,
-        stiffness = StandardStiffness,
+        stiffness = snapped(StandardStiffness),
         visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    private val QuickOffset = SpringSpec(
+    private val QuickOffset get() = SpringSpec(
         dampingRatio = Flat,
-        stiffness = QuickStiffness,
+        stiffness = snapped(QuickStiffness),
         visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    private val EmphasizedOffset = SpringSpec(
+    private val EmphasizedOffset get() = SpringSpec(
         dampingRatio = NearlyFlat,
-        stiffness = EmphasizedStiffness,
+        stiffness = snapped(EmphasizedStiffness),
         visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    private val EmphasizedSize = SpringSpec(
+    private val EmphasizedSize get() = SpringSpec(
         dampingRatio = NearlyFlat,
-        stiffness = EmphasizedStiffness,
+        stiffness = snapped(EmphasizedStiffness),
         visibilityThreshold = IntSize.VisibilityThreshold,
     )
 
-    val expandEnter: EnterTransition =
+    val expandEnter: EnterTransition
+        get() =
         expandVertically(EmphasizedSize, expandFrom = Alignment.Top) + fadeIn(Standard)
 
-    val shrinkExit: ExitTransition =
+    val shrinkExit: ExitTransition
+        get() =
         shrinkVertically(EmphasizedSize, shrinkTowards = Alignment.Top) + fadeOut(Quick)
 
-    val revealEnter: EnterTransition =
+    val revealEnter: EnterTransition
+        get() =
         expandHorizontally(EmphasizedSize) + fadeIn(Standard)
 
-    val concealExit: ExitTransition =
+    val concealExit: ExitTransition
+        get() =
         shrinkHorizontally(EmphasizedSize) + fadeOut(Quick)
 
-    val fadeThrough: ContentTransform =
+    val fadeThrough: ContentTransform
+        get() =
         fadeIn(Standard).togetherWith(fadeOut(Quick))
 
     val fadeThroughFixedSize: ContentTransform
@@ -156,19 +171,20 @@ object AppAnimations {
             sizeTransform = null,
         )
 
-    val fadeScaleTransform: ContentTransform =
+    val fadeScaleTransform: ContentTransform
+        get() =
         (fadeIn(Standard) + scaleIn(initialScale = 0.96f, animationSpec = Emphasized))
             .togetherWith(fadeOut(Quick) + scaleOut(targetScale = 0.98f, animationSpec = Quick))
 
-    private val NavigationOffset = SpringSpec(
+    private val NavigationOffset get() = SpringSpec(
         dampingRatio = Flat,
-        stiffness = NavigationStiffness,
+        stiffness = snapped(NavigationStiffness),
         visibilityThreshold = IntOffset.VisibilityThreshold,
     )
 
-    private val NavigationFloat = SpringSpec<Float>(
+    private val NavigationFloat get() = SpringSpec<Float>(
         dampingRatio = Flat,
-        stiffness = NavigationStiffness,
+        stiffness = snapped(NavigationStiffness),
     )
 
     private const val RestingScreenAlpha = 0.82f
@@ -359,19 +375,21 @@ fun AnimatedNumberText(
         val digitWidth = with(density) {
             measurer.measure(AnnotatedString("0"), digitStyle).size.width.toDp()
         }
-        Row(Modifier.animateContentSize(AppAnimations.emphasized()), verticalAlignment = Alignment.CenterVertically) {
-            text.indices.forEach { index ->
-                val place = text.lastIndex - index
-                key(place) {
-                    AnimatedContent(
-                        targetState = text[index],
-                        transitionSpec = { AppAnimations.slideDigitTransform(towardsUp) },
-                        contentKey = { it },
-                        label = "digit-$place",
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.width(digitWidth),
-                    ) { digit ->
-                        Text(text = digit.toString(), style = digitStyle, color = color, textAlign = TextAlign.Center, maxLines = 1)
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(Modifier.animateContentSize(AppAnimations.emphasized()), verticalAlignment = Alignment.CenterVertically) {
+                text.indices.forEach { index ->
+                    val place = text.lastIndex - index
+                    key(place) {
+                        AnimatedContent(
+                            targetState = text[index],
+                            transitionSpec = { AppAnimations.slideDigitTransform(towardsUp) },
+                            contentKey = { it },
+                            label = "digit-$place",
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.width(digitWidth),
+                        ) { digit ->
+                            Text(text = digit.toString(), style = digitStyle, color = color, textAlign = TextAlign.Center, maxLines = 1)
+                        }
                     }
                 }
             }
@@ -397,6 +415,9 @@ private fun AnimatedNumberTextPreview() {
     }
 }
 
+val LocalReduceMotion = staticCompositionLocalOf { false }
+
 @Composable
 fun isAppMotionReduced(): Boolean =
-    (rememberCoroutineScope().coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f) == 0f
+    LocalReduceMotion.current ||
+        (rememberCoroutineScope().coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f) == 0f

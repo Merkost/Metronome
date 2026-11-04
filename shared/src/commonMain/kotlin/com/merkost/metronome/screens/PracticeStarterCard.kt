@@ -7,49 +7,48 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ArrowRight
 import com.composables.icons.lucide.Lucide
-import com.merkost.metronome.ui.cornerRadiusXLarge
-import com.merkost.metronome.ui.horizontalPadding
-import com.merkost.metronome.ui.sheetButtonHeight
+import com.composables.icons.lucide.ArrowLeft
+import com.merkost.metronome.ui.cornerRadiusLarge
+import com.merkost.metronome.ui.minimumTouchTargetSize
+import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun PracticeStarterCard(onPreview: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(cornerRadiusXLarge), color = MaterialTheme.colorScheme.primaryContainer) {
-        Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-            Text("Try a starter routine", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text("A steady warm-up", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text("Three gentle steps. Six minutes.\nMake it your own before saving.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                listOf(60, 72, 84).forEachIndexed { index, bpm ->
-                    Column(verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-                        Text(bpm.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                        Text("BPM · 2 min", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                    }
-                    if (index < 2) Icon(Lucide.ArrowRight, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(16.dp))
-                }
-            }
-            Button(onClick = onPreview, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight)) {
-                Text("Preview & edit", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
-                Icon(Lucide.ArrowRight, null, modifier = Modifier.size(18.dp))
-            }
-            Text("Nothing is added until you save the routine.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+    Row(
+        modifier = modifier.fillMaxWidth()
+            .heightIn(min = minimumTouchTargetSize)
+            .clip(RoundedCornerShape(cornerRadiusLarge))
+            .pressableSurface(onPreview)
+            .padding(vertical = spacingMedium),
+        horizontalArrangement = Arrangement.spacedBy(spacingMedium),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
+            Text("Try a warm-up", style = MaterialTheme.typography.titleSmall)
+            Text(
+                "60 → 72 → 84 BPM · 6 min",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text("Preview & edit", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         }
+        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowLeft else Lucide.ArrowRight, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

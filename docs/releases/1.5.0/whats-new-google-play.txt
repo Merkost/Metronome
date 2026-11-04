@@ -1,0 +1,8 @@
+More space for your rhythm in 1.5.0
+
+• One illustrated welcome with a few short highlights
+• A cleaner main screen and clearer Rhythm, Sound and Settings
+• Quick tempo adjustments moved into Set tempo, applied when you confirm
+• Refined preset, routine, timer and trainer layouts with smooth transitions
+• Better large-text layouts and scrolling, safer bottom-sheet spacing, correct right-to-left numbers and navigation
+• Clearer status-bar icons in dark mode

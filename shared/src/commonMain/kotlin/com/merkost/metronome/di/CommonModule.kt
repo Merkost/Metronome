@@ -8,6 +8,7 @@ import com.merkost.metronome.logging.CedarSetup
 import com.merkost.metronome.logging.ReleaseLogTreeProvider
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.AppDatastoreImpl
+import com.merkost.metronome.platform.UnknownAudioOutputStatus
 import com.merkost.metronome.platform.isDebug
 import com.merkost.metronome.platform.currentTimeMillis
 import com.merkost.metronome.practiceSets.DataStorePracticeSessionRepository
@@ -71,7 +72,12 @@ val commonModule = module {
     single<ReviewPromptStore> { DataStoreReviewPromptStore(get()) }
     single { ReviewPromptCoordinator(get(), get(), get()) }
     single { WhatsNewCoordinator(get(), get()) }
-    single { MetronomeViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    single {
+        MetronomeViewModel(
+            get(), get(), get(), get(), get(), get(), get(),
+            audioOutputStatus = getOrNull() ?: UnknownAudioOutputStatus,
+        )
+    }
     single {
         CedarSetup.initialize(isDebug(), get<ReleaseLogTreeProvider>().releaseTree())
         MetronomeEngine(get(), get(), get(), get(), get()).also { it.start() }

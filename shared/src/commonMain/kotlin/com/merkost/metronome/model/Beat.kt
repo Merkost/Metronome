@@ -5,6 +5,8 @@ enum class Beat(val rate: Float) {
     LOW(1f),
     MUTE(1f);
 
+    fun clicksTo(target: Beat): Int = (target.ordinal - ordinal + entries.size) % entries.size
+
     fun next(): Beat {
         return when (this) {
             HIGH -> LOW

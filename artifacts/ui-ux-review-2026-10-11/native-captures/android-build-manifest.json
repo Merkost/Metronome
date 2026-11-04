@@ -1,0 +1,63 @@
+{
+  "baseRevision": "7847dec373bb049d6968c5c645f2d8a7ec7484bd",
+  "branch": "dev",
+  "buildLog": "/private/tmp/metronome-clean-final-ui-gates.log",
+  "gates": [
+    ":shared:testDebugUnitTest",
+    ":androidApp:assembleDebug",
+    ":shared:compileKotlinIosArm64",
+    ":shared:compileKotlinWasmJs"
+  ],
+  "result": "BUILD SUCCESSFUL",
+  "unitTests": {
+    "suites": 34,
+    "tests": 199,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "apk": {
+    "path": "/Users/merkost/StudioProjects/Metronome/androidApp/build/outputs/apk/debug/androidApp-debug.apk",
+    "sha256": "b40e99d797143c5c477979f2e2a9cdc2c64c8cf93ab251a8dcb79ff8ab55793c",
+    "bytes": 20732094
+  },
+  "sourceSha256": {
+    "androidApp/src/main/kotlin/com/merkost/metronome/MainActivity.kt": "3818d29d2c8a2264cb938aec04616e5d554a46466a65ab94d42c39b618ac56cc",
+    "shared/src/androidMain/kotlin/com/merkost/metronome/platform/SystemBarAppearance.android.kt": "aa1c112ac6136c73efd2bad0bacd06edc5fcb02176182fe2e7b7fc7b53ad6e07",
+    "shared/src/commonMain/composeResources/values/strings.xml": "ea2ddd3a871a947dcfc7fbc1cfcc98eae6d4d6e8ead17970a75767ef15a215bf",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/AppBottomSheet.kt": "0c9d17fd09ff76993fa5fcb277dd88a36714488e8ee3d6951850f97e1715f6c1",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/MainShortcuts.kt": "75711f0f94e2f869e8286c7dbb860461ef7b2fc13de5baee1ca9073048c79617",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/OnboardingIllustration.kt": "910e1f27de25f1cdceb8080423dbcb6fcd9d2ecb7b2cc8a404d855eff882e7bc",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/PracticePresetComponents.kt": "b31b18479ac88ce6989f69f7b5fd86bb545ea4ce526709b39dc12bdc86fca206",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/components/PracticeSetComponents.kt": "553832eff0bf13ec26c99b26e33a7c285bcf275a539b718ef75c5d3f2351e99a",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/navigation/AppNavigation.kt": "5acba9911d75e6a86f0ab6d72c339a3109a694bba8ba183181fe68ff3bdf1775",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/ExactTempoSheet.kt": "f903eff068c15ddf13d6742c9ff4e4399b7126ea483b6d218038e040075ba37e",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/MainScreen.kt": "9a174a4fd04287b02069aff945a471eac91de5bf9e03c466c2dd16ef9e1bbdef",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/PracticeHubSheet.kt": "fcc441192a96fb5d61e2e4a06e24ade2628b15ac130fd3ef38e74c8e0cd97d88",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/PracticePresetsScreen.kt": "1b44a7ed46a02819b4074920cc6f2ac9a715dd036837709ec7f98c12e10d8967",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/PracticeSessionSheet.kt": "226122c533b2e7e09f599e3e775037ddd251b6291985397263818c0175970676",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/PracticeSetsScreen.kt": "99f4a5173e8010042164e2461689d0abd92be0ce717738868544e94209f38d06",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/PracticeStarterCard.kt": "c32a22a19db3d934832832c092012a5d27dae9afe2a9d2a477d5f863d07d3740",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/PracticeTimerSheet.kt": "d22af79039f77510a61aaea71f737e5d9f79c9274f96ce7c40dad79448808762",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/RhythmSheet.kt": "5d79a227c40c5e785a3bc58d86f01c80e71a6c8606d0395e738d1347f39e4d89",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/SettingsComponents.kt": "688f36c5c901c225755ef61396ae453287a515a308ce00d49280eabedea29f94",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/SettingsInfoSheets.kt": "54fcfe419b8da230f55ad8b92c0732de7e02db849ebc60e5b1c71f1b9164e531",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/SettingsScreen.kt": "1601df83c2f00b682793aa49a977a22abc8fd63197391ca5aed9b2b53f5dd94d",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/SoundPickerSheet.kt": "d45283e0b96dae725426aa007fc0b333c8266946fafb40c766955eb8fffa8654",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/TempoTrainerSheet.kt": "99fd492d8da626817ae6ac5eb0f1667f58041b3ff23d68d291011e09f2109eb1",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/WelcomeScreen.kt": "1e0bc9680c331fa0fcdef63f268a2397e78aeb9bdc91ed14f37830e4b15c3a15",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/WhatsNewSheet.kt": "4e76687a033938cdec102839854a16756da38d7b49abaf16d81f94cb47076588",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/ui/AppAnimations.kt": "42ef71f49e8e18f2d7d9e4598c7ff5c7deef6141b8cccac17b56d255e565dc85",
+    "shared/src/commonMain/kotlin/com/merkost/metronome/viewModels/MetronomeViewModel.kt": "f262ff3044fc7a5966bb4dbdef5d62cd7478ae3d78a3dfb6b8e26dc66fae24b8"
+  },
+  "preservedUserEdit": "iosApp/iosApp/Info.plist: CFBundleVersion 2 -> 3",
+  "runtimeTarget": "emulator-5596",
+  "freshAndroidWelcome": "Passed: large RTL and standard English; Get started and Skip open paused80BPM/Wood/4/4; completion persists after reopening",
+  "runtimeCorrections": "Passed: RTL digit order, mirrored Settings Back, Mono outline, system-bar contrast, full52dp Done plus32dp end gap",
+  "restoredEmulatorConfiguration": {
+    "locale": [],
+    "fontScale": 1.0,
+    "rtl": false,
+    "night": "no"
+  }
+}

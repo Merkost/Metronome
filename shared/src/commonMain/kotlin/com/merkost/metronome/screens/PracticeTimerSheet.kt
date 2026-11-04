@@ -6,9 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -22,9 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppSlider
@@ -37,6 +41,7 @@ import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 
 private val DURATION_PRESETS = listOf(5, 10, 15, 20, 30)
+private const val STOP_WHEN_TIME_IS_UP_SUBTITLE = "Finishes the bar in progress, then stops"
 
 @Composable
 fun PracticeTimerSheet(
@@ -47,13 +52,16 @@ fun PracticeTimerSheet(
     todayPracticeTime: Long,
     practiceStreak: Int,
     totalPracticeTime: Long,
+    stopWhenTimerEnds: Boolean,
+    onStopWhenTimerEndsChange: (Boolean) -> Unit,
+    stoppedPlayback: Boolean,
     onStart: (minutes: Int) -> Unit,
     onExtend: (minutes: Int) -> Unit,
     onRestart: () -> Unit,
     onStop: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppBottomSheet(title = "Practice Timer", onDismiss = onDismiss) { dismissAnimated ->
+    AppBottomSheet(title = "Practice timer", onDismiss = onDismiss) { dismissAnimated ->
         var lastActiveGoal by remember { mutableStateOf(timerGoal ?: 0L) }
         LaunchedEffect(timerGoal) {
             timerGoal?.let { lastActiveGoal = it }
@@ -75,6 +83,9 @@ fun PracticeTimerSheet(
                         onStop()
                         dismissAnimated()
                     },
+                    stopWhenTimerEnds = stopWhenTimerEnds,
+                    onStopWhenTimerEndsChange = onStopWhenTimerEndsChange,
+                    stoppedPlayback = stoppedPlayback,
                 )
             } else {
                 ConfigTimerContent(
@@ -83,6 +94,8 @@ fun PracticeTimerSheet(
                     todayPracticeTime = todayPracticeTime,
                     practiceStreak = practiceStreak,
                     totalPracticeTime = totalPracticeTime,
+                    stopWhenTimerEnds = stopWhenTimerEnds,
+                    onStopWhenTimerEndsChange = onStopWhenTimerEndsChange,
                     onStart = { minutes ->
                         onStart(minutes)
                         dismissAnimated()
@@ -93,14 +106,17 @@ fun PracticeTimerSheet(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ConfigTimerContent(
+internal fun ConfigTimerContent(
     isPlaying: Boolean,
     lastTimerMinutes: Int,
     todayPracticeTime: Long,
     practiceStreak: Int,
     totalPracticeTime: Long,
     onStart: (minutes: Int) -> Unit,
+    stopWhenTimerEnds: Boolean = false,
+    onStopWhenTimerEndsChange: (Boolean) -> Unit = {},
 ) {
     var minutes by remember { mutableStateOf(lastTimerMinutes.coerceIn(1, 60)) }
 
@@ -113,15 +129,16 @@ private fun ConfigTimerContent(
             )
         }
 
-        Row(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(spacingSmall),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             DURATION_PRESETS.forEach { preset ->
                 AppChip(
                     selected = minutes == preset,
                     onClick = { minutes = preset },
-                    label = "$preset",
+                    label = "$preset min",
                 )
             }
         }
@@ -141,10 +158,17 @@ private fun ConfigTimerContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
+        SettingsSwitch(
+            title = "Stop when time is up",
+            checked = stopWhenTimerEnds,
+            onCheckedChange = onStopWhenTimerEndsChange,
+            subtitle = STOP_WHEN_TIME_IS_UP_SUBTITLE,
+        )
+
         Button(
             onClick = { onStart(minutes) },
             shape = CircleShape,
-            modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+            modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         ) {
             Text(
                 text = if (isPlaying) "Start timer" else "Start timer & play",
@@ -154,43 +178,54 @@ private fun ConfigTimerContent(
 
         HorizontalDivider()
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            StatText(
-                label = "Today",
-                value = TimestampMillisecondsFormatter.formatHuman(todayPracticeTime),
-                modifier = Modifier.weight(1f),
-            )
-            StatText(
-                label = "Streak",
-                value = if (practiceStreak > 0) {
-                    if (practiceStreak == 1) "1 day" else "$practiceStreak days"
-                } else {
-                    "—"
-                },
-                modifier = Modifier.weight(1f),
-                alignCenter = true,
-            )
-            StatText(
-                label = "Total",
-                value = TimestampMillisecondsFormatter.formatHuman(totalPracticeTime),
-                modifier = Modifier.weight(1f),
-                alignEnd = true,
-            )
+        if (LocalDensity.current.fontScale >= 1.3f) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                StatText("Today", TimestampMillisecondsFormatter.formatHuman(todayPracticeTime))
+                StatText("Streak", if (practiceStreak > 0) { if (practiceStreak == 1) "1 day" else "$practiceStreak days" } else "—")
+                StatText("Total", TimestampMillisecondsFormatter.formatHuman(totalPracticeTime))
+            }
+        } else {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                StatText(
+                    label = "Today",
+                    value = TimestampMillisecondsFormatter.formatHuman(todayPracticeTime),
+                    modifier = Modifier.weight(1f),
+                )
+                StatText(
+                    label = "Streak",
+                    value = if (practiceStreak > 0) {
+                        if (practiceStreak == 1) "1 day" else "$practiceStreak days"
+                    } else {
+                        "—"
+                    },
+                    modifier = Modifier.weight(1f),
+                    alignCenter = true,
+                )
+                StatText(
+                    label = "Total",
+                    value = TimestampMillisecondsFormatter.formatHuman(totalPracticeTime),
+                    modifier = Modifier.weight(1f),
+                    alignEnd = true,
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ActiveTimerContent(
+internal fun ActiveTimerContent(
     isPlaying: Boolean,
     timerGoal: Long,
     timerRemaining: Long,
     onExtend: (minutes: Int) -> Unit,
     onRestart: () -> Unit,
     onStop: () -> Unit,
+    stopWhenTimerEnds: Boolean = false,
+    onStopWhenTimerEndsChange: (Boolean) -> Unit = {},
+    stoppedPlayback: Boolean = false,
 ) {
     val done = timerRemaining <= 0L
 
@@ -217,12 +252,14 @@ private fun ActiveTimerContent(
             ) { (finished, playing) ->
                 Text(
                     text = when {
+                        finished && stoppedPlayback -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced · stopped"
                         finished -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced"
                         playing -> "of ${TimestampMillisecondsFormatter.format(timerGoal)}"
                         else -> "paused — counts down while playing"
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = if (finished) Modifier.semantics { liveRegion = LiveRegionMode.Polite } else Modifier,
                 )
             }
         }
@@ -239,10 +276,19 @@ private fun ActiveTimerContent(
             }
         }
 
+        if (!done) {
+            SettingsSwitch(
+                title = "Stop when time is up",
+                checked = stopWhenTimerEnds,
+                onCheckedChange = onStopWhenTimerEndsChange,
+                subtitle = STOP_WHEN_TIME_IS_UP_SUBTITLE,
+            )
+        }
+
         Button(
             onClick = onStop,
             shape = CircleShape,
-            modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+            modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         ) {
             AnimatedContent(
                 targetState = done,
@@ -280,16 +326,14 @@ private fun StatText(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth(),
             textAlign = textAlign,
-            maxLines = 1,
-            autoSize = TextAutoSize.StepBased(10.sp, 14.sp),
+
         )
         Text(
             text = value,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.fillMaxWidth(),
             textAlign = textAlign,
-            maxLines = 1,
-            autoSize = TextAutoSize.StepBased(10.sp, 20.sp),
+
         )
     }
 }

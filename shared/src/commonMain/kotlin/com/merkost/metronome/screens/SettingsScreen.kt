@@ -30,6 +30,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.composables.icons.lucide.ArrowLeft
+import com.composables.icons.lucide.ArrowRight
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.composables.icons.lucide.CircleHelp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.SlidersHorizontal
@@ -40,6 +43,8 @@ import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.engine.SoundPreviewController
+import com.merkost.metronome.navigation.AppPresentation
+import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.ThemeMode
@@ -73,6 +78,7 @@ internal data class SettingsUiState(
     val previewSound: ClickSound? = null,
     val playing: Boolean = false,
     val supportsDynamicColor: Boolean = false,
+    val supportsHaptics: Boolean = true,
     val version: String = "",
     val previewError: String? = null,
 )
@@ -106,6 +112,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val appVersionProvider: AppVersionProvider = koinInject()
     val soundPreview: SoundPreviewController = koinInject()
     val uriHandler = LocalUriHandler.current
+    val desktop = LocalAppPresentation.current == AppPresentation.Desktop
     val colorScheme by viewModel.colorScheme.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val colorFlash by viewModel.colorFlash.collectAsState()
@@ -138,7 +145,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     LaunchedEffect(clickVolume, currentStereo) {
         soundPreview.updateOutput(clickVolume, currentStereo)
     }
-    if (showBackgroundPlayPermission && backgroundPlay) {
+    if (!desktop && showBackgroundPlayPermission && backgroundPlay) {
         BackgroundPlayPermissionCheck(true)
     }
 
@@ -151,6 +158,7 @@ fun SettingsScreen(upPress: () -> Unit) {
             selectedSound = selectedSound,
             previewSound = previewSound,
             errorMessage = previewError,
+            previewEnabled = !playing,
             onSelect = { soundPreview.stop(); viewModel.onSoundChanged(it) },
             onPreview = preview,
             onDismiss = {
@@ -209,6 +217,7 @@ fun SettingsScreen(upPress: () -> Unit) {
             previewSound = previewSound,
             playing = playing,
             supportsDynamicColor = platformActions.isDynamicColorSupported(),
+            supportsHaptics = !desktop,
             version = version,
             previewError = previewError,
         ),
@@ -249,12 +258,17 @@ internal fun SettingsScreenContent(
     actions: SettingsActions,
     upPress: () -> Unit,
 ) {
+    val desktop = LocalAppPresentation.current == AppPresentation.Desktop
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Settings", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    AppIconButton(onClick = upPress) { Icon(Lucide.ArrowLeft, "Back") }
+                    if (!desktop) {
+                        AppIconButton(onClick = upPress) {
+                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, "Back")
+                        }
+                    }
                 },
             )
         },
@@ -270,47 +284,48 @@ internal fun SettingsScreenContent(
                     .padding(bottom = spacingLarge),
                 verticalArrangement = Arrangement.spacedBy(spacingMedium),
             ) {
-                Column(Modifier.padding(vertical = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-                    Text("Make it yours.", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold)
-                    Text("A little tweak. A better groove.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
                 SettingsSoundPanel(state, actions)
                 SettingsAppearancePanel(state, actions)
                 SettingsDisclosure(
-                    title = "Keep your flow.",
-                    description = "Practice & playback",
+                    title = "Playback",
+                    description = if (desktop) "Prepare before the first beat" else "Count-in, screen & background audio",
                     icon = Lucide.Timer,
                 ) {
-                    SettingsSwitch("Count-in", state.countInEnabled, actions.onCountIn, "One bar to ease you in")
-                    SettingsSwitch("Keep screen awake", state.keepScreenAwake, actions.onKeepScreenAwake, "While the beat is playing")
-                    SettingsSwitch("Background playback", state.backgroundPlay, actions.onBackgroundPlay, "Keep going when you leave the app")
-                    LiveActivitySettingsRow(state.liveActivityEnabled, actions.onLiveActivity)
+                    SettingsSwitch("Count-in", state.countInEnabled, actions.onCountIn, "One bar before playback")
+                    if (!desktop) {
+                        SettingsSwitch("Keep screen awake", state.keepScreenAwake, actions.onKeepScreenAwake, "While the beat is playing")
+                        SettingsSwitch("Background playback", state.backgroundPlay, actions.onBackgroundPlay, "Play while using other apps")
+                        LiveActivitySettingsRow(state.liveActivityEnabled, actions.onLiveActivity)
+                    } else {
+                        Text("Playback continues while you use other apps. Quit Metronome to stop playback.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
                 SettingsDisclosure(
-                    title = "See the beat.",
-                    description = "Beat display & motion",
+                    title = "Beat display",
+                    description = "Visual style & flash",
                     icon = Lucide.SlidersHorizontal,
                 ) {
-                    SettingsRow("Beat display") {
+                    SettingsRow("Style") {
                         SettingsChoiceRow {
                             BeatDisplayStyle.entries.forEach { style ->
                                 AppChip(state.beatDisplayStyle == style, { actions.onBeatDisplay(style) }, style.label)
                             }
                         }
                     }
-                    SettingsSwitch("Beat flash", state.colorFlash, actions.onColorFlash, "A little pulse while you play")
-                    Text("Animations follow your device's motion preference.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    SettingsSwitch("Beat flash", state.colorFlash, actions.onColorFlash, "Flashes each beat, downbeat only above 180 BPM")
+                    Text(if (desktop) "Choose how each beat moves." else "Animations follow your device's motion preference.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Column(Modifier.padding(top = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    Text("A little more.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    SettingsLink("Your practice", "Time, backups & data", Lucide.Timer, actions.onPractice)
-                    SettingsLink("What's new", "Fresh additions for your practice", Lucide.Sparkles, actions.onWhatsNew)
-                    SettingsLink("Help & about", "A hand when you need it", Lucide.CircleHelp, actions.onAbout)
+                SettingsGroup("Practice data") {
+                    SettingsLink("Statistics & backups", "Practice time, export & import", Lucide.Timer, actions.onPractice)
                 }
-                SettingsWebCard(actions.onWeb)
+                SettingsGroup("Help") {
+                    SettingsLink("What's new", "Latest updates", Lucide.Sparkles, actions.onWhatsNew)
+                    SettingsLink("Help & about", "Guide, support & app information", Lucide.CircleHelp, actions.onAbout)
+                    SettingsWebCard(actions.onWeb)
+                }
                 SettingsSubyCard(actions.onSuby)
                 Text(
-                    "Made for your next good practice.\nMetronome${state.version.takeIf { it.isNotBlank() }?.let { " · $it" }.orEmpty()}",
+                    "Metronome${state.version.takeIf { it.isNotBlank() }?.let { " · $it" }.orEmpty()}",
                     modifier = Modifier.fillMaxWidth().padding(top = spacingSmall),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

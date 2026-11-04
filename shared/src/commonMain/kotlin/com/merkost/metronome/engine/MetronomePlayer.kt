@@ -4,6 +4,7 @@ import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlin.time.Duration
 
 interface MetronomePlayer {
     val failures: Flow<Throwable> get() = emptyFlow()
@@ -13,6 +14,8 @@ interface MetronomePlayer {
         play(beat, stereoLeft, stereoRight)
         onSubmitted()
     }
+    val warmUpLead: Duration get() = Duration.ZERO
+    fun keepAlive() {}
     fun stop()
     fun release()
     fun switchSound(sound: ClickSound)

@@ -25,6 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
@@ -36,6 +39,12 @@ import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.statusStripHeight
 
+data class StatusStripAction(
+    val icon: ImageVector,
+    val label: String,
+    val onClick: () -> Unit,
+)
+
 @Composable
 fun StatusStrip(
     icon: ImageVector,
@@ -43,11 +52,16 @@ fun StatusStrip(
     caption: String,
     progress: Float,
     accent: Color,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     onStop: (() -> Unit)? = null,
     titleModifier: Modifier = Modifier,
+    description: String? = null,
+    onClickLabel: String? = null,
+    stopLabel: String = "Stop",
+    action: StatusStripAction? = null,
 ) {
+    val textSemantics = if (description != null) Modifier.clearAndSetSemantics {} else Modifier
     val interactionSource = remember { MutableInteractionSource() }
     val animatedProgress by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
@@ -69,10 +83,18 @@ fun StatusStrip(
                     size = size.copy(width = size.width * animatedProgress)
                 )
             }
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick
+            .then(if (description != null) Modifier.semantics { contentDescription = description } else Modifier)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClickLabel = onClickLabel,
+                        onClick = onClick,
+                    )
+                } else {
+                    Modifier
+                }
             ),
     ) {
         Row(
@@ -92,7 +114,7 @@ fun StatusStrip(
                 text = title,
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                 color = accent,
-                modifier = titleModifier,
+                modifier = titleModifier.then(textSemantics),
             )
             Spacer(Modifier.weight(1f))
             AnimatedContent(
@@ -104,14 +126,26 @@ fun StatusStrip(
                     text = text,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = textSemantics,
                 )
+            }
+            if (action != null) {
+                Spacer(Modifier.width(spacingSmall / 2))
+                AppIconButton(onClick = action.onClick) {
+                    Icon(
+                        imageVector = action.icon,
+                        contentDescription = action.label,
+                        tint = accent,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
             if (onStop != null) {
                 Spacer(Modifier.width(spacingSmall / 2))
                 AppIconButton(onClick = onStop) {
                     Icon(
                         imageVector = Lucide.X,
-                        contentDescription = "Stop",
+                        contentDescription = stopLabel,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )

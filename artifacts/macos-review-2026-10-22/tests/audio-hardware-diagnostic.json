@@ -1,0 +1,134 @@
+{
+  "checkedAtUtc": "2026-10-22T00:31:11.722078+00:00",
+  "appPath": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app",
+  "runtimePath": "/Users/merkost/Library/Java/JavaVirtualMachines/jbr-21.0.11/Contents/Home",
+  "checksPassed": false,
+  "scope": "Unsandboxed output submission through packaged production classes and audio. Does not measure speakers, hearing, latency, stereo audibility, route changes, or the signed app sandbox.",
+  "events": [
+    {
+      "type": "provenance",
+      "playerOrigin": "file:/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/app/shared-desktop-5777302db23921c8854837babe672c.jar",
+      "audioOrigin": "jar:file:/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/app/shared-desktop-5777302db23921c8854837babe672c.jar!/audio/origin-manifest.json",
+      "audioManifestSha256": "a7664fea98e636cf06bba7fd2135268c914a7ce6ac461e57be68b07f95487893",
+      "defaultMixer": "Default Audio Device"
+    },
+    {
+      "type": "failure",
+      "sound": "WOOD",
+      "beat": "LOW",
+      "message": "No accepted output submission for WOOD LOW. Check the Mac's default output device."
+    },
+    {
+      "type": "submission",
+      "sound": "WOOD",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLICK",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLICK",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLASSIC",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLASSIC",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "SOFT",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "SOFT",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "RIM",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "RIM",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "failure",
+      "sound": "CLAVE",
+      "beat": "LOW",
+      "message": "No accepted output submission for CLAVE LOW. Check the Mac's default output device."
+    },
+    {
+      "type": "submission",
+      "sound": "CLAVE",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "STUDIO",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "STUDIO",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "summary",
+      "sounds": 7,
+      "acceptedSubmissions": 12,
+      "failedSubmissions": 2,
+      "muteSuppressed": true,
+      "releaseSuppressedPlayback": true,
+      "scope": "Production callbacks after PCM acceptance; no speaker, audibility, latency, or sandbox measurement"
+    }
+  ],
+  "stderr": "Exception in thread \"main\" java.lang.IllegalStateException: One or more output submissions failed: [No accepted output submission for WOOD LOW. Check the Mac's default output device., No accepted output submission for CLAVE LOW. Check the Mac's default output device.]\n\tat AudioPlaybackSmoke.main(AudioPlaybackSmoke.java:59)\n"
+}

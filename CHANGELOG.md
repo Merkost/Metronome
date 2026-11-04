@@ -10,6 +10,71 @@ to. Newest first.
 
 ---
 
+## 1.5.0 — More space for your rhythm
+_Prepared 2026-10-12 · Android versionCode 12 · iOS build 4_
+
+A cleaner instrument and a simpler welcome, with refined practice tools,
+stable controls and more comfortable layouts.
+
+**Highlights**
+- **One-screen welcome.** A graphic introduction with three short feature
+  highlights and Get started or Skip. Both open the instrument silently and
+  preserve the current setup.
+- **A calmer main screen.** Tempo and the beat take priority. The −5, +5, halve
+  and double shortcuts move into Set tempo and change only the draft until
+  confirmation. Dismissing the sheet keeps the current tempo.
+- **Clearer Settings and Rhythm.** Literal section names, quieter grouping
+  and compact sound choices make controls easier to scan.
+- **More focused practice.** Refined presets, routines, session controls,
+  timers and trainers. The starter routine stays contextual to an empty
+  practice-set library.
+
+**Fixes and interaction polish**
+- Long bottom sheets keep the complete final action visible with 32dp end
+  spacing above the safe-area boundary.
+- Larger text layouts wrap and scroll without shrinking touch targets.
+- Welcome uses an accessible logo header at large text sizes; its primary
+  action keeps a stable size and centers its text during saving feedback.
+- Numeric readouts retain correct digit order in right-to-left layouts,
+  while only the changed decimal places animate. Back arrows mirror correctly.
+- Android system-bar icons follow app appearance for readable contrast.
+- Unselected Mono swatches stay visible on dark surfaces.
+- Welcome completion blocks duplicate taps and preserves existing sound
+  selection without an unnecessary settings write.
+
+**Store message — Google Play** (459 of 500 characters)
+```
+More space for your rhythm in 1.5.0
+
+• One illustrated welcome with a few short highlights
+• A cleaner main screen and clearer Rhythm, Sound and Settings
+• Quick tempo adjustments moved into Set tempo, applied when you confirm
+• Refined preset, routine, timer and trainer layouts with smooth transitions
+• Better large-text layouts and scrolling, safer bottom-sheet spacing, correct right-to-left numbers and navigation
+• Clearer status-bar icons in dark mode
+```
+
+**Store message — App Store** (968 of 4000 characters)
+```
+More space for your rhythm
+
+Metronome 1.5.0 brings a cleaner, calmer experience, from the first welcome to your next practice session.
+
+A SIMPLE START
+A single illustrated welcome introduces tempo, sound and practice in a few short highlights. Get started or skip straight to the instrument, with no setup steps or automatic playback.
+
+A CLEARER INSTRUMENT
+The main screen gives the beat and BPM more room. Quick tempo adjustments now live in Set tempo: add or subtract 5 BPM, halve or double the value, then apply it when you're ready. Rhythm, sound and Settings are easier to scan.
+
+SMOOTHER PRACTICE
+Refined preset, routine, timer and trainer layouts keep the next action clear. Controls stay steady as their state changes, and transitions follow the app's shared motion style.
+
+MORE COMFORTABLE LAYOUTS
+Improved large-text layouts, scrolling and bottom-sheet spacing keep actions within reach. Numbers and navigation now display correctly in right-to-left layouts.
+```
+
+---
+
 ## 1.4.0 — Find your flow
 _2026-10-07 · Android versionCode 11 · iOS build 2_
 

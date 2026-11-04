@@ -10,6 +10,12 @@ plugins {
 }
 
 kotlin {
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
@@ -82,6 +88,20 @@ kotlin {
             implementation(libs.accompanist.permissions)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.play.review)
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutines.swing)
+            }
+        }
+
+        val desktopTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation(compose.desktop.uiTestJUnit4)
+            }
         }
 
         commonTest.dependencies {

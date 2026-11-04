@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pointer
+import com.merkost.metronome.model.BeatPulse
 import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.rememberAppHaptics
@@ -34,6 +35,7 @@ fun MainButtonsRow(
     stopWatchState: StopWatchState,
     timerGoal: Long?,
     timerRemaining: Long,
+    barStart: BeatPulse? = null,
     onPlayPause: (isPlaying: Boolean) -> Unit,
     onTempoTap: () -> Unit,
     onTimerClick: () -> Unit,
@@ -56,6 +58,7 @@ fun MainButtonsRow(
         PlayButton(
             Modifier,
             isPlaying = isPlaying,
+            barStart = barStart,
             onClick = { onPlayPause(isPlaying) }
         )
         Spacer(modifier = Modifier.size(horizontalPadding))

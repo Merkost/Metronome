@@ -19,6 +19,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
@@ -45,13 +47,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.ArrowRight
 import com.composables.icons.lucide.Plus
 import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.AppTextField
@@ -59,6 +65,8 @@ import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.PracticeSetRow
 import com.merkost.metronome.components.PracticeSetStepRow
+import com.merkost.metronome.navigation.LocalDesktopNavigationGuard
+import com.merkost.metronome.navigation.MainDestination
 import com.merkost.metronome.practiceSets.PracticeSessionStartResult
 import com.merkost.metronome.practiceSets.PracticeSet
 import com.merkost.metronome.practiceSets.PracticeSetValidationError
@@ -93,6 +101,7 @@ fun PracticeSetsScreen(
     val viewModel: PracticeSetsViewModel = koinViewModel()
     val metronomeViewModel: MetronomeViewModel = koinInject()
     val uiState by viewModel.uiState.collectAsState()
+    PracticeSetNavigationGuard({ viewModel.uiState.value.editor }, viewModel::cancelEditing)
     val practiceSessionState by metronomeViewModel.practiceSessionState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     var deleteCandidate by remember { mutableStateOf<PracticeSet?>(null) }
@@ -247,6 +256,42 @@ fun PracticeSetsScreen(
 }
 
 @Composable
+internal fun PracticeSetNavigationGuard(editor: () -> PracticeSetEditorState?, onDiscard: () -> Unit) {
+    val navigationGuard = LocalDesktopNavigationGuard.current ?: return
+    val currentEditor by rememberUpdatedState(editor)
+    val currentDiscard by rememberUpdatedState(onDiscard)
+    var pendingNavigation by remember { mutableStateOf<(() -> Unit)?>(null) }
+    DisposableEffect(navigationGuard) {
+        val unregister = navigationGuard.register(MainDestination.PracticeSets) { proceed ->
+            val state = currentEditor()
+            when {
+                state?.isSaving == true -> Unit
+                state?.hasUnsavedChanges == true -> pendingNavigation = proceed
+                else -> proceed()
+            }
+        }
+        onDispose(unregister)
+    }
+    if (pendingNavigation != null) {
+        AppDialog(
+            title = stringResource(Res.string.practice_set_unsaved_title),
+            text = stringResource(Res.string.practice_set_unsaved_body),
+            confirmLabel = stringResource(Res.string.discard),
+            dismissLabel = stringResource(Res.string.cancel),
+            onConfirm = {
+                if (currentEditor()?.isSaving != true) {
+                    val proceed = pendingNavigation
+                    pendingNavigation = null
+                    currentDiscard()
+                    if (currentEditor() == null) proceed?.invoke()
+                }
+            },
+            onDismiss = { pendingNavigation = null },
+        )
+    }
+}
+
+@Composable
 private fun PracticeSetsContent(
     uiState: PracticeSetsUiState,
     persistenceWarning: Boolean,
@@ -314,7 +359,7 @@ private fun PracticeSetsContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PracticeSetsLibrary(
+internal fun PracticeSetsLibrary(
     uiState: PracticeSetsUiState,
     persistenceWarning: Boolean,
     snackbarHostState: SnackbarHostState,
@@ -343,7 +388,7 @@ private fun PracticeSetsLibrary(
                 },
                 navigationIcon = {
                     AppIconButton(onClick = onBack) {
-                        Icon(Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
+                        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
                     }
                 },
                 actions = {
@@ -373,6 +418,7 @@ private fun PracticeSetsLibrary(
                         verticalArrangement = Arrangement.spacedBy(spacingMedium),
                     ) {
                         PracticeSetsEmptyState(onCreate = onCreate)
+                        HorizontalDivider()
                         PracticeStarterCard(onPreview = onPreviewStarter)
                     }
                 } else {
@@ -389,7 +435,7 @@ private fun PracticeSetsLibrary(
                         if (persistenceWarning) {
                             item(key = "persistence-warning") {
                                 Surface(
-                                    modifier = Modifier.animateItem(),
+                                    modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()),
                                     shape = RoundedCornerShape(cornerRadiusLarge),
                                     color = MaterialTheme.colorScheme.errorContainer,
                                     contentColor = MaterialTheme.colorScheme.onErrorContainer,
@@ -415,7 +461,7 @@ private fun PracticeSetsLibrary(
                         item(key = "summary") {
                             if (stacked) {
                                 Column(
-                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth().padding(vertical = spacingSmall),
                                     verticalArrangement = Arrangement.spacedBy(spacingSmall),
                                 ) {
                                     Text(
@@ -429,7 +475,7 @@ private fun PracticeSetsLibrary(
                                 }
                             } else {
                                 Row(
-                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth().padding(vertical = spacingSmall),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Text(
@@ -447,7 +493,7 @@ private fun PracticeSetsLibrary(
                         itemsIndexed(uiState.sets, key = { _, set -> set.id }) { index, set ->
                             val presetIds = uiState.presets.mapTo(mutableSetOf()) { it.id }
                             PracticeSetRow(
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()),
                                 practiceSet = set,
                                 missingPresetCount = set.steps.count { it.presetId !in presetIds },
                                 isActive = set.id == uiState.activeSourceSetId,
@@ -461,14 +507,6 @@ private fun PracticeSetsLibrary(
                                 onMoveUp = { onMove(set.id, index - 1) },
                                 onMoveDown = { onMove(set.id, index + 1) },
                             )
-                        }
-                        if (!uiState.isReordering) {
-                            item(key = "starter-routine") {
-                                PracticeStarterCard(
-                                    onPreview = onPreviewStarter,
-                                    modifier = Modifier.animateItem().padding(vertical = spacingSmall),
-                                )
-                            }
                         }
                     }
                 }
@@ -507,7 +545,7 @@ private fun PracticeSetEditor(
                 },
                 navigationIcon = {
                     AppIconButton(onClick = onBack, enabled = !editor.isSaving) {
-                        Icon(Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
+                        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
                     }
                 },
                 actions = {
@@ -535,8 +573,8 @@ private fun PracticeSetEditor(
                 if (editor.isStarter) {
                     item(key = "starter-explanation") {
                         Text(
-                            "Make this warm-up your own. New setups are added only when you save the routine.",
-                            modifier = Modifier.animateItem(),
+                            "Edit the steps below. Nothing is added until you save.",
+                            modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -544,7 +582,7 @@ private fun PracticeSetEditor(
                 }
                 item(key = "name") {
                     AppTextField(
-                        modifier = Modifier.animateItem().fillMaxWidth(),
+                        modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth(),
                         value = editor.name,
                         onValueChange = { if (it.length <= PracticeSet.MAX_NAME_LENGTH + 1) onNameChanged(it) },
                         label = stringResource(Res.string.practice_set_name),
@@ -554,7 +592,7 @@ private fun PracticeSetEditor(
                 if (editor.steps.isNotEmpty()) {
                     item(key = "step-actions") {
                         Row(
-                            modifier = Modifier.animateItem().fillMaxWidth(),
+                            modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -571,7 +609,7 @@ private fun PracticeSetEditor(
                 }
                 itemsIndexed(editor.steps, key = { _, step -> step.id }) { index, step ->
                     PracticeSetStepRow(
-                        modifier = Modifier.animateItem(),
+                        modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()),
                         index = index,
                         step = step,
                         preset = presets.firstOrNull { it.id == step.presetId },
@@ -590,7 +628,7 @@ private fun PracticeSetEditor(
                             onClick = onAddPreset,
                             enabled = editor.steps.size < PracticeSet.MAX_STEPS,
                             shape = CircleShape,
-                            modifier = Modifier.animateItem().fillMaxWidth().height(sheetButtonHeight),
+                            modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth().heightIn(min = sheetButtonHeight),
                         ) {
                             Icon(Lucide.Plus, contentDescription = null)
                             Spacer(Modifier.width(spacingSmall))
@@ -655,7 +693,7 @@ private fun CreateSetButton(enabled: Boolean, onClick: () -> Unit) {
         onClick = onClick,
         enabled = enabled,
         shape = CircleShape,
-        modifier = Modifier.height(sheetButtonHeight),
+        modifier = Modifier.heightIn(min = sheetButtonHeight),
     ) {
         Icon(Lucide.Plus, contentDescription = null, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(spacingSmall))
@@ -681,7 +719,7 @@ private fun PresetPickerSheet(
             Button(
                 onClick = onOpenPresets,
                 shape = CircleShape,
-                modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+                modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
             ) {
                 Text(stringResource(Res.string.practice_presets))
             }
@@ -691,9 +729,9 @@ private fun PresetPickerSheet(
                     Surface(
                         modifier = Modifier.fillMaxWidth().clickable { onSelect(preset) },
                         shape = RoundedCornerShape(cornerRadiusLarge),
-                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        color = MaterialTheme.colorScheme.surface,
                     ) {
-                        Column(modifier = Modifier.padding(spacingMedium)) {
+                        Column(modifier = Modifier.heightIn(min = com.merkost.metronome.ui.minimumTouchTargetSize).padding(vertical = spacingSmall)) {
                             Text(preset.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                             Text(
                                 preset.rhythmSummary,

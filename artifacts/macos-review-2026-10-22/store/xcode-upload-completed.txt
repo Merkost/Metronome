@@ -1,0 +1,155 @@
+Window: "Unknown", App: Xcode.
+0 sheet Secondary Actions: Raise
+	1 button (disabled) Cancel
+	2 button Done
+	3 button (disabled) Previous
+	4 text Description: Distribution Step Title, Value: Upload completed with warnings:
+	5 container
+		6 text The following issues occurred while distributing your application.
+		7 scroll area Secondary Actions: Scroll Up, Scroll Down
+			8 table
+				9 row (selectable)
+					10 cell
+						11 image Warning
+						12 text App Store Connect Warning "Cannot be used with TestFlight because the bundle at “Metronome.app” is missing a provisioning profile. Main bundles are expected to have provisioning profiles in order to be eligible for TestFlight."
+				13 row (selectable)
+					14 cell
+						15 image Warning
+						16 text Upload Symbols Failed The archive did not include a dSYM for the Metronome.app with the UUIDs [D7B5561A-EBC0-3FFA-90F5-7FE06588D8C2]. Ensure that the archive's dSYM folder includes a DWARF file for Metronome.app with the expected UUIDs.
+				17 row (selectable)
+					18 cell
+						19 image Warning
+						20 text Upload Symbols Failed The archive did not include a dSYM for the libskiko-macos-arm64.dylib with the UUIDs [4E28C964-3571-31EF-8AAD-B883E82ECB9D]. Ensure that the archive's dSYM folder includes a DWARF file for libskiko-macos-arm64.dylib with the expected UUIDs.
+				21 row (selectable)
+					22 cell
+						23 image Warning
+						24 text Upload Symbols Failed The archive did not include a dSYM for the runtime with the UUIDs [7E187BC1-E4D4-34D4-9713-79E2FEF0E79D]. Ensure that the archive's dSYM folder includes a DWARF file for runtime with the expected UUIDs.
+				25 row (selectable)
+					26 cell
+						27 image Warning
+						28 text Upload Symbols Failed The archive did not include a dSYM for the jspawnhelper with the UUIDs [38763D3D-AE1B-395B-9E86-997C30C82F4D]. Ensure that the archive's dSYM folder includes a DWARF file for jspawnhelper with the expected UUIDs.
+				29 row (selectable)
+					30 cell
+						31 image Warning
+						32 text Upload Symbols Failed The archive did not include a dSYM for the libawt.dylib with the UUIDs [1DC2E0EA-CF35-3F00-8D32-AE21EF3A0C82]. Ensure that the archive's dSYM folder includes a DWARF file for libawt.dylib with the expected UUIDs.
+				33 row (selectable)
+					34 cell
+						35 image Warning
+						36 text Upload Symbols Failed The archive did not include a dSYM for the libawt_lwawt.dylib with the UUIDs [8ABC6884-E580-3F83-A2A6-6951A9DEC9D3]. Ensure that the archive's dSYM folder includes a DWARF file for libawt_lwawt.dylib with the expected UUIDs.
+				37 row (selectable)
+					38 cell
+						39 image Warning
+						40 text Upload Symbols Failed The archive did not include a dSYM for the libfontmanager.dylib with the UUIDs [026A8750-ECB4-3EFE-91F8-E51034931C14]. Ensure that the archive's dSYM folder includes a DWARF file for libfontmanager.dylib with the expected UUIDs.
+				41 row (selectable)
+					42 cell
+						43 image Warning
+						44 text Upload Symbols Failed The archive did not include a dSYM for the libfreetype.dylib with the UUIDs [94307AD9-3041-312F-994F-EFD5E39E59E8]. Ensure that the archive's dSYM folder includes a DWARF file for libfreetype.dylib with the expected UUIDs.
+				45 row (selectable)
+					46 cell
+						47 image Warning
+						48 text Upload Symbols Failed The archive did not include a dSYM for the libjava.dylib with the UUIDs [2670FF52-B523-3358-BD70-0C901991E3B4]. Ensure that the archive's dSYM folder includes a DWARF file for libjava.dylib with the expected UUIDs.
+				49 row (selectable)
+					50 cell
+						51 image Warning
+						52 text Upload Symbols Failed The archive did not include a dSYM for the libjavajpeg.dylib with the UUIDs [BF78ECA1-8BD3-331F-B8DB-8181E2EC57BA]. Ensure that the archive's dSYM folder includes a DWARF file for libjavajpeg.dylib with the expected UUIDs.
+				53 row (selectable)
+					54 cell
+						55 image Warning
+						56 text Upload Symbols Failed The archive did not include a dSYM for the libjawt.dylib with the UUIDs [789E9821-8F56-357A-A374-4A28771EABF1]. Ensure that the archive's dSYM folder includes a DWARF file for libjawt.dylib with the expected UUIDs.
+				57 row (selectable)
+					58 cell
+						59 image Warning
+						60 text Upload Symbols Failed The archive did not include a dSYM for the libjimage.dylib with the UUIDs [CE63D69E-0286-3090-9290-75C4C9668D9E]. Ensure that the archive's dSYM folder includes a DWARF file for libjimage.dylib with the expected UUIDs.
+				61 row (selectable)
+					62 cell
+						63 image Warning
+						64 text Upload Symbols Failed The archive did not include a dSYM for the libjli.dylib with the UUIDs [7E187BC1-E4D4-34D4-9713-79E2FEF0E79D]. Ensure that the archive's dSYM folder includes a DWARF file for libjli.dylib with the expected UUIDs.
+				65 row (selectable)
+					66 cell
+						67 image Warning
+						68 text Upload Symbols Failed The archive did not include a dSYM for the libjsig.dylib with the UUIDs [D2A0AA0A-FD47-3B8F-9636-7F5B1DF27ECA]. Ensure that the archive's dSYM folder includes a DWARF file for libjsig.dylib with the expected UUIDs.
+				69 row (selectable)
+					70 cell
+						71 image Warning
+						72 text Upload Symbols Failed The archive did not include a dSYM for the libjsound.dylib with the UUIDs [46247B6E-D808-3462-B40B-12DDB245C62A]. Ensure that the archive's dSYM folder includes a DWARF file for libjsound.dylib with the expected UUIDs.
+				73 row (selectable)
+					74 cell
+						75 image Warning
+						76 text Upload Symbols Failed The archive did not include a dSYM for the liblcms.dylib with the UUIDs [5AFD0F45-ACC1-3F33-903C-64CB23D44672]. Ensure that the archive's dSYM folder includes a DWARF file for liblcms.dylib with the expected UUIDs.
+				77 row (selectable)
+					78 cell
+						79 image Warning
+						80 text Upload Symbols Failed The archive did not include a dSYM for the libmlib_image.dylib with the UUIDs [D9DFA62B-E1C4-3927-A531-C3E6B3599B6B]. Ensure that the archive's dSYM folder includes a DWARF file for libmlib_image.dylib with the expected UUIDs.
+				81 row (selectable)
+					82 cell
+						83 image Warning
+						84 text Upload Symbols Failed The archive did not include a dSYM for the libnet.dylib with the UUIDs [5F0F2CDA-7B9F-3842-A59B-1755BE00CB8A]. Ensure that the archive's dSYM folder includes a DWARF file for libnet.dylib with the expected UUIDs.
+				85 row (selectable)
+					86 cell
+						87 image Warning
+						88 text Upload Symbols Failed The archive did not include a dSYM for the libnio.dylib with the UUIDs [151F02C8-D5DF-3098-BF5F-CA100F7317F7]. Ensure that the archive's dSYM folder includes a DWARF file for libnio.dylib with the expected UUIDs.
+				89 row (selectable)
+					90 cell
+						91 image Warning
+						92 text Upload Symbols Failed The archive did not include a dSYM for the libosx.dylib with the UUIDs [E995ED76-C119-3FF3-8827-82CCEF494CBD]. Ensure that the archive's dSYM folder includes a DWARF file for libosx.dylib with the expected UUIDs.
+				93 row (selectable)
+					94 cell
+						95 image Warning
+						96 text Upload Symbols Failed The archive did not include a dSYM for the libosxapp.dylib with the UUIDs [C188BBAA-009A-33AE-9099-5463F80ACFBB]. Ensure that the archive's dSYM folder includes a DWARF file for libosxapp.dylib with the expected UUIDs.
+				97 row (selectable)
+					98 cell
+						99 image Warning
+						100 text Upload Symbols Failed The archive did not include a dSYM for the libosxsecurity.dylib with the UUIDs [91851BB8-A27F-3C6F-807E-D96CC4C2DBEA]. Ensure that the archive's dSYM folder includes a DWARF file for libosxsecurity.dylib with the expected UUIDs.
+				101 row (selectable)
+					102 cell
+						103 image Warning
+						104 text Upload Symbols Failed The archive did not include a dSYM for the libosxui.dylib with the UUIDs [8B36622A-070D-3A90-966C-F75958A6918D]. Ensure that the archive's dSYM folder includes a DWARF file for libosxui.dylib with the expected UUIDs.
+				105 row (selectable)
+					106 cell
+						107 image Warning
+						108 text Upload Symbols Failed The archive did not include a dSYM for the libprefs.dylib with the UUIDs [2A1D1BEE-2936-36C0-A7DB-C946E0F308B7]. Ensure that the archive's dSYM folder includes a DWARF file for libprefs.dylib with the expected UUIDs.
+				109 row (selectable)
+					110 cell
+						111 image Warning
+						112 text Upload Symbols Failed The archive did not include a dSYM for the libsplashscreen.dylib with the UUIDs [2676A021-B429-304B-AD4A-EA54B282FEBC]. Ensure that the archive's dSYM folder includes a DWARF file for libsplashscreen.dylib with the expected UUIDs.
+				113 row (selectable)
+					114 cell
+						115 image Warning
+						116 text Upload Symbols Failed The archive did not include a dSYM for the libsyslookup.dylib with the UUIDs [50655DA4-FE88-3704-BC21-1041DC4A868C]. Ensure that the archive's dSYM folder includes a DWARF file for libsyslookup.dylib with the expected UUIDs.
+				117 row (selectable)
+					118 cell
+						119 image Warning
+						120 text Upload Symbols Failed The archive did not include a dSYM for the libverify.dylib with the UUIDs [F5DB410B-3E0A-3009-8E1F-2315E9EA87E7]. Ensure that the archive's dSYM folder includes a DWARF file for libverify.dylib with the expected UUIDs.
+				121 row (selectable)
+					122 cell
+						123 image Warning
+						124 text Upload Symbols Failed The archive did not include a dSYM for the libzip.dylib with the UUIDs [30B63244-7F35-3A23-AFE1-0F9A40313613]. Ensure that the archive's dSYM folder includes a DWARF file for libzip.dylib with the expected UUIDs.
+				125 row (selectable)
+					126 cell
+						127 image Warning
+						128 text Upload Symbols Failed The archive did not include a dSYM for the libjsig.dylib with the UUIDs [D2A0AA0A-FD47-3B8F-9636-7F5B1DF27ECA]. Ensure that the archive's dSYM folder includes a DWARF file for libjsig.dylib with the expected UUIDs.
+				129 row (selectable)
+					130 cell
+						131 image Warning
+						132 text Upload Symbols Failed The archive did not include a dSYM for the libjvm.dylib with the UUIDs [E040194E-1803-3C4D-9102-C9059A2CCAB6]. Ensure that the archive's dSYM folder includes a DWARF file for libjvm.dylib with the expected UUIDs.
+			133 scroll bar (settable, float) 0
+				134 value indicator (settable, float) 0
+				135 increment arrow button
+				136 decrement arrow button
+				137 increment page button
+				138 decrement page button
+	139 button Export…
+140 menu bar
+	141 Xcode
+	142 File
+	143 Edit
+	144 View
+	145 Find
+	146 Navigate
+	147 Editor
+	148 Product
+	149 Integrate
+	150 Window
+	151 Help
+
+The focused UI element is 0 sheet Secondary Actions: Raise

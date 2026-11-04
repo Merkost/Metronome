@@ -11,12 +11,23 @@ class AndroidAudioFocusController(
 ) : AudioFocusController {
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var onLost: (() -> Unit)? = null
+    private var onEvent: ((AudioFocusEvent) -> Unit)? = null
 
     private val listener = AudioManager.OnAudioFocusChangeListener { change ->
         when (change) {
-            AudioManager.AUDIOFOCUS_LOSS,
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> onLost?.invoke()
+            AudioManager.AUDIOFOCUS_LOSS -> {
+                onEvent?.invoke(AudioFocusEvent.LOSS)
+                onLost?.invoke()
+            }
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+                onEvent?.invoke(AudioFocusEvent.LOSS_TRANSIENT)
+                onLost?.invoke()
+            }
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                onEvent?.invoke(AudioFocusEvent.LOSS_TRANSIENT_CAN_DUCK)
+                onLost?.invoke()
+            }
+            AudioManager.AUDIOFOCUS_GAIN -> onEvent?.invoke(AudioFocusEvent.GAIN)
         }
     }
 
@@ -33,6 +44,10 @@ class AndroidAudioFocusController(
 
     override fun setOnFocusLost(onLost: () -> Unit) {
         this.onLost = onLost
+    }
+
+    override fun setOnFocusEvent(listener: (AudioFocusEvent) -> Unit) {
+        this.onEvent = listener
     }
 
     override fun requestFocus(): Boolean =

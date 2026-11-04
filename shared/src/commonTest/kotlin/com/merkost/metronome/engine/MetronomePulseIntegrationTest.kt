@@ -10,6 +10,8 @@ import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.platform.AppVersionInfo
 import com.merkost.metronome.platform.AppVersionProvider
 import com.merkost.metronome.platform.HapticProvider
+import com.merkost.metronome.platform.AudioFocusController
+import com.merkost.metronome.platform.AudioFocusEvent
 import com.merkost.metronome.platform.NoopAudioFocusController
 import com.merkost.metronome.presets.DataStorePracticePresetRepository
 import com.merkost.metronome.presets.InMemoryPreferencesDataStore
@@ -136,18 +138,32 @@ class MetronomePulseIntegrationTest {
 
     @Test
     fun stalePrimariesAreSkippedAndTheNextSubmittedClickHasFreshCentreTiming() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            state.source.time += 1000.milliseconds
+            advanceTimeBy(500)
+            runCurrent()
+            assertEquals(2, state.player.beats.size)
+            assertEquals(Beat.LOW, state.player.beats.last())
+            val pulse = assertNotNull(state.viewModel.beatClock.value.pulse)
+            assertEquals(2L, pulse.ordinal)
+            assertEquals(Duration.ZERO, pulse.startedAt.elapsedNow())
+            assertEquals(0f, pulse.pendulumDisplacement())
+        }
+    }
+
+    @Test
+    fun hapticsFollowTheClick() = runTest {
         fixture(haptics = true) { state ->
+            var beatsWhenHapticFired = -1
             state.haptic.onBeat = {
-                state.haptic.onBeat = null
-                state.source.time += 1000.milliseconds
+                if (beatsWhenHapticFired < 0) beatsWhenHapticFired = state.player.beats.size
             }
             state.viewModel.onPlayPauseClicked(false)
             runCurrent()
-            assertEquals(listOf(Beat.LOW), state.player.beats)
-            val pulse = assertNotNull(state.viewModel.beatClock.value.pulse)
-            assertEquals(1L, pulse.ordinal)
-            assertEquals(Duration.ZERO, pulse.startedAt.elapsedNow())
-            assertEquals(0f, pulse.pendulumDisplacement())
+            assertEquals(1, beatsWhenHapticFired)
         }
     }
 
@@ -171,6 +187,7 @@ class MetronomePulseIntegrationTest {
             runCurrent()
             assertTrue(state.viewModel.beatClock.value.generation > beforeMeter)
             assertNull(state.viewModel.beatClock.value.pulse)
+            step(state, 500)
             state.player.submit(2)
             assertNull(state.viewModel.beatClock.value.pulse)
             state.player.submit(3)
@@ -220,13 +237,423 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun mutedGapBarsKeepTheOutputAwakeOnEveryScheduledBeat() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            val atStart = state.player.keepAlives
+            step(state, 500)
+            assertEquals(atStart, state.player.keepAlives)
+            step(state, 500)
+            assertEquals(atStart + 1, state.player.keepAlives)
+            step(state, 500)
+            assertEquals(atStart + 2, state.player.keepAlives)
+            step(state, 500)
+            assertEquals(atStart + 2, state.player.keepAlives)
+            assertEquals(listOf(Beat.HIGH, Beat.LOW, Beat.HIGH), state.player.beats)
+        }
+    }
+
+    @Test
+    fun theFirstClickWaitsForTheWarmUpLeadAndTheSecondFollowsOneFullInterval() = runTest {
+        fixture(warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.keepAlives)
+            assertTrue(state.player.beats.isEmpty())
+            step(state, 199)
+            assertTrue(state.player.beats.isEmpty())
+            step(state, 1)
+            assertEquals(listOf(Beat.HIGH), state.player.beats)
+            step(state, 499)
+            assertEquals(listOf(Beat.HIGH), state.player.beats)
+            step(state, 1)
+            assertEquals(listOf(Beat.HIGH, Beat.LOW), state.player.beats)
+        }
+    }
+
+    @Test
+    fun aMeterRestartDoesNotRepeatTheWarmUpLead() = runTest {
+        fixture(warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 200)
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            val keepAlivesAtStart = state.player.keepAlives
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            step(state, 500)
+            assertEquals(3, state.player.beats.size)
+            assertEquals(keepAlivesAtStart, state.player.keepAlives)
+        }
+    }
+
+    @Test
+    fun aMeterChangeRightAfterABeatWaitsForTheNextBeatInsteadOfStackingOnTheLastOne() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            assertEquals(2, state.player.beats.size)
+            step(state, 499)
+            assertEquals(2, state.player.beats.size)
+            step(state, 1)
+            assertEquals(3, state.player.beats.size)
+            assertEquals(Beat.HIGH, state.player.beats.last())
+        }
+    }
+
+    @Test
+    fun aMeterChangeInTheMiddleOfABeatStaysOnTheBeatGrid() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 700)
+            assertEquals(2, state.player.beats.size)
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            assertEquals(2, state.player.beats.size)
+            step(state, 299)
+            assertEquals(2, state.player.beats.size)
+            step(state, 1)
+            assertEquals(3, state.player.beats.size)
+            step(state, 499)
+            assertEquals(3, state.player.beats.size)
+            step(state, 1)
+            assertEquals(4, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun stoppingDuringTheWarmUpLeadPlaysNothing() = runTest {
+        fixture(warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 100)
+            state.viewModel.onStopClicked()
+            runCurrent()
+            step(state, 500)
+            assertTrue(state.player.beats.isEmpty())
+        }
+    }
+
+    @Test
+    fun countInStartsAfterTheWarmUpLead() = runTest {
+        fixture(countIn = true, warmUpLead = 200.milliseconds) { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 199)
+            assertTrue(state.player.beats.isEmpty())
+            step(state, 1)
+            assertEquals(listOf(Beat.HIGH), state.player.beats)
+            step(state, 500)
+            assertEquals(listOf(Beat.HIGH, Beat.HIGH), state.player.beats)
+        }
+    }
+
+    @Test
+    fun hapticsFireWithThePrimaryClickEvenWhenSubdivisionsFollow() = runTest {
+        fixture(haptics = true) { state ->
+            var fired = 0
+            state.haptic.onBeat = { fired++ }
+            state.viewModel.onSubdivisionChanged(Subdivision.EIGHTH)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, fired)
+            assertEquals(1, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun theBarNumberAdvancesAtTheDownbeatAndNotAtTheLastBeat() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(0, state.viewModel.currentBar.value)
+            step(state, 500)
+            assertEquals(0, state.viewModel.currentBar.value)
+            step(state, 500)
+            assertEquals(1, state.viewModel.currentBar.value)
+        }
+    }
+
+    @Test
+    fun aGapTrainerStartedMidBarKeepsThatBarAudibleAndStartsTheCycleOnTheNextBar() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            step(state, 500)
+            assertEquals(3, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(5, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun aLiveGapEditDuringAMuteKeepsThatBarMutedAndRebasesOnTheNextBar() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            step(state, 500)
+            step(state, 500)
+            assertEquals(2, state.player.beats.size)
+            step(state, 100)
+            state.viewModel.updateGapTrainer(GapTrainerConfig(1, 3))
+            step(state, 400)
+            assertEquals(2, state.player.beats.size)
+            step(state, 500)
+            assertEquals(3, state.player.beats.size)
+            step(state, 500)
+            assertEquals(4, state.player.beats.size)
+            repeat(6) { step(state, 500) }
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(5, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun aGapTrainerStartedWhilePausedStartsTheCycleAtBarZero() = runTest {
+        fixture { state ->
+            state.viewModel.startGapTrainer(GapTrainerConfig(2, 1))
+            assertEquals(0, state.viewModel.gapTrainerStartBar.value)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun slowTemposKeepTheOutputAwakeHalfwayThroughLongBeatGaps() = runTest {
+        fixture { state ->
+            state.viewModel.onSliderValueChanged(30f)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            val atStart = state.player.keepAlives
+            repeat(3) { step(state, 250) }
+            assertEquals(atStart, state.player.keepAlives)
+            repeat(1) { step(state, 250) }
+            assertEquals(atStart + 1, state.player.keepAlives)
+            repeat(4) { step(state, 250) }
+            assertEquals(atStart + 1, state.player.keepAlives)
+            assertEquals(2, state.player.beats.size)
+            repeat(4) { step(state, 250) }
+            assertEquals(atStart + 2, state.player.keepAlives)
+        }
+    }
+
+    @Test
+    fun fastTemposDoNotAddMidGapKeepAlives() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            val atStart = state.player.keepAlives
+            repeat(4) { step(state, 250) }
+            assertEquals(atStart, state.player.keepAlives)
+        }
+    }
+
+    @Test
+    fun aMeterChangeBetweenSubdivisionClicksStaysOnTheBeatGrid() = runTest {
+        fixture { state ->
+            state.viewModel.onSubdivisionChanged(Subdivision.EIGHTH)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            step(state, 100)
+            state.viewModel.onTimeSignatureChanged(TimeSignature.THREE_FOUR)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            step(state, 399)
+            assertEquals(1, state.player.beats.size)
+            step(state, 1)
+            assertEquals(2, state.player.beats.size)
+            assertEquals(Beat.HIGH, state.player.beats.last())
+        }
+    }
+
+    @Test
+    fun aGapTrainerStartedDuringCountInStartsTheCycleAtTheFirstBar() = runTest {
+        fixture(countIn = true) { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            state.viewModel.startGapTrainer(GapTrainerConfig(1, 1))
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            repeat(3) { step(state, 500) }
+            assertEquals(4, state.player.beats.size)
+            repeat(2) { step(state, 500) }
+            assertEquals(4, state.player.beats.size)
+            step(state, 500)
+            assertEquals(5, state.player.beats.size)
+        }
+    }
+
+    @Test
+    fun phraseMarkerAccentsOnlyTheFirstBarOfEachPhrase() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPhraseLengthChanged(4)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            repeat(9) { step(state, 500) }
+            val high = Beat.HIGH
+            val low = Beat.LOW
+            assertEquals(listOf(high, low, low, low, low, low, low, low, high, low), state.player.beats)
+        }
+    }
+
+    @Test
+    fun phraseMarkerKeepsTheBeatGrid() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPhraseLengthChanged(4)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            repeat(9) { index ->
+                step(state, 500)
+                assertEquals(index + 2, state.player.beats.size)
+            }
+        }
+    }
+
+    @Test
+    fun countInIsNotPartOfThePhrase() = runTest {
+        fixture(countIn = true) { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPhraseLengthChanged(4)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            repeat(7) { step(state, 500) }
+            val high = Beat.HIGH
+            val low = Beat.LOW
+            assertEquals(listOf(high, high, high, low, low, low, low, low), state.player.beats)
+        }
+    }
+
+    @Test
+    fun phraseOffPlaysTheWrittenPattern() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            repeat(3) { step(state, 500) }
+            assertEquals(listOf(Beat.HIGH, Beat.LOW, Beat.HIGH, Beat.LOW), state.player.beats)
+        }
+    }
+
+    @Test
+    fun duckedFocusDipsTheClickToFortyPercentAndGainRestoresIt() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            assertEquals(1f, state.player.lefts.last())
+            state.focus.fire(AudioFocusEvent.LOSS_TRANSIENT_CAN_DUCK)
+            step(state, 500)
+            assertEquals(0.4f, state.player.lefts.last())
+            state.focus.fire(AudioFocusEvent.GAIN)
+            step(state, 500)
+            assertEquals(1f, state.player.lefts.last())
+            assertEquals(true, state.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun transientFocusLossPausesTheClickAndGainResumesItWithinTheWindow() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            val abandonedBefore = state.focus.abandoned
+            state.focus.fire(AudioFocusEvent.LOSS_TRANSIENT)
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+            assertEquals(abandonedBefore, state.focus.abandoned)
+            step(state, 10_000)
+            state.focus.fire(AudioFocusEvent.GAIN)
+            runCurrent()
+            assertEquals(true, state.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun gainAfterTheWindowLeavesTheClickPaused() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            state.focus.fire(AudioFocusEvent.LOSS_TRANSIENT)
+            runCurrent()
+            step(state, 31_000)
+            state.focus.fire(AudioFocusEvent.GAIN)
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun permanentFocusLossStopsTheClickAndReleasesFocus() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            val abandonedBefore = state.focus.abandoned
+            state.focus.fire(AudioFocusEvent.LOSS)
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+            assertEquals(abandonedBefore + 1, state.focus.abandoned)
+        }
+    }
+
+    @Test
+    fun anAudioFailureWhilePlayingStopsTheBeatAndRaisesTheUnavailableState() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            state.player.failureFlow.tryEmit(IllegalStateException("Audio engine is unavailable"))
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+            assertEquals(true, state.viewModel.audioUnavailable.value)
+            val clicks = state.player.beats.size
+            step(state, 2_000)
+            assertEquals(clicks, state.player.beats.size)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)
         runCurrent()
     }
 
-    private suspend fun TestScope.fixture(deferred: Boolean = false, countIn: Boolean = false, haptics: Boolean = false, block: suspend TestScope.(Fixture) -> Unit) {
+    private suspend fun TestScope.fixture(deferred: Boolean = false, countIn: Boolean = false, haptics: Boolean = false, warmUpLead: Duration = Duration.ZERO, block: suspend TestScope.(Fixture) -> Unit) {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         val preferences = InMemoryPreferencesDataStore()
         val store = AppDatastoreImpl(preferences)
@@ -235,7 +662,7 @@ class MetronomePulseIntegrationTest {
         store.saveHapticEnabled(haptics)
         val haptic = TestHaptics()
         val source = InterceptedClock()
-        val player = SubmissionPlayer(deferred)
+        val player = SubmissionPlayer(deferred, warmUpLead)
         val version = object : AppVersionProvider {
             override fun getAppVersion() = AppVersionInfo("1.4.0", 10L)
         }
@@ -249,14 +676,15 @@ class MetronomePulseIntegrationTest {
             nowMillis = { 0L },
         )
         val viewModel = MetronomeViewModel(store, haptic, review, DataStorePracticePresetRepository(preferences, { "pulse-test" }, { 0L }))
-        val engine = MetronomeEngine(player, viewModel, haptic, NoopAudioFocusController(), coroutineScope = backgroundScope, timeSource = source)
+        val focus = FakeFocus()
+        val engine = MetronomeEngine(player, viewModel, haptic, focus, coroutineScope = backgroundScope, timeSource = source)
         try {
             runCurrent()
             viewModel.onSliderValueChanged(120f)
             runCurrent()
             engine.start()
             runCurrent()
-            block(Fixture(viewModel, engine, source, player, haptic))
+            block(Fixture(viewModel, engine, source, player, haptic, focus))
         } finally {
             engine.release()
             viewModel.viewModelScope.cancel()
@@ -265,7 +693,17 @@ class MetronomePulseIntegrationTest {
         }
     }
 
-    private data class Fixture(val viewModel: MetronomeViewModel, val engine: MetronomeEngine, val source: InterceptedClock, val player: SubmissionPlayer, val haptic: TestHaptics)
+    private data class Fixture(val viewModel: MetronomeViewModel, val engine: MetronomeEngine, val source: InterceptedClock, val player: SubmissionPlayer, val haptic: TestHaptics, val focus: FakeFocus)
+
+    private class FakeFocus : AudioFocusController {
+        private var listener: ((AudioFocusEvent) -> Unit)? = null
+        var abandoned = 0
+        override fun setOnFocusLost(onLost: () -> Unit) = Unit
+        override fun setOnFocusEvent(listener: (AudioFocusEvent) -> Unit) { this.listener = listener }
+        override fun requestFocus() = true
+        override fun abandonFocus() { abandoned++ }
+        fun fire(event: AudioFocusEvent) { listener?.invoke(event) }
+    }
 
     private class InterceptedClock : TimeSource.WithComparableMarks {
         val time = TestTimeSource()
@@ -278,13 +716,18 @@ class MetronomePulseIntegrationTest {
         }
     }
 
-    private class SubmissionPlayer(private val deferred: Boolean) : MetronomePlayer {
+    private class SubmissionPlayer(private val deferred: Boolean, override val warmUpLead: Duration = Duration.ZERO) : MetronomePlayer {
+        val failureFlow = kotlinx.coroutines.flow.MutableSharedFlow<Throwable>(extraBufferCapacity = 4)
+        override val failures: kotlinx.coroutines.flow.Flow<Throwable> = failureFlow
         val beats = mutableListOf<Beat>()
+        val lefts = mutableListOf<Float>()
+        var keepAlives = 0
+        override fun keepAlive() { keepAlives++ }
         val pending = mutableListOf<() -> Unit>()
         override fun initialize(initialSound: ClickSound) = Unit
-        override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) { beats += beat }
+        override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float) { beats += beat; lefts += stereoLeft }
         override fun play(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: () -> Unit) {
-            if (deferred) pending += { beats += beat; onSubmitted() } else { beats += beat; onSubmitted() }
+            if (deferred) pending += { beats += beat; lefts += stereoLeft; onSubmitted() } else { beats += beat; lefts += stereoLeft; onSubmitted() }
         }
         fun submit(index: Int) = pending[index]()
         override fun stop() = Unit

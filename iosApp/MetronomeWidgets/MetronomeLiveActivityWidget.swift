@@ -59,13 +59,13 @@ private struct CompactValueView: View {
     }
 
     private var timerText: Text? {
-        if state.isPlaying, state.timerKind == "countdown", let end = state.timerEnd {
+        if state.isPlaying, state.timerKind == .countdown, let end = state.timerEnd {
             return Text(timerInterval: Date.now...max(end, Date.now), countsDown: true)
         }
-        if state.isPlaying, state.timerKind == "stopwatch", let start = state.timerStart {
+        if state.isPlaying, state.timerKind == .stopwatch, let start = state.timerStart {
             return Text(timerInterval: start...Date.distantFuture, countsDown: false)
         }
-        if let frozen = state.timerFrozenSeconds, state.timerKind != "none" {
+        if let frozen = state.timerFrozenSeconds, state.timerKind != .none {
             return Text(Self.format(frozen))
         }
         return nil
@@ -80,16 +80,16 @@ private struct TimerView: View {
     let state: MetronomeActivityAttributes.ContentState
 
     var body: some View {
-        if state.timerKind == "none" {
+        if state.timerKind == .none {
             EmptyView()
-        } else if state.isPlaying, state.timerKind == "countdown", let end = state.timerEnd {
+        } else if state.isPlaying, state.timerKind == .countdown, let end = state.timerEnd {
             ProgressView(timerInterval: Date.now...max(end, Date.now)) {
                 EmptyView()
             } currentValueLabel: {
                 Text(timerInterval: Date.now...max(end, Date.now), countsDown: true)
             }
             .progressViewStyle(.circular)
-        } else if state.isPlaying, state.timerKind == "stopwatch", let start = state.timerStart {
+        } else if state.isPlaying, state.timerKind == .stopwatch, let start = state.timerStart {
             Text(timerInterval: start...Date.distantFuture, countsDown: false)
         } else if let frozen = state.timerFrozenSeconds {
             Text(CompactValueView.format(frozen))

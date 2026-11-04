@@ -42,6 +42,11 @@ interface AppDatastore {
 
     val lastTimerMinutes: Flow<Int>
     suspend fun saveLastTimerMinutes(minutes: Int)
+    val stopWhenTimerEnds: Flow<Boolean>
+    suspend fun saveStopWhenTimerEnds(enabled: Boolean)
+
+    val phraseLength: Flow<Int>
+    suspend fun savePhraseLength(bars: Int)
 
     val subdivision: Flow<Subdivision>
     suspend fun saveSubdivision(subdivision: Subdivision)

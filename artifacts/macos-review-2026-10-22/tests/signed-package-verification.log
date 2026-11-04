@@ -1,0 +1,21 @@
+{
+  "verifiedAtUtc": "2026-10-22T07:39:52.438398+00:00",
+  "classification": "Mac App Store signed application",
+  "appPath": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app",
+  "checksPassed": true,
+  "appStoreUploadPerformed": false,
+  "submittedForReview": false,
+  "testFlightProvisioningChecked": false,
+  "scope": "Static packaged artifact checks; runtime UI, audio, file-access and sandbox acceptance are separate gates",
+  "package": {
+    "path": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/pkg/Metronome-1.5.0.pkg",
+    "bytes": 76138637,
+    "sha256": "3365107e87412ed09bfa39be99757ef9367f4422ffd640c5aa5f52356caece82",
+    "installerSignatureVerified": true,
+    "appBytesMatchVerifiedImage": true
+  },
+  "version": "1.5.0",
+  "build": "1",
+  "nativeBinariesVerified": 30,
+  "audioPayloadsVerified": 11
+}
