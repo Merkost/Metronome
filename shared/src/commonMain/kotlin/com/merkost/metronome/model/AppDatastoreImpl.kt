@@ -49,6 +49,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val TODAY_DAY = longPreferencesKey("TODAY_DAY")
         private val STREAK_DAYS = intPreferencesKey("STREAK_DAYS")
         private val LAST_PRACTICE_DAY = longPreferencesKey("LAST_PRACTICE_DAY")
+        private val PRACTICE_LOG = stringPreferencesKey("PRACTICE_LOG")
         private val LIVE_ACTIVITY_ENABLED = booleanPreferencesKey("live_activity_enabled")
         private const val STREAK_MIN_MS = 60_000L
     }
@@ -131,6 +132,9 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
             val newTodayTime = todayBase + elapsedTime
             preferences[TODAY_DAY] = today
             preferences[TODAY_TIME] = newTodayTime
+            preferences[PRACTICE_LOG] = PracticeLog.encode(
+                PracticeLog.add(PracticeLog.parse(preferences[PRACTICE_LOG]), today, elapsedTime),
+            )
             if (newTodayTime >= STREAK_MIN_MS) {
                 val lastDay = preferences[LAST_PRACTICE_DAY]
                 if (lastDay != today) {
@@ -148,6 +152,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
             preferences[TODAY_TIME] = 0L
             preferences[STREAK_DAYS] = 0
             preferences.remove(LAST_PRACTICE_DAY)
+            preferences.remove(PRACTICE_LOG)
         }
     }
 
@@ -159,6 +164,9 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
                 0L
             }
         }
+
+    override val practiceWeek: Flow<PracticeWeek> = dataStore.data
+        .map { preferences -> PracticeLog.week(PracticeLog.parse(preferences[PRACTICE_LOG]), currentEpochDay()) }
 
     override val practiceStreak: Flow<Int> = dataStore.data
         .map { preferences ->

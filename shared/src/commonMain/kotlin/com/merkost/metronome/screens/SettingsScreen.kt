@@ -1,5 +1,6 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.model.PracticeWeek
 import com.merkost.metronome.components.PageScaffold
 import com.merkost.metronome.components.pageContentWidth
 import com.composables.icons.lucide.ChartNoAxesColumn
@@ -130,6 +131,7 @@ fun SettingsScreen(upPress: () -> Unit) {
     val totalTime by viewModel.totalTime.collectAsState()
     val todayTime by viewModel.todayTime.collectAsState()
     val practiceStreak by viewModel.practiceStreak.collectAsState()
+    val practiceWeek by viewModel.practiceWeek.collectAsState()
     val currentStereo by viewModel.currentStereo.collectAsState()
     val clickVolume by viewModel.clickVolume.collectAsState()
     val selectedSound by viewModel.selectedSound.collectAsState()
@@ -178,6 +180,7 @@ fun SettingsScreen(upPress: () -> Unit) {
             playing = playing,
             onReset = { showResetConfirmation = true },
             onDismiss = { activeSheet = null },
+            week = practiceWeek,
         )
         "about" -> SettingsAboutSheet(
             version = version,
