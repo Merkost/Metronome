@@ -87,6 +87,11 @@ import com.merkost.metronome.components.Pendulum
 import com.merkost.metronome.components.PillChip
 import com.merkost.metronome.components.MainShortcuts
 import com.merkost.metronome.components.StatusStrip
+import com.merkost.metronome.components.StatusStripAction
+import com.merkost.metronome.model.TempoStepMode
+import com.merkost.metronome.model.tempoTrainerStripState
+import com.composables.icons.lucide.ChevronDown
+import com.composables.icons.lucide.ChevronUp
 import com.merkost.metronome.components.PresetNameDialog
 import com.merkost.metronome.components.PresetSaveChoiceDialog
 import com.merkost.metronome.components.PracticeSessionStrip
@@ -617,24 +622,36 @@ fun MainScreen(
                         ) {
                             val config = gradualTempoConfig ?: lastShownTrainerConfig
                             if (config != null) {
-                                val complete = config.isComplete(metronomeState.rhythm)
+                                val strip = tempoTrainerStripState(
+                                    config = config,
+                                    bpm = metronomeState.rhythm,
+                                    trainerBar = gradualTempoCurrentBar,
+                                    isPlaying = isPlaying,
+                                    gapRunning = gapTrainerConfig != null,
+                                )
+                                val manual = config.stepMode == TempoStepMode.MANUAL &&
+                                    !config.isComplete(metronomeState.rhythm)
                                 StatusStrip(
                                     icon = if (config.ascending) {
                                         Lucide.TrendingUp
                                     } else {
                                         Lucide.TrendingDown
                                     },
-                                    title = if (complete) {
-                                        "${config.endBpm} BPM reached"
+                                    title = strip.title,
+                                    caption = strip.caption,
+                                    progress = strip.progress,
+                                    description = strip.description,
+                                    onClickLabel = "Edit tempo trainer",
+                                    stopLabel = "Stop tempo trainer",
+                                    action = if (manual) {
+                                        StatusStripAction(
+                                            icon = if (config.ascending) Lucide.ChevronUp else Lucide.ChevronDown,
+                                            label = "Next step",
+                                            onClick = viewModel::stepTempoTrainerForward,
+                                        )
                                     } else {
-                                        "${metronomeState.rhythm} → ${config.endBpm}"
+                                        null
                                     },
-                                    caption = when {
-                                        complete -> ""
-                                        isPlaying -> "bar ${gradualTempoCurrentBar.coerceAtMost(config.totalBars)} / ${config.totalBars}"
-                                        else -> "paused"
-                                    },
-                                    progress = config.progressFor(metronomeState.rhythm),
                                     accent = MaterialTheme.colorScheme.tertiary,
                                     onClick = {
                                         tempoSheetSection = TempoSheetSection.TRAINER
@@ -947,6 +964,8 @@ fun MainScreen(
             onSubdivisionChanged = viewModel::onSubdivisionChanged,
             phraseLength = phraseLength,
             onPhraseLengthChanged = viewModel::onPhraseLengthChanged,
+            onStepTrainerForward = viewModel::stepTempoTrainerForward,
+            onStepTrainerBack = viewModel::stepTempoTrainerBack,
             onStartTrainer = { config ->
                 if (practiceSessionState.session != null) {
                     pendingStructuredAction = { viewModel.replacePracticeSessionWithTempoTrainer(config) }

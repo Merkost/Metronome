@@ -53,6 +53,10 @@ import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.Subdivision
+import com.merkost.metronome.model.TempoStepMode
+import com.merkost.metronome.model.trainerProgressCaption
+import com.merkost.metronome.model.trainerRuleCaption
+import com.merkost.metronome.model.trainerSummaryFor
 import com.merkost.metronome.presets.ActivePresetState
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.practiceSets.PracticeSet
@@ -116,6 +120,8 @@ fun TempoTrainerSheet(
     onDismiss: () -> Unit,
     phraseLength: Int = 0,
     onPhraseLengthChanged: (Int) -> Unit = {},
+    onStepTrainerForward: () -> Unit = {},
+    onStepTrainerBack: () -> Unit = {},
 ) {
     AppBottomSheet(title = "Tempo", onDismiss = onDismiss) { dismissAnimated ->
         var expandedSection by remember {
@@ -238,6 +244,9 @@ fun TempoTrainerSheet(
                             currentBpm = currentBpm,
                             currentBar = currentBar,
                             isPlaying = isPlaying,
+                            gapRunning = activeGapConfig != null,
+                            onStepForward = onStepTrainerForward,
+                            onStepBack = onStepTrainerBack,
                             onStopKeep = {
                                 onStopTrainer(false)
                                 dismissAnimated()
@@ -254,6 +263,7 @@ fun TempoTrainerSheet(
                             beatsPerBar = beatsPerBar,
                             isPlaying = isPlaying,
                             seedConfig = activeConfig ?: lastConfig,
+                            gapCycleBars = activeGapConfig?.cycleBars,
                             onStartTrainer = {
                                 onStartTrainer(it)
                                 dismissAnimated()
@@ -496,6 +506,7 @@ private fun TrainerConfigContent(
     beatsPerBar: Int,
     isPlaying: Boolean,
     seedConfig: GradualTempoConfig?,
+    gapCycleBars: Int? = null,
     onStartTrainer: (GradualTempoConfig) -> Unit,
 ) {
     var startBpm by remember { mutableStateOf(seedConfig?.startBpm ?: currentBpm) }
@@ -504,6 +515,7 @@ private fun TrainerConfigContent(
     }
     var increment by remember { mutableStateOf(seedConfig?.increment ?: 2) }
     var barsPerStep by remember { mutableStateOf(seedConfig?.barsPerStep ?: 4) }
+    var stepMode by remember { mutableStateOf(seedConfig?.stepMode ?: TempoStepMode.BARS) }
 
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
         SectionCaption("Changes tempo automatically while you play")
@@ -533,16 +545,31 @@ private fun TrainerConfigContent(
             display = { if (endBpm >= startBpm) "+$it" else "−$it" },
             onSelect = { increment = it },
         )
-        OptionChipsRow(
-            label = "Every",
-            options = BARS_OPTIONS,
-            selected = barsPerStep,
-            display = { if (it == 1) "$it bar" else "$it bars" },
-            onSelect = { barsPerStep = it },
+        TrainerStepModeRow(
+            selected = stepMode,
+            gapRunning = gapCycleBars != null,
+            barsPerStep = barsPerStep,
+            onSelect = { mode ->
+                stepMode = mode
+                when (mode) {
+                    TempoStepMode.BARS -> if (barsPerStep !in BARS_OPTIONS) barsPerStep = 4
+                    TempoStepMode.GAP_CYCLE -> barsPerStep = gapCycleBars ?: barsPerStep
+                    TempoStepMode.MANUAL -> Unit
+                }
+            },
         )
+        if (stepMode == TempoStepMode.BARS) {
+            OptionChipsRow(
+                label = "Every",
+                options = BARS_OPTIONS,
+                selected = barsPerStep,
+                display = { if (it == 1) "$it bar" else "$it bars" },
+                onSelect = { barsPerStep = it },
+            )
+        }
 
-        val config = GradualTempoConfig(startBpm, endBpm, increment, barsPerStep)
-        SectionCaption(trainerSummary(config, beatsPerBar))
+        val config = GradualTempoConfig(startBpm, endBpm, increment, barsPerStep, stepMode)
+        SectionCaption(trainerSummaryFor(config, beatsPerBar))
 
         Button(
             onClick = { onStartTrainer(config) },
@@ -564,6 +591,9 @@ private fun ActiveTrainerContent(
     currentBpm: Int,
     currentBar: Int,
     isPlaying: Boolean,
+    gapRunning: Boolean,
+    onStepForward: () -> Unit,
+    onStepBack: () -> Unit,
     onStopKeep: () -> Unit,
     onStopReset: () -> Unit,
     onEdit: () -> Unit,
@@ -585,16 +615,18 @@ private fun ActiveTrainerContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            val direction = if (config.ascending) "+" else "−"
-            SectionCaption(
-                "${config.startBpm} → ${config.endBpm} · $direction${config.increment} every ${config.barsPerStep} bars",
-            )
+            SectionCaption(trainerRuleCaption(config))
             AnimatedSectionCaption(
-                when {
-                    config.isComplete(currentBpm) -> "Target reached"
-                    isPlaying -> "Bar ${currentBar.coerceAtMost(config.totalBars)} of ${config.totalBars}"
-                    else -> "Paused — advances while playing"
-                },
+                trainerProgressCaption(config, currentBpm, currentBar, isPlaying, gapRunning),
+            )
+        }
+
+        if (config.stepMode == TempoStepMode.MANUAL) {
+            ManualStepControls(
+                config = config,
+                currentBpm = currentBpm,
+                onStepForward = onStepForward,
+                onStepBack = onStepBack,
             )
         }
 
@@ -690,7 +722,7 @@ private fun GapTrainerContent(
 }
 
 @Composable
-private fun SheetSecondaryLabel(text: String) {
+internal fun SheetSecondaryLabel(text: String) {
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
@@ -703,10 +735,4 @@ private fun SheetSecondaryLabel(text: String) {
             autoSize = TextAutoSize.StepBased(8.sp, 16.sp),
         )
     }
-}
-
-private fun trainerSummary(config: GradualTempoConfig, beatsPerBar: Int): String {
-    val averageBpm = (config.startBpm + config.endBpm) / 2f
-    val minutes = (config.totalBars * beatsPerBar / averageBpm).toInt().coerceAtLeast(1)
-    return "${config.totalBars} bars · ≈ $minutes min"
 }
