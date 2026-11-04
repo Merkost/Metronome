@@ -330,6 +330,7 @@ fun MainScreen(
     val practiceTimerStoppedPlayback by viewModel.practiceTimerStoppedPlayback.collectAsState()
     val tempoTrainerStoppedNotice by viewModel.tempoTrainerStoppedNotice.collectAsState()
     val noSoundHint by viewModel.noSoundHint.collectAsState()
+    val audioUnavailable by viewModel.audioUnavailable.collectAsState()
     var lastNoSoundHint by remember { mutableStateOf<NoSoundHint?>(null) }
     LaunchedEffect(noSoundHint) { noSoundHint?.let { lastNoSoundHint = it } }
     val phraseLength by viewModel.phraseLength.collectAsState()
@@ -601,6 +602,27 @@ fun MainScreen(
                             },
                         verticalArrangement = Arrangement.spacedBy(spacingMedium)
                     ) {
+                        AnimatedVisibility(
+                            visible = audioUnavailable,
+                            enter = AppAnimations.expandEnter,
+                            exit = AppAnimations.shrinkExit,
+                            modifier = Modifier.padding(horizontal = horizontalPadding)
+                        ) {
+                            StatusStrip(
+                                icon = Lucide.VolumeX,
+                                title = "Audio unavailable",
+                                caption = "tap to retry",
+                                progress = 0f,
+                                accent = MaterialTheme.colorScheme.error,
+                                description = "Audio is unavailable. The click stopped. Tap to try again.",
+                                onClickLabel = "Try again",
+                                stopLabel = "Dismiss",
+                                onClick = { viewModel.onPlayPauseClicked(false) },
+                                onStop = viewModel::dismissAudioUnavailable,
+                                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                            )
+                        }
+
                         AnimatedVisibility(
                             visible = noSoundHint != null,
                             enter = AppAnimations.expandEnter,

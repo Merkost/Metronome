@@ -45,6 +45,15 @@ internal object IosAudioSessionLease {
         }
     }
 
+    fun invalidate() {
+        lock.lock()
+        try {
+            owners.clear()
+        } finally {
+            lock.unlock()
+        }
+    }
+
     fun release(owner: Any) {
         lock.lock()
         try {

@@ -61,6 +61,9 @@ class MetronomeEngine(
         audioFocus.setOnFocusEvent(focusCoordinator::onEvent)
         job = coroutineScope.launch {
             launch {
+                player.failures.collect { viewModel.onAudioUnavailable() }
+            }
+            launch {
                 viewModel.selectedSound.collectLatest { sound ->
                     player.switchSound(sound)
                 }

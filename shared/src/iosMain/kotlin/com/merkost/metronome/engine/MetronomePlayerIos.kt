@@ -19,13 +19,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.asSharedFlow
 import org.kimplify.cedar.logging.Cedar
 import platform.AVFAudio.AVAudioEngine
+import platform.AVFAudio.AVAudioEngineConfigurationChangeNotification
 import platform.AVFAudio.AVAudioFile
 import platform.AVFAudio.AVAudioPCMBuffer
 import platform.AVFAudio.AVAudioPlayerNode
 import platform.AVFAudio.AVAudioPlayerNodeBufferInterrupts
+import platform.AVFAudio.AVAudioSessionMediaServicesWereResetNotification
 import platform.AVFAudio.AVAudioUnitVarispeed
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
+import platform.Foundation.NSNotificationCenter
 import kotlin.concurrent.Volatile
 import kotlin.math.max
 import kotlin.time.Duration
@@ -70,6 +73,28 @@ class MetronomePlayerIos : MetronomePlayer {
 
     @Volatile
     private var outputWarm = false
+
+    @Volatile
+    private var needsRebuild = false
+
+    private val configurationObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+        name = AVAudioEngineConfigurationChangeNotification,
+        `object` = null,
+        queue = null,
+    ) {
+        Cedar.tag(TAG).w("Audio engine configuration changed; graph will be rebuilt on next use")
+        needsRebuild = true
+    }
+
+    private val mediaServicesResetObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+        name = AVAudioSessionMediaServicesWereResetNotification,
+        `object` = null,
+        queue = null,
+    ) {
+        Cedar.tag(TAG).w("Media services were reset; session and graph will be rebuilt on next use")
+        IosAudioSessionLease.invalidate()
+        needsRebuild = true
+    }
 
     override val warmUpLead: Duration
         get() = if (outputWarm) Duration.ZERO else COLD_START_LEAD
@@ -139,7 +164,12 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     private fun playInternal(beat: Beat, stereoLeft: Float, stereoRight: Float, onSubmitted: (() -> Unit)?) {
-        val current = graph ?: return
+        rebuildIfStale()
+        val current = graph
+        if (current == null) {
+            reportFailure(IllegalStateException("Audio graph is unavailable"))
+            return
+        }
         if (!ensureRunning(current)) {
             reportFailure(IllegalStateException("Audio engine is unavailable"))
             return
@@ -171,6 +201,7 @@ class MetronomePlayerIos : MetronomePlayer {
     }
 
     private fun keepAliveInternal() {
+        rebuildIfStale()
         val current = graph ?: return
         if (!ensureRunning(current)) return
         if (!current.player.playing) current.player.play()
@@ -192,7 +223,28 @@ class MetronomePlayerIos : MetronomePlayer {
         installGraph(replacement, sound)
     }
 
+    private fun rebuildIfStale() {
+        if (!needsRebuild) return
+        val sound = requestedSound ?: return
+        needsRebuild = false
+        val stale = graph
+        stale?.player?.stop()
+        stale?.engine?.stop()
+        graph = null
+        if (!activateSession()) {
+            reportFailure(IllegalStateException("Audio session is unavailable"))
+            return
+        }
+        val replacement = createGraph(sound)
+        if (replacement == null) {
+            reportFailure(IllegalStateException("Audio graph could not be rebuilt"))
+            return
+        }
+        installGraph(replacement, sound)
+    }
+
     private fun releaseInternal() {
+        needsRebuild = false
         outputWarm = false
         graph?.player?.stop()
         graph?.engine?.stop()

@@ -87,6 +87,42 @@ class NoSoundHintFlowTest {
         }
     }
 
+    @Test
+    fun audioFailureWhilePlayingStopsPlaybackAndRaisesTheUnavailableState() = runTest {
+        withFixture(null) { viewModel ->
+            viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            viewModel.onAudioUnavailable()
+            runCurrent()
+            assertEquals(false, viewModel.metronomeState.value.playing)
+            assertEquals(true, viewModel.audioUnavailable.value)
+            viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(false, viewModel.audioUnavailable.value)
+            assertEquals(true, viewModel.metronomeState.value.playing)
+        }
+    }
+
+    @Test
+    fun audioFailureWhilePausedIsIgnored() = runTest {
+        withFixture(null) { viewModel ->
+            viewModel.onAudioUnavailable()
+            runCurrent()
+            assertEquals(false, viewModel.audioUnavailable.value)
+        }
+    }
+
+    @Test
+    fun dismissingTheUnavailableNoticeClearsIt() = runTest {
+        withFixture(null) { viewModel ->
+            viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            viewModel.onAudioUnavailable()
+            viewModel.dismissAudioUnavailable()
+            assertEquals(false, viewModel.audioUnavailable.value)
+        }
+    }
+
     private class FakeStatus(var mediaOff: Boolean) : AudioOutputStatus {
         var reads = 0
         var shown = 0

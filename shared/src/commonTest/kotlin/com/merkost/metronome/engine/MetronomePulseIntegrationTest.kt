@@ -631,6 +631,22 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun anAudioFailureWhilePlayingStopsTheBeatAndRaisesTheUnavailableState() = runTest {
+        fixture { state ->
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            step(state, 500)
+            state.player.failureFlow.tryEmit(IllegalStateException("Audio engine is unavailable"))
+            runCurrent()
+            assertEquals(false, state.viewModel.metronomeState.value.playing)
+            assertEquals(true, state.viewModel.audioUnavailable.value)
+            val clicks = state.player.beats.size
+            step(state, 2_000)
+            assertEquals(clicks, state.player.beats.size)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)
@@ -701,6 +717,8 @@ class MetronomePulseIntegrationTest {
     }
 
     private class SubmissionPlayer(private val deferred: Boolean, override val warmUpLead: Duration = Duration.ZERO) : MetronomePlayer {
+        val failureFlow = kotlinx.coroutines.flow.MutableSharedFlow<Throwable>(extraBufferCapacity = 4)
+        override val failures: kotlinx.coroutines.flow.Flow<Throwable> = failureFlow
         val beats = mutableListOf<Beat>()
         val lefts = mutableListOf<Float>()
         var keepAlives = 0

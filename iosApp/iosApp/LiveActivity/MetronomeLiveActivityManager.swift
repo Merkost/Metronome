@@ -54,7 +54,7 @@ final class MetronomeLiveActivityManager: LiveActivityController {
                 bpm: Int(truncating: s.bpm as NSNumber),
                 tempoName: s.tempoName,
                 timeSignature: s.timeSignatureLabel,
-                timerKind: s.timerKind.name.lowercased(),
+                timerKind: LiveActivityTimerKind(rawValue: s.timerKind.name.lowercased()) ?? .none,
                 timerStart: s.timerStartEpochMillis.map { Date(timeIntervalSince1970: $0.doubleValue / 1000.0) },
                 timerEnd: s.timerEndEpochMillis.map { Date(timeIntervalSince1970: $0.doubleValue / 1000.0) },
                 timerFrozenSeconds: s.timerFrozenMillis.map { Int(truncating: $0) / 1000 }

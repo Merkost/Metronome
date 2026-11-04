@@ -423,6 +423,7 @@ class MetronomeViewModel(
 
     fun onPlayPauseClicked(isPlaying: Boolean) {
         if (!acceptPlaybackRequest()) return
+        if (!isPlaying) _audioUnavailable.value = false
         if (practiceSessionState.value.session != null) {
             viewModelScope.launch {
                 if (applicationExitRequested) return@launch
@@ -567,6 +568,19 @@ class MetronomeViewModel(
 
     fun onPresetDeleted(id: String) {
         activePresetTracker.removed(id)
+    }
+
+    private val _audioUnavailable = MutableStateFlow(false)
+    val audioUnavailable: StateFlow<Boolean> = _audioUnavailable.asStateFlow()
+
+    fun onAudioUnavailable() {
+        if (!_metronomeState.value.playing) return
+        _audioUnavailable.value = true
+        onStopClicked()
+    }
+
+    fun dismissAudioUnavailable() {
+        _audioUnavailable.value = false
     }
 
     private val _noSoundHint = MutableStateFlow<NoSoundHint?>(null)

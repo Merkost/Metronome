@@ -3,6 +3,7 @@ package com.merkost.metronome
 import com.merkost.metronome.di.commonModule
 import com.merkost.metronome.di.iosModule
 import com.merkost.metronome.engine.LiveActivityObserver
+import com.merkost.metronome.engine.MetronomeEngine
 import com.merkost.metronome.platform.LiveActivityController
 import com.merkost.metronome.review.InAppReviewRequester
 import org.koin.core.context.startKoin
@@ -23,5 +24,6 @@ fun initKoin(
             }
         )
     }
+    KoinPlatform.getKoin().get<MetronomeEngine>()
     KoinPlatform.getKoin().get<LiveActivityObserver>().start()
 }
