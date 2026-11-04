@@ -1,5 +1,7 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.components.PageScaffold
+import com.merkost.metronome.components.pageContentWidth
 import com.composables.icons.lucide.ChartNoAxesColumn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -264,24 +266,16 @@ internal fun SettingsScreenContent(
     upPress: () -> Unit,
 ) {
     val desktop = LocalAppPresentation.current == AppPresentation.Desktop
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Settings", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    if (!desktop) {
-                        AppIconButton(onClick = upPress) {
-                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, "Back")
-                        }
-                    }
-                },
-            )
-        },
+    PageScaffold(
+        title = "Settings",
+        subtitle = if (desktop) state.practiceSummary ?: "Sound, appearance and practice data" else null,
+        onBack = upPress,
+        centerTitle = false,
     ) { insets ->
         Box(Modifier.fillMaxSize().padding(top = insets.calculateTopPadding()), contentAlignment = Alignment.TopCenter) {
             Column(
                 modifier = Modifier
-                    .widthIn(max = maxContentWidth)
+                    .widthIn(max = pageContentWidth())
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
@@ -289,7 +283,7 @@ internal fun SettingsScreenContent(
                     .padding(bottom = spacingLarge),
                 verticalArrangement = Arrangement.spacedBy(spacingMedium),
             ) {
-                state.practiceSummary?.let { summary ->
+                state.practiceSummary?.takeIf { !desktop }?.let { summary ->
                     Text(
                         summary,
                         style = MaterialTheme.typography.bodyMedium,

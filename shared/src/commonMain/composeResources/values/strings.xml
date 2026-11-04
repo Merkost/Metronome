@@ -34,7 +34,7 @@
     <string name="unfavourite_preset">Unfavourite %1$s</string>
     <string name="preset_actions">Actions for %1$s</string>
     <string name="preset_empty_title">Save a setup</string>
-    <string name="preset_empty_body">Keep your tempo and rhythm ready for next time.</string>
+    <string name="preset_empty_body">Keep the setups you return to. Save a tempo, rhythm and sound once, then bring it back in one click.</string>
     <string name="preset_limit_reached">You can keep up to 50 presets. Delete one before saving another.</string>
     <string name="preset_migration_failed">Saved tempos could not be imported. Your original saved tempos are still safe.</string>
     <string name="retry">Retry</string>
@@ -64,8 +64,8 @@
     <string name="practice_set_name_required">Enter a name for this set.</string>
     <string name="practice_set_name_too_long">Keep the name to 80 characters or fewer.</string>
     <string name="practice_set_steps_required">Add at least one preset.</string>
-    <string name="practice_set_empty_title">Your practice, in steps</string>
-    <string name="practice_set_empty_body">Combine saved setups into a routine.</string>
+    <string name="practice_set_empty_title">Practice in steps</string>
+    <string name="practice_set_empty_body">Chain presets into a routine with time or bar goals, then let it run hands-free.</string>
     <string name="practice_set_count">%1$d of 30 sets</string>
     <string name="practice_set_step_count">%1$d steps</string>
     <string name="practice_set_start">Start set</string>

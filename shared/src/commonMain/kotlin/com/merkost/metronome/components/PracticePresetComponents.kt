@@ -357,30 +357,12 @@ fun PresetSaveChoiceDialog(
 
 @Composable
 fun PracticePresetsEmptyState(onCreate: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth().padding(vertical = spacingLarge),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(spacingSmall),
+    EmptyState(
+        art = EmptyStateArt.Presets,
+        title = stringResource(Res.string.preset_empty_title),
+        body = stringResource(Res.string.preset_empty_body),
+        modifier = modifier,
     ) {
-        Icon(
-            imageVector = Lucide.Star,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(32.dp),
-        )
-        Text(
-            text = stringResource(Res.string.preset_empty_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = stringResource(Res.string.preset_empty_body),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(spacingSmall))
         Button(onClick = onCreate, modifier = Modifier.heightIn(min = sheetButtonHeight)) {
             Icon(Lucide.Plus, contentDescription = null)
             Spacer(Modifier.width(spacingSmall))

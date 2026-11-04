@@ -74,6 +74,7 @@ private val desktopDestinations = listOf(
 fun DesktopAppShell(
     selectedDestination: MainDestination,
     onNavigate: (MainDestination) -> Unit,
+    playing: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
@@ -92,7 +93,7 @@ fun DesktopAppShell(
                             horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            MetronomeMark(Modifier.size(28.dp), MaterialTheme.colorScheme.onSurface)
+                            MetronomeMark(Modifier.size(28.dp), MaterialTheme.colorScheme.onSurface, swinging = playing)
                             if (LocalDensity.current.fontScale <= 1.4f) {
                                 Text("Metronome", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             }
