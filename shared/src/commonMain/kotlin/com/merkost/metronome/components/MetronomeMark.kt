@@ -1,5 +1,13 @@
 package com.merkost.metronome.components
 
+import com.merkost.metronome.ui.isAppMotionReduced
+import com.merkost.metronome.ui.AppAnimations
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalContentColor
@@ -13,12 +21,28 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+private const val MarkSwingDegrees = 7f
+private const val MarkSwingMillis = 700
+
 @Composable
-fun MetronomeMark(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current) {
+fun MetronomeMark(modifier: Modifier = Modifier, tint: Color = LocalContentColor.current, swinging: Boolean = false) {
+    val reducedMotion = isAppMotionReduced()
+    val angle = remember { Animatable(0f) }
+    LaunchedEffect(swinging, reducedMotion) {
+        if (swinging && !reducedMotion) {
+            angle.animateTo(MarkSwingDegrees, AppAnimations.calm())
+            while (true) {
+                angle.animateTo(-MarkSwingDegrees, tween(MarkSwingMillis, easing = FastOutSlowInEasing))
+                angle.animateTo(MarkSwingDegrees, tween(MarkSwingMillis, easing = FastOutSlowInEasing))
+            }
+        } else {
+            angle.animateTo(0f, AppAnimations.calm())
+        }
+    }
     val path = remember {
         PathParser().parsePathString("M5305.1,2767.8L6117,1414.7l-468.4,-281.6l-662.4,1104.4l-304.3,-507.5c-266.7,-443.9 -842.8,-587.4 -1286.6,-320.7c-131.5,79 -241.7,189.2 -320.7,320.7l-1770.4,2955c-317.5,529 -146.1,1215.2 382.8,1532.8c173.6,104.2 372.3,159.3 574.8,159.3h3232.9c616.6,-1 1116.1,-500.6 1117.1,-1117.1v-10.9c-0.2,-203 -55.6,-402 -160.4,-575.9L5305.1,2767.8zM3543.8,2014.2c111.4,-184.9 351.6,-244.6 536.5,-133.2c54.6,32.9 100.3,78.6 133.2,133.2l455.6,754.5L3595.7,4554.6H2019.4L3543.8,2014.2zM4987.1,3299l755.4,1255.6H4233.6L4987.1,3299zM6065.1,5259.9c0,315 -255.4,570.4 -570.4,570.4H2261.7c-314.5,0 -569.5,-255 -569.5,-569.5c0,-54 7.7,-107.7 22.8,-159.5h4330c13,47.8 19.8,97.1 20,146.7V5259.9z").toPath()
     }
-    Canvas(modifier.size(28.dp)) {
+    Canvas(modifier.size(28.dp).graphicsLayer { rotationZ = angle.value; transformOrigin = TransformOrigin(0.5f, 0.9f) }) {
         scale(size.width / 7654f, size.height / 7654f, pivot = androidx.compose.ui.geometry.Offset.Zero) {
             drawPath(path, tint)
         }

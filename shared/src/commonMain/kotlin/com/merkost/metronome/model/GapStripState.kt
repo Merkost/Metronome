@@ -53,3 +53,12 @@ fun gapStripState(
         },
     )
 }
+
+fun gapClickResting(
+    gapActive: Boolean,
+    currentBar: Int,
+    startBar: Int,
+    muted: Boolean,
+    isPlaying: Boolean,
+    countInRemaining: Int,
+): Boolean = gapActive && isPlaying && countInRemaining == 0 && currentBar >= startBar && muted

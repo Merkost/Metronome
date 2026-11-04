@@ -1,5 +1,9 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.components.PageScaffold
+import com.merkost.metronome.components.pageContentWidth
+import com.merkost.metronome.components.EmptyState
+import com.merkost.metronome.components.EmptyStateArt
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import com.merkost.metronome.navigation.LocalAppPresentation
@@ -39,7 +43,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import com.merkost.metronome.components.AppSnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -386,32 +390,17 @@ internal fun PracticeSetsLibrary(
     onReorderingChanged: (Boolean) -> Unit,
 ) {
     val stacked = LocalDensity.current.fontScale >= 1.3f
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        stringResource(Res.string.practice_sets),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    if (LocalAppPresentation.current != AppPresentation.Desktop) {
-                        AppIconButton(onClick = onBack) {
-                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
-                        }
-                    }
-                },
-                actions = {
-                    if (uiState.sets.isNotEmpty()) {
-                        TextButton(onClick = { onReorderingChanged(!uiState.isReordering) }) {
-                            Text(stringResource(if (uiState.isReordering) Res.string.done else Res.string.reorder))
-                        }
-                    }
-                },
-            )
+    PageScaffold(
+        title = stringResource(Res.string.practice_sets),
+        subtitle = "Routines made of your presets",
+        onBack = onBack,
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
+        actions = {
+            if (uiState.sets.isNotEmpty()) {
+                TextButton(onClick = { onReorderingChanged(!uiState.isReordering) }) {
+                    Text(stringResource(if (uiState.isReordering) Res.string.done else Res.string.reorder))
+                }
+            }
         },
     ) { contentPadding ->
         Box(
@@ -425,7 +414,7 @@ internal fun PracticeSetsLibrary(
             ) { isEmpty ->
                 if (isEmpty) {
                     Column(
-                        Modifier.widthIn(max = maxContentWidth).fillMaxWidth()
+                        Modifier.widthIn(max = pageContentWidth()).fillMaxWidth()
                             .verticalScroll(rememberScrollState()).navigationBarsPadding()
                             .padding(start = horizontalPadding, end = horizontalPadding, bottom = spacingLarge),
                         verticalArrangement = Arrangement.spacedBy(spacingMedium),
@@ -436,7 +425,7 @@ internal fun PracticeSetsLibrary(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.widthIn(max = maxContentWidth).fillMaxWidth(),
+                        modifier = Modifier.widthIn(max = pageContentWidth()).fillMaxWidth(),
                         contentPadding = PaddingValues(
                             start = horizontalPadding,
                             end = horizontalPadding,
@@ -544,7 +533,7 @@ private fun PracticeSetEditor(
     onReorderingChanged: (Boolean) -> Unit,
 ) {
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -656,46 +645,12 @@ private fun PracticeSetEditor(
 
 @Composable
 private fun PracticeSetsEmptyState(onCreate: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth().padding(top = spacingLarge, bottom = spacingLarge),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    EmptyState(
+        art = EmptyStateArt.Steps,
+        title = stringResource(Res.string.practice_set_empty_title),
+        body = stringResource(Res.string.practice_set_empty_body),
+        modifier = modifier,
     ) {
-        Box(
-            modifier = Modifier
-                .size(emptyStateBadgeSize)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                repeat(3) { index ->
-                    Box(
-                        modifier = Modifier
-                            .size(if (index == 0) 12.dp else 9.dp)
-                            .clip(CircleShape)
-                            .background(
-                                MaterialTheme.colorScheme.onSurface
-                                    .copy(alpha = if (index == 0) 1f else 0.3f)
-                            )
-                    )
-                }
-            }
-        }
-        Spacer(Modifier.height(spacingLarge))
-        Text(
-            stringResource(Res.string.practice_set_empty_title),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(spacingSmall))
-        Text(
-            stringResource(Res.string.practice_set_empty_body),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(spacingLarge))
         CreateSetButton(enabled = true, onClick = onCreate)
     }
 }

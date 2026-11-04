@@ -1,5 +1,7 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.components.PageScaffold
+import com.merkost.metronome.components.pageContentWidth
 import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.navigation.AppPresentation
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import com.merkost.metronome.components.AppSnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -302,32 +304,17 @@ internal fun PracticePresetsContent(
     onRetryMigration: () -> Unit,
 ) {
     val useStackedSummary = LocalDensity.current.fontScale >= 1.3f
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        stringResource(Res.string.practice_presets),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                navigationIcon = {
-                    if (LocalAppPresentation.current != AppPresentation.Desktop) {
-                        AppIconButton(onClick = onBack) {
-                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
-                        }
-                    }
-                },
-                actions = {
-                    if (uiState.presets.isNotEmpty()) {
-                        TextButton(onClick = { onReorderingChanged(!uiState.isReordering) }) {
-                            Text(stringResource(if (uiState.isReordering) Res.string.done else Res.string.reorder))
-                        }
-                    }
-                },
-            )
+    PageScaffold(
+        title = stringResource(Res.string.practice_presets),
+        subtitle = "Saved tempo and rhythm setups",
+        onBack = onBack,
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
+        actions = {
+            if (uiState.presets.isNotEmpty()) {
+                TextButton(onClick = { onReorderingChanged(!uiState.isReordering) }) {
+                    Text(stringResource(if (uiState.isReordering) Res.string.done else Res.string.reorder))
+                }
+            }
         },
     ) { contentPadding ->
         Box(
@@ -342,11 +329,11 @@ internal fun PracticePresetsContent(
                 if (isEmpty) {
                     PracticePresetsEmptyState(
                         onCreate = onCreate,
-                        modifier = Modifier.widthIn(max = maxContentWidth).verticalScroll(rememberScrollState()).padding(horizontal = horizontalPadding),
+                        modifier = Modifier.widthIn(max = pageContentWidth()).verticalScroll(rememberScrollState()).padding(horizontal = horizontalPadding),
                     )
                 } else {
                     LazyColumn(
-                        modifier = Modifier.widthIn(max = maxContentWidth).fillMaxWidth(),
+                        modifier = Modifier.widthIn(max = pageContentWidth()).fillMaxWidth(),
                         contentPadding = androidx.compose.foundation.layout.PaddingValues(
                             start = horizontalPadding,
                             end = horizontalPadding,

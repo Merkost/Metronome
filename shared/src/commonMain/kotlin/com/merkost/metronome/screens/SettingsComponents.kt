@@ -1,5 +1,6 @@
 package com.merkost.metronome.screens
 
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -278,13 +279,27 @@ private fun SettingsPaletteChoice(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
-        Box(Modifier.size(minimumTouchTargetSize).border(ring, ringColor, CircleShape).padding(4.dp), contentAlignment = Alignment.Center) {
-            Surface(shape = CircleShape, color = palette.lightColor.primary, modifier = Modifier.size(40.dp).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)) {
-                Box(contentAlignment = Alignment.Center) {
-                    AnimatedContent(isSelected, transitionSpec = { AppAnimations.fadeScaleTransform }, label = "paletteCheck") { chosen ->
-                        if (chosen) Icon(Lucide.Check, null, tint = palette.lightColor.onPrimary, modifier = Modifier.size(20.dp))
-                        else if (palette == AppColorScheme.MATERIAL3) Icon(Lucide.Smartphone, null, tint = palette.lightColor.onPrimary, modifier = Modifier.size(18.dp))
-                    }
+        val face = if (MaterialTheme.colorScheme.background.luminance() < 0.5f) palette.darkColor else palette.lightColor
+        val faceShape = RoundedCornerShape(cornerRadiusMedium)
+        Column(
+            Modifier.size(width = 60.dp, height = 76.dp)
+                .border(ring.coerceAtLeast(1.dp), if (isSelected) ringColor else MaterialTheme.colorScheme.outlineVariant, faceShape)
+                .clip(faceShape)
+                .background(face.background)
+                .padding(vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                repeat(3) { dot ->
+                    Box(Modifier.size(6.dp).clip(CircleShape).background(face.primary.copy(alpha = if (dot == 0) 1f else 0.3f)))
+                }
+            }
+            Text("96", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = face.onBackground, maxLines = 1)
+            Box(Modifier.size(18.dp).clip(CircleShape).background(face.primary), contentAlignment = Alignment.Center) {
+                AnimatedContent(isSelected, transitionSpec = { AppAnimations.fadeScaleTransform }, label = "paletteCheck") { chosen ->
+                    if (chosen) Icon(Lucide.Check, null, tint = face.onPrimary, modifier = Modifier.size(12.dp))
+                    else if (palette == AppColorScheme.MATERIAL3) Icon(Lucide.Smartphone, null, tint = face.onPrimary, modifier = Modifier.size(11.dp))
                 }
             }
         }

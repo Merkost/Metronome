@@ -1,5 +1,6 @@
 package com.merkost.metronome.components
 
+import com.merkost.metronome.ui.hoverTint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -97,6 +98,7 @@ fun ExpandableSection(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(cornerRadiusMedium))
                 .background(highlight)
+                .hoverTint(interactionSource, RoundedCornerShape(cornerRadiusMedium))
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,

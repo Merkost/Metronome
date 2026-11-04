@@ -1,5 +1,7 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.components.PageScaffold
+import com.merkost.metronome.components.pageContentWidth
 import com.composables.icons.lucide.ChartNoAxesColumn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,6 +59,7 @@ import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.theme.AppColorScheme
+import com.merkost.metronome.model.practiceSummaryLine
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -82,6 +85,7 @@ internal data class SettingsUiState(
     val supportsHaptics: Boolean = true,
     val version: String = "",
     val previewError: String? = null,
+    val practiceSummary: String? = null,
 )
 
 internal data class SettingsActions(
@@ -222,6 +226,7 @@ fun SettingsScreen(upPress: () -> Unit) {
             supportsHaptics = !desktop,
             version = version,
             previewError = previewError,
+            practiceSummary = practiceSummaryLine(totalTime, practiceStreak),
         ),
         actions = SettingsActions(
             onColorScheme = viewModel::onColorSchemeChanged,
@@ -261,24 +266,16 @@ internal fun SettingsScreenContent(
     upPress: () -> Unit,
 ) {
     val desktop = LocalAppPresentation.current == AppPresentation.Desktop
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Settings", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    if (!desktop) {
-                        AppIconButton(onClick = upPress) {
-                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, "Back")
-                        }
-                    }
-                },
-            )
-        },
+    PageScaffold(
+        title = "Settings",
+        subtitle = if (desktop) state.practiceSummary ?: "Sound, appearance and practice data" else null,
+        onBack = upPress,
+        centerTitle = false,
     ) { insets ->
         Box(Modifier.fillMaxSize().padding(top = insets.calculateTopPadding()), contentAlignment = Alignment.TopCenter) {
             Column(
                 modifier = Modifier
-                    .widthIn(max = maxContentWidth)
+                    .widthIn(max = pageContentWidth())
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
@@ -286,6 +283,13 @@ internal fun SettingsScreenContent(
                     .padding(bottom = spacingLarge),
                 verticalArrangement = Arrangement.spacedBy(spacingMedium),
             ) {
+                state.practiceSummary?.takeIf { !desktop }?.let { summary ->
+                    Text(
+                        summary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 SettingsSoundPanel(state, actions)
                 SettingsAppearancePanel(state, actions)
                 SettingsDisclosure(

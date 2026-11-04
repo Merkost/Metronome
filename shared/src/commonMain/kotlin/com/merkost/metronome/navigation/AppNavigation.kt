@@ -206,6 +206,7 @@ private fun AppNavigationHost() {
             DesktopAppShell(
                 selectedDestination = backStack.lastOrNull() as? MainDestination ?: MainDestination.Main,
                 onNavigate = navigate,
+                playing = koinInject<MetronomeViewModel>().isPlaying.collectAsState().value,
                 content = content,
             )
         }
