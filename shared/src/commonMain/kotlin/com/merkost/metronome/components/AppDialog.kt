@@ -17,6 +17,7 @@ fun AppDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     dismissLabel: String = "Cancel",
+    destructive: Boolean = false,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -35,7 +36,7 @@ fun AppDialog(
                 Text(
                     text = confirmLabel,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                 )
             }
         },

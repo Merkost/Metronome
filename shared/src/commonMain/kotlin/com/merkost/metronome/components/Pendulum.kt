@@ -73,7 +73,6 @@ fun Pendulum(
     val armHighlightColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.65f)
     val tipColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
     val weightColor = when (activeBeat) {
-        Beat.HIGH -> MaterialTheme.colorScheme.tertiary
         Beat.MUTE -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.66f)
         else -> MaterialTheme.colorScheme.primary
     }

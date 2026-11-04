@@ -60,7 +60,8 @@ internal val mainNavigationSavedStateConfiguration = SavedStateConfiguration {
 
 @Composable
 fun AppNavigation() {
-    var splashComplete by rememberSaveable { mutableStateOf(false) }
+    val startsOnContent = LocalAppPresentation.current == AppPresentation.Desktop
+    var splashComplete by rememberSaveable { mutableStateOf(startsOnContent) }
 
     val viewModel: MetronomeViewModel = koinInject()
     val previewController: SoundPreviewController = koinInject()
@@ -162,9 +163,9 @@ private fun AppNavigationHost() {
         NavDisplay(
             backStack = backStack,
             onBack = goBack,
-            transitionSpec = { AppAnimations.forwardNavigation() },
-            popTransitionSpec = { AppAnimations.backwardNavigation() },
-            predictivePopTransitionSpec = { AppAnimations.backwardNavigation() },
+            transitionSpec = { if (desktop) AppAnimations.fadeThroughRoute else AppAnimations.forwardNavigation() },
+            popTransitionSpec = { if (desktop) AppAnimations.fadeThroughRoute else AppAnimations.backwardNavigation() },
+            predictivePopTransitionSpec = { if (desktop) AppAnimations.fadeThroughRoute else AppAnimations.backwardNavigation() },
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator(),
@@ -189,7 +190,9 @@ private fun AppNavigationHost() {
                     PracticeSetsScreen(
                         upPress = goBack,
                         onStart = { navigate(MainDestination.Main) },
-                        onOpenPresets = { navigate(MainDestination.PracticePresets) },
+                        onOpenPresets = {
+                            if (desktop) navigate(MainDestination.PracticePresets) else navigator.navigateBackToOrPush(MainDestination.PracticePresets)
+                        },
                     )
                 }
                 entry<MainDestination.Settings> {

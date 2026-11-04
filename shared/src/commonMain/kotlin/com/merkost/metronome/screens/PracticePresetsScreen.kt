@@ -1,5 +1,7 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.navigation.LocalAppPresentation
+import com.merkost.metronome.navigation.AppPresentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -251,6 +253,7 @@ fun PracticePresetsScreen(
             title = stringResource(Res.string.delete_preset),
             text = stringResource(Res.string.delete_preset_message, preset.name),
             confirmLabel = stringResource(Res.string.delete),
+            destructive = true,
             dismissLabel = stringResource(Res.string.cancel),
             onConfirm = {
                 presetsViewModel.delete(preset.id)
@@ -311,8 +314,10 @@ internal fun PracticePresetsContent(
                     )
                 },
                 navigationIcon = {
-                    AppIconButton(onClick = onBack) {
-                        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
+                    if (LocalAppPresentation.current != AppPresentation.Desktop) {
+                        AppIconButton(onClick = onBack) {
+                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
+                        }
                     }
                 },
                 actions = {

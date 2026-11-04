@@ -216,7 +216,11 @@ internal fun AppBottomSheetBody(
                 .padding(start = horizontalPadding, end = horizontalPadding, bottom = spacingLarge),
         ) {
             if (showTitle) {
-                Text(title, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.semantics { heading() },
+                )
                 Spacer(Modifier.height(spacingMedium))
             }
             content(onDismissAnimated)

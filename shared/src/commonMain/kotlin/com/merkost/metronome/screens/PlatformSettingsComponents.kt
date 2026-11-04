@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.platform.AppVersionProvider
+import com.merkost.metronome.ui.cornerRadiusLarge
 import metronome.shared.generated.resources.Res
 import metronome.shared.generated.resources.app_full_name
 import metronome.shared.generated.resources.ic_launcher
@@ -30,9 +31,13 @@ fun AppInfoCard() {
     val appVersionProvider: AppVersionProvider = koinInject()
     val appVersion = appVersionProvider.getAppVersion()
 
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(cornerRadiusLarge),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
         Row(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {

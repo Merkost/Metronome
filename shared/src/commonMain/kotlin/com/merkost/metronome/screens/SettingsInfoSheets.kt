@@ -163,7 +163,7 @@ internal fun SettingsGuideSheet(onDismiss: () -> Unit) {
 private fun SettingsGuideContent(onDone: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
         SettingsGuideStep("Tempo", "Slide the tempo, tap a rhythm or enter an exact BPM. Press Play when you're ready.")
-        SettingsGuideStep("Rhythm", "Tap a beat to cycle through normal, accent and mute. A filled dot plays the accent sound; the outer ring follows the active beat.")
+        SettingsGuideStep("Rhythm", "Tap a beat to cycle accent, normal and mute. A filled dot plays the accent sound; the outer ring follows the active beat.")
         SettingsGuideStep("Saved setups", "Save a preset to return to a tempo and rhythm. Arrange presets into a practice set with time or bar goals.")
         SettingsGuideStep("Training tools", "Use the timer for a focused block, Tempo trainer to build speed and Gap trainer to practice through silence.")
         Button(onClick = onDone, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight)) {

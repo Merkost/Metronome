@@ -1,5 +1,6 @@
 package com.merkost.metronome.components
 
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -96,6 +97,8 @@ fun AppChip(
                     fontWeight = FontWeight.SemiBold
                 ),
                 color = contentColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             if (onTrailingClose != null) {
                 AppIconButton(onClick = onTrailingClose) {

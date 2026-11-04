@@ -1,5 +1,9 @@
 package com.merkost.metronome.screens
 
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.heading
+import com.composables.icons.lucide.ChevronRight
+import com.composables.icons.lucide.ChevronLeft
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -61,7 +65,7 @@ fun PracticeHubSheet(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {
-            Text("Saved setups", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Text("Saved setups", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.semantics { heading() })
             PracticeHubRow(Lucide.Bookmark, "Presets", value = presetCount.toString()) {
                 onOpenPresets()
                 dismissAnimated()
@@ -138,7 +142,7 @@ internal fun PracticeHubRow(
             caption?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
         value?.let { Text(it, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowLeft else Lucide.ArrowRight, contentDescription = null, modifier = Modifier.size(18.dp))
+        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight, contentDescription = null, modifier = Modifier.size(18.dp))
     }
 }
 

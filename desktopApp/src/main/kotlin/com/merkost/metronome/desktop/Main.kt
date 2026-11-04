@@ -19,6 +19,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.window.application
@@ -179,15 +180,11 @@ fun main() {
                     Item("Metronome", shortcut = KeyShortcut(Key.One, meta = true), enabled = ready) {
                         navigate(MainDestination.Main)
                     }
-                    Item("Saved tempos", shortcut = KeyShortcut(Key.Two, meta = true), enabled = ready) {
+                    Item("Presets", shortcut = KeyShortcut(Key.Two, meta = true), enabled = ready) {
                         navigate(MainDestination.PracticePresets)
                     }
                     Item("Practice sets", shortcut = KeyShortcut(Key.Three, meta = true), enabled = ready) {
                         navigate(MainDestination.PracticeSets)
-                    }
-                    Separator()
-                    Item("Settings…", shortcut = KeyShortcut(Key.Comma, meta = true), enabled = ready) {
-                        navigate(MainDestination.Settings)
                     }
                 }
                 Menu("Playback", enabled = !quitting) {
@@ -200,15 +197,32 @@ fun main() {
                     Item("Tap tempo", shortcut = KeyShortcut(Key.T, meta = true), enabled = ready) {
                         viewModel.onTempoTap()
                     }
+                    Separator()
+                    Item("Faster", shortcut = KeyShortcut(Key.Equals, meta = true), enabled = ready) {
+                        viewModel.onSliderValueIncreased()
+                    }
+                    Item("Slower", shortcut = KeyShortcut(Key.Minus, meta = true), enabled = ready) {
+                        viewModel.onSliderValueDecreased()
+                    }
+                }
+                Menu("Window") {
+                    Item("Close", shortcut = KeyShortcut(Key.W, meta = true)) {
+                        visible = false
+                    }
+                    Item("Minimize", shortcut = KeyShortcut(Key.M, meta = true)) {
+                        windowState.isMinimized = true
+                    }
+                    Item("Zoom") {
+                        windowState.placement =
+                            if (windowState.placement == WindowPlacement.Maximized) WindowPlacement.Floating
+                            else WindowPlacement.Maximized
+                    }
+                    Separator()
+                    Item("Metronome", enabled = !quitting) { reveal() }
                 }
                 Menu("Help") {
                     Item("Metronome support", onClick = actions::contactSupport)
                     Item("Rate Metronome", onClick = actions::rateApp)
-                    Separator()
-                    Item("About Metronome") {
-                        reveal()
-                        showAbout = true
-                    }
                 }
             }
 
@@ -226,7 +240,7 @@ fun main() {
                                 onDismissRequest = { showAbout = false },
                                 title = { Text("Metronome") },
                                 text = {
-                                    Text("Precise timing. Better practice.\n\nVersion ${version?.versionName.orEmpty()} (${version?.versionNumber ?: 1})\n\nSpace: start or stop\n↑ / ↓: adjust tempo\n⌘1 / ⌘2 / ⌘3: navigate\n⌘,: Settings\n\nMade by Merkost")
+                                    Text("Precise timing. Better practice.\n\nVersion ${version?.versionName.orEmpty()} (${version?.versionNumber ?: 1})\n\nSpace: start or stop\n↑ / ↓: adjust tempo\n\nMade by Merkost")
                                 },
                                 confirmButton = {
                                     TextButton(onClick = { showAbout = false }) { Text("Done") }

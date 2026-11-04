@@ -54,6 +54,14 @@ fun ExactTempoSheet(currentBpm: Int, onApply: (Int) -> Unit, onDismiss: () -> Un
     }
 }
 
+internal fun sanitizeTempoInput(text: String): String = text.filter { it.isDigit() }.take(3)
+
+internal fun tempoInputShowsError(text: String): Boolean {
+    if (text.isEmpty()) return false
+    val value = text.toIntOrNull()
+    return value == null || value !in MIN_BPM..MAX_BPM
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismiss: () -> Unit) {
@@ -77,10 +85,10 @@ internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismis
         Text("$MIN_BPM–$MAX_BPM BPM", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         AppTextField(
             value = input,
-            onValueChange = { input = it },
+            onValueChange = { input = it.copy(text = sanitizeTempoInput(it.text)) },
             modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
             label = "Tempo in BPM",
-            isError = !valid,
+            isError = tempoInputShowsError(input.text),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { apply() }),
         )
@@ -102,7 +110,7 @@ internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismis
                 }
             }
         }
-        AnimatedVisibility(visible = !valid, enter = AppAnimations.expandEnter, exit = AppAnimations.shrinkExit) {
+        AnimatedVisibility(visible = tempoInputShowsError(input.text), enter = AppAnimations.expandEnter, exit = AppAnimations.shrinkExit) {
             Text(
                 "Enter a whole number from $MIN_BPM to $MAX_BPM.",
                 style = MaterialTheme.typography.bodySmall,
