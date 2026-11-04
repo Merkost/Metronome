@@ -1,5 +1,6 @@
 package com.merkost.metronome.ui
 
+import com.merkost.metronome.components.HintTooltip
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -61,13 +62,14 @@ private data class DesktopDestination(
     val label: String,
     val compactLabel: String,
     val icon: ImageVector,
+    val hint: String,
 )
 
 private val desktopDestinations = listOf(
-    DesktopDestination(MainDestination.Main, "Metronome", "Tempo", Lucide.Timer),
-    DesktopDestination(MainDestination.PracticePresets, "Presets", "Presets", Lucide.Bookmark),
-    DesktopDestination(MainDestination.PracticeSets, "Practice sets", "Sets", Lucide.Layers),
-    DesktopDestination(MainDestination.Settings, "Settings", "Settings", Lucide.Settings),
+    DesktopDestination(MainDestination.Main, "Metronome", "Tempo", Lucide.Timer, "Metronome · ⌘1"),
+    DesktopDestination(MainDestination.PracticePresets, "Presets", "Presets", Lucide.Bookmark, "Presets · ⌘2"),
+    DesktopDestination(MainDestination.PracticeSets, "Practice sets", "Sets", Lucide.Layers, "Practice sets · ⌘3"),
+    DesktopDestination(MainDestination.Settings, "Settings", "Settings", Lucide.Settings, "Settings · ⌘,"),
 )
 
 @Composable
@@ -171,12 +173,13 @@ private fun DesktopNavigationItem(
         second = MaterialTheme.colorScheme.inverseOnSurface,
     )
     val shape = RoundedCornerShape(cornerRadiusMedium)
-    val container = modifier.clip(shape).background(background)
+    val container = Modifier.fillMaxWidth().clip(shape).background(background)
         .hoverTint(interactionSource, shape, enabled = !selected)
         .then(if (focused) Modifier.border(1.dp, MaterialTheme.colorScheme.primary, shape) else Modifier)
         .selectable(selected = selected, role = Role.Tab, interactionSource = interactionSource, indication = null, onClick = onClick)
         .semantics { contentDescription = item.label }
         .heightIn(min = minimumTouchTargetSize)
+    HintTooltip(item.hint, modifier = modifier) {
     if (compact) {
         Column(
             modifier = container.padding(horizontal = spacingSmall / 2, vertical = spacingSmall),
@@ -195,6 +198,7 @@ private fun DesktopNavigationItem(
             Icon(item.icon, null, tint = foreground, modifier = Modifier.size(20.dp))
             Text(item.label, color = foreground, style = MaterialTheme.typography.labelLarge, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium)
         }
+    }
     }
 }
 

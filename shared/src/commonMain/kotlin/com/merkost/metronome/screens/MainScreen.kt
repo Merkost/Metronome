@@ -556,6 +556,7 @@ fun MainScreen(
                             ) {
                                 MyIconButton(
                                     Lucide.Minus,
+                                    hint = "Slower · ↓",
                                     onClick = viewModel::onSliderValueDecreased
                                 )
                                 val countingIn = countInRemaining > 0
@@ -611,6 +612,7 @@ fun MainScreen(
                                 }
                                 MyIconButton(
                                     Lucide.Plus,
+                                    hint = "Faster · ↑",
                                     onClick = viewModel::onSliderValueIncreased
                                 )
                             }

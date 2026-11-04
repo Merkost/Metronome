@@ -131,6 +131,7 @@ fun MyIconButton(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     size: Dp = defaultIconButtonSize,
+    hint: String? = null,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -154,25 +155,27 @@ fun MyIconButton(
     // reads as a square behind a round button on any pointer device. Driving
     // the container colour from the interaction state instead keeps every
     // state inside the circle.
-    Box(
-        modifier = modifier
-            .size(size)
-            .pressScale(interactionSource, PressedScaleControl)
-            .clip(CircleShape)
-            .background(containerColor)
-            .pointerHoverIcon(PointerIcon.Hand)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                role = Role.Button,
-                onClick = {
-                    haptics.tick()
-                    onClick()
-                },
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(icon, icon.name, tint = MaterialTheme.colorScheme.primary)
+    HintTooltip(hint) {
+        Box(
+            modifier = modifier
+                .size(size)
+                .pressScale(interactionSource, PressedScaleControl)
+                .clip(CircleShape)
+                .background(containerColor)
+                .pointerHoverIcon(PointerIcon.Hand)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    role = Role.Button,
+                    onClick = {
+                        haptics.tick()
+                        onClick()
+                    },
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, icon.name, tint = MaterialTheme.colorScheme.primary)
+        }
     }
 }
 
