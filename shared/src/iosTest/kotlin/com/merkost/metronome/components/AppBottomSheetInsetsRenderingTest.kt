@@ -72,6 +72,51 @@ class AppBottomSheetInsetsRenderingTest {
     }
 
     @Test
+    fun materialModalKeepsTheFinalActionAndEndPaddingInsideItsScrollViewport(): TestResult = runComposeUiTest(
+        effectContext = object : MotionDurationScale { override val scaleFactor = 1f },
+        testTimeout = 30.seconds,
+    ) {
+        mainClock.autoAdvance = false
+        var dismissals = 0
+        setContent {
+            CompositionLocalProvider(LocalDensity provides Density(1f)) {
+                MaterialTheme(colorScheme = AppColorScheme.MELROSE.darkColor, typography = Typography) {
+                    Box(Modifier.width(360.dp).height(640.dp)) {
+                        AppBottomSheetUi(
+                            title = "Actual modal",
+                            onDismiss = { dismissals++ },
+                            safeInsets = { WindowInsets(left = 18, top = 59, right = 18, bottom = 34) },
+                        ) { dismissAnimated ->
+                            repeat(24) { index ->
+                                Text("Practice row $index", Modifier.fillMaxWidth().heightIn(min = 48.dp))
+                            }
+                            Button(
+                                onClick = dismissAnimated,
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("modalFinalAction"),
+                            ) { Text("Done") }
+                        }
+                    }
+                }
+            }
+        }
+        advance(2_000)
+        val scrollContainer = onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.ScrollBy))
+        repeat(4) {
+            scrollContainer.performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 1_000f) }
+            advance(1_000)
+        }
+        val viewport = scrollContainer.fetchSemanticsNode().boundsInRoot
+        val action = onNodeWithTag("modalFinalAction").fetchSemanticsNode().boundsInRoot
+        onNodeWithTag("modalFinalAction").assertIsDisplayed()
+        assertTrue(action.width >= 48f && action.height >= 52f)
+        assertTrue(action.top >= viewport.top && action.bottom <= viewport.bottom, "The actual Material modal must show the whole final action")
+        assertTrue(viewport.bottom - action.bottom >= 31.5f, "The actual Material modal must retain32dp of scrollable end padding; gap=${viewport.bottom - action.bottom}")
+        onNodeWithTag("modalFinalAction").performClick()
+        advance(2_000)
+        assertEquals(1, dismissals)
+    }
+
+    @Test
     fun negativeAnchoredPlacementCannotLiftTheSurfaceAboveItsSafeTop(): TestResult = renderingTest { model ->
         val initial = geometry()
         listOf(-24.3f, -72.8f, 0f).forEach { offset ->
@@ -174,6 +219,7 @@ class AppBottomSheetInsetsRenderingTest {
         val action = onNodeWithTag("finalAction").fetchSemanticsNode().boundsInRoot
         assertTrue(action.left >= body.left - 0.5f && action.right <= body.right + 0.5f)
         assertTrue(action.top >= body.top - 0.5f && action.bottom <= body.bottom + 0.5f, "The final action must remain fully within the usable content viewport")
+        assertTrue(body.bottom - action.bottom >= 31.5f, "The scroll end must retain32dp below the final action")
     }
 
     private fun ComposeUiTest.revealFinalAction() {

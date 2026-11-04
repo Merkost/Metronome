@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,9 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.ChevronUp
@@ -64,6 +66,8 @@ import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.cornerRadiusXLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.spacingMedium
+import com.merkost.metronome.ui.spacingLarge
+import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.spacingSmall
 import metronome.shared.generated.resources.Res
 import metronome.shared.generated.resources.active
@@ -112,9 +116,9 @@ fun PracticePresetRow(
     var actionsExpanded by remember { mutableStateOf(false) }
     val surfaceColor by animateColorAsState(
         targetValue = if (isActive) {
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.surfaceContainerHigh
         } else {
-            MaterialTheme.colorScheme.surfaceContainerLow
+            MaterialTheme.colorScheme.surface
         },
         animationSpec = AppAnimations.standard(),
         label = "presetRowSurface",
@@ -133,7 +137,7 @@ fun PracticePresetRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacingMedium),
+                .padding(vertical = spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
@@ -354,7 +358,7 @@ fun PresetSaveChoiceDialog(
 @Composable
 fun PracticePresetsEmptyState(onCreate: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(vertical = 56.dp, horizontal = spacingMedium),
+        modifier = modifier.fillMaxWidth().padding(vertical = spacingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
@@ -368,14 +372,16 @@ fun PracticePresetsEmptyState(onCreate: () -> Unit, modifier: Modifier = Modifie
             text = stringResource(Res.string.preset_empty_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
         )
         Text(
             text = stringResource(Res.string.preset_empty_body),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(spacingSmall))
-        FilledTonalButton(onClick = onCreate) {
+        Button(onClick = onCreate, modifier = Modifier.heightIn(min = sheetButtonHeight)) {
             Icon(Lucide.Plus, contentDescription = null)
             Spacer(Modifier.width(spacingSmall))
             Text(stringResource(Res.string.save_current_setup))

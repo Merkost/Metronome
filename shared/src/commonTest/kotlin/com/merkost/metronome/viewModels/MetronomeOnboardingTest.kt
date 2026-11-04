@@ -190,8 +190,28 @@ class MetronomeOnboardingTest {
         }
     }
 
+    @Test
+    fun silentCompletionPreservesExistingSetupWithoutRewritingSound() = runTest {
+        withFixture(initialSound = ClickSound.STUDIO) { fixture ->
+            runCurrent()
+            val bpm = fixture.viewModel.metronomeState.value.rhythm
+            fixture.store.failSoundWrites = true
+            fixture.viewModel.completeOnboarding(bpm, ClickSound.STUDIO, false)
+            runCurrent()
+
+            assertFalse(fixture.viewModel.onboardingVisible.value)
+            assertTrue(fixture.store.onboardingComplete.first())
+            assertEquals(0, fixture.store.soundWrites)
+            assertEquals(ClickSound.STUDIO, fixture.store.selectedSound.first())
+            assertEquals(bpm, fixture.viewModel.metronomeState.value.rhythm)
+            assertFalse(fixture.viewModel.metronomeState.value.playing)
+            assertEquals(0L, fixture.store.totalTime.first())
+        }
+    }
+
     private suspend fun TestScope.withFixture(
         completed: Boolean = false,
+        initialSound: ClickSound = ClickSound.WOOD,
         deferInitialRead: Boolean = false,
         failInitialRead: Boolean = false,
         block: suspend TestScope.(Fixture) -> Unit,
@@ -201,6 +221,7 @@ class MetronomeOnboardingTest {
         try {
             val preferences = InMemoryPreferencesDataStore()
             val delegate = AppDatastoreImpl(preferences)
+            delegate.saveSelectedSound(initialSound)
             if (completed) delegate.saveOnboardingComplete(true)
             val store = ControlledOnboardingStore(delegate).apply {
                 if (deferInitialRead) initialReadGate = CompletableDeferred()
@@ -251,6 +272,14 @@ class MetronomeOnboardingTest {
         var failCompletion = false
         var failInitialRead = false
         var completionWrites = 0
+        var soundWrites = 0
+        var failSoundWrites = false
+
+        override suspend fun saveSelectedSound(sound: ClickSound) {
+            soundWrites++
+            if (failSoundWrites) error("sound storage unavailable")
+            delegate.saveSelectedSound(sound)
+        }
 
         override val onboardingComplete: Flow<Boolean> = flow {
             initialReadGate?.await()

@@ -1,0 +1,8 @@
+{
+  "source": "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png",
+  "sourceSha256": "364199f05a9ef33e037119129c826b69137683f8f498953749a6ee492f2de4a4",
+  "output": "desktopApp/packaging/Metronome.icns",
+  "sha256": "58863ad774f4feaafba4b1cdbb0f2c50c4f89c0bc9a4061b93c29b9d9ed4610b",
+  "method": "Existing app icon resized with Apple sips and assembled with Apple iconutil",
+  "artworkChanged": false
+}

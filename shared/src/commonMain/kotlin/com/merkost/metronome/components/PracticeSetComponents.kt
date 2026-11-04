@@ -1,6 +1,5 @@
 package com.merkost.metronome.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -38,6 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.semantics.contentDescription
@@ -70,7 +71,6 @@ import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.PressedScaleSubtle
 import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.PressedScaleSurface
-import com.merkost.metronome.ui.setPlayButtonSize
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
@@ -98,7 +98,7 @@ fun PracticeAgainRow(
             .pressScale(interactionSource, PressedScaleSurface)
             .semantics(mergeDescendants = true) { contentDescription = description },
         shape = RoundedCornerShape(cornerRadiusLarge),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Row(
             modifier = Modifier
@@ -188,7 +188,7 @@ private fun SetPlayButton(
         onClick = onClick,
         interactionSource = interactionSource,
         modifier = modifier
-            .size(setPlayButtonSize)
+            .size(minimumTouchTargetSize)
             .pressScale(interactionSource, PressedScaleControl)
             .semantics { contentDescription = description },
         shape = CircleShape,
@@ -223,9 +223,9 @@ fun PracticeSetRow(
     val interactionSource = remember { MutableInteractionSource() }
     val surfaceColor by animateColorAsState(
         targetValue = if (isActive) {
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.surfaceContainerHigh
         } else {
-            MaterialTheme.colorScheme.surfaceContainerLow
+            MaterialTheme.colorScheme.surface
         },
         animationSpec = AppAnimations.standard(),
         label = "practiceSetRowSurface",
@@ -243,7 +243,7 @@ fun PracticeSetRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacingMedium),
+                .padding(vertical = spacingSmall),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
@@ -276,11 +276,7 @@ fun PracticeSetRow(
                 ) {
                     StepDots(
                         count = practiceSet.steps.size,
-                        tint = if (isActive) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     val detail = when {
                         missingPresetCount > 0 -> stringResource(Res.string.practice_step_missing)
@@ -292,8 +288,6 @@ fun PracticeSetRow(
                         style = MaterialTheme.typography.bodySmall,
                         color = if (missingPresetCount > 0) {
                             MaterialTheme.colorScheme.error
-                        } else if (isActive) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         },
@@ -382,7 +376,7 @@ fun PracticeSetStepRow(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(cornerRadiusLarge),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Column(
             modifier = Modifier.padding(spacingMedium),
@@ -512,22 +506,28 @@ fun PracticeTargetEditor(
                 targetChoices(Modifier.weight(1f))
             }
         }
-        when (target) {
-            PracticeStepTarget.None -> Unit
-            is PracticeStepTarget.Duration -> ValueStepper(
-                value = target.minutes,
-                onValueChange = { onTargetChange(PracticeStepTarget.Duration(it)) },
-                range = 1..PracticeSet.MAX_DURATION_MINUTES,
-                label = stringResource(Res.string.minutes),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-            is PracticeStepTarget.Bars -> ValueStepper(
-                value = target.count,
-                onValueChange = { onTargetChange(PracticeStepTarget.Bars(it)) },
-                range = 1..PracticeSet.MAX_BARS,
-                label = stringResource(Res.string.bars),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
+        AnimatedContent(
+            targetState = target,
+            contentKey = { when (it) { PracticeStepTarget.None -> 0; is PracticeStepTarget.Duration -> 1; is PracticeStepTarget.Bars -> 2 } },
+            transitionSpec = { AppAnimations.fadeScaleTransform },
+            label = "practiceTargetFields",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        ) { shownTarget ->
+            when (shownTarget) {
+                PracticeStepTarget.None -> Unit
+                is PracticeStepTarget.Duration -> ValueStepper(
+                    value = shownTarget.minutes,
+                    onValueChange = { onTargetChange(PracticeStepTarget.Duration(it)) },
+                    range = 1..PracticeSet.MAX_DURATION_MINUTES,
+                    label = stringResource(Res.string.minutes),
+                )
+                is PracticeStepTarget.Bars -> ValueStepper(
+                    value = shownTarget.count,
+                    onValueChange = { onTargetChange(PracticeStepTarget.Bars(it)) },
+                    range = 1..PracticeSet.MAX_BARS,
+                    label = stringResource(Res.string.bars),
+                )
+            }
         }
     }
 }
@@ -550,9 +550,8 @@ fun PracticeSessionStrip(
             .fillMaxWidth()
             .pressScale(interactionSource, PressedScaleSubtle),
         shape = RoundedCornerShape(cornerRadiusLarge),
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
     ) {
         Column(
             modifier = Modifier.padding(spacingMedium),
@@ -623,7 +622,7 @@ fun PracticeSessionStrip(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 SetIconButton(
-                    icon = Lucide.ArrowLeft,
+                    icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft,
                     description = stringResource(Res.string.practice_session_previous),
                     enabled = session.currentStepIndex > 0 && session.pendingStepIndex == null,
                     onClick = onPrevious,
@@ -641,7 +640,7 @@ fun PracticeSessionStrip(
                     )
                 }
                 SetIconButton(
-                    icon = Lucide.ArrowRight,
+                    icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowLeft else Lucide.ArrowRight,
                     description = stringResource(Res.string.practice_session_next),
                     enabled = !session.isLastStep && session.pendingStepIndex == null,
                     onClick = onNext,

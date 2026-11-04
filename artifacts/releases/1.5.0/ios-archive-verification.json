@@ -1,0 +1,89 @@
+{
+  "verifiedAtUtc": "2026-10-12T00:05:08.552452+00:00",
+  "archivePath": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive",
+  "buildLog": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/build-ios-archive.log",
+  "classification": "Unsigned iOS device Release archive; not a signed App Store IPA",
+  "signing": "CODE_SIGNING_ALLOWED=NO; no signing identity or profile changes",
+  "main": {
+    "path": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app",
+    "identifier": "com.merkost.metronome",
+    "version": "1.5.0",
+    "build": "4",
+    "platforms": [
+      "iPhoneOS"
+    ],
+    "executable": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app/Metronome",
+    "executableSha256": "c29fdcd53be9e8b5f1340878131fc09dc2a7fdff05d17f4c4f64e84731484820",
+    "uuid": "UUID: 92CEC34B-D40C-3A40-B3B8-6725E7465350 (arm64) /Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app/Metronome"
+  },
+  "widget": {
+    "path": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app/PlugIns/MetronomeWidgets.appex",
+    "identifier": "com.merkost.metronome.widgets",
+    "version": "1.5.0",
+    "build": "4",
+    "platforms": [
+      "iPhoneOS"
+    ],
+    "executable": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app/PlugIns/MetronomeWidgets.appex/MetronomeWidgets",
+    "executableSha256": "7ff1a35ef9180f10e78a49f19658244a2a8022cbdfb776b51cfc4233e77b390e",
+    "uuid": "UUID: D4AB0C29-5E50-3F13-8754-2D117B8FB46B (arm64) /Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app/PlugIns/MetronomeWidgets.appex/MetronomeWidgets"
+  },
+  "machOFiles": [
+    {
+      "path": "Metronome",
+      "architectures": [
+        "arm64"
+      ],
+      "platforms": [
+        "IOS"
+      ]
+    },
+    {
+      "path": "PlugIns/MetronomeWidgets.appex/MetronomeWidgets",
+      "architectures": [
+        "arm64"
+      ],
+      "platforms": [
+        "IOS"
+      ]
+    }
+  ],
+  "symbols": [
+    {
+      "path": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/dSYMs/Metronome.app.dSYM",
+      "uuid": "UUID: 92CEC34B-D40C-3A40-B3B8-6725E7465350 (arm64) /Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/dSYMs/Metronome.app.dSYM/Contents/Resources/DWARF/Metronome"
+    },
+    {
+      "path": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/dSYMs/MetronomeWidgets.appex.dSYM",
+      "uuid": "UUID: D4AB0C29-5E50-3F13-8754-2D117B8FB46B (arm64) /Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/dSYMs/MetronomeWidgets.appex.dSYM/Contents/Resources/DWARF/MetronomeWidgets"
+    }
+  ],
+  "archiveBuildExitCode": 0,
+  "archiveBuildResult": "ARCHIVE SUCCEEDED",
+  "archiveSigningIdentity": "",
+  "archiveTeam": "",
+  "unsignedBundleChecks": [
+    {
+      "path": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app",
+      "exitCode": 1,
+      "output": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app: code object is not signed at all"
+    },
+    {
+      "path": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app/PlugIns/MetronomeWidgets.appex",
+      "exitCode": 1,
+      "output": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive/Products/Applications/Metronome.app/PlugIns/MetronomeWidgets.appex: code object is not signed at all"
+    }
+  ],
+  "archiveContentManifest": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/archive-content-manifest.json",
+  "archiveFilesSha256": "af390c488b971e351f664e2f91a78bb4c8dc7249fd393c481437150c9de26f67",
+  "package": {
+    "path": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/Metronome-1.5.0-4-unsigned.xcarchive.zip",
+    "bytes": 28944718,
+    "sha256": "12c5ccdbd7447d25d1c90a8fb96685f235abe016db877a9965e686924136b1c3",
+    "allArchiveFileBytesVerified": true
+  },
+  "sourceProvenance": "/Users/merkost/StudioProjects/Metronome/shared/release/1.5.0/source-provenance.json",
+  "sourceFilesVerified": 254,
+  "publicationPerformed": false,
+  "appStoreUploadPerformed": false
+}

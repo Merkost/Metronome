@@ -1,0 +1,392 @@
+{
+  "verifiedAtUtc": "2026-10-11T23:18:49.852899+00:00",
+  "result": "BUILD SUCCESSFUL",
+  "log": "/private/tmp/metronome-clean-native-final-verification.log",
+  "deviceId": "73631849-FAD8-4315-9D68-20DBC320489C",
+  "runtime": "iOS26.4.1",
+  "standalone": false,
+  "sdkDirectory": "/private/tmp/MetronomeCleanIosTestSdk",
+  "tests": 283,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.backup.PracticeBackupCodecTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "d70056fdac3ebe71a4694544eb54514deae20320d16e27b8e46cb3533f1bac4a"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.backup.PracticeBackupRepositoryTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "ad02e094ab53bb32ec940576543393a0dcd785a10ba36255d5fed00e4128ca44"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.components.AppBottomSheetInsetsRenderingTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "7d48b85688d0b417393289b23b5aa8a80ba99ce0997f17fc00b21633696335f1"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.components.PendulumRenderingTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "83ae3c9bde4cea2a89239180dcc3800b3b538f6fedd2ef15b548dcd4d4bfc8a7"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.components.PracticeBackupActionsRenderingTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "c8b506e2cd00450f6c658042aa9fca93d588c9c018682d1f7bb39fa0de385e04"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.AudioSessionEventPolicyTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "50abefc882aad38cf43f754f0ce8c61b1f45ca76148e0a4e30fb6008dfe01114"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.BeatEventsTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "58f03037205f7cadad5f817f5a94d4894f7a761836458d45efdd6e142a2491dd"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.BeatTimelineTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "9f118918efa30589d43bc87d67cbaabbd6f9b035e9b801fc6b1c5d97cfbd1661"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.MetronomePulseIntegrationTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "d6c928c6ce6b6e888df8b40c8e9dd5df0509247e9deb8f1b6cb0f0d776df216b"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.PlaybackFocusPolicyTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "912c5580c9f364b35209d9eb5a56d566b60fbff0afbd3335dddfb345bcda6977"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.SerializedCommandQueueTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "ac663ad57b011da36d089ef1a0555cec53aa340c9f96b0a66fde68f805790ee1"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.SoundLoadStateTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "6bbb625af127e8cfe1a72d78670993c948e26d4ac161814acdb60202cce175a8"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.engine.SoundPreviewControllerTest",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "057aaf8ad7a96e71a0a716d951a9e8e08be2de344e0856c0c09d1ff54ac3fa13"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.model.BeatPulseTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "42c3eeb37d65e9b319dc115ae8692556da3ca0524a778e309815e9ba7f477635"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.model.MetronomeTimingTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "d4ff5116406b0a05aca5905c2474d336eac04d640d1451781efdf77ee4ed5d98"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.model.SubdivisionTimingTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "c92bb60cfa08ae534ba5d75724993d0bcd3bb80b43e94684222addfde18fe524"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.model.TempoMathTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "6e59a538bc696f23a1cf3ac196965768c0ac342fc97618b502ae79481eec448d"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.navigation.AppNavigatorTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "ec53b30c8b6095e8f94f216c9bf6a78386d18fda0d98effe631d57643a415752"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.practiceSets.DataStorePracticeSetRepositoryTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "ef8e020025a37dd67748d46780ef8fe0726fde66084cd4bebc127763b87e827b"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.practiceSets.PracticeAgainPolicyTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "a75a096a688ea40753b00d8469612416ca359e46ed82f3026b84bf3927807f25"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.practiceSets.PracticeSessionControllerTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "5347a19e5baab3f0bb00ac4fc3027ae6f07258d55cc299c7afe7b23e49fa209f"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.practiceSets.PracticeSessionPersistenceTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "e9e1932cb18cf5c5b39dfae665bcfb96047a2ce474379cce085c3e0ef0031a0b"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.practiceSets.PracticeSetCodecTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "6d566265c257eb14fabfce19cba007b534e25d8a5c7d3321cfb32483a026e0bf"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.practiceSets.PracticeStarterRepositoryTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "b769575a1251e0772369a3a9e127d07b748a61df48d36909dad8b6673cb0ff63"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.presets.ActivePresetTrackerTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "c307bd1684c01a042fea7c372a6df0e31dea921c785f48cc8a13488022cd79f9"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.presets.DataStorePracticePresetRepositoryTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "d9f0ffa63859969724c1350a9139131c31eea229f41f052ada23df1d44fcf9f0"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.presets.MetronomePresetApplicationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "63eabc855e897aea6ecdcf52926d00f78ee3cf2fd57dc4f7c1a1f10b537d942d"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.presets.PracticePresetCodecTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "c55740fddd3ced3db72e62924689f653c6504e0fe4241004c13da3a2c4f49807"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.review.ReviewPromptCoordinatorTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "4fbe3a5cbed294ae20d82294be2f22f7e0c75cf169330517ef622d075d29b897"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.review.ReviewPromptPolicyTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "eec8ed224efd1e15f8dda115ffca4933371bace577f5d58ced80ddb8c452c21f"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.ExactTempoRenderingTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "162d669f7145c51e38e90a22c29323b6325a1dd636a4e123de78826d74bdcfeb"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.HomeRhythmLayoutTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "b99004db93bfa0ab2e08d81f7c86d5ed543a33ee79e7cdd83d7ff4d1134b924c"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.PracticeCleanLayoutTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "c5215718214aa580097bbe8f2262e84ebf0b3d502d1fb2fa23040587455a2e19"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.SettingsAppearanceRenderingTest",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "38055e32a1256df37a0e4b0df01f491fbd39518ed8a1f616133a54e4d3230cdc"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.SettingsCleanLayoutTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "fa56edffa8bfbd0f52c10a4e3a7965bb72acc05cb1cc1d0b7cad405339faaba4"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.SettingsSoundPreviewRenderingTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "543492e30cc96002d68346b815459a7d546b298dc45c82cfe7f5873801ff5f55"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.SettingsSwitchRenderingTest",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "6ff26603eab6961bd1479fce37f02fdbe556328eb322fecc4a766681b4326947"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.SoundPickerRenderingTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "b3a575df45628cce84efa3a7ece7c95824eb5fab410572c77d61f25dc699e2b6"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.TempoAdjustmentTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "8f5f0e85387ca0d14fd26ed27298758dca2ec01620e30838ef369ee76fd06c85"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.screens.WelcomeRenderingTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "8da3c91e7436961ef1de1bbd41eb0b5331eff7bdba233e0a42dc26a0f4f6a56e"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.ui.AnimatedNumberRenderingTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "6dc5ac09c04010be3804d12dff911a39bc27147e9e863067402773a617443b83"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.ui.theme.ThemeTransitionContrastTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "9371fd07a92acd176b3d7dbe22dd5c01047f691be1633c371d93b277088aef2b"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.viewModels.MetronomeOnboardingTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "de8b82de23afe2a9fd8447dc17ea16626d9dba70c28c642d75e81a270c28db7e"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.viewModels.PracticePresetsViewModelTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "ffc5c6dd201bbf408c4ce96a9fca6c0cedcc3bc7e5f8866ef26d75b5f322ab62"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.viewModels.PracticeSetsViewModelTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "ae0fc2663cbcd5cc85a232300fb8501b09b81f409baef7a28c23c365f6185e16"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.whatsnew.WhatsNewCoordinatorTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "b42c8cb56a6677250c7cc365da2c578b3f16504a258a72f06fd5b58e2daf4eb4"
+    },
+    {
+      "name": "iosSimulatorArm64Test.com.merkost.metronome.whatsnew.WhatsNewPolicyTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "177f5278ef8fbeacf2a1d8e5ac256be130e7a70eeb4fb4ff351aca423223ee5a"
+    }
+  ],
+  "scope": "Real Compose native offscreen renderer, callback, layout and pixel tests; separate from UIKit screenshots and physical touch/screenreader acceptance"
+}

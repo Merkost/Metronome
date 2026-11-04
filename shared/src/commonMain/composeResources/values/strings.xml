@@ -33,8 +33,8 @@
     <string name="favourite_preset">Favourite %1$s</string>
     <string name="unfavourite_preset">Unfavourite %1$s</string>
     <string name="preset_actions">Actions for %1$s</string>
-    <string name="preset_empty_title">Build your first practice setup</string>
-    <string name="preset_empty_body">Save tempo, meter, subdivision, accents and count-in together, then return to them in one tap.</string>
+    <string name="preset_empty_title">Save a setup</string>
+    <string name="preset_empty_body">Keep your tempo and rhythm ready for next time.</string>
     <string name="preset_limit_reached">You can keep up to 50 presets. Delete one before saving another.</string>
     <string name="preset_migration_failed">Saved tempos could not be imported. Your original saved tempos are still safe.</string>
     <string name="retry">Retry</string>
@@ -64,8 +64,8 @@
     <string name="practice_set_name_required">Enter a name for this set.</string>
     <string name="practice_set_name_too_long">Keep the name to 80 characters or fewer.</string>
     <string name="practice_set_steps_required">Add at least one preset.</string>
-    <string name="practice_set_empty_title">Build a repeatable practice flow</string>
-    <string name="practice_set_empty_body">Arrange saved presets into a sequence. You decide when to move to the next step.</string>
+    <string name="practice_set_empty_title">Your practice, in steps</string>
+    <string name="practice_set_empty_body">Combine saved setups into a routine.</string>
     <string name="practice_set_count">%1$d of 30 sets</string>
     <string name="practice_set_step_count">%1$d steps</string>
     <string name="practice_set_start">Start set</string>
@@ -133,14 +133,12 @@
     <string name="whats_new_subtitle">Version %1$s</string>
     <string name="whats_new_dismiss">Got it</string>
     <string name="whats_new_full_notes">Full release notes</string>
-    <string name="whats_new_presets_title">Hello, rhythm.</string>
-    <string name="whats_new_presets_body">Hear your starting pace and pick a click in the new interactive welcome.</string>
-    <string name="whats_new_sets_title">Make it yours.</string>
-    <string name="whats_new_sets_body">Sound, appearance and playback settings have a fresh layout, with smoother controls and transitions.</string>
-    <string name="whats_new_again_title">Four new clicks.</string>
-    <string name="whats_new_again_body">Try Soft, Rim, Clave and Studio. Preview a bar before choosing your sound.</string>
-    <string name="whats_new_motion_title">Keep your practice.</string>
-    <string name="whats_new_motion_body">Export and import your presets and practice sets, or edit a starter routine to find your flow.</string>
+    <string name="whats_new_presets_title">A simpler welcome.</string>
+    <string name="whats_new_presets_body">One graphic screen introduces the app, then opens the instrument without starting playback.</string>
+    <string name="whats_new_sets_title">A cleaner instrument.</string>
+    <string name="whats_new_sets_body">BPM and the beat take centre stage, with clearer Settings and tempo shortcuts in Set tempo.</string>
+    <string name="whats_new_motion_title">Smoother practice.</string>
+    <string name="whats_new_motion_body">Stable controls, better sheet scrolling and cleaner sound and practice tools, including large-text and right-to-left layouts.</string>
     <string name="settings_whats_new">What&apos;s new in this version</string>
     <string name="coach_mark_skip">Skip</string>
 </resources>

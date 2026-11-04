@@ -1,0 +1,1622 @@
+{
+  "checkedAtUtc": "2026-10-22T11:20:44.954166+00:00",
+  "scope": "Static verification of Organizer exported package; does not establish TestFlight provisioning, runtime acceptance or App Store review approval",
+  "checksPassed": true,
+  "app": {
+    "identifier": "com.merkost.metronome",
+    "version": "1.5.0",
+    "build": "1",
+    "minimumMacOS": "13.0",
+    "category": "public.app-category.music",
+    "runtime": {
+      "JAVA_VERSION": "21.0.11",
+      "JAVA_RUNTIME_VERSION": "21.0.11+10-b1163.116",
+      "IMPLEMENTOR": "JetBrains s.r.o.",
+      "identitySource": "java.base/java/lang/VersionProps.class",
+      "compiledIdentitySha256": "c065deafa324782e897efd04b064ff4dc821dda1ef941cf2e81454b6c0bc6eeb",
+      "moduleImageSha256": "87f096cc622187bb5eacdd142484c7700559e5c677e2ebd518b25338e0eeee7c"
+    },
+    "signatures": {
+      "app": {
+        "teamIdentifier": "P47X2292CM",
+        "authorities": [
+          "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+          "Apple Worldwide Developer Relations Certification Authority",
+          "Apple Root CA"
+        ],
+        "strictSignatureVerified": true,
+        "entitlements": {
+          "com.apple.security.app-sandbox": true,
+          "com.apple.security.cs.allow-jit": true,
+          "com.apple.security.files.user-selected.read-write": true
+        },
+        "restrictedEntitlementsAbsent": true
+      },
+      "runtime": {
+        "teamIdentifier": "P47X2292CM",
+        "authorities": [
+          "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+          "Apple Worldwide Developer Relations Certification Authority",
+          "Apple Root CA"
+        ],
+        "strictSignatureVerified": true,
+        "entitlements": {},
+        "codeKind": "Library loaded inside the sandboxed main process",
+        "restrictedEntitlementsAbsent": true
+      }
+    },
+    "nativeBinaries": [
+      {
+        "path": "Contents/MacOS/Metronome",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "ee83920579d0bc7b5017059340e6babdf481e84b7ed2995f143935175daabb44",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/app/libskiko-macos-arm64.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "c667de0a6cdd980c91f3fc4e0576939902975e93d5176c297fce570d972453e9",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/jspawnhelper",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "69c3e10a3520f5f30dd93f46c227fb51c20400d7cfb4b95db60d4d2d3eb516ab",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libawt.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "07ac380f506dd38c829cd406f329e74e357a16b3f5a5e2d159d1a0b210001f21",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libawt_lwawt.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "c8902d078403e878f9afab080d3da0114ba54c337e02d4da0c2dd575c8ac3a1c",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libfontmanager.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "d9d5c973b5af6c6406a4b33c96cfd6776798f1b88ebb5b7e48ae8f0c49219cd3",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libfreetype.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "9acba6dafea9bef8b4d1bfdd089b2c5bb4a4f9daf376bc68629ee1a344de04f8",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libjava.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "420751197a4741c337d34c5b7d5b29da7f399ca929d483abca6d09ac4370a682",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libjavajpeg.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "31815ac666b08c8b116fa1eab8632c8b1b02ca5b93d76cec68853a875d216c27",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libjawt.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "cdfb471dd32ca7bd12eef8e2052dfc9068fe9094e50368780d2d8e62d49be366",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libjimage.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "ac64b48f9d036e205722f6aa143e681006b467501943d661fa48557bf23a92de",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libjli.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "445740beabd49e4f213ed14cfc4c945a1530f6cef472dec58fd9d6e6b39e36de",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libjsig.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "731c463b93597b26aa9d7e62d103e6ebc34a7efb9500d0ea11c1c85f1797329c",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libjsound.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "ea04a6ba64c9a66cd38d613d5f77fa99809faf314d3205482f312128cd9947dc",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/liblcms.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "e1c9c78d976f4c58f0ece0a9248188d421f6b1c34ccca636658e868c05da4e48",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libmlib_image.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "cd42bb5075a6c0fd13d84f83aa1234cb913d36f9949368332171628d15f6a545",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libnet.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "82ef9bbfb3daf245113567967251077426ce82a9d5b10c5280acfb3d96006aeb",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libnio.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "eddd6a0b1cfb208489e5465d6d6940de8166e41b6f828b66ee8c9d1f83ac931f",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libosx.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "efd929af8ae162387a64c5e67591c67cad08d4ef59bee24f171f504051d89e80",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libosxapp.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "3984ca9caac9e2efb553db0851c01bbc6b56d3e1147c4b4e9156451116fefa2c",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libosxsecurity.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "ff6e21da99668362c29c1e8bc4b1bb513e40f7c9ca2b7210367d2ee7e9406e92",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libosxui.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "20fe906d0b4e66d543e41de5b72ed9dfd664b94f6c4c2f7c94c192a1ac1933dd",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libprefs.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "c7afc86505c05be8a22b0bd8892d24b06f040208bd435d4f75dec1a190cbf3f3",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libsplashscreen.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "cf41b8f05b7f1425b6bd2b92f1ff27ef0848519148179bb50f8de977d9cb0e4d",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libsyslookup.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "0a39512f7cb62e6a9fe9420055cb29418392b7afbc2533a5827fa08e40ee061f",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libverify.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "d740efbc3e1db5c3e1807cbb429e28d924dac036a92e93d15816192d28953828",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/libzip.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "68eeeef92de498bdbc74e30eb997b695712945ed0b020801011d6eabadc0f3bb",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/server/libjsig.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "18c4432f0c4bbe6f897d903d0db3395d13a5b9a4758147c1c4455ee4b1d1f8f9",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/Home/lib/server/libjvm.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "1c188a09e2a3c4a5f43f857eda9946e05575fb91bdf05716d2e3be2525978885",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      },
+      {
+        "path": "Contents/runtime/Contents/MacOS/libjli.dylib",
+        "architectures": [
+          "arm64"
+        ],
+        "minimumMacOS": "11.0",
+        "sha256": "b4a10543ff8a6a4bae7eeb3dcdc6766ead31c89edc9a7270bfae4e548fc91eb8",
+        "signature": {
+          "teamIdentifier": "P47X2292CM",
+          "authorities": [
+            "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+            "Apple Worldwide Developer Relations Certification Authority",
+            "Apple Root CA"
+          ],
+          "strictSignatureVerified": true
+        }
+      }
+    ],
+    "audioPayloads": [
+      {
+        "source": "shared/src/androidMain/res/raw/clave.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/clave.wav",
+        "sha256": "d4f9940252e067497f2db8994148ab38c32619d0e00be9d31edd72bd20391e0e",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/clave.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/clave_accent.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/clave_accent.wav",
+        "sha256": "2edf0c04402eb9378dffe92b7e1abc87fe6c81ce3f45c47c779d28837d6f1a33",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/clave_accent.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/click.mp3",
+        "desktop": "shared/src/desktopMain/resources/audio/click.wav",
+        "sha256": "60c65876f1139ed3d565f7bc94ed30e0400ab582cb97f10a0fef6b350ee6b992",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/click.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/metronome.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/metronome.wav",
+        "sha256": "a1904415fd138f3aa4f796a4b6bd48a961cb34b705a674e2ad257278fb5ae955",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/metronome.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/rim.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/rim.wav",
+        "sha256": "8beafbaceeb07c067b6d042bf08b0c0e2a214d6e48594b2b3b55bba896ce1d66",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/rim.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/rim_accent.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/rim_accent.wav",
+        "sha256": "264d58fa84a8300304c47751b8db626e3fcc0d819302b040e9218566da9cdbb5",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/rim_accent.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/soft.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/soft.wav",
+        "sha256": "c03921061d0b8492ccf2895f4354e4a36588c16f8cd08229b332eb9b80beb2d2",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/soft.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/soft_accent.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/soft_accent.wav",
+        "sha256": "2d52cff9e55b5714a17dfee8144d6b2f7932baa1dd73a055bb7e46a5f82cfb96",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/soft_accent.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/studio.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/studio.wav",
+        "sha256": "e4e0cce96bbd4d34b0e916bb87dcfe619448330f3f86beb5ebbfb858eab6a45d",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/studio.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/studio_accent.wav",
+        "desktop": "shared/src/desktopMain/resources/audio/studio_accent.wav",
+        "sha256": "20ad0f1c57d942258629c51cec1a6615f6952ebc38ff5fe1a2762b25d64dc7cb",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/studio_accent.wav"
+        ]
+      },
+      {
+        "source": "shared/src/androidMain/res/raw/wood.mp3",
+        "desktop": "shared/src/desktopMain/resources/audio/wood.wav",
+        "sha256": "d7c44d979a4e8c9ae63ed1d3fc70642d6b77cac46333daf3fd12203c3357bb7a",
+        "packageEntries": [
+          "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/wood.wav"
+        ]
+      }
+    ],
+    "fileManifest": {
+      "Contents/Info.plist": {
+        "bytes": 1894,
+        "sha256": "b833e642749d53316213da1204423bcdef460b6356cdbce52316c74758a0731c"
+      },
+      "Contents/MacOS/Metronome": {
+        "bytes": 201984,
+        "sha256": "ee83920579d0bc7b5017059340e6babdf481e84b7ed2995f143935175daabb44"
+      },
+      "Contents/PkgInfo": {
+        "bytes": 8,
+        "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+      },
+      "Contents/Resources/Metronome.icns": {
+        "bytes": 153949,
+        "sha256": "58863ad774f4feaafba4b1cdbb0f2c50c4f89c0bc9a4061b93c29b9d9ed4610b"
+      },
+      "Contents/_CodeSignature/CodeResources": {
+        "bytes": 43819,
+        "sha256": "4746ae8f7e32eecc3f830cc1869433c91e33a246f280c9bacb82da86f433d062"
+      },
+      "Contents/app/.jpackage.xml": {
+        "bytes": 287,
+        "sha256": "2cbac7822bf56479a57d03e712add1f3a2ac059efd9b48bbe0158564e3aae67b"
+      },
+      "Contents/app/Metronome.cfg": {
+        "bytes": 7339,
+        "sha256": "4008327a118684ce13cc66833c78feb05e24f3c14cd7b0a389a20ad681143b86"
+      },
+      "Contents/app/animation-core-desktop-1.12.1-e9420621a5a999d679c6cbd2f1a42.jar": {
+        "bytes": 400211,
+        "sha256": "24fdb3ae7a57ff2f4292bbd211c559e7d02a50e76cb6c5a96bbeda432b21c44e"
+      },
+      "Contents/app/animation-desktop-1.12.1-fdae3e449cd09fba75baf68dd23ffc.jar": {
+        "bytes": 466649,
+        "sha256": "9b9af6a482a47bc830d31cc400b848531a189c6cd98fe7b12073d3de2f670f83"
+      },
+      "Contents/app/annotation-jvm-1.9.1-1d6a04b3b9847638d0529df8ef76a.jar": {
+        "bytes": 61953,
+        "sha256": "5c638851e7e762cfa4197b583d1bcdfae8e3bcbc2c704578ec7c95e7e836355a"
+      },
+      "Contents/app/annotations-23.0.0-8484cd17d040d837983323f760b2c660.jar": {
+        "bytes": 30459,
+        "sha256": "a62b671c95e176ef660d1bfbd4a9db033adea83306be31734db02a3072d79b8a"
+      },
+      "Contents/app/atomicfu-jvm-0.28.0-70921245a0aed3c3e3d17c34ca3dbd87.jar": {
+        "bytes": 49314,
+        "sha256": "e28cf934fe8ed3affecf7703c058379d79f7e1d88ae19cdf22dd68ad8d3045e1"
+      },
+      "Contents/app/cedar-logging-jvm-92e4b1e8114d1960a080b4d7c1518d90.jar": {
+        "bytes": 24726,
+        "sha256": "753392b59fadf17862ca17a8025d342e2f8650c8701c5294dbcaae95343d8d55"
+      },
+      "Contents/app/collection-jvm-1.5.0-4421442c114a4f8c8fe587cf2d668237.jar": {
+        "bytes": 880750,
+        "sha256": "3d4dc77ada96d75bbf7dd386ea7593ab45cdf57c26bbfcd0a03f0ee7c3c8079d"
+      },
+      "Contents/app/core-common-2.2.0-2212d240dfe1e8a7598ee117ccc316d.jar": {
+        "bytes": 11913,
+        "sha256": "d36682253372b67cc080986ff883048f6c67a9e6db85c08861069e3351bd633f"
+      },
+      "Contents/app/datastore-core-jvm-1.2.1-68bd30a82462b130b953a7a0ade6b318.jar": {
+        "bytes": 172012,
+        "sha256": "9c66b3f6dd71691240f4f54cc44e8199b628831dee4c38e45a5849d3a9932a04"
+      },
+      "Contents/app/datastore-core-okio-jvm-1.2.1-38c87b659b5e43255f87474fab30457f.jar": {
+        "bytes": 32270,
+        "sha256": "ee9588efe19762037be8756d3a5fd55be908c7b9deb8edf09d17534db5ec4d1d"
+      },
+      "Contents/app/datastore-preferences-core-jvm-1.2.1-a71e7c68fc6dd85f6237335722cd925.jar": {
+        "bytes": 40526,
+        "sha256": "5359f847582cf1eb50bac2b9ca120090cd1ca726baa0e6e6a2e2313390c68835"
+      },
+      "Contents/app/datastore-preferences-external-protobuf-1.2.1-80e72813e22e9695eaf82ff9ccb727e0.jar": {
+        "bytes": 1059247,
+        "sha256": "a5896fff2574ba8a305940930a6c257d220f56863f7bcec4aae69b530c878d5b"
+      },
+      "Contents/app/datastore-preferences-proto-1.2.1-f7b9c81898907447e4911df25f047.jar": {
+        "bytes": 30796,
+        "sha256": "056f38b51729db897a8226749bde44568913298523ecbb50a354e244135e18c7"
+      },
+      "Contents/app/desktop-jvm-1.12.1-4ae609894295d208af37cd66a73dcb.jar": {
+        "bytes": 9541,
+        "sha256": "1085c64e00ddb200775ccded57078b9973761520b933fe453692a1b4f85eab5b"
+      },
+      "Contents/app/desktopApp-b952b4895c2b528395971a212af8dca.jar": {
+        "bytes": 57893,
+        "sha256": "e507af94321592ddbb14d9773e18314968b1f51b081b7acac948e81fba020d89"
+      },
+      "Contents/app/foundation-desktop-1.12.1-af970f7348edc832f57bd29a9aceaf.jar": {
+        "bytes": 4775151,
+        "sha256": "f5f1366951130ad3a6ee7a0867da8dcae4f6c15cc49c0535b15dc18c5c2e00ea"
+      },
+      "Contents/app/foundation-layout-desktop-1.12.1-a74242b69b6ea3e0269ad27af719fbe5.jar": {
+        "bytes": 684579,
+        "sha256": "f724a4f7b0779e07ad2f5152c0dfd4b5d6ad20ea6ae95299aa06b5d86e125232"
+      },
+      "Contents/app/icons-lucide-jvm-1.1.0-508f66b424118c386de2a3269fae242e.jar": {
+        "bytes": 5202744,
+        "sha256": "4b46dde2d8e3ead6d2ebb16b507861f010e2e68b886aaeffd7b833bcfa9fe982"
+      },
+      "Contents/app/jbr-api-1.9.0-4ae6ce27bcafb233efdbf54395d03.jar": {
+        "bytes": 50561,
+        "sha256": "9502d8edade2f95c2a01045912195e8585792a46e92c4530a4575957a9751989"
+      },
+      "Contents/app/jspecify-1.0.0-9133aba420d0ca3b01dbb6ae9992cf6.jar": {
+        "bytes": 3819,
+        "sha256": "92c2ad0a5f2f04bff8767a379d74763ef4ee78eb1acc28fa81b398d7922afa27"
+      },
+      "Contents/app/koin-compose-jvm-4.2.2-fef56dff985d468e4bc99dd050d584.jar": {
+        "bytes": 40422,
+        "sha256": "ce29748a00cf4cb19d814a04026bedd8b7ae446f8cf99ff65913e3647cb3e8df"
+      },
+      "Contents/app/koin-compose-viewmodel-jvm-4.2.2-2f49ef2fb5f4d6f1e3caacf67df531.jar": {
+        "bytes": 125205,
+        "sha256": "d590cb948e2134d16c29d292cdc153bddd8b9911434eee0a97454d6d47cdcc4a"
+      },
+      "Contents/app/koin-core-jvm-4.2.2-994c7c1ccb4a746fb81c32726ee66a.jar": {
+        "bytes": 439801,
+        "sha256": "78b188d0c183b9be444c646670a2917755ae02456d1fc91ddadd0ae0bef6c058"
+      },
+      "Contents/app/koin-core-viewmodel-jvm-4.2.2-c83c3eed9aa366b766f986361891384.jar": {
+        "bytes": 141808,
+        "sha256": "27e77822890a1110aa0b38b42737cb7e8cd119cf4914eec5c36bd436b7fe9f99"
+      },
+      "Contents/app/kotlin-stdlib-2.4.20-99b8b084c36f4bb0ecfbfcbce05dd1c2.jar": {
+        "bytes": 1870258,
+        "sha256": "13c87c37c6b52494c8d81ffd5651f20a1793ed086eea4a5c0f85d78438faa688"
+      },
+      "Contents/app/kotlinx-coroutines-core-jvm-1.11.0-41a5e9a2f2c9affb9d9ab254be5a984f.jar": {
+        "bytes": 1591436,
+        "sha256": "3fcd911c04a487221d405e4b686a342ddbc2e1af867403eb369c54c37a6a5cc8"
+      },
+      "Contents/app/kotlinx-coroutines-swing-1.11.0-e2b21cfe6937a29f4b6eb63570c77085.jar": {
+        "bytes": 9097,
+        "sha256": "ce19282ab336702757b9d7a2c2f6e7e3980b53a9d4610862a0ccdb6560b97480"
+      },
+      "Contents/app/kotlinx-datetime-jvm-0.8.0-74607e75425578a6983dcb8528507cd.jar": {
+        "bytes": 732052,
+        "sha256": "5506f55e909c8651c0efca30339d4a320a52abdef56829923b12f8ee2aec01fb"
+      },
+      "Contents/app/kotlinx-serialization-core-jvm-1.7.3-58c2ba33122ceccf1b35147f3db945f8.jar": {
+        "bytes": 394923,
+        "sha256": "d0cf0dc3a1c84c77cb271a3ddf2a8b54c074c4f892429ea0389ed77cec7f5a95"
+      },
+      "Contents/app/kotlinx-serialization-json-jvm-1.7.3-b1f7c0e3bc8e8a591b83ff602cebd0.jar": {
+        "bytes": 272841,
+        "sha256": "0d710c2064a5194985c77733a23c1c3d530d90e746d7a0867692fb690175a13f"
+      },
+      "Contents/app/library-desktop-1.12.1-1a84e4497278b2a22fcd2fa02e3deac.jar": {
+        "bytes": 238270,
+        "sha256": "f96253dc21c0289bd12e3698cd00be4b9243126524c998c9f95afcc35560b579"
+      },
+      "Contents/app/library-desktop-1.12.1-606da0e78c77fbaa9c61416f66f56357.jar": {
+        "bytes": 5996,
+        "sha256": "bdef5b1d4c8143fb286b47cd62a5dd6d0a469e0ed0a321093205e117eb8a9067"
+      },
+      "Contents/app/libskiko-macos-arm64.dylib": {
+        "bytes": 21320064,
+        "sha256": "c667de0a6cdd980c91f3fc4e0576939902975e93d5176c297fce570d972453e9"
+      },
+      "Contents/app/libskiko-macos-arm64.dylib.sha256": {
+        "bytes": 64,
+        "sha256": "78ccda6c389a7fde19dd0bb6a4b698c9a8b16e3ab79a862c8c7f52c4a8984e14"
+      },
+      "Contents/app/lifecycle-common-jvm-2.11.0-14b667ae927764855aedc4f3c099.jar": {
+        "bytes": 66565,
+        "sha256": "8c8cba74ce3f18cd4e71f2e15f7e1250fef9c075e6b895b2ae9f095eec280baa"
+      },
+      "Contents/app/lifecycle-common-jvm-2.11.0-abf33538971706e734094ccec7f03f.jar": {
+        "bytes": 5083,
+        "sha256": "87307b0c6f4123f4ad87658b84d1b793062613c38cec1f04ce674fc11df02103"
+      },
+      "Contents/app/lifecycle-runtime-compose-desktop-2.11.0-39a884fc9f780a0a4c984b5f429825.jar": {
+        "bytes": 5137,
+        "sha256": "7c121061ea574f45a082f9036c4fc0b88cf9dd6ea856f89f463b8ffd46663f66"
+      },
+      "Contents/app/lifecycle-runtime-compose-desktop-2.11.0-b176c793de60d9c31bc2ae3987f7d29e.jar": {
+        "bytes": 52544,
+        "sha256": "93a5b82f586ba85875f5ff3db90e3cac9a5f094805f94785469a5c4e007dceec"
+      },
+      "Contents/app/lifecycle-runtime-desktop-2.11.0-db02cb9fa9bf7526ffd1fef044cdbf.jar": {
+        "bytes": 5089,
+        "sha256": "0a064380d0420fd130ddbff9adcef9271abb9ea5467b60595209d4ee13206062"
+      },
+      "Contents/app/lifecycle-runtime-desktop-2.11.0-f14af19f336c43981285f2b83ea88f.jar": {
+        "bytes": 53460,
+        "sha256": "a1a949a1920d407f97d0be9d5ac0511e8e007b45c22b8b75567336ec08927dac"
+      },
+      "Contents/app/lifecycle-viewmodel-compose-desktop-2.11.0-9b8cf0a583b9f95d6c80da92f398b5.jar": {
+        "bytes": 34951,
+        "sha256": "ace860cfa370be19e35b1c8894d57bdfb349928c447b29fd551c834623724407"
+      },
+      "Contents/app/lifecycle-viewmodel-compose-desktop-2.11.0-b6b9988570b5c2c9e248104289c72a74.jar": {
+        "bytes": 5149,
+        "sha256": "46c2f0e78cac71fd6dbe5117b015b9bdd0e7ad89691684ac092cc0029cafacca"
+      },
+      "Contents/app/lifecycle-viewmodel-desktop-2.11.0-eb8f3804e7967444ef57615880a76b.jar": {
+        "bytes": 5101,
+        "sha256": "b611e4f2bb4a68dfb9ace8d5eca2ea2a80a3d6f80189fc4a7999875fb16e8774"
+      },
+      "Contents/app/lifecycle-viewmodel-desktop-2.11.0-f82f9216259467601fb180d915a6b118.jar": {
+        "bytes": 62236,
+        "sha256": "8084962a31c7ccfa778309277868cb2af22342fff4d31c9fef40118bddc95e39"
+      },
+      "Contents/app/lifecycle-viewmodel-navigation3-desktop-2.11.0-52bf98f2bedb9f10b32d33ea69283d3.jar": {
+        "bytes": 5173,
+        "sha256": "43510af5158143aff2a16a2639b02a2a92a5d2a7530fd78ea25da73dd98cc24c"
+      },
+      "Contents/app/lifecycle-viewmodel-navigation3-desktop-2.11.0-5ba6f05f1969e9687ca56d4746954650.jar": {
+        "bytes": 16336,
+        "sha256": "6f52e3173e56e65612c69494b715d8b3f5cbb169d2a05f3f1f53f05d373ebac0"
+      },
+      "Contents/app/lifecycle-viewmodel-savedstate-desktop-2.11.0-2527aa4d8d1c0962b7ae1dc31a16597.jar": {
+        "bytes": 5167,
+        "sha256": "3ef6517c09f712b41a77722974210bf0e78b6fa75700940930c5484636faf8a9"
+      },
+      "Contents/app/lifecycle-viewmodel-savedstate-desktop-2.11.0-32f127f2f7fce65ea95a871fd81b1a2.jar": {
+        "bytes": 60931,
+        "sha256": "ce9b55ca4d458f561b76ce31b42e32d2b153e2adba419decea54359b45d891cb"
+      },
+      "Contents/app/material-desktop-1.12.1-921af98aef5117e3c225b2aa7fe7b5d9.jar": {
+        "bytes": 1482019,
+        "sha256": "c1d62795dc5304e83d947f0aa67afb40a8a33f794da4ea144d24ff6790199c3b"
+      },
+      "Contents/app/material-ripple-desktop-1.12.1-14de3de9fc704811971ae5fc7fe212a.jar": {
+        "bytes": 77993,
+        "sha256": "e5e588b64f56b0262a904b183e81ffd6da02361fda3b0de74e45010562cdc057"
+      },
+      "Contents/app/material3-desktop-1.9.0-e8b6edb91fefebc65537db222e7bd1.jar": {
+        "bytes": 4460042,
+        "sha256": "ca96ffe2fc4a5269d74079c0e4c9a26cf206830aa686518b3b6b395db5aeea17"
+      },
+      "Contents/app/navigation3-runtime-desktop-1.2.0-c372665b2a98bdcaca658664dab6c2c.jar": {
+        "bytes": 152796,
+        "sha256": "a89eda0ade5acb4125a8f530e34748eadbf3f8334443da93453d1388abe95811"
+      },
+      "Contents/app/navigation3-ui-desktop-1.1.2-7829cdeac97ad4de55eb5e40d65cadd.jar": {
+        "bytes": 112462,
+        "sha256": "77d0ff4d5e67e45b9caca726a37127da10535cc2b9170eb18e17d052e79e43a2"
+      },
+      "Contents/app/navigationevent-compose-desktop-1.1.0-6370d5c46488f619be7b5e63333545d2.jar": {
+        "bytes": 4789,
+        "sha256": "2ba852c14d3c6bbe8433d70556a019bec263bf83bc2fd862a8cb83116adfdac3"
+      },
+      "Contents/app/navigationevent-compose-desktop-1.1.1-7c81c6a8aa54e8beed4bae895cb91.jar": {
+        "bytes": 32104,
+        "sha256": "876b6778c0bc7754bfa08f24d79e8303b725613f3654798bd12132b37695eb78"
+      },
+      "Contents/app/navigationevent-desktop-1.1.1-5d6b5b7abab9bd6abdc6485ffd91541.jar": {
+        "bytes": 46146,
+        "sha256": "b8757bf1c5780b5669408d4981bd88d52af69d9809b3a50205b9175dd394d008"
+      },
+      "Contents/app/okio-jvm-3.9.1-8017bd41eff99c44380b364e9ad7e5e.jar": {
+        "bytes": 372276,
+        "sha256": "78308574c0183a968b45fd558818a538cf639e649e0fc1c9142b29adc8db1d17"
+      },
+      "Contents/app/runtime-annotation-jvm-1.12.1-4190aa9d3047cacca43687b075ca9f41.jar": {
+        "bytes": 9667,
+        "sha256": "8f35dda73d4c8aca8df14bd4f7b8d6d55a0a9d4d7cc61f12ed4ffa9fde5ad813"
+      },
+      "Contents/app/runtime-desktop-1.12.1-1f10feae5687d5ddef2226983a95b8e.jar": {
+        "bytes": 1961069,
+        "sha256": "81a6eb4d4a038def51844d49a1bb84d5fedbfb7676d0dd92be1d4713f1936a9c"
+      },
+      "Contents/app/runtime-desktop-1.12.1-b7d07b28974ce573c251fcf21c78ac5.jar": {
+        "bytes": 5009,
+        "sha256": "413b7c378e17e3c6d587d8a9f0f9df9a15ef74aad159a29597220eccee542993"
+      },
+      "Contents/app/runtime-retain-desktop-1.12.1-1a6731c44f232c5d9e1fb10edac28de.jar": {
+        "bytes": 54013,
+        "sha256": "e90301989291e4bbcc54c19f51fb9a1135afce7e4d69aa61e71318b7973e3385"
+      },
+      "Contents/app/runtime-saveable-desktop-1.12.1-20894c61e27fb5db944c2ca8876eb2.jar": {
+        "bytes": 54375,
+        "sha256": "706778979a6926ecee71f33b6db127949559ea69a61e146b7db55b723258a4fb"
+      },
+      "Contents/app/runtime-saveable-desktop-1.12.1-b997262ae4482c23c7c8a0c47e846924.jar": {
+        "bytes": 5063,
+        "sha256": "ae14302f5065f1caf69c9e6b43845e5bb0d3d6d355007a0c5b7f4acae172f7d7"
+      },
+      "Contents/app/savedstate-compose-desktop-1.4.0-84ed9710e312be7017fd7498fe747a.jar": {
+        "bytes": 15798,
+        "sha256": "f34992485b0896c702672f6d817928d6af6559dd17756c001e9797251a743c9f"
+      },
+      "Contents/app/savedstate-compose-desktop-1.4.0-8de11644e97845eaa45d9e74fdec755.jar": {
+        "bytes": 486,
+        "sha256": "52f52658b6972ce9833bec2fee501143fa8765605d86d90b2e73c718c9fa8674"
+      },
+      "Contents/app/savedstate-desktop-1.4.0-e2a50762f9c6de234b04b12926df6b3.jar": {
+        "bytes": 82969,
+        "sha256": "5a72fd3f672b2426811871ba9e856e3227728abebae3642303d35f79f1b0e391"
+      },
+      "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar": {
+        "bytes": 2701726,
+        "sha256": "facb580117877444f67d97a8d8962e2deec66a84b4eeaa4f91cbbfca64244d98"
+      },
+      "Contents/app/skiko-awt-0.150.1-68b78f48c75f4f82c8e747df5df4883a.jar": {
+        "bytes": 1273292,
+        "sha256": "d9657ff09093f5ab6012934614a4bbeb05211eb5197b93ee72bde3009b14209c"
+      },
+      "Contents/app/skiko-awt-runtime-macos-arm64-0.150.1-76bff0485a4784a11628eb3354251bb.jar": {
+        "bytes": 293,
+        "sha256": "a8a102f3610b8d122314d8b0ca857586c3c64ce11702bc12a8adc16794e3d536"
+      },
+      "Contents/app/stately-concurrency-jvm-2.1.0-caa3a637b3459827e138cf78b9f31c55.jar": {
+        "bytes": 11702,
+        "sha256": "8499bb1833304f1baff55c6a9c8aaf5ca2918567b98be09a444ac0c5bdc9b871"
+      },
+      "Contents/app/stately-concurrent-collections-jvm-2.1.0-b7acc01ab9a6662528925fb79d422dd1.jar": {
+        "bytes": 73469,
+        "sha256": "6ce3ba9028407aba3b814fe9f58b03ded59b5d1694c6abe04b328cb83852436f"
+      },
+      "Contents/app/stately-strict-jvm-2.1.0-4aa938e33acc448c4ebd7f76848d22.jar": {
+        "bytes": 1735,
+        "sha256": "6f780ad2f988c2ee6533ebd02ecf6fcb05dd04230b21300d52640c1d6a55163f"
+      },
+      "Contents/app/ui-backhandler-desktop-1.12.1-35874ca299568adff7969876bded31ff.jar": {
+        "bytes": 28826,
+        "sha256": "fdfe70211de339ddb269d8968bf484587a8a90aa9bd6b8788c4fd4ede7d028a6"
+      },
+      "Contents/app/ui-desktop-1.12.1-c4ace5714b95bdaa8dfbefbef8c45514.jar": {
+        "bytes": 3744872,
+        "sha256": "924ff31ee2108f18392d1fa0977d160c70969245f9aa55c76d5657f51eafa85a"
+      },
+      "Contents/app/ui-geometry-desktop-1.12.1-29a565e9b56c42fc9a78ad6247868345.jar": {
+        "bytes": 61647,
+        "sha256": "c0b346986f3c08f1b2087c6ef4174af6d83b6885efec7c097fae321b767a0813"
+      },
+      "Contents/app/ui-graphics-desktop-1.12.1-6fa07bde255e7be1447cd8eabce6901d.jar": {
+        "bytes": 649464,
+        "sha256": "de7faaef4815201cc1179c33f32c3d3a6f176cf04f3778ffa76a085837154320"
+      },
+      "Contents/app/ui-text-desktop-1.12.1-5e3686245ced4825d1d811c323ec58fb.jar": {
+        "bytes": 732884,
+        "sha256": "da2bfb735d51b35d62f06262483e3305bc81bae436a8537feeabde5fc4b8ad85"
+      },
+      "Contents/app/ui-tooling-preview-desktop-1.12.1-3548dd9011fded88e7f44967f5c29e4.jar": {
+        "bytes": 28409,
+        "sha256": "0da63cd561e0d514ca850ce402169474803113981af7fabf99baeeb883240945"
+      },
+      "Contents/app/ui-unit-desktop-1.12.1-7ef6fe1b7eef6348891d94869166a6f7.jar": {
+        "bytes": 92646,
+        "sha256": "6e0d4685dca2cedf7ded2dc528d702f5abb118603e25eb52da1661c13575ca43"
+      },
+      "Contents/app/ui-util-desktop-1.12.1-8f9524bdc94dc578c1cf5d640b48d99.jar": {
+        "bytes": 23671,
+        "sha256": "af9a4dbe3b657e1c9dd827b13f3b87cb38004dff8cb58f6be46777e607413bdd"
+      },
+      "Contents/runtime/Contents/Home/conf/jaxp.properties": {
+        "bytes": 7302,
+        "sha256": "7d95c49465d0c836d608d02856d3b097934dfb5dc4bd2279affaf337d045b708"
+      },
+      "Contents/runtime/Contents/Home/conf/logging.properties": {
+        "bytes": 2732,
+        "sha256": "b62d2733ab99556b108a1951d894c5a8d76b1ac7a00c02c388f9eb9be046c56f"
+      },
+      "Contents/runtime/Contents/Home/conf/net.properties": {
+        "bytes": 7341,
+        "sha256": "f0093906820c30e079cbf79bd744d761aaf32ae917598c7ce71fac7eae16f86d"
+      },
+      "Contents/runtime/Contents/Home/conf/security/java.policy": {
+        "bytes": 2294,
+        "sha256": "d51bcab7ed301caeff3779a5e777e6019864cecee5e2abc102ef991b0de77af2"
+      },
+      "Contents/runtime/Contents/Home/conf/security/java.security": {
+        "bytes": 70512,
+        "sha256": "7b8e5863046539f79a3ff3acbede2eb6b37043a461da524259f015f1dd7c0d92"
+      },
+      "Contents/runtime/Contents/Home/conf/security/policy/README.txt": {
+        "bytes": 2390,
+        "sha256": "6da0747334b0fea7592fd92614b2bbc8b126535e129b1fee483774d914e98eb5"
+      },
+      "Contents/runtime/Contents/Home/conf/security/policy/limited/default_US_export.policy": {
+        "bytes": 146,
+        "sha256": "758b930a526fc670ab7537f8c26321527050a31f5f42149a2dda623c56a0a1a9"
+      },
+      "Contents/runtime/Contents/Home/conf/security/policy/limited/default_local.policy": {
+        "bytes": 647,
+        "sha256": "2b2627548e61316150d47ffc3e6cad465ca05b3cccd4785eb7d21aa7baa0f441"
+      },
+      "Contents/runtime/Contents/Home/conf/security/policy/limited/exempt_local.policy": {
+        "bytes": 566,
+        "sha256": "8c3d7648abcd95a272ce12db870082937f4d7f6878d730d83cb7fbb31eb8b2c9"
+      },
+      "Contents/runtime/Contents/Home/conf/security/policy/unlimited/default_US_export.policy": {
+        "bytes": 146,
+        "sha256": "758b930a526fc670ab7537f8c26321527050a31f5f42149a2dda623c56a0a1a9"
+      },
+      "Contents/runtime/Contents/Home/conf/security/policy/unlimited/default_local.policy": {
+        "bytes": 193,
+        "sha256": "8d8a318e6d90dfd7e26612d2b6385aa704f686ca6134c551f8928418d92b851a"
+      },
+      "Contents/runtime/Contents/Home/conf/sound.properties": {
+        "bytes": 1210,
+        "sha256": "299c2360b6155eb28990ec49cd21753f97e43442fe8fab03e04f3e213df43a66"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/aes.md": {
+        "bytes": 1444,
+        "sha256": "45c6d4da48325edfbff3dcf71c704e504c057904435ed23c6d57046d551eb69d"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/asm.md": {
+        "bytes": 1582,
+        "sha256": "683be15695bd248272d60f5b7fbe5e126a935ea6bf231a624a9aa164733e1d1d"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/c-libutl.md": {
+        "bytes": 1556,
+        "sha256": "bef40679922d6fdfb7e4ddb223ad6722300f6054ba737bbf6188d60fcec517f9"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/cldr.md": {
+        "bytes": 9601,
+        "sha256": "19515e14a240e022640e95b61b5095127fa9690755950b4a2b0a02e783e08163"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/icu.md": {
+        "bytes": 30197,
+        "sha256": "1bf28459c6e0af9f3429f4f8becd1668d6544055f8df240277456bc4b3d8a752"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/public_suffix.md": {
+        "bytes": 17783,
+        "sha256": "d7818e02ebfc4e5cd82613e003e7ba6be2e9d5949ea4aa0ba88d4d2f7ca69999"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/siphash.md": {
+        "bytes": 8256,
+        "sha256": "5a792b5a74ad2a5f3d6a7ad8b7a841116e58a772c18bc6e392320a365b222c76"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/unicode.md": {
+        "bytes": 9078,
+        "sha256": "6f72f10d166b2c2e8a395e03e734c5afc852b59aeca73ced124f6b9c96268d53"
+      },
+      "Contents/runtime/Contents/Home/legal/java.base/zlib.md": {
+        "bytes": 1010,
+        "sha256": "c9c70c36a1f0325e8788771906202d42ba6ab4205caca44ec0f665707e83226b"
+      },
+      "Contents/runtime/Contents/Home/legal/java.datatransfer/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/java.datatransfer/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/java.datatransfer/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/colorimaging.md": {
+        "bytes": 167,
+        "sha256": "04d61e3e8e71dd452ebe52008af5378d9f6640d14578aeb515dc5375973b0189"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/freetype.md": {
+        "bytes": 30460,
+        "sha256": "81b380959fad26d66928c0f4547c2fe25914e6f2bcab264971b3261c3fbee1c5"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/giflib.md": {
+        "bytes": 1689,
+        "sha256": "4fdfc68f8c5e461ee899cec851290cc713e17673a0466f46973178866ddc9ed0"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/harfbuzz.md": {
+        "bytes": 3628,
+        "sha256": "9050c60ce9a0c2b212e746bf5b3eb8ccb064d2c41a77ac7b681b3a6eb22cc304"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/jpeg.md": {
+        "bytes": 3474,
+        "sha256": "c1dfb9719a71ad9f861f8728550542d681e25c8ef40e6393606e6e2a0c1d653a"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/lcms.md": {
+        "bytes": 2641,
+        "sha256": "fc1d7f60c7cdc96b5cadafd4f3610c6a74f2d0afa08852036929c7a1474ebab6"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/libpng.md": {
+        "bytes": 7519,
+        "sha256": "46e55b9dc9cc25bfd3ff2bb6d48b9b9caa1b8f85e69473630ec5b41d22afc3c2"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/mesa3d.md": {
+        "bytes": 5732,
+        "sha256": "63f4e6f75caebbccb95d903fb43e46ac7111b3624d0a34f146b276d7d9e7b152"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/pipewire.md": {
+        "bytes": 1479,
+        "sha256": "56a8fb1652c70ac204d13bb52ca4d678162e7d21a97d10209c2a633de8082de0"
+      },
+      "Contents/runtime/Contents/Home/legal/java.desktop/xwd.md": {
+        "bytes": 1348,
+        "sha256": "1d4ffa93c87f35084b02a7aa90a21084b4019db4fe1003c2e5ce775b4a384f59"
+      },
+      "Contents/runtime/Contents/Home/legal/java.logging/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/java.logging/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/java.logging/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/java.prefs/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/java.prefs/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/java.prefs/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/bcel.md": {
+        "bytes": 11196,
+        "sha256": "cd578186ad93de46cca29ec8ace2b11f9da751987f3f140e6095c528596cc8c1"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/dom.md": {
+        "bytes": 3761,
+        "sha256": "6686e8877667584a3a7c07344baadca1a03e29f677162d87c3c0811e990d1148"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/jcup.md": {
+        "bytes": 1448,
+        "sha256": "8d5dcfdf50455a3c34c753a98f21e953248af200415a9084e3f102cb6c43b8bf"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/xalan.md": {
+        "bytes": 13477,
+        "sha256": "c27eb875da4be683d4d7422be986e5e30f636ede31958ff1d39f9cd6109e7a00"
+      },
+      "Contents/runtime/Contents/Home/legal/java.xml/xerces.md": {
+        "bytes": 11848,
+        "sha256": "4a6bf6b367193ee68681cb2d9fed30ffc5d62dd2d477bd62e0271707d71b3244"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.charsets/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.charsets/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.charsets/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.crypto.ec/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.crypto.ec/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.crypto.ec/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.unsupported/ADDITIONAL_LICENSE_INFO": {
+        "bytes": 2114,
+        "sha256": "a69bce275ba7a3570af6579cb0f55682cd75fedfcd49e0e8e9022270c447c916"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.unsupported/ASSEMBLY_EXCEPTION": {
+        "bytes": 1514,
+        "sha256": "75292f03bf23d3db7c985aecc191029b93883200721ed23ed34a2e601463df33"
+      },
+      "Contents/runtime/Contents/Home/legal/jdk.unsupported/LICENSE": {
+        "bytes": 19274,
+        "sha256": "4b9abebc4338048a7c2dc184e9f800deb349366bdf28eb23c2677a77b4c87726"
+      },
+      "Contents/runtime/Contents/Home/lib/classlist": {
+        "bytes": 201858,
+        "sha256": "584c42f680d7a5481229a7f5eaea8e0f802aee308cd8234c01a02facd190e828"
+      },
+      "Contents/runtime/Contents/Home/lib/fontconfig.bfc": {
+        "bytes": 2922,
+        "sha256": "5409952a218126c5c11cf0e4963665711aeeab50f5648264d70866fca705a950"
+      },
+      "Contents/runtime/Contents/Home/lib/fontconfig.properties.src": {
+        "bytes": 8931,
+        "sha256": "c8d20a4a39240665252306bdd3dbc8d71e1e246c8cd8c7985b32e4101658a148"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSans-Bold.ttf": {
+        "bytes": 194488,
+        "sha256": "2f529a3e60c007979d95d29794c3660694217fb882429fb33919d2245fe969e9"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSans.ttf": {
+        "bytes": 190776,
+        "sha256": "f51b88945f4c1b236f44b8d55a2d304316869127e95248c435c23f1e4142a7db"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSansMono.ttf": {
+        "bytes": 119380,
+        "sha256": "12b552de765dc1265d64f9f5566649930dde4dba07da0251d9f92801e70a1047"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSansMonoDotted.ttf": {
+        "bytes": 117696,
+        "sha256": "bf8c5e6b662df177af25226e61c34d6cf6ae23bb39939530347a81a5b5bbffc8"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSansMonoSlashed.ttf": {
+        "bytes": 117744,
+        "sha256": "01550d67b4c7a8c113da222a26f0e77f39d9fe2264369c7cc2d8f6962682be35"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSerif-Bold.ttf": {
+        "bytes": 185228,
+        "sha256": "c746c6383a03effbcad6ccb028e4b39e87071ff1a146a24fb2110a23e05776bb"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSerif-BoldItalic.ttf": {
+        "bytes": 190304,
+        "sha256": "1aba99421b31afe890182663270c28bc619f00d8746234da3dda054cd5bf09b0"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSerif-Italic.ttf": {
+        "bytes": 177560,
+        "sha256": "02c0108dea583e393fbcbec39c7093e9a3095a09d65e37fafff9a9b7a89123a4"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/DroidSerif-Regular.ttf": {
+        "bytes": 172916,
+        "sha256": "ae32140265dbe0dfde24b9abd222be9210a531888f014ff9b2326aba2d6fd777"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/FiraCode-Bold.ttf": {
+        "bytes": 324328,
+        "sha256": "37a609b7e27516ce0cf55cb7550edd1a1cbd8cd5bc028415a1d520c426c10357"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/FiraCode-Light.ttf": {
+        "bytes": 285000,
+        "sha256": "965786b0157a8f0607701077e226acab9d7a66b2b32f01848c46bb54b24bcb9a"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/FiraCode-Medium.ttf": {
+        "bytes": 294960,
+        "sha256": "f94d9fa1ffb46463e6d8fda12041088397adea1c47de7c50a8f9f57ce9a6d788"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/FiraCode-Regular.ttf": {
+        "bytes": 299152,
+        "sha256": "28c3ae21a853f1d74673384c7a0d620abb0e877b8c6cd8b64173a95512476824"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/FiraCode-Retina.ttf": {
+        "bytes": 295252,
+        "sha256": "e8aad8140dd254b73bac71205ec4e0cc3f1c3914aa73f514e2cc4b3cf937d35d"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/Inconsolata.ttf": {
+        "bytes": 22416,
+        "sha256": "691b7811a052b517a1b23c83b29aab3ac2ea0bd19a3f0816cf32aa1f1b1793b2"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/Inter-Italic.otf": {
+        "bytes": 271400,
+        "sha256": "45ecfe6cbadfd4803de6214e02c336a95163a7703973bc8a5ce7ac2d174ecaf7"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/Inter-Regular.otf": {
+        "bytes": 258992,
+        "sha256": "a7e791e8f5a0fb02b65663f7fca73e1d1ca9543f772ad480cbd76f4e3fe3f8cc"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/Inter-SemiBold.otf": {
+        "bytes": 270760,
+        "sha256": "8c1990b6012254ea2b487161697d107357dd0ee55811cfd91c8c11227bbef457"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/Inter-SemiBoldItalic.otf": {
+        "bytes": 279536,
+        "sha256": "404251faffd4c55dfcb53007e7afb9d5c2891584c842165e35050345ab97744b"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-Bold.ttf": {
+        "bytes": 277828,
+        "sha256": "5590990c82e097397517f275f430af4546e1c45cff408bde4255dad142479dcb"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-BoldItalic.ttf": {
+        "bytes": 279832,
+        "sha256": "4039d5ce0ed225bf9c8b2c8c6436290ae2f356b7e90d70fa666227238324aa3b"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-ExtraBold.ttf": {
+        "bytes": 279404,
+        "sha256": "8e501d3a6a883e83ea4f7852804fb0894cebdd67751bb1006b37a476cef34cd6"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-ExtraBoldItalic.ttf": {
+        "bytes": 281616,
+        "sha256": "ec3a860fa87d0a3b1451277d1c2f3072f5ba19d2367aec54f7169d5710872610"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-ExtraLight.ttf": {
+        "bytes": 274144,
+        "sha256": "8391e7ec13e8ba758c1838f56bccd973228ccf4dc74aa5bffe9525b9147b12f8"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-ExtraLightItalic.ttf": {
+        "bytes": 274240,
+        "sha256": "3c7fee57538f18b61cc5f0784a8133fe5ee95feb41f633e8f6f7ef609e6207ec"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-Italic.ttf": {
+        "bytes": 276840,
+        "sha256": "9d0a1f7a708e6af183f1193b7e81d40da294f5c67682c085d8401c60aac8ded4"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-Light.ttf": {
+        "bytes": 276452,
+        "sha256": "60c18d7dd58d81b3bbd12e8ce32744a8771bfe2b5280574082b0eaed46c60d24"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-LightItalic.ttf": {
+        "bytes": 277104,
+        "sha256": "18ffadb91fa711b45feae027ddfd561e7f97ace805ec4baf9905046cf450befb"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-Medium.ttf": {
+        "bytes": 273860,
+        "sha256": "31c92d01a8a08528b718a43addf0ad3df0af2ca4b7b3290a452f70f358e14d3d"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-MediumItalic.ttf": {
+        "bytes": 276804,
+        "sha256": "4477fda6bd472ef96b11bc1083370f7fc3ff427bdc807e682ced5819e3dee9df"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-Regular.ttf": {
+        "bytes": 273900,
+        "sha256": "a0bf60ef0f83c5ed4d7a75d45838548b1f6873372dfac88f71804491898d138f"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-SemiBold.ttf": {
+        "bytes": 277092,
+        "sha256": "1b3bfa1ed5665a4ce3f9feb68d2d4e40e70bf8b4b7d9a3edd418f321b4e166a0"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-SemiBoldItalic.ttf": {
+        "bytes": 279828,
+        "sha256": "3b3000507a7285872395ddbb4e53a28f07910dbf494fb0d5e1421dd60b5d8436"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-Thin.ttf": {
+        "bytes": 270112,
+        "sha256": "0756e8e8cf1d65fa7519776764479b3973efb15af4f419d5d7274dc27ae1b702"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/JetBrainsMono-ThinItalic.ttf": {
+        "bytes": 272984,
+        "sha256": "ebcdd13119b6beb7457e2f76b31094cb8cf1108e567030f8402b24dde018e76a"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/Roboto-Light.ttf": {
+        "bytes": 140276,
+        "sha256": "b17667ce7e13581db105777f986e141168231e88a8ef16d13e581c7c1525f14b"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/Roboto-Thin.ttf": {
+        "bytes": 130044,
+        "sha256": "11dbd8bf4f8c61d665f4f3157027b9643db2454d5d84daffbe6385d70e8bf131"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/SourceCodePro-Bold.ttf": {
+        "bytes": 197004,
+        "sha256": "72f35788b9ed009b4f2e9c947447e6b31fbdd00bb8d583e5675660a0e2bc40dd"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/SourceCodePro-BoldIt.ttf": {
+        "bytes": 162976,
+        "sha256": "b242cf3324b3b6fd268bb98aedb6fd1c4ba47e09cd72cc9380fb68de524462a9"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/SourceCodePro-It.ttf": {
+        "bytes": 163624,
+        "sha256": "04c0fb338201c9fed2821176461165d27cf70182bdb9aa47ffb75e1ddfcf54cc"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/SourceCodePro-Regular.ttf": {
+        "bytes": 197644,
+        "sha256": "ef6ea62b6849bc1535aae941d32de8d7b3ad14eab87d681dd237d125e36aebec"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/font.conf": {
+        "bytes": 584,
+        "sha256": "10be692d96ca5b3abc7bff76685c777e62d3e8db5e1628d83ddcabbc141df2a5"
+      },
+      "Contents/runtime/Contents/Home/lib/fonts/fonts.dir": {
+        "bytes": 36170,
+        "sha256": "6b41d9e657bf9f835d12fd06bcc35af7f3874459f44c8f56ccad058a3e46623b"
+      },
+      "Contents/runtime/Contents/Home/lib/jrt-fs.jar": {
+        "bytes": 110120,
+        "sha256": "9fb1f37627d35604d6c86fff28f9dad4c98662c8660abe7dce5e6ae9b8bcd72d"
+      },
+      "Contents/runtime/Contents/Home/lib/jspawnhelper": {
+        "bytes": 70752,
+        "sha256": "69c3e10a3520f5f30dd93f46c227fb51c20400d7cfb4b95db60d4d2d3eb516ab"
+      },
+      "Contents/runtime/Contents/Home/lib/jvm.cfg": {
+        "bytes": 29,
+        "sha256": "aa9efb969444c1484e29adecab55a122458090616e766b2f1230ef05bc3867e0"
+      },
+      "Contents/runtime/Contents/Home/lib/libawt.dylib": {
+        "bytes": 548352,
+        "sha256": "07ac380f506dd38c829cd406f329e74e357a16b3f5a5e2d159d1a0b210001f21"
+      },
+      "Contents/runtime/Contents/Home/lib/libawt_lwawt.dylib": {
+        "bytes": 1644144,
+        "sha256": "c8902d078403e878f9afab080d3da0114ba54c337e02d4da0c2dd575c8ac3a1c"
+      },
+      "Contents/runtime/Contents/Home/lib/libfontmanager.dylib": {
+        "bytes": 1417248,
+        "sha256": "d9d5c973b5af6c6406a4b33c96cfd6776798f1b88ebb5b7e48ae8f0c49219cd3"
+      },
+      "Contents/runtime/Contents/Home/lib/libfreetype.dylib": {
+        "bytes": 641776,
+        "sha256": "9acba6dafea9bef8b4d1bfdd089b2c5bb4a4f9daf376bc68629ee1a344de04f8"
+      },
+      "Contents/runtime/Contents/Home/lib/libjava.dylib": {
+        "bytes": 186624,
+        "sha256": "420751197a4741c337d34c5b7d5b29da7f399ca929d483abca6d09ac4370a682"
+      },
+      "Contents/runtime/Contents/Home/lib/libjavajpeg.dylib": {
+        "bytes": 262432,
+        "sha256": "31815ac666b08c8b116fa1eab8632c8b1b02ca5b93d76cec68853a875d216c27"
+      },
+      "Contents/runtime/Contents/Home/lib/libjawt.dylib": {
+        "bytes": 51952,
+        "sha256": "cdfb471dd32ca7bd12eef8e2052dfc9068fe9094e50368780d2d8e62d49be366"
+      },
+      "Contents/runtime/Contents/Home/lib/libjimage.dylib": {
+        "bytes": 75984,
+        "sha256": "ac64b48f9d036e205722f6aa143e681006b467501943d661fa48557bf23a92de"
+      },
+      "Contents/runtime/Contents/Home/lib/libjli.dylib": {
+        "bytes": 146752,
+        "sha256": "445740beabd49e4f213ed14cfc4c945a1530f6cef472dec58fd9d6e6b39e36de"
+      },
+      "Contents/runtime/Contents/Home/lib/libjsig.dylib": {
+        "bytes": 69328,
+        "sha256": "731c463b93597b26aa9d7e62d103e6ebc34a7efb9500d0ea11c1c85f1797329c"
+      },
+      "Contents/runtime/Contents/Home/lib/libjsound.dylib": {
+        "bytes": 134048,
+        "sha256": "ea04a6ba64c9a66cd38d613d5f77fa99809faf314d3205482f312128cd9947dc"
+      },
+      "Contents/runtime/Contents/Home/lib/liblcms.dylib": {
+        "bytes": 390128,
+        "sha256": "e1c9c78d976f4c58f0ece0a9248188d421f6b1c34ccca636658e868c05da4e48"
+      },
+      "Contents/runtime/Contents/Home/lib/libmlib_image.dylib": {
+        "bytes": 503760,
+        "sha256": "cd42bb5075a6c0fd13d84f83aa1234cb913d36f9949368332171628d15f6a545"
+      },
+      "Contents/runtime/Contents/Home/lib/libnet.dylib": {
+        "bytes": 112496,
+        "sha256": "82ef9bbfb3daf245113567967251077426ce82a9d5b10c5280acfb3d96006aeb"
+      },
+      "Contents/runtime/Contents/Home/lib/libnio.dylib": {
+        "bytes": 127104,
+        "sha256": "eddd6a0b1cfb208489e5465d6d6940de8166e41b6f828b66ee8c9d1f83ac931f"
+      },
+      "Contents/runtime/Contents/Home/lib/libosx.dylib": {
+        "bytes": 73168,
+        "sha256": "efd929af8ae162387a64c5e67591c67cad08d4ef59bee24f171f504051d89e80"
+      },
+      "Contents/runtime/Contents/Home/lib/libosxapp.dylib": {
+        "bytes": 215920,
+        "sha256": "3984ca9caac9e2efb553db0851c01bbc6b56d3e1147c4b4e9156451116fefa2c"
+      },
+      "Contents/runtime/Contents/Home/lib/libosxsecurity.dylib": {
+        "bytes": 73504,
+        "sha256": "ff6e21da99668362c29c1e8bc4b1bb513e40f7c9ca2b7210367d2ee7e9406e92"
+      },
+      "Contents/runtime/Contents/Home/lib/libosxui.dylib": {
+        "bytes": 97968,
+        "sha256": "20fe906d0b4e66d543e41de5b72ed9dfd664b94f6c4c2f7c94c192a1ac1933dd"
+      },
+      "Contents/runtime/Contents/Home/lib/libprefs.dylib": {
+        "bytes": 72960,
+        "sha256": "c7afc86505c05be8a22b0bd8892d24b06f040208bd435d4f75dec1a190cbf3f3"
+      },
+      "Contents/runtime/Contents/Home/lib/libsplashscreen.dylib": {
+        "bytes": 405920,
+        "sha256": "cf41b8f05b7f1425b6bd2b92f1ff27ef0848519148179bb50f8de977d9cb0e4d"
+      },
+      "Contents/runtime/Contents/Home/lib/libsyslookup.dylib": {
+        "bytes": 34976,
+        "sha256": "0a39512f7cb62e6a9fe9420055cb29418392b7afbc2533a5827fa08e40ee061f"
+      },
+      "Contents/runtime/Contents/Home/lib/libverify.dylib": {
+        "bytes": 105040,
+        "sha256": "d740efbc3e1db5c3e1807cbb429e28d924dac036a92e93d15816192d28953828"
+      },
+      "Contents/runtime/Contents/Home/lib/libzip.dylib": {
+        "bytes": 160720,
+        "sha256": "68eeeef92de498bdbc74e30eb997b695712945ed0b020801011d6eabadc0f3bb"
+      },
+      "Contents/runtime/Contents/Home/lib/modules": {
+        "bytes": 57574940,
+        "sha256": "87f096cc622187bb5eacdd142484c7700559e5c677e2ebd518b25338e0eeee7c"
+      },
+      "Contents/runtime/Contents/Home/lib/psfont.properties.ja": {
+        "bytes": 3793,
+        "sha256": "5a4bd51b969bf187ff86d94f4a71fdfbfa602762975fa3c73d264b4575f7c78f"
+      },
+      "Contents/runtime/Contents/Home/lib/psfontj2d.properties": {
+        "bytes": 11390,
+        "sha256": "780c565d5af3ee6f68b887b75c041cdf46a0592f67012f12eeb691283e92630a"
+      },
+      "Contents/runtime/Contents/Home/lib/security/blocked.certs": {
+        "bytes": 2488,
+        "sha256": "96572f243f31c2ef81a6e627542e596f6a9295cff3c7ae095c1b595cb1457ded"
+      },
+      "Contents/runtime/Contents/Home/lib/security/cacerts": {
+        "bytes": 132316,
+        "sha256": "707312d3e8018928f53d108e4534f628cbbfad18196df1a2e72884300be1a69f"
+      },
+      "Contents/runtime/Contents/Home/lib/security/default.policy": {
+        "bytes": 10657,
+        "sha256": "2bd418aab30b091b136962f80be7ddf39dcba85f082a558a6993848ae65366ae"
+      },
+      "Contents/runtime/Contents/Home/lib/security/public_suffix_list.dat": {
+        "bytes": 228507,
+        "sha256": "5a3a571cc2e016fee10c221036cf1d2b52ee8ba39288ef20abe2667828ca30b4"
+      },
+      "Contents/runtime/Contents/Home/lib/server/libjsig.dylib": {
+        "bytes": 69328,
+        "sha256": "18c4432f0c4bbe6f897d903d0db3395d13a5b9a4758147c1c4455ee4b1d1f8f9"
+      },
+      "Contents/runtime/Contents/Home/lib/server/libjvm.dylib": {
+        "bytes": 18218736,
+        "sha256": "1c188a09e2a3c4a5f43f857eda9946e05575fb91bdf05716d2e3be2525978885"
+      },
+      "Contents/runtime/Contents/Home/lib/shaders.metallib": {
+        "bytes": 159917,
+        "sha256": "8115f7b1d349b13a89d32a5a636dfe91e7fbaa049094a892cca2a7b2bf589e57"
+      },
+      "Contents/runtime/Contents/Home/lib/tzdb.dat": {
+        "bytes": 102820,
+        "sha256": "36cf71e63ce2816fe4456e9195e6c27fa7c9cd431c89ba762eba394ec2c7a1e3"
+      },
+      "Contents/runtime/Contents/Home/release": {
+        "bytes": 150,
+        "sha256": "994234321beb17a6e7003864a2633817a1d7fa4e47f9dc6b06d86ace9af3b0f1"
+      },
+      "Contents/runtime/Contents/Info.plist": {
+        "bytes": 748,
+        "sha256": "195e15b6e3e21ba5603c1de821013c86bf6d93a22ec581e40549a3822478eff2"
+      },
+      "Contents/runtime/Contents/MacOS/libjli.dylib": {
+        "bytes": 146816,
+        "sha256": "b4a10543ff8a6a4bae7eeb3dcdc6766ead31c89edc9a7270bfae4e548fc91eb8"
+      },
+      "Contents/runtime/Contents/_CodeSignature/CodeResources": {
+        "bytes": 25173,
+        "sha256": "3ecc0025efbbd3ec8f3e2531ac2e0775a456b818611f34ae4bfe2654e30c5612"
+      }
+    }
+  },
+  "package": {
+    "path": "/Users/merkost/StudioProjects/Metronome/artifacts/macos-review-2026-10-22/store/Metronome-Mac-1.5.0-1-upload/Metronome.pkg",
+    "bytes": 76138858,
+    "sha256": "d89eff4de1ddaa5423e4a0e9a9711d80827e96ab949d47ee714fc253a1658273",
+    "installerSignatureVerified": true,
+    "appBytesMatchVerifiedImage": true
+  },
+  "exportOptions": {
+    "destination": "upload",
+    "installerSigningCertificate": "3rd Party Mac Developer Installer",
+    "manageAppVersionAndBuildNumber": false,
+    "method": "app-store-connect",
+    "signingCertificate": "E52D3624E70D7C3FCDC20C0FBE3AF19038F77AB1",
+    "signingStyle": "manual",
+    "teamID": "P47X2292CM",
+    "uploadSymbols": true
+  }
+}

@@ -1,0 +1,496 @@
+{
+  "recordedAtUtc": "2026-10-22T07:49:21.805494+00:00",
+  "scope": "Shared common and desktop JUnit/Compose rendering tests; native signed app acceptance is separate",
+  "totals": {
+    "tests": 245,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "name": "PracticeBackupCodecTest[desktop]",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.backup.PracticeBackupCodecTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.461318+00:00"
+    },
+    {
+      "name": "PracticeBackupRepositoryTest[desktop]",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.backup.PracticeBackupRepositoryTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.461564+00:00"
+    },
+    {
+      "name": "AudioSessionEventPolicyTest[desktop]",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.AudioSessionEventPolicyTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.461663+00:00"
+    },
+    {
+      "name": "BeatEventsTest[desktop]",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.BeatEventsTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.461788+00:00"
+    },
+    {
+      "name": "BeatTimelineTest[desktop]",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.BeatTimelineTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.461874+00:00"
+    },
+    {
+      "name": "DesktopPcmTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.DesktopPcmTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.461984+00:00"
+    },
+    {
+      "name": "MetronomePlayerDesktopTest[desktop]",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.MetronomePlayerDesktopTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462137+00:00"
+    },
+    {
+      "name": "MetronomePulseIntegrationTest[desktop]",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.MetronomePulseIntegrationTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462166+00:00"
+    },
+    {
+      "name": "PlaybackFocusPolicyTest[desktop]",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.PlaybackFocusPolicyTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462345+00:00"
+    },
+    {
+      "name": "SerializedCommandQueueTest[desktop]",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.SerializedCommandQueueTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462301+00:00"
+    },
+    {
+      "name": "SoundLoadStateTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.SoundLoadStateTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462433+00:00"
+    },
+    {
+      "name": "SoundPreviewControllerTest[desktop]",
+      "counts": {
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.engine.SoundPreviewControllerTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462546+00:00"
+    },
+    {
+      "name": "BeatPulseTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.model.BeatPulseTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462550+00:00"
+    },
+    {
+      "name": "MetronomeTimingTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.model.MetronomeTimingTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462688+00:00"
+    },
+    {
+      "name": "SubdivisionTimingTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.model.SubdivisionTimingTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462681+00:00"
+    },
+    {
+      "name": "TempoMathTest[desktop]",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.model.TempoMathTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462803+00:00"
+    },
+    {
+      "name": "AppNavigatorTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.navigation.AppNavigatorTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462814+00:00"
+    },
+    {
+      "name": "AppPresentationTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.navigation.AppPresentationTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462931+00:00"
+    },
+    {
+      "name": "DesktopBackupFilesTest[desktop]",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.platform.DesktopBackupFilesTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.462983+00:00"
+    },
+    {
+      "name": "DesktopSettingsPathsTest[desktop]",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.platform.DesktopSettingsPathsTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.463175+00:00"
+    },
+    {
+      "name": "DataStorePracticeSetRepositoryTest[desktop]",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.practiceSets.DataStorePracticeSetRepositoryTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.463207+00:00"
+    },
+    {
+      "name": "PracticeAgainPolicyTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.practiceSets.PracticeAgainPolicyTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.463537+00:00"
+    },
+    {
+      "name": "PracticeSessionControllerTest[desktop]",
+      "counts": {
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.practiceSets.PracticeSessionControllerTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.463455+00:00"
+    },
+    {
+      "name": "PracticeSessionPersistenceTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.practiceSets.PracticeSessionPersistenceTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.463724+00:00"
+    },
+    {
+      "name": "PracticeSetCodecTest[desktop]",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.practiceSets.PracticeSetCodecTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.463813+00:00"
+    },
+    {
+      "name": "PracticeStarterRepositoryTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.practiceSets.PracticeStarterRepositoryTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.463943+00:00"
+    },
+    {
+      "name": "ActivePresetTrackerTest[desktop]",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.presets.ActivePresetTrackerTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464170+00:00"
+    },
+    {
+      "name": "DataStorePracticePresetRepositoryTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.presets.DataStorePracticePresetRepositoryTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464191+00:00"
+    },
+    {
+      "name": "MetronomePresetApplicationTest[desktop]",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.presets.MetronomePresetApplicationTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464286+00:00"
+    },
+    {
+      "name": "PracticePresetCodecTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.presets.PracticePresetCodecTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464325+00:00"
+    },
+    {
+      "name": "ReviewPromptCoordinatorTest[desktop]",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.review.ReviewPromptCoordinatorTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464414+00:00"
+    },
+    {
+      "name": "ReviewPromptPolicyTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.review.ReviewPromptPolicyTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464447+00:00"
+    },
+    {
+      "name": "TempoAdjustmentTest[desktop]",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.screens.TempoAdjustmentTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464517+00:00"
+    },
+    {
+      "name": "DesktopDialogKeyboardRenderingTest[desktop]",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.ui.DesktopDialogKeyboardRenderingTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464553+00:00"
+    },
+    {
+      "name": "DesktopNavigationGuardRenderingTest[desktop]",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.ui.DesktopNavigationGuardRenderingTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464623+00:00"
+    },
+    {
+      "name": "DesktopPresentationRenderingTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.ui.DesktopPresentationRenderingTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464663+00:00"
+    },
+    {
+      "name": "DesktopSettingsRenderingTest[desktop]",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.ui.DesktopSettingsRenderingTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464726+00:00"
+    },
+    {
+      "name": "ThemeTransitionContrastTest[desktop]",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.ui.theme.ThemeTransitionContrastTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464767+00:00"
+    },
+    {
+      "name": "MetronomeApplicationExitTest[desktop]",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.viewModels.MetronomeApplicationExitTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464863+00:00"
+    },
+    {
+      "name": "MetronomeOnboardingTest[desktop]",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.viewModels.MetronomeOnboardingTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464912+00:00"
+    },
+    {
+      "name": "PracticePresetsViewModelTest[desktop]",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.viewModels.PracticePresetsViewModelTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.464986+00:00"
+    },
+    {
+      "name": "PracticeSetsViewModelTest[desktop]",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.viewModels.PracticeSetsViewModelTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.465017+00:00"
+    },
+    {
+      "name": "WhatsNewCoordinatorTest[desktop]",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.whatsnew.WhatsNewCoordinatorTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.465098+00:00"
+    },
+    {
+      "name": "WhatsNewPolicyTest[desktop]",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "report": "shared/build/test-results/desktopTest/TEST-com.merkost.metronome.whatsnew.WhatsNewPolicyTest.xml",
+      "modifiedAtUtc": "2026-10-22T07:36:22.465136+00:00"
+    }
+  ]
+}

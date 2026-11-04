@@ -42,7 +42,6 @@ import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.pressableSurface
-import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.ceil
@@ -50,6 +49,8 @@ import kotlin.math.ceil
 private val ShortcutIconSize = 20.dp
 private val ShortcutChevronSize = 16.dp
 private val ShortcutTextGap = spacingSmall / 4
+private val ShortcutHorizontalPadding = spacingSmall * 1.5f
+private val ShortcutVerticalPadding = spacingSmall
 
 private data class ShortcutMetrics(val titleStyle: TextStyle, val titleHeight: Dp, val captionHeight: Dp, val height: Dp, val iconsAbove: Boolean)
 
@@ -69,18 +70,18 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val minimum = with(density) { ceil(minimumTextWidth).toInt().toDp() }
         val halfWidth = (maxWidth - spacingSmall) / 2
-        val sideBySide = halfWidth >= minimum + spacingMedium * 2
+        val sideBySide = halfWidth >= minimum + ShortcutHorizontalPadding * 2
         val cardWidth = if (sideBySide) halfWidth else maxWidth
         val horizontalExtras = ShortcutIconSize + ShortcutChevronSize + spacingSmall * 2
-        val iconsAbove = sideBySide && cardWidth < minimum + spacingMedium * 2 + horizontalExtras
-        val textWidth = with(density) { (cardWidth - spacingMedium * 2 - if (iconsAbove) 0.dp else horizontalExtras).toPx().toInt().coerceAtLeast(1) }
+        val iconsAbove = sideBySide && cardWidth < minimum + ShortcutHorizontalPadding * 2 + horizontalExtras
+        val textWidth = with(density) { (cardWidth - ShortcutHorizontalPadding * 2 - if (iconsAbove) 0.dp else horizontalExtras).toPx().toInt().coerceAtLeast(1) }
         val metrics = remember(measurer, density, titleStyle, captionStyle, textWidth, iconsAbove) {
             val constraints = Constraints(maxWidth = textWidth)
             val titleHeight = with(density) { listOf("Practice", "Sound").maxOf { measurer.measure(AnnotatedString(it), titleStyle, constraints = constraints).size.height }.toDp() }
             val captionHeight = with(density) { captions.maxOf { measurer.measure(AnnotatedString(it), captionStyle, constraints = constraints).size.height }.toDp() }
             val textHeight = titleHeight + ShortcutTextGap + captionHeight
             val contentHeight = if (iconsAbove) ShortcutIconSize + spacingSmall + textHeight else maxOf(ShortcutIconSize, textHeight)
-            ShortcutMetrics(titleStyle, titleHeight, captionHeight, maxOf(minimumTouchTargetSize, contentHeight + spacingMedium * 2), iconsAbove)
+            ShortcutMetrics(titleStyle, titleHeight, captionHeight, maxOf(minimumTouchTargetSize, contentHeight + ShortcutVerticalPadding * 2), iconsAbove)
         }
         if (sideBySide) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
@@ -100,19 +101,19 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
 private fun MainShortcut(icon: ImageVector, title: String, caption: String, onClick: () -> Unit, metrics: ShortcutMetrics, modifier: Modifier = Modifier) {
     val chevron = if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight
     val container = modifier.height(metrics.height).clip(RoundedCornerShape(cornerRadiusLarge))
-        .background(MaterialTheme.colorScheme.surfaceContainer).pressableSurface(onClick)
-        .semantics(mergeDescendants = true) { contentDescription = "$title. $caption" }.padding(spacingMedium)
+        .background(MaterialTheme.colorScheme.surfaceContainerLow).pressableSurface(onClick)
+        .semantics(mergeDescendants = true) { contentDescription = "$title. $caption" }.padding(horizontal = ShortcutHorizontalPadding, vertical = ShortcutVerticalPadding)
     if (metrics.iconsAbove) {
         Column(container, verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(ShortcutIconSize))
+                Icon(icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(ShortcutIconSize))
                 Icon(chevron, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(ShortcutChevronSize))
             }
             ShortcutText(title, caption, metrics)
         }
     } else {
         Row(container, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(ShortcutIconSize))
+            Icon(icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(ShortcutIconSize))
             ShortcutText(title, caption, metrics, Modifier.weight(1f))
             Icon(chevron, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(ShortcutChevronSize))
         }

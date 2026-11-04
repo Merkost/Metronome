@@ -20,4 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Metronome"
-include(":shared", ":androidApp")
+include(":shared", ":androidApp", ":desktopApp")

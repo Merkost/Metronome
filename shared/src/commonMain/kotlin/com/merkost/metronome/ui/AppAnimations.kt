@@ -37,6 +37,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -56,11 +57,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -359,19 +362,21 @@ fun AnimatedNumberText(
         val digitWidth = with(density) {
             measurer.measure(AnnotatedString("0"), digitStyle).size.width.toDp()
         }
-        Row(Modifier.animateContentSize(AppAnimations.emphasized()), verticalAlignment = Alignment.CenterVertically) {
-            text.indices.forEach { index ->
-                val place = text.lastIndex - index
-                key(place) {
-                    AnimatedContent(
-                        targetState = text[index],
-                        transitionSpec = { AppAnimations.slideDigitTransform(towardsUp) },
-                        contentKey = { it },
-                        label = "digit-$place",
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.width(digitWidth),
-                    ) { digit ->
-                        Text(text = digit.toString(), style = digitStyle, color = color, textAlign = TextAlign.Center, maxLines = 1)
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(Modifier.animateContentSize(AppAnimations.emphasized()), verticalAlignment = Alignment.CenterVertically) {
+                text.indices.forEach { index ->
+                    val place = text.lastIndex - index
+                    key(place) {
+                        AnimatedContent(
+                            targetState = text[index],
+                            transitionSpec = { AppAnimations.slideDigitTransform(towardsUp) },
+                            contentKey = { it },
+                            label = "digit-$place",
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.width(digitWidth),
+                        ) { digit ->
+                            Text(text = digit.toString(), style = digitStyle, color = color, textAlign = TextAlign.Center, maxLines = 1)
+                        }
                     }
                 }
             }

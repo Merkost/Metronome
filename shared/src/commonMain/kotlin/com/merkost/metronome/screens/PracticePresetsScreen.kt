@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -35,12 +38,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.ArrowRight
 import com.composables.icons.lucide.Plus
 import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.AppDialog
@@ -56,6 +62,7 @@ import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.maxContentWidth
 import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingSmall
+import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.PracticePresetsUiState
 import com.merkost.metronome.viewModels.PracticePresetsViewModel
@@ -276,7 +283,7 @@ fun PracticePresetsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PracticePresetsContent(
+internal fun PracticePresetsContent(
     uiState: PracticePresetsUiState,
     activeState: ActivePresetState,
     snackbarHostState: SnackbarHostState,
@@ -305,7 +312,7 @@ private fun PracticePresetsContent(
                 },
                 navigationIcon = {
                     AppIconButton(onClick = onBack) {
-                        Icon(Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
+                        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
                     }
                 },
                 actions = {
@@ -330,7 +337,7 @@ private fun PracticePresetsContent(
                 if (isEmpty) {
                     PracticePresetsEmptyState(
                         onCreate = onCreate,
-                        modifier = Modifier.widthIn(max = maxContentWidth).padding(horizontal = horizontalPadding),
+                        modifier = Modifier.widthIn(max = maxContentWidth).verticalScroll(rememberScrollState()).padding(horizontal = horizontalPadding),
                     )
                 } else {
                     LazyColumn(
@@ -346,7 +353,7 @@ private fun PracticePresetsContent(
                         if (uiState.migrationFailed) {
                             item(key = "migration") {
                                 Column(
-                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth().padding(vertical = spacingSmall),
                                     verticalArrangement = Arrangement.spacedBy(spacingSmall),
                                 ) {
                                     Text(
@@ -363,7 +370,7 @@ private fun PracticePresetsContent(
                         item(key = "summary") {
                             if (useStackedSummary) {
                                 Column(
-                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth().padding(vertical = spacingSmall),
                                     verticalArrangement = Arrangement.spacedBy(spacingSmall),
                                 ) {
                                     Text(
@@ -375,7 +382,7 @@ private fun PracticePresetsContent(
                                         Button(
                                             onClick = onCreate,
                                             enabled = uiState.presets.size < PracticePreset.MAX_PRESETS,
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
                                         ) {
                                             Icon(Lucide.Plus, contentDescription = null)
                                             Spacer(Modifier.width(spacingSmall))
@@ -385,7 +392,7 @@ private fun PracticePresetsContent(
                                 }
                             } else {
                                 Row(
-                                    modifier = Modifier.animateItem().fillMaxWidth().padding(vertical = spacingSmall),
+                                    modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).fillMaxWidth().padding(vertical = spacingSmall),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Text(
@@ -395,7 +402,7 @@ private fun PracticePresetsContent(
                                         modifier = Modifier.weight(1f),
                                     )
                                     if (!uiState.isReordering) {
-                                        Button(onClick = onCreate, enabled = uiState.presets.size < PracticePreset.MAX_PRESETS) {
+                                        Button(onClick = onCreate, enabled = uiState.presets.size < PracticePreset.MAX_PRESETS, modifier = Modifier.heightIn(min = sheetButtonHeight)) {
                                             Icon(Lucide.Plus, contentDescription = null)
                                             Spacer(Modifier.width(spacingSmall))
                                             Text(stringResource(Res.string.save_current_setup))
@@ -410,7 +417,7 @@ private fun PracticePresetsContent(
                                     text = stringResource(Res.string.preset_limit_reached),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.animateItem().padding(bottom = spacingSmall),
+                                    modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).padding(bottom = spacingSmall),
                                 )
                             }
                         }
@@ -431,7 +438,7 @@ private fun PracticePresetsContent(
                                 onDelete = { onDelete(preset) },
                                 onMoveUp = { onMove(preset.id, index - 1) },
                                 onMoveDown = { onMove(preset.id, index + 1) },
-                                modifier = Modifier.animateItem().pointerInput(uiState.isReordering, preset.id, index) {
+                                modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()).pointerInput(uiState.isReordering, preset.id, index) {
                                     if (!uiState.isReordering) return@pointerInput
                                     detectDragGesturesAfterLongPress(
                                         onDragEnd = { accumulatedDrag = 0f },

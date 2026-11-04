@@ -1,0 +1,12 @@
+{
+  "deviceName": "Metronome Clean UI Fallback 20261012",
+  "deviceId": "73631849-FAD8-4315-9D68-20DBC320489C",
+  "model": "iPhone 17 Pro",
+  "runtime": "iOS 26.4.1",
+  "ownership": "Created only for this task; existing user app/device data untouched",
+  "originalAppearance": "light",
+  "originalContentSize": "large",
+  "supersedes": "simulator-baseline-historical.json",
+  "initialDeviceId": "26089DC2-1855-4F51-A6F7-04B2C73A172F",
+  "initialDeviceState": "Shutdown after scoped migration recovery"
+}

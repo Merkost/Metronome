@@ -1,6 +1,5 @@
 package com.merkost.metronome.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,19 +9,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ArrowRight
 import com.composables.icons.lucide.Bookmark
 import com.composables.icons.lucide.Layers
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.ChartNoAxesColumn
 import com.composables.icons.lucide.Timer
 import com.composables.icons.lucide.TrendingUp
@@ -53,47 +57,51 @@ fun PracticeHubSheet(
     onDismiss: () -> Unit,
 ) {
     AppBottomSheet(title = "Practice", onDismiss = onDismiss) { dismissAnimated ->
-        Text(
-            "A little structure goes a long way.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
         Column(
-            modifier = Modifier.fillMaxWidth().padding(top = spacingMedium),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {
-            Text("Your practice", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-            PracticeHubRow(Lucide.Bookmark, "Saved presets", "Return to a setup you love", value = presetCount.toString()) {
+            Text("Saved setups", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            PracticeHubRow(Lucide.Bookmark, "Presets", value = presetCount.toString()) {
                 onOpenPresets()
                 dismissAnimated()
             }
-            PracticeHubRow(Lucide.Layers, "Practice sets", "Turn your presets into a routine", value = practiceSetCount.toString()) {
+            PracticeHubRow(Lucide.Layers, "Practice sets", value = practiceSetCount.toString()) {
                 onOpenPracticeSets()
                 dismissAnimated()
             }
             Text("Training tools", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = spacingMedium))
-            PracticeHubRow(Lucide.Timer, "Practice timer", "Make time for a focused block", value = "$timerMinutes min") {
+            PracticeHubRow(Lucide.Timer, "Timer", value = "$timerMinutes min") {
                 onOpenTimer()
                 dismissAnimated()
             }
-            PracticeHubRow(Lucide.TrendingUp, "Tempo trainer", "Build speed, one bar at a time") {
+            PracticeHubRow(Lucide.TrendingUp, "Tempo trainer") {
                 onOpenTempoTrainer()
                 dismissAnimated()
             }
-            PracticeHubRow(Lucide.VolumeX, "Gap trainer", "Keep the pulse through silence") {
+            PracticeHubRow(Lucide.VolumeX, "Gap trainer") {
                 onOpenGapTrainer()
                 dismissAnimated()
             }
+            HorizontalDivider(modifier = Modifier.padding(top = spacingMedium))
             Text("Practice summary", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = spacingMedium))
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
-                horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-            ) {
-                PracticeHubStatistic("Today", TimestampMillisecondsFormatter.formatHuman(todayPracticeTime), Modifier.weight(1f))
-                PracticeHubStatistic("Streak", "$practiceStreak ${if (practiceStreak == 1) "day" else "days"}", Modifier.weight(1f))
-                PracticeHubStatistic("Total", TimestampMillisecondsFormatter.formatHuman(totalPracticeTime), Modifier.weight(1f))
+            if (LocalDensity.current.fontScale >= 1.3f) {
+                Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                    PracticeHubStatistic("Today", TimestampMillisecondsFormatter.formatHuman(todayPracticeTime))
+                    PracticeHubStatistic("Streak", "$practiceStreak ${if (practiceStreak == 1) "day" else "days"}")
+                    PracticeHubStatistic("Total", TimestampMillisecondsFormatter.formatHuman(totalPracticeTime))
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
+                    horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+                ) {
+                    PracticeHubStatistic("Today", TimestampMillisecondsFormatter.formatHuman(todayPracticeTime), Modifier.weight(1f))
+                    PracticeHubStatistic("Streak", "$practiceStreak ${if (practiceStreak == 1) "day" else "days"}", Modifier.weight(1f))
+                    PracticeHubStatistic("Total", TimestampMillisecondsFormatter.formatHuman(totalPracticeTime), Modifier.weight(1f))
+                }
             }
-            PracticeHubRow(Lucide.ChartNoAxesColumn, "View practice data", "Statistics, backups & a fresh start") {
+            PracticeHubRow(Lucide.ChartNoAxesColumn, "Practice data", "Statistics and backups") {
                 onOpenPracticeData()
                 dismissAnimated()
             }
@@ -108,10 +116,10 @@ fun PracticeHubSheet(
 }
 
 @Composable
-private fun PracticeHubRow(
+internal fun PracticeHubRow(
     icon: ImageVector,
     title: String,
-    caption: String,
+    caption: String? = null,
     value: String? = null,
     onClick: () -> Unit,
 ) {
@@ -119,19 +127,18 @@ private fun PracticeHubRow(
         modifier = Modifier.fillMaxWidth()
             .heightIn(min = minimumTouchTargetSize)
             .clip(RoundedCornerShape(cornerRadiusLarge))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
             .pressableSurface(onClick)
-            .padding(spacingMedium),
+            .padding(vertical = spacingSmall),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacingMedium),
     ) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(title, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold))
-            Text(caption, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            caption?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
-        value?.let { Text(it, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary) }
-        Icon(Lucide.ArrowRight, contentDescription = null, modifier = Modifier.size(18.dp))
+        value?.let { Text(it, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowLeft else Lucide.ArrowRight, contentDescription = null, modifier = Modifier.size(18.dp))
     }
 }
 
