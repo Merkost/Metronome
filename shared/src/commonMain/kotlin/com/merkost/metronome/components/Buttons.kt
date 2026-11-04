@@ -2,13 +2,7 @@ package com.merkost.metronome.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -33,6 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.animation.core.Animatable
+import androidx.compose.runtime.LaunchedEffect
+import com.merkost.metronome.model.BeatPulse
+import com.merkost.metronome.model.HALO_PULSE_ALPHA
+import com.merkost.metronome.model.haloPulseVisible
+import com.merkost.metronome.ui.isAppMotionReduced
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -178,6 +178,7 @@ fun PlayButton(
     modifier: Modifier = Modifier,
     isPlaying: Boolean,
     size: Dp = defaultPlayButtonSize,
+    barStart: BeatPulse? = null,
     onClick: () -> Unit
 ) {
     val haptics = rememberAppHaptics()
@@ -193,21 +194,19 @@ fun PlayButton(
     val glowExtensionPx = with(LocalDensity.current) { 8.dp.toPx() }
     val cornerRadiusPx = with(LocalDensity.current) { cornerRadius.toPx() }
 
-    val glowModifier = if (isPlaying) {
-        val infiniteTransition = rememberInfiniteTransition(label = "playButtonGlow")
-        val glowAlpha by infiniteTransition.animateFloat(
-            initialValue = 0.05f,
-            targetValue = 0.14f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 2600, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "playButtonGlowAlpha"
-        )
-        Modifier.drawBehind {
-            val ext = glowExtensionPx
+    val halo = remember { Animatable(0f) }
+    val reducedMotion = isAppMotionReduced()
+    LaunchedEffect(barStart) {
+        if (barStart != null && haloPulseVisible(isPlaying, reducedMotion, 0)) {
+            halo.snapTo(HALO_PULSE_ALPHA)
+            halo.animateTo(0f, AppAnimations.calm())
+        }
+    }
+    val glowModifier = Modifier.drawBehind {
+        val ext = glowExtensionPx
+        if (halo.value > 0f) {
             drawRoundRect(
-                color = glowColor.copy(alpha = glowAlpha),
+                color = glowColor.copy(alpha = halo.value),
                 topLeft = Offset(-ext, -ext),
                 size = androidx.compose.ui.geometry.Size(
                     this.size.width + ext * 2,
@@ -216,8 +215,6 @@ fun PlayButton(
                 cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadiusPx + ext)
             )
         }
-    } else {
-        Modifier
     }
 
     Card(
@@ -227,9 +224,9 @@ fun PlayButton(
         ),
         modifier = modifier
             .size(size)
+            .pressScale(interactionSource, PressedScaleControl)
             .then(glowModifier)
-            .clip(RoundedCornerShape(cornerRadius))
-            .pressScale(interactionSource, PressedScaleControl),
+            .clip(RoundedCornerShape(cornerRadius)),
         onClick = {
             haptics.confirm()
             onClick()

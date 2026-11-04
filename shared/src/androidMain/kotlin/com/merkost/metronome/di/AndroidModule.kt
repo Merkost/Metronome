@@ -1,5 +1,7 @@
 package com.merkost.metronome.di
 
+import com.merkost.metronome.platform.AndroidMotionPreferences
+import com.merkost.metronome.platform.MotionPreferences
 import com.merkost.metronome.logging.CrashlyticsTree
 import com.merkost.metronome.logging.ReleaseLogTreeProvider
 
@@ -31,6 +33,7 @@ val androidModule = module {
     single<MetronomePlayer> { MetronomePlayerAndroid(androidContext()) }
     single<MetronomePlayer>(named("soundPreview")) { MetronomePlayerAndroid(androidContext()) }
     single<AudioOutputStatus> { AndroidAudioOutputStatus(androidContext()) }
+    single<MotionPreferences> { AndroidMotionPreferences(androidContext()) }
     single<PlatformActions> { AndroidPlatformActions(androidContext()) }
     single<AppVersionProvider> { AndroidAppVersionProvider(androidContext()) }
     single<HapticProvider> { HapticProviderAndroid(androidContext()) }

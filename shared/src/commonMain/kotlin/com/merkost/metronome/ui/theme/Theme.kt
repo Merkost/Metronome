@@ -15,6 +15,11 @@ import androidx.compose.runtime.getValue
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.ThemeMode
 import com.merkost.metronome.platform.resolveDynamicColorScheme
+import androidx.compose.runtime.CompositionLocalProvider
+import com.merkost.metronome.platform.FullMotion
+import com.merkost.metronome.platform.MotionPreferences
+import com.merkost.metronome.ui.LocalReduceMotion
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 
 @Composable
@@ -54,11 +59,17 @@ fun MetronomeTheme(
         fontFamily?.let { Typography.withFontFamily(it) } ?: Typography
     }
 
-    MaterialTheme(
-        colorScheme = animatedColorScheme(brandedScheme),
-        typography = typography,
-        content = content
-    )
+    val motionPreferences = getKoin().getOrNull<MotionPreferences>() ?: FullMotion
+    val reduceMotion by motionPreferences.reduceMotion.collectAsState()
+    AppAnimations.motionReduced = reduceMotion
+
+    CompositionLocalProvider(LocalReduceMotion provides reduceMotion) {
+        MaterialTheme(
+            colorScheme = animatedColorScheme(brandedScheme),
+            typography = typography,
+            content = content
+        )
+    }
 }
 
 @Composable

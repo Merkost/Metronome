@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -102,6 +103,9 @@ import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.navigation.AppPresentation
 import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.model.beatFlashVisible
+import com.merkost.metronome.model.indicatorCrossfades
+import com.merkost.metronome.model.indicatorStiffnessFor
+import androidx.compose.animation.core.SpringSpec
 import com.merkost.metronome.model.gapStripState
 import com.merkost.metronome.model.phraseBarLabel
 import com.merkost.metronome.model.BeatDisplayStyle
@@ -335,7 +339,9 @@ fun MainScreen(
     LaunchedEffect(noSoundHint) { noSoundHint?.let { lastNoSoundHint = it } }
     val phraseLength by viewModel.phraseLength.collectAsState()
 
-    val beatIndicatorSpec = AppAnimations.Emphasized
+    val beatIndicatorSpec = remember(metronomeState.rhythm) {
+        SpringSpec<Float>(dampingRatio = 0.94f, stiffness = indicatorStiffnessFor(metronomeState.rhythm))
+    }
 
     val boxColorAnimation = remember { Animatable(0f) }
 
@@ -447,6 +453,8 @@ fun MainScreen(
                                         beats = beats,
                                         isPlaying = isPlaying,
                                         animSpec = beatIndicatorSpec,
+                                        beatPulse = viewModel.beatClock.collectAsState().value.pulse,
+                                        crossfade = indicatorCrossfades(metronomeState.rhythm),
                                         arrangementSpacing = ballSpacing,
                                         indicatorSize = indicatorSize,
                                         ballSize = ballSize,
@@ -788,6 +796,7 @@ fun MainScreen(
                             stopWatchState = metronomeState.stopWatchState,
                             timerGoal = practiceTimerGoal,
                             timerRemaining = practiceTimerRemaining,
+                            barStart = if (selectedIndex == 0) viewModel.beatClock.collectAsState().value.pulse else null,
                             onPlayPause = viewModel::onPlayPauseClicked,
                             onTempoTap = viewModel::onTempoTap,
                             onTimerClick = { showTimerSheet = true }
@@ -1121,12 +1130,18 @@ fun MainScreen(
 
 @Composable
 internal fun MainScrollableContent(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState()).padding(vertical = spacingLarge),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(spacingLarge),
-        content = content,
-    )
+    BoxWithConstraints(modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = maxHeight)
+                .padding(vertical = spacingLarge),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(spacingLarge, Alignment.CenterVertically),
+            content = content,
+        )
+    }
 }
 
 @Preview

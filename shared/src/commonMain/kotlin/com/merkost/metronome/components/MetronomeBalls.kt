@@ -3,6 +3,7 @@ package com.merkost.metronome.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +43,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.model.Beat
+import com.merkost.metronome.model.BeatPulse
+import com.merkost.metronome.model.strikePeakFor
+import com.merkost.metronome.model.strikeVisible
+import com.merkost.metronome.ui.isAppMotionReduced
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.BallSize
 import com.merkost.metronome.ui.CircleSize
@@ -50,6 +57,8 @@ import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.rememberAppHaptics
 import kotlin.math.ceil
 
+private const val INDICATOR_ARRIVAL_ALPHA = 0.35f
+
 @Composable
 fun MetronomeBalls(
     selectedIndex: Int,
@@ -59,19 +68,43 @@ fun MetronomeBalls(
     arrangementSpacing: Dp = 32.dp,
     indicatorSize: Dp = CircleSize,
     ballSize: Dp = BallSize,
+    beatPulse: BeatPulse? = null,
+    crossfade: Boolean = false,
     modifier: Modifier = Modifier,
     onBallClicked: (index: Int, Beat) -> Unit,
     onSetBeat: ((index: Int, Beat) -> Unit)? = null,
 ) {
+    val reducedMotion = isAppMotionReduced()
     val indicatorIndex = remember { Animatable(selectedIndex.coerceAtLeast(0).toFloat()) }
+    val arrival = remember { Animatable(1f) }
     val wasVisible = remember { booleanArrayOf(false) }
-    LaunchedEffect(selectedIndex, isPlaying, beats.size) {
+    LaunchedEffect(selectedIndex, isPlaying, beats.size, crossfade, reducedMotion) {
         val visible = isPlaying && selectedIndex in beats.indices
         val continuing = wasVisible[0]
         wasVisible[0] = visible
         if (visible) {
-            if (continuing) indicatorIndex.animateTo(selectedIndex.toFloat(), animSpec)
-            else indicatorIndex.snapTo(selectedIndex.toFloat())
+            if (continuing && !crossfade && !reducedMotion) {
+                indicatorIndex.animateTo(selectedIndex.toFloat(), animSpec)
+            } else {
+                indicatorIndex.snapTo(selectedIndex.toFloat())
+                if (continuing && !reducedMotion) {
+                    arrival.snapTo(INDICATOR_ARRIVAL_ALPHA)
+                    arrival.animateTo(1f, AppAnimations.quick())
+                }
+            }
+        }
+    }
+
+    val strikes = remember(beats.size) { List(beats.size) { Animatable(1f) } }
+    val strikeScope = rememberCoroutineScope()
+    LaunchedEffect(beatPulse) {
+        val beat = beats.getOrNull(selectedIndex)
+        if (beatPulse != null && beat != null && strikeVisible(isPlaying, reducedMotion, beat)) {
+            val strike = strikes[selectedIndex]
+            strikeScope.launch {
+                strike.animateTo(strikePeakFor(beat), AppAnimations.press())
+                strike.animateTo(1f, AppAnimations.standard())
+            }
         }
     }
 
@@ -92,6 +125,7 @@ fun MetronomeBalls(
                         index = index,
                         beat = beat,
                         ballSize = ballSize,
+                        strike = strikes[index],
                         onClick = { onBallClicked(index, beat) },
                         onSetBeat = { target ->
                             if (onSetBeat != null) {
@@ -111,7 +145,7 @@ fun MetronomeBalls(
                 modifier = Modifier
                     .layoutId("indicator")
                     .size(maxOf(indicatorSize, minimumTouchTargetSize))
-                    .graphicsLayer { alpha = indicatorAlpha }
+                    .graphicsLayer { alpha = indicatorAlpha * arrival.value }
                     .border(CircleWeight, primaryColor, CircleShape)
             )
         }
@@ -191,6 +225,7 @@ private fun Ball(
     index: Int,
     beat: Beat,
     ballSize: Dp = BallSize,
+    strike: Animatable<Float, AnimationVector1D>,
     onClick: () -> Unit,
     onSetBeat: (Beat) -> Unit,
 ) {
@@ -246,6 +281,10 @@ private fun Ball(
         Box(
             modifier = Modifier
                 .size(ballSize)
+                .graphicsLayer {
+                    scaleX = strike.value
+                    scaleY = strike.value
+                }
                 .padding(2.dp)
                 .clip(CircleShape)
                 .background(color)
