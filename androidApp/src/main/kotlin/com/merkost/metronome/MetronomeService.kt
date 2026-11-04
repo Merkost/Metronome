@@ -9,6 +9,8 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Binder
 import android.os.IBinder
+import android.os.PowerManager
+import com.merkost.metronome.engine.shouldStopWhenHidden
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,7 @@ class MetronomeService : Service(), KoinComponent {
     companion object {
         private const val CHANNEL_ID = "Metronome service"
         private const val STOP_SERVICE = "STOP_METRONOME_SERVICE"
+        private const val WAKE_LOCK_TIMEOUT_MS = 4 * 60 * 60 * 1000L
     }
 
     private val binder = MetronomeBinder()
@@ -30,6 +33,12 @@ class MetronomeService : Service(), KoinComponent {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
+
+    private val wakeLock: PowerManager.WakeLock by lazy {
+        (getSystemService(POWER_SERVICE) as PowerManager)
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Metronome:playback")
+            .apply { setReferenceCounted(false) }
+    }
 
     inner class MetronomeBinder : Binder() {
         fun getService(): MetronomeService {
@@ -53,7 +62,9 @@ class MetronomeService : Service(), KoinComponent {
             viewModel.isPlaying.collectLatest { playing ->
                 if (playing) {
                     startForegroundNotification()
+                    wakeLock.acquire(WAKE_LOCK_TIMEOUT_MS)
                 } else {
+                    releaseWakeLock()
                     stopForeground(STOP_FOREGROUND_REMOVE)
                 }
             }
@@ -98,8 +109,13 @@ class MetronomeService : Service(), KoinComponent {
         startForeground(1, notification)
     }
 
+    private fun releaseWakeLock() {
+        if (wakeLock.isHeld) wakeLock.release()
+    }
+
     override fun onDestroy() {
         job?.cancel()
+        releaseWakeLock()
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -107,6 +123,9 @@ class MetronomeService : Service(), KoinComponent {
     }
 
     fun stopPlaying() {
-        viewModel.onStopClicked()
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        if (shouldStopWhenHidden(backgroundPlay = false, screenInteractive = powerManager.isInteractive)) {
+            viewModel.onStopClicked()
+        }
     }
 }

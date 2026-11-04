@@ -14,6 +14,8 @@ import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.platform.HapticProviderAndroid
 import com.merkost.metronome.platform.LiveActivityController
 import com.merkost.metronome.platform.NoopLiveActivityController
+import com.merkost.metronome.platform.AudioOutputStatus
+import com.merkost.metronome.platform.AndroidAudioOutputStatus
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.platform.createDataStore
 import com.merkost.metronome.review.AndroidInAppReviewRequester
@@ -28,6 +30,7 @@ val androidModule = module {
     single { createDataStore(androidContext()) }
     single<MetronomePlayer> { MetronomePlayerAndroid(androidContext()) }
     single<MetronomePlayer>(named("soundPreview")) { MetronomePlayerAndroid(androidContext()) }
+    single<AudioOutputStatus> { AndroidAudioOutputStatus(androidContext()) }
     single<PlatformActions> { AndroidPlatformActions(androidContext()) }
     single<AppVersionProvider> { AndroidAppVersionProvider(androidContext()) }
     single<HapticProvider> { HapticProviderAndroid(androidContext()) }

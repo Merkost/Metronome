@@ -54,7 +54,9 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -77,6 +79,7 @@ import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.VolumeX
 import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.MetronomeMark
+import com.merkost.metronome.components.PhraseBarCounter
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.MainButtonsRow
@@ -86,6 +89,12 @@ import com.merkost.metronome.components.Pendulum
 import com.merkost.metronome.components.PillChip
 import com.merkost.metronome.components.MainShortcuts
 import com.merkost.metronome.components.StatusStrip
+import com.merkost.metronome.components.StatusStripAction
+import com.merkost.metronome.model.NoSoundHint
+import com.merkost.metronome.model.TempoStepMode
+import com.merkost.metronome.model.tempoTrainerStripState
+import com.composables.icons.lucide.ChevronDown
+import com.composables.icons.lucide.ChevronUp
 import com.merkost.metronome.components.PresetNameDialog
 import com.merkost.metronome.components.PresetSaveChoiceDialog
 import com.merkost.metronome.components.PracticeSessionStrip
@@ -94,6 +103,7 @@ import com.merkost.metronome.navigation.AppPresentation
 import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.model.beatFlashVisible
 import com.merkost.metronome.model.gapStripState
+import com.merkost.metronome.model.phraseBarLabel
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
@@ -319,6 +329,10 @@ fun MainScreen(
     val countInRemaining by viewModel.countInRemaining.collectAsState()
     val practiceTimerStoppedPlayback by viewModel.practiceTimerStoppedPlayback.collectAsState()
     val tempoTrainerStoppedNotice by viewModel.tempoTrainerStoppedNotice.collectAsState()
+    val noSoundHint by viewModel.noSoundHint.collectAsState()
+    var lastNoSoundHint by remember { mutableStateOf<NoSoundHint?>(null) }
+    LaunchedEffect(noSoundHint) { noSoundHint?.let { lastNoSoundHint = it } }
+    val phraseLength by viewModel.phraseLength.collectAsState()
 
     val beatIndicatorSpec = AppAnimations.Emphasized
 
@@ -449,6 +463,16 @@ fun MainScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(spacingSmall)
                         ) {
+                            if (phraseLength != 0) {
+                                PhraseBarCounter(
+                                    label = phraseBarLabel(currentBar, phraseLength, isPlaying, countInRemaining),
+                                    phraseLength = phraseLength,
+                                    onClick = {
+                                        tempoSheetSection = TempoSheetSection.PHRASE
+                                        showTempoSheet = true
+                                    },
+                                )
+                            }
                             val tempoLabel = if (metronomeState.subdivision == Subdivision.QUARTER) {
                                 metronomeState.tempoName
                             } else {
@@ -578,6 +602,42 @@ fun MainScreen(
                         verticalArrangement = Arrangement.spacedBy(spacingMedium)
                     ) {
                         AnimatedVisibility(
+                            visible = noSoundHint != null,
+                            enter = AppAnimations.expandEnter,
+                            exit = AppAnimations.shrinkExit,
+                            modifier = Modifier.padding(horizontal = horizontalPadding)
+                        ) {
+                            val hint = noSoundHint ?: lastNoSoundHint
+                            if (hint != null) {
+                                val mediaOff = hint == NoSoundHint.MEDIA_VOLUME_OFF
+                                val tappable = !mediaOff || viewModel.canShowVolumeControls
+                                StatusStrip(
+                                    icon = Lucide.VolumeX,
+                                    title = if (mediaOff) "Media volume is off" else "Click volume is off",
+                                    caption = when {
+                                        !mediaOff -> "open settings"
+                                        tappable -> "tap to adjust"
+                                        else -> "use volume buttons"
+                                    },
+                                    progress = 0f,
+                                    accent = MaterialTheme.colorScheme.error,
+                                    description = when {
+                                        !mediaOff -> "Click volume is at zero in settings."
+                                        tappable -> "Media volume is off. Turn it up to hear the click."
+                                        else -> "Media volume is off. Use the volume buttons to hear the click."
+                                    },
+                                    onClickLabel = if (mediaOff) "Show volume controls" else "Open settings",
+                                    onClick = when {
+                                        !mediaOff -> onSettingsClicked
+                                        tappable -> viewModel::showVolumeControls
+                                        else -> null
+                                    },
+                                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                                )
+                            }
+                        }
+
+                        AnimatedVisibility(
                             visible = tempoTrainerStoppedNotice && gradualTempoConfig == null,
                             enter = AppAnimations.expandEnter,
                             exit = AppAnimations.shrinkExit,
@@ -604,24 +664,36 @@ fun MainScreen(
                         ) {
                             val config = gradualTempoConfig ?: lastShownTrainerConfig
                             if (config != null) {
-                                val complete = config.isComplete(metronomeState.rhythm)
+                                val strip = tempoTrainerStripState(
+                                    config = config,
+                                    bpm = metronomeState.rhythm,
+                                    trainerBar = gradualTempoCurrentBar,
+                                    isPlaying = isPlaying,
+                                    gapRunning = gapTrainerConfig != null,
+                                )
+                                val manual = config.stepMode == TempoStepMode.MANUAL &&
+                                    !config.isComplete(metronomeState.rhythm)
                                 StatusStrip(
                                     icon = if (config.ascending) {
                                         Lucide.TrendingUp
                                     } else {
                                         Lucide.TrendingDown
                                     },
-                                    title = if (complete) {
-                                        "${config.endBpm} BPM reached"
+                                    title = strip.title,
+                                    caption = strip.caption,
+                                    progress = strip.progress,
+                                    description = strip.description,
+                                    onClickLabel = "Edit tempo trainer",
+                                    stopLabel = "Stop tempo trainer",
+                                    action = if (manual) {
+                                        StatusStripAction(
+                                            icon = if (config.ascending) Lucide.ChevronUp else Lucide.ChevronDown,
+                                            label = "Next step",
+                                            onClick = viewModel::stepTempoTrainerForward,
+                                        )
                                     } else {
-                                        "${metronomeState.rhythm} → ${config.endBpm}"
+                                        null
                                     },
-                                    caption = when {
-                                        complete -> ""
-                                        isPlaying -> "bar ${gradualTempoCurrentBar.coerceAtMost(config.totalBars)} / ${config.totalBars}"
-                                        else -> "paused"
-                                    },
-                                    progress = config.progressFor(metronomeState.rhythm),
                                     accent = MaterialTheme.colorScheme.tertiary,
                                     onClick = {
                                         tempoSheetSection = TempoSheetSection.TRAINER
@@ -932,6 +1004,10 @@ fun MainScreen(
                 }
             },
             onSubdivisionChanged = viewModel::onSubdivisionChanged,
+            phraseLength = phraseLength,
+            onPhraseLengthChanged = viewModel::onPhraseLengthChanged,
+            onStepTrainerForward = viewModel::stepTempoTrainerForward,
+            onStepTrainerBack = viewModel::stepTempoTrainerBack,
             onStartTrainer = { config ->
                 if (practiceSessionState.session != null) {
                     pendingStructuredAction = { viewModel.replacePracticeSessionWithTempoTrainer(config) }

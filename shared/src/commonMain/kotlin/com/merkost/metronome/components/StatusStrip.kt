@@ -39,6 +39,12 @@ import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.statusStripHeight
 
+data class StatusStripAction(
+    val icon: ImageVector,
+    val label: String,
+    val onClick: () -> Unit,
+)
+
 @Composable
 fun StatusStrip(
     icon: ImageVector,
@@ -46,13 +52,14 @@ fun StatusStrip(
     caption: String,
     progress: Float,
     accent: Color,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     onStop: (() -> Unit)? = null,
     titleModifier: Modifier = Modifier,
     description: String? = null,
     onClickLabel: String? = null,
     stopLabel: String = "Stop",
+    action: StatusStripAction? = null,
 ) {
     val textSemantics = if (description != null) Modifier.clearAndSetSemantics {} else Modifier
     val interactionSource = remember { MutableInteractionSource() }
@@ -77,11 +84,17 @@ fun StatusStrip(
                 )
             }
             .then(if (description != null) Modifier.semantics { contentDescription = description } else Modifier)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClickLabel = onClickLabel,
-                onClick = onClick
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClickLabel = onClickLabel,
+                        onClick = onClick,
+                    )
+                } else {
+                    Modifier
+                }
             ),
     ) {
         Row(
@@ -115,6 +128,17 @@ fun StatusStrip(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = textSemantics,
                 )
+            }
+            if (action != null) {
+                Spacer(Modifier.width(spacingSmall / 2))
+                AppIconButton(onClick = action.onClick) {
+                    Icon(
+                        imageVector = action.icon,
+                        contentDescription = action.label,
+                        tint = accent,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
             if (onStop != null) {
                 Spacer(Modifier.width(spacingSmall / 2))
