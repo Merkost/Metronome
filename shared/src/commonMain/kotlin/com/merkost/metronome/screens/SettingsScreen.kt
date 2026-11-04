@@ -298,7 +298,7 @@ internal fun SettingsScreenContent(
                             }
                         }
                     }
-                    SettingsSwitch("Beat flash", state.colorFlash, actions.onColorFlash, "A little pulse while you play")
+                    SettingsSwitch("Beat flash", state.colorFlash, actions.onColorFlash, "Flashes each beat, downbeat only above 180 BPM")
                     Text("Animations follow your device's motion preference.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Column(Modifier.padding(top = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
