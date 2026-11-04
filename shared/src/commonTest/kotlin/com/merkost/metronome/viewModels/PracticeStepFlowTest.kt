@@ -198,6 +198,69 @@ class PracticeStepFlowTest {
         }
     }
 
+    @Test
+    fun theTimerStoppingPlaybackIsReportedUntilDismissed() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.onStopWhenTimerEndsChanged(true)
+            runCurrent()
+            fixture.viewModel.startPracticeTimer(1)
+            runCurrent()
+            advanceTimeBy(61_000L)
+            runCurrent()
+            assertFalse(fixture.viewModel.practiceTimerStoppedPlayback.value)
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            assertFalse(fixture.viewModel.metronomeState.value.playing)
+            assertTrue(fixture.viewModel.practiceTimerStoppedPlayback.value)
+            fixture.viewModel.dismissPracticeTimer()
+            assertFalse(fixture.viewModel.practiceTimerStoppedPlayback.value)
+        }
+    }
+
+    @Test
+    fun theTimerKeepsPlayingWithoutReportingAStopWhenTheOptionIsOff() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.startPracticeTimer(1)
+            runCurrent()
+            advanceTimeBy(61_000L)
+            runCurrent()
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            assertFalse(fixture.viewModel.practiceTimerStoppedPlayback.value)
+        }
+    }
+
+    @Test
+    fun startingAnotherTimerClearsTheStoppedReport() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.onStopWhenTimerEndsChanged(true)
+            runCurrent()
+            fixture.viewModel.startPracticeTimer(1)
+            runCurrent()
+            advanceTimeBy(61_000L)
+            runCurrent()
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            fixture.viewModel.restartPracticeTimer()
+            runCurrent()
+            assertFalse(fixture.viewModel.practiceTimerStoppedPlayback.value)
+        }
+    }
+
+    @Test
+    fun settingABeatChangesOnlyThatBeatAndOnlyWhenItDiffers() = runTest {
+        withFixture { fixture ->
+            val before = fixture.viewModel.metronomeState.value.beats
+            val target = if (before[1] == Beat.HIGH) Beat.MUTE else Beat.HIGH
+            fixture.viewModel.setBeat(1, target)
+            val after = fixture.viewModel.metronomeState.value.beats
+            assertEquals(target, after[1])
+            assertEquals(before.filterIndexed { i, _ -> i != 1 }, after.filterIndexed { i, _ -> i != 1 })
+            fixture.viewModel.setBeat(1, target)
+            assertEquals(after, fixture.viewModel.metronomeState.value.beats)
+        }
+    }
+
     private fun twoStepSet() = PracticeSet(
         "set", "Daily practice", 0L, 0L, null, null, 0,
         listOf(

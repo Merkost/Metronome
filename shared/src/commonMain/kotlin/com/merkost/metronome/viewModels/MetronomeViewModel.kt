@@ -484,9 +484,13 @@ class MetronomeViewModel(
     }
 
     fun onBallClicked(index: Int, beat: Beat) {
+        setBeat(index, beat.next())
+    }
+
+    fun setBeat(index: Int, beat: Beat) {
+        if (_metronomeState.value.beats.getOrNull(index) == beat) return
         markConfigurationEdited()
-        val newBeat = beat.next()
-        _metronomeState.update { it.copy(beats = it.beats.toMutableList().apply { set(index, newBeat) }) }
+        _metronomeState.update { it.copy(beats = it.beats.toMutableList().apply { set(index, beat) }) }
     }
 
     fun onTimeSignatureChanged(ts: TimeSignature) {
@@ -598,6 +602,7 @@ class MetronomeViewModel(
     private fun beginPracticeTimer(minutes: Int) {
         if (!acceptPlaybackRequest()) return
         pendingStopAtBarEnd = false
+        _practiceTimerStoppedPlayback.value = false
         practiceTimerJob?.cancel()
         practiceTimerDoneJob?.cancel()
         val goalMs = minutes * 60_000L
@@ -632,6 +637,9 @@ class MetronomeViewModel(
 
     private var pendingStopAtBarEnd = false
 
+    private val _practiceTimerStoppedPlayback = MutableStateFlow(false)
+    val practiceTimerStoppedPlayback: StateFlow<Boolean> = _practiceTimerStoppedPlayback.asStateFlow()
+
     private var timerSheetVisible = false
     private var timerAutoDismissPending = false
 
@@ -662,6 +670,7 @@ class MetronomeViewModel(
 
     fun dismissPracticeTimer(cancelPendingStop: Boolean = true) {
         if (cancelPendingStop) pendingStopAtBarEnd = false
+        _practiceTimerStoppedPlayback.value = false
         practiceTimerJob?.cancel()
         practiceTimerJob = null
         practiceTimerDoneJob?.cancel()
@@ -816,6 +825,7 @@ class MetronomeViewModel(
     fun onBarCompleted(barNumber: Int) {
         if (pendingStopAtBarEnd) {
             pendingStopAtBarEnd = false
+            _practiceTimerStoppedPlayback.value = true
             onStopClicked()
         }
         val pendingSessionIndex = practiceSessionState.value.session?.pendingStepIndex
