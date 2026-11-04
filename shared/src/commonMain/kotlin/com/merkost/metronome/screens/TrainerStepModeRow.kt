@@ -8,17 +8,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.MySecondaryButton
 import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.TempoStepMode
+import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.spacingSmall
 
 fun gapCycleFallbackCaption(barsPerStep: Int): String =
@@ -86,25 +90,42 @@ fun ManualStepControls(
 ) {
     val complete = config.isComplete(currentBpm)
     val atStart = config.stepsTaken(currentBpm) == 0
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-        modifier = modifier.fillMaxWidth(),
-    ) {
+    val stacked = LocalDensity.current.fontScale > 1.3f
+    val back: @Composable (Modifier) -> Unit = { buttonModifier ->
         MySecondaryButton(
             onClick = onStepBack,
             enabled = !atStart,
             shape = CircleShape,
-            modifier = Modifier.weight(1f),
+            modifier = buttonModifier,
         ) {
             SheetSecondaryLabel("Step back")
         }
-        MySecondaryButton(
+    }
+    val forward: @Composable (Modifier) -> Unit = { buttonModifier ->
+        Button(
             onClick = onStepForward,
             enabled = !complete,
             shape = CircleShape,
-            modifier = Modifier.weight(1f),
+            modifier = buttonModifier.heightIn(min = sheetButtonHeight),
         ) {
-            SheetSecondaryLabel("Next step")
+            Text(text = "Next step", fontWeight = FontWeight.Bold, maxLines = 1)
+        }
+    }
+    if (stacked) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(spacingSmall),
+            modifier = modifier.fillMaxWidth(),
+        ) {
+            forward(Modifier.fillMaxWidth())
+            back(Modifier.fillMaxWidth())
+        }
+    } else {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+            modifier = modifier.fillMaxWidth(),
+        ) {
+            back(Modifier.weight(1f))
+            forward(Modifier.weight(1f))
         }
     }
 }
