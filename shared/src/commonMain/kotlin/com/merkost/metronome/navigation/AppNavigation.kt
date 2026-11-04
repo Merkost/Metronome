@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -95,7 +96,7 @@ fun AppNavigation() {
                         }
                     }
                 }
-                welcome -> WelcomeRoute(viewModel)
+                welcome -> WelcomeRoute(viewModel, previewController)
                 else -> AppNavigationHost()
             }
         }
@@ -106,17 +107,27 @@ fun AppNavigation() {
 }
 
 @Composable
-private fun WelcomeRoute(viewModel: MetronomeViewModel) {
+private fun WelcomeRoute(viewModel: MetronomeViewModel, previewController: SoundPreviewController) {
     val state by viewModel.metronomeState.collectAsState()
     val selectedSound by viewModel.onboardingInitialSound.collectAsState()
     val isSaving by viewModel.onboardingSaving.collectAsState()
     val error by viewModel.onboardingError.collectAsState()
-    val finish = { viewModel.completeOnboarding(state.rhythm, selectedSound, startPlaying = false) }
+    val hearing by previewController.activeSound.collectAsState()
+    DisposableEffect(previewController) { onDispose { previewController.stop() } }
+    val finish = {
+        previewController.stop()
+        viewModel.completeOnboarding(state.rhythm, selectedSound, startPlaying = false)
+    }
     WelcomeScreen(
         isSaving = isSaving,
         error = error,
         onComplete = finish,
         onSkip = finish,
+        hearing = hearing != null,
+        onHearBar = {
+            if (hearing != null) previewController.stop()
+            else previewController.preview(selectedSound, bpm = state.rhythm)
+        },
     )
 }
 

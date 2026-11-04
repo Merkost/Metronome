@@ -1,5 +1,6 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.components.BeatDisplayPreview
 import com.merkost.metronome.model.PracticeWeek
 import com.merkost.metronome.components.PageScaffold
 import com.merkost.metronome.components.pageContentWidth
@@ -321,6 +322,7 @@ internal fun SettingsScreenContent(
                             }
                         }
                     }
+                    BeatDisplayPreview(state.beatDisplayStyle)
                     SettingsSwitch("Beat flash", state.colorFlash, actions.onColorFlash, "Flashes each beat, downbeat only above 180 BPM")
                     Text(if (desktop) "Choose how each beat moves." else "Animations follow your device's motion preference.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
