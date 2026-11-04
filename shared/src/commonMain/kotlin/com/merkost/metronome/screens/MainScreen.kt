@@ -54,7 +54,9 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -88,6 +90,7 @@ import com.merkost.metronome.components.PillChip
 import com.merkost.metronome.components.MainShortcuts
 import com.merkost.metronome.components.StatusStrip
 import com.merkost.metronome.components.StatusStripAction
+import com.merkost.metronome.model.NoSoundHint
 import com.merkost.metronome.model.TempoStepMode
 import com.merkost.metronome.model.tempoTrainerStripState
 import com.composables.icons.lucide.ChevronDown
@@ -326,6 +329,9 @@ fun MainScreen(
     val countInRemaining by viewModel.countInRemaining.collectAsState()
     val practiceTimerStoppedPlayback by viewModel.practiceTimerStoppedPlayback.collectAsState()
     val tempoTrainerStoppedNotice by viewModel.tempoTrainerStoppedNotice.collectAsState()
+    val noSoundHint by viewModel.noSoundHint.collectAsState()
+    var lastNoSoundHint by remember { mutableStateOf<NoSoundHint?>(null) }
+    LaunchedEffect(noSoundHint) { noSoundHint?.let { lastNoSoundHint = it } }
     val phraseLength by viewModel.phraseLength.collectAsState()
 
     val beatIndicatorSpec = AppAnimations.Emphasized
@@ -595,6 +601,42 @@ fun MainScreen(
                             },
                         verticalArrangement = Arrangement.spacedBy(spacingMedium)
                     ) {
+                        AnimatedVisibility(
+                            visible = noSoundHint != null,
+                            enter = AppAnimations.expandEnter,
+                            exit = AppAnimations.shrinkExit,
+                            modifier = Modifier.padding(horizontal = horizontalPadding)
+                        ) {
+                            val hint = noSoundHint ?: lastNoSoundHint
+                            if (hint != null) {
+                                val mediaOff = hint == NoSoundHint.MEDIA_VOLUME_OFF
+                                val tappable = !mediaOff || viewModel.canShowVolumeControls
+                                StatusStrip(
+                                    icon = Lucide.VolumeX,
+                                    title = if (mediaOff) "Media volume is off" else "Click volume is off",
+                                    caption = when {
+                                        !mediaOff -> "open settings"
+                                        tappable -> "tap to adjust"
+                                        else -> "use volume buttons"
+                                    },
+                                    progress = 0f,
+                                    accent = MaterialTheme.colorScheme.error,
+                                    description = when {
+                                        !mediaOff -> "Click volume is at zero in settings."
+                                        tappable -> "Media volume is off. Turn it up to hear the click."
+                                        else -> "Media volume is off. Use the volume buttons to hear the click."
+                                    },
+                                    onClickLabel = if (mediaOff) "Show volume controls" else "Open settings",
+                                    onClick = when {
+                                        !mediaOff -> onSettingsClicked
+                                        tappable -> viewModel::showVolumeControls
+                                        else -> null
+                                    },
+                                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                                )
+                            }
+                        }
+
                         AnimatedVisibility(
                             visible = tempoTrainerStoppedNotice && gradualTempoConfig == null,
                             enter = AppAnimations.expandEnter,

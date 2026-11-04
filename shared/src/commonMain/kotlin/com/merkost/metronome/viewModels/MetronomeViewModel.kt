@@ -20,7 +20,11 @@ import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TempoStepMode
 import com.merkost.metronome.model.gapCycleStepDue
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.platform.AudioOutputStatus
 import com.merkost.metronome.platform.HapticProvider
+import com.merkost.metronome.platform.UnknownAudioOutputStatus
+import com.merkost.metronome.model.NoSoundHint
+import com.merkost.metronome.model.noSoundHint
 import com.merkost.metronome.platform.currentTimeMillis
 import com.merkost.metronome.presets.ActivePresetTracker
 import com.merkost.metronome.presets.PracticePreset
@@ -82,6 +86,7 @@ class MetronomeViewModel(
     private val practiceSetRepository: PracticeSetRepository? = null,
     private val whatsNewCoordinator: WhatsNewCoordinator? = null,
     private val nowMillis: () -> Long = ::currentTimeMillis,
+    private val audioOutputStatus: AudioOutputStatus = UnknownAudioOutputStatus,
 ) : ViewModel() {
     val colorFlash = appDatastore.colorFlash
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
@@ -562,6 +567,15 @@ class MetronomeViewModel(
 
     fun onPresetDeleted(id: String) {
         activePresetTracker.removed(id)
+    }
+
+    private val _noSoundHint = MutableStateFlow<NoSoundHint?>(null)
+    val noSoundHint: StateFlow<NoSoundHint?> = _noSoundHint.asStateFlow()
+
+    val canShowVolumeControls: Boolean get() = audioOutputStatus.canShowVolumeControls
+
+    fun showVolumeControls() {
+        audioOutputStatus.showVolumeControls()
     }
 
     private val _tempoTrainerStoppedNotice = MutableStateFlow(false)
@@ -1085,6 +1099,26 @@ class MetronomeViewModel(
 
     init {
         retryOnboardingLoad()
+        viewModelScope.launch {
+            _metronomeState.map { it.playing }.distinctUntilChanged().collectLatest { playing ->
+                if (!playing || audioOutputStatus === UnknownAudioOutputStatus) {
+                    _noSoundHint.value = null
+                    return@collectLatest
+                }
+                try {
+                    while (true) {
+                        _noSoundHint.value = noSoundHint(
+                            playing = true,
+                            mediaVolumeOff = audioOutputStatus.isMediaVolumeOff(),
+                            clickVolume = clickVolume.value,
+                        )
+                        delay(1000)
+                    }
+                } finally {
+                    _noSoundHint.value = null
+                }
+            }
+        }
         viewModelScope.launch {
             appDatastore.countInEnabled.distinctUntilChanged().collect { _countInEnabled.value = it }
         }
