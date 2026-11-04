@@ -10,13 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,7 +32,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Music
 import com.composables.icons.lucide.Plus
@@ -114,7 +112,14 @@ fun TempoTrainerSheet(
     onStopGapTrainer: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppBottomSheet(title = "Tempo", onDismiss = onDismiss) { dismissAnimated ->
+    AppBottomSheet(
+        title = when (initialSection) {
+            TempoSheetSection.TRAINER -> "Tempo trainer"
+            TempoSheetSection.GAP -> "Gap trainer"
+            else -> "Tempo"
+        },
+        onDismiss = onDismiss,
+    ) { dismissAnimated ->
         var expandedSection by remember {
             mutableStateOf(
                 initialSection ?: when {
@@ -135,43 +140,45 @@ fun TempoTrainerSheet(
         }
 
         Column {
-            FlowRowPresets(
-                currentBpm = currentBpm,
-                onPresetSelected = {
-                    onPresetSelected(it)
-                    dismissAnimated()
-                },
-            )
-            Spacer(Modifier.height(spacingSmall))
-            PracticePresetsQuickSection(
-                favourites = favouritePresets,
-                recents = recentPresets,
-                activeState = activePresetState,
-                recentPracticeSet = recentPracticeSet,
-                onApply = {
-                    onApplyPracticePreset(it)
-                    dismissAnimated()
-                },
-                onSave = {
-                    dismissAnimated()
-                    onSaveCurrentSetup()
-                },
-                onManage = {
-                    dismissAnimated()
-                    onManagePresets()
-                },
-                onManageSets = {
-                    dismissAnimated()
-                    onManagePracticeSets()
-                },
-                onPracticeAgain = {
-                    dismissAnimated()
-                    onPracticeAgain(it)
-                },
-            )
-            Spacer(Modifier.height(spacingSmall))
-            HorizontalDivider()
+            if (initialSection != TempoSheetSection.TRAINER && initialSection != TempoSheetSection.GAP) {
+                FlowRowPresets(
+                    currentBpm = currentBpm,
+                    onPresetSelected = {
+                        onPresetSelected(it)
+                        dismissAnimated()
+                    },
+                )
+                Spacer(Modifier.height(spacingSmall))
+                PracticePresetsQuickSection(
+                    favourites = favouritePresets,
+                    recents = recentPresets,
+                    activeState = activePresetState,
+                    recentPracticeSet = recentPracticeSet,
+                    onApply = {
+                        onApplyPracticePreset(it)
+                        dismissAnimated()
+                    },
+                    onSave = {
+                        dismissAnimated()
+                        onSaveCurrentSetup()
+                    },
+                    onManage = {
+                        dismissAnimated()
+                        onManagePresets()
+                    },
+                    onManageSets = {
+                        dismissAnimated()
+                        onManagePracticeSets()
+                    },
+                    onPracticeAgain = {
+                        dismissAnimated()
+                        onPracticeAgain(it)
+                    },
+                )
+                Spacer(Modifier.height(spacingSmall))
+                HorizontalDivider()
 
+            }
             ExpandableSection(
                 icon = { SectionIcon(Lucide.Music, subdivision != Subdivision.QUARTER) },
                 title = "Subdivision",
@@ -201,7 +208,7 @@ fun TempoTrainerSheet(
                         activeConfig != null,
                     )
                 },
-                title = "Tempo Trainer",
+                title = "Tempo trainer",
                 summary = activeConfig?.let { "$currentBpm → ${it.endBpm}" } ?: "Off",
                 summaryActive = activeConfig != null,
                 expanded = expandedSection == TempoSheetSection.TRAINER,
@@ -248,7 +255,7 @@ fun TempoTrainerSheet(
 
             ExpandableSection(
                 icon = { SectionIcon(Lucide.VolumeX, activeGapConfig != null) },
-                title = "Gap Trainer",
+                title = "Gap trainer",
                 summary = activeGapConfig?.let { "${it.playBars} + ${it.muteBars} bars" } ?: "Off",
                 summaryActive = activeGapConfig != null,
                 expanded = expandedSection == TempoSheetSection.GAP,
@@ -332,10 +339,10 @@ private fun PracticePresetsQuickSection(
                 onClick = { onPracticeAgain(practiceSet) },
             )
         }
-        FilledTonalButton(
+        TextButton(
             onClick = onManageSets,
             shape = CircleShape,
-            modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+            modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         ) {
             Icon(Lucide.Music, contentDescription = null)
             Spacer(Modifier.width(spacingSmall))
@@ -452,28 +459,30 @@ private fun OptionChipsRow(
     display: (Int) -> String,
     onSelect: (Int) -> Unit,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(44.dp),
-        )
-        FlowRowChips(
-            options = options,
-            selected = selected,
-            display = display,
-            onSelect = onSelect,
-        )
+    if (LocalDensity.current.fontScale >= 1.3f) {
+        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+            SectionCaption(label)
+            FlowRowChips(options = options, selected = selected, display = display, onSelect = onSelect)
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.width(44.dp),
+            )
+            FlowRowChips(options = options, selected = selected, display = display, onSelect = onSelect)
+        }
     }
 }
 
 @Composable
-private fun TrainerConfigContent(
+internal fun TrainerConfigContent(
     currentBpm: Int,
     beatsPerBar: Int,
     isPlaying: Boolean,
@@ -490,22 +499,27 @@ private fun TrainerConfigContent(
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
         SectionCaption("Changes tempo automatically while you play")
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            ValueStepper(
-                value = startBpm,
-                onValueChange = { startBpm = it },
-                range = MIN_BPM..MAX_BPM,
-                label = "Start",
-            )
-            ValueStepper(
-                value = endBpm,
-                onValueChange = { endBpm = it },
-                range = MIN_BPM..MAX_BPM,
-                label = "Target",
-            )
+        Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+            listOf("Start" to startBpm, "Target" to endBpm).forEach { (label, value) ->
+                if (LocalDensity.current.fontScale >= 1.3f) {
+                    ValueStepper(
+                        value = value,
+                        onValueChange = { if (label == "Start") startBpm = it else endBpm = it },
+                        range = MIN_BPM..MAX_BPM,
+                        label = label,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                    )
+                } else {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                        ValueStepper(
+                            value = value,
+                            onValueChange = { if (label == "Start") startBpm = it else endBpm = it },
+                            range = MIN_BPM..MAX_BPM,
+                        )
+                    }
+                }
+            }
         }
 
         OptionChipsRow(
@@ -530,7 +544,7 @@ private fun TrainerConfigContent(
             onClick = { onStartTrainer(config) },
             enabled = startBpm != endBpm,
             shape = CircleShape,
-            modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+            modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         ) {
             Text(
                 text = if (isPlaying) "Start trainer" else "Start trainer & play",
@@ -580,23 +594,21 @@ private fun ActiveTrainerContent(
             )
         }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            MySecondaryButton(
-                onClick = onStopKeep,
-                shape = CircleShape,
-                modifier = Modifier.weight(1f),
-            ) {
-                SheetSecondaryLabel("Stop, keep $currentBpm")
+        val stopActions: @Composable (Modifier) -> Unit = { actionModifier ->
+            MySecondaryButton(onClick = onStopKeep, shape = CircleShape, modifier = actionModifier) {
+                SheetSecondaryLabel("Stop, keep $currentBpm BPM")
             }
-            MySecondaryButton(
-                onClick = onStopReset,
-                shape = CircleShape,
-                modifier = Modifier.weight(1f),
-            ) {
+            MySecondaryButton(onClick = onStopReset, shape = CircleShape, modifier = actionModifier) {
                 SheetSecondaryLabel("Reset to ${config.startBpm}")
+            }
+        }
+        if (LocalDensity.current.fontScale >= 1.3f) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                stopActions(Modifier.fillMaxWidth())
+            }
+        } else {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                stopActions(Modifier.weight(1f))
             }
         }
 
@@ -607,7 +619,7 @@ private fun ActiveTrainerContent(
 }
 
 @Composable
-private fun GapTrainerContent(
+internal fun GapTrainerContent(
     isPlaying: Boolean,
     activeConfig: GapTrainerConfig?,
     seedConfig: GapTrainerConfig?,
@@ -659,7 +671,7 @@ private fun GapTrainerContent(
                 Button(
                     onClick = { onStartAndDismiss(GapTrainerConfig(playBars, muteBars)) },
                     shape = CircleShape,
-                    modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
                 ) {
                     Text(
                         text = if (isPlaying) "Start gap trainer" else "Start gap trainer & play",
@@ -675,14 +687,13 @@ private fun GapTrainerContent(
 private fun SheetSecondaryLabel(text: String) {
     Row(
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth().height(sheetButtonHeight),
+        modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-            maxLines = 1,
-            autoSize = TextAutoSize.StepBased(8.sp, 16.sp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
         )
     }
 }

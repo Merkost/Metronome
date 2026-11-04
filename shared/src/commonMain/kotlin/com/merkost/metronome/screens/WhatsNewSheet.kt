@@ -4,15 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,17 +20,13 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Folder
 import com.composables.icons.lucide.Settings
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.Sparkles
 import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.ui.appearIn
-import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import metronome.shared.generated.resources.Res
-import metronome.shared.generated.resources.whats_new_again_body
-import metronome.shared.generated.resources.whats_new_again_title
 import metronome.shared.generated.resources.whats_new_dismiss
 import metronome.shared.generated.resources.whats_new_motion_body
 import metronome.shared.generated.resources.whats_new_motion_title
@@ -54,7 +48,6 @@ private data class ReleaseHighlight(
 private val RELEASE_HIGHLIGHTS = listOf(
     ReleaseHighlight(Lucide.Sparkles, Res.string.whats_new_presets_title, Res.string.whats_new_presets_body),
     ReleaseHighlight(Lucide.Settings, Res.string.whats_new_sets_title, Res.string.whats_new_sets_body),
-    ReleaseHighlight(Lucide.Volume2, Res.string.whats_new_again_title, Res.string.whats_new_again_body),
     ReleaseHighlight(Lucide.Folder, Res.string.whats_new_motion_title, Res.string.whats_new_motion_body),
 )
 
@@ -85,7 +78,7 @@ fun WhatsNewSheet(
                 modifier = Modifier
                     .appearIn(delayMillis = HIGHLIGHT_STAGGER_MILLIS * (RELEASE_HIGHLIGHTS.size + 1))
                     .fillMaxWidth()
-                    .height(sheetButtonHeight),
+                    .heightIn(min = sheetButtonHeight),
             ) {
                 Text(stringResource(Res.string.whats_new_dismiss), fontWeight = FontWeight.Bold)
             }
@@ -102,17 +95,12 @@ private fun HighlightRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(spacingMedium),
     ) {
-        Surface(
-            shape = RoundedCornerShape(cornerRadiusLarge),
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
-        ) {
-            Icon(
-                imageVector = highlight.icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(10.dp).size(20.dp),
-            )
-        }
+        Icon(
+            imageVector = highlight.icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 2.dp).size(20.dp),
+        )
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(spacingSmall / 2),

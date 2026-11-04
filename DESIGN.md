@@ -191,6 +191,10 @@ The app uses a centered single-column instrument layout. Content fills compact s
 
 The main screen keeps playback controls anchored as a stable bottom action row while the tempo and beat region can scroll when text or available height demands it. Settings and bottom sheets scroll vertically, respect safe areas and navigation insets, and keep content centered inside the same maximum width. Advanced tools remain progressively disclosed inside the tempo sheet so the basic metronome stays immediate.
 
+Welcome uses one skippable graphic screen with a decorative, theme-aware vector illustration, three short feature highlights and one Get started action. The transition into the instrument and saving/error feedback follow the shared motion tokens. Completion opens the instrument silently and preserves the current setup. Explanations scroll at large text sizes while the primary action remains reachable and keeps a reserved label height.
+
+On home, tempo and playback retain priority. Quick tempo math belongs in exact tempo editing and changes only the draft until confirmation. Rhythm groups use spacing and selected-only tint. Settings uses literal Audio, Appearance, Playback, Beat display, Practice data and Help groups; web access and More by Merkost remain compact, permanent secondary entries.
+
 At large accessibility sizes, compact labels may use bounded auto-sizing, descriptive text may wrap, and repeated values divide available width evenly. Do not solve text pressure by reducing touch targets below 48dp or by expanding tablet content into an unnecessarily wide dashboard.
 
 ## Elevation & Depth

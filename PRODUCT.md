@@ -28,6 +28,7 @@ A precise, distraction-free metronome with a substantial practice toolkit built 
 
 ## Capabilities and Constraints
 
+- A skippable graphic welcome introduces rhythm, sound customization and practice tools, then opens the instrument without starting playback or changing the current setup.
 - Precise tempo control, tap tempo, time signatures, accents, per-beat mute, subdivisions, stereo panning, multiple click sounds, visual beat displays, and haptic feedback.
 - Practice timer, tempo trainer, gap trainer, count-in, saved tempos, and local practice statistics including daily time and streaks.
 - Background playback, keep-screen-awake support, light and dark themes, and multiple color schemes.

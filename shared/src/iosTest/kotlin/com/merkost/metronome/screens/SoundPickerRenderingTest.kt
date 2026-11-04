@@ -37,6 +37,8 @@ import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
@@ -64,6 +66,41 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalTestApi::class)
 class SoundPickerRenderingTest {
+    @Test
+    fun normalTextUsesCompactRowsWithSmallPassiveProfiles(): TestResult = renderingTest {
+        ClickSound.entries.forEach { sound ->
+            reveal(sound)
+            val row = cardBounds(sound)
+            val profile = chartBounds(sound)
+            assertTrue(row.height <= 84f, "The ${sound.displayName} row must remain compact. bounds=$row")
+            assertEquals(72f, profile.width, 0.5f, "The tone profile must remain a quiet thumbnail")
+            assertSoundTextFits(sound)
+            assertSeparatePreviewTarget(sound)
+        }
+    }
+
+    @Test
+    fun playingMetronomeDisablesPreviewWithoutBlockingSoundSelection(): TestResult = renderingTest { model ->
+        runOnUiThread { model.previewEnabled.value = false }
+        settle()
+        onNode(hasText("Choose a sound. Pause playback to preview.")).assertIsDisplayed()
+        reveal(ClickSound.CLICK)
+        val disabledPreview = preview(ClickSound.CLICK, previewing = false)
+        disabledPreview.assertIsNotEnabled().performTouchInput { click() }
+        assertEquals(0, model.previewCallbacks)
+        row(ClickSound.CLICK).performClick()
+        settle()
+        assertEquals(1, model.selectionCallbacks)
+        assertSelectedSound(ClickSound.CLICK)
+        runOnUiThread { model.previewEnabled.value = true }
+        settle()
+        reveal(ClickSound.CLICK)
+        preview(ClickSound.CLICK, previewing = false).assertIsEnabled().performClick()
+        assertEquals(1, model.previewCallbacks)
+        assertEquals(1, model.selectionCallbacks)
+        assertEquals(ClickSound.CLICK, model.previewSound.value)
+    }
+
     @Test
     fun everySoundPaintsADistinctPassiveToneProfileWithStableSelectionGeometry(): TestResult = renderingTest(profilesOnly = true) { model ->
         val initialBounds = ClickSound.entries.associateWith { profileBounds(it) }
@@ -377,6 +414,7 @@ private class SoundPickerFixtureModel {
     val selectedSound = mutableStateOf(ClickSound.WOOD)
     val previewSound = mutableStateOf<ClickSound?>(null)
     val profilesSelected = mutableStateOf(false)
+    val previewEnabled = mutableStateOf(true)
     var selectionCallbacks = 0
     var previewCallbacks = 0
 
@@ -420,7 +458,7 @@ private fun SoundPickerFixture(
                         }
                     } else {
                         Box(Modifier.fillMaxWidth().testTag("pickerContent")) {
-                            SoundPickerContent(model.selectedSound.value, model.previewSound.value, model::select, model::preview)
+                            SoundPickerContent(model.selectedSound.value, model.previewSound.value, model::select, model::preview, previewEnabled = model.previewEnabled.value)
                         }
                         Text("Following content", modifier = Modifier.fillMaxWidth().testTag("following"), style = MaterialTheme.typography.bodyMedium)
                     }

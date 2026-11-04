@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -56,7 +57,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.LayoutDirection
-import com.composables.icons.lucide.CalendarDays
 import com.composables.icons.lucide.Check
 import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.ChevronRight
@@ -64,12 +64,9 @@ import com.composables.icons.lucide.ChevronLeft
 import com.composables.icons.lucide.ExternalLink
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Monitor
-import com.composables.icons.lucide.Palette
 import com.composables.icons.lucide.Smartphone
 import com.composables.icons.lucide.Timer
-import com.composables.icons.lucide.Users
 import com.composables.icons.lucide.Volume2
-import com.composables.icons.lucide.Wallet
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.SoundPreviewButton
@@ -80,7 +77,6 @@ import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
 import com.merkost.metronome.ui.cornerRadiusMedium
-import com.merkost.metronome.ui.cornerRadiusXLarge
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.pressableSurface
@@ -103,11 +99,11 @@ internal fun SettingsSoundPanel(state: SettingsUiState, actions: SettingsActions
         state.stereo > 0 -> "Right ${state.stereo * 20}%"
         else -> "Centre"
     }
-    Surface(shape = RoundedCornerShape(cornerRadiusXLarge), color = MaterialTheme.colorScheme.secondaryContainer) {
+    Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 SettingsGlyph(Lucide.Volume2)
-                Text("Find your click.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text("Audio", modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             }
             SettingsSoundSelectionRow(state, actions)
             AnimatedVisibility(state.playing, enter = AppAnimations.expandEnter, exit = AppAnimations.shrinkExit) {
@@ -123,7 +119,9 @@ internal fun SettingsSoundPanel(state: SettingsUiState, actions: SettingsActions
                 )
             }
             state.previewError?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
-            SettingsSwitch("Beat haptics", state.hapticEnabled, actions.onHaptic, "Feel the beat, too")
+            if (state.supportsHaptics) {
+                SettingsSwitch("Beat haptics", state.hapticEnabled, actions.onHaptic, "Haptic feedback on each beat")
+            }
             Row(
                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(cornerRadiusMedium))
                     .pressableSurface({ advanced = !advanced })
@@ -232,10 +230,7 @@ internal fun SettingsAppearancePanel(state: SettingsUiState, actions: SettingsAc
         AppColorScheme.entries.maxOf { measurer.measure(AnnotatedString(it.settingsName), nameStyle, softWrap = false, maxLines = 1).size.width }.toDp()
     }
     Column(Modifier.fillMaxWidth().padding(vertical = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            Text("Set the mood.", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            SettingsGlyph(Lucide.Palette)
-        }
+        Text("Appearance", modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("Colour scheme", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
             AnimatedContent(
@@ -254,7 +249,7 @@ internal fun SettingsAppearancePanel(state: SettingsUiState, actions: SettingsAc
                 SettingsPaletteChoice(palette, state.colorScheme == palette, { actions.onColorScheme(palette) }, Modifier.widthIn(min = minimumTouchTargetSize))
             }
         }
-        SettingsRow("Appearance") {
+        SettingsRow("Theme") {
             AppSegmentedControl(
                 options = ThemeMode.entries.map { it.label },
                 selectedIndex = ThemeMode.entries.indexOf(state.themeMode),
@@ -284,7 +279,7 @@ private fun SettingsPaletteChoice(
         verticalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
         Box(Modifier.size(minimumTouchTargetSize).border(ring, ringColor, CircleShape).padding(4.dp), contentAlignment = Alignment.Center) {
-            Surface(shape = CircleShape, color = palette.lightColor.primary, modifier = Modifier.size(40.dp)) {
+            Surface(shape = CircleShape, color = palette.lightColor.primary, modifier = Modifier.size(40.dp).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)) {
                 Box(contentAlignment = Alignment.Center) {
                     AnimatedContent(isSelected, transitionSpec = { AppAnimations.fadeScaleTransform }, label = "paletteCheck") { chosen ->
                         if (chosen) Icon(Lucide.Check, null, tint = palette.lightColor.onPrimary, modifier = Modifier.size(20.dp))
@@ -305,7 +300,7 @@ internal fun SettingsDisclosure(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    Surface(shape = RoundedCornerShape(cornerRadiusXLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
+    Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth().pressableSurface({ expanded = !expanded })
@@ -317,7 +312,7 @@ internal fun SettingsDisclosure(
             ) {
                 SettingsGlyph(icon)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-                    Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text(title, modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 SettingsChevron(expanded)
@@ -337,9 +332,7 @@ private fun SettingsChevron(expanded: Boolean) {
 
 @Composable
 private fun SettingsGlyph(icon: ImageVector) {
-    Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.primaryContainer) {
-        Icon(icon, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.padding(10.dp).size(22.dp))
-    }
+    Icon(icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
 }
 
 @Composable
@@ -356,86 +349,52 @@ internal fun SettingsLink(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacingMedium),
     ) {
-        Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+        Icon(icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
             Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
             Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Icon(if (external) Lucide.ExternalLink else Lucide.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+        Icon(
+            if (external) Lucide.ExternalLink else if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight,
+            null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(18.dp),
+        )
+    }
+}
+
+@Composable
+internal fun SettingsGroup(title: String, content: @Composable ColumnScope.() -> Unit) {
+    Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
+        Column(Modifier.fillMaxWidth().padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
+            Text(title, modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            content()
+        }
     }
 }
 
 @Composable
 internal fun SettingsWebCard(onClick: () -> Unit) {
-    Surface(shape = RoundedCornerShape(cornerRadiusXLarge), color = MaterialTheme.colorScheme.primaryContainer) {
-        Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    Text("Metronome on the web", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                    Text("Your beat.\nAny screen.", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                }
-                Icon(Lucide.Monitor, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(40.dp))
-            }
-            Text("Open Metronome in your browser.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Surface(
-                shape = RoundedCornerShape(cornerRadiusLarge),
-                color = MaterialTheme.colorScheme.surface,
-                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(cornerRadiusLarge)).pressableSurface(onClick),
-            ) {
-                Row(
-                    Modifier.heightIn(min = minimumTouchTargetSize).padding(horizontal = spacingMedium, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-                ) {
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-                        Text("Open web app", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                        Text("metronome.merkost.dev", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Icon(Lucide.ExternalLink, null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-        }
-    }
+    SettingsLink("Open web app", "metronome.merkost.dev", Lucide.Monitor, onClick, external = true)
 }
 
 @Composable
 internal fun SettingsSubyCard(onClick: () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-        Text("More by Merkost", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = spacingSmall))
-        Surface(shape = RoundedCornerShape(cornerRadiusXLarge), color = MaterialTheme.colorScheme.tertiaryContainer) {
-            Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(spacingSmall), verticalAlignment = Alignment.CenterVertically) {
-                    Image(painterResource(Res.drawable.suby_icon), null, modifier = Modifier.size(54.dp).clip(RoundedCornerShape(cornerRadiusLarge)))
-                    Column(verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-                        Text("Suby", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
-                        Text("Subscription manager", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    Text("Subscriptions, a little more sorted.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text("Keep renewals, costs and shared plans in one place.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    SettingsFeature(Lucide.CalendarDays, "Renewals")
-                    SettingsFeature(Lucide.Wallet, "Costs")
-                    SettingsFeature(Lucide.Users, "Sharing")
-                }
-                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxWidth().clip(CircleShape).pressableSurface(onClick)) {
-                    Row(Modifier.heightIn(min = minimumTouchTargetSize).padding(horizontal = spacingMedium, vertical = spacingSmall), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Explore Suby", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                        Icon(Lucide.ExternalLink, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(18.dp))
-                    }
-                }
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+        Text("More by Merkost", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = spacingSmall))
+        Row(
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(cornerRadiusLarge))
+                .pressableSurface(onClick).heightIn(min = minimumTouchTargetSize).padding(vertical = spacingSmall),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacingMedium),
+        ) {
+            Image(painterResource(Res.drawable.suby_icon), null, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(cornerRadiusMedium)))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
+                Text("Suby", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text("Keep subscriptions & renewals in one place", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            Icon(Lucide.ExternalLink, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
         }
-    }
-}
-
-@Composable
-private fun SettingsFeature(icon: ImageVector, label: String) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-        Icon(icon, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -513,13 +472,13 @@ private fun SettingsPanelsPreview() {
 @Preview
 @Composable
 private fun SettingsDisclosurePreview() {
-    MaterialTheme { SettingsDisclosure("Keep your flow.", "Practice & playback", Lucide.Timer) { SettingsSwitch("Count-in", true, {}, "One bar to ease you in") } }
+    MaterialTheme { SettingsDisclosure("Playback", "Count-in, screen & background audio", Lucide.Timer) { SettingsSwitch("Count-in", true, {}, "One bar before playback") } }
 }
 
 @Preview
 @Composable
 private fun SettingsLinkPreview() {
-    MaterialTheme { SettingsLink("Your practice", "Time, backups & data", Lucide.Timer, {}) }
+    MaterialTheme { SettingsLink("Statistics & backups", "Practice time, export & import", Lucide.Timer, {}) }
 }
 
 @Preview
@@ -541,10 +500,15 @@ private fun SettingsSmallComponentsPreview() {
             SettingsPaletteChoice(AppColorScheme.MELROSE, true, {})
             SettingsChevron(true)
             SettingsGlyph(Lucide.Volume2)
-            SettingsFeature(Lucide.CalendarDays, "Renewals")
             SettingsSlider("Click volume", "80%") { AppSlider(0.8f, {}, valueRange = 0f..1f, accessibilityLabel = "Click volume") }
             SettingsRow("Appearance") { SettingsChoiceRow { AppChip(true, {}, "System") } }
-            SettingsSwitch("Beat haptics", false, {}, "Feel the beat, too")
+            SettingsSwitch("Beat haptics", false, {}, "Haptic feedback on each beat")
         }
     }
+}
+
+@Preview
+@Composable
+private fun SettingsGroupPreview() {
+    MaterialTheme { SettingsGroup("Help") { SettingsWebCard({}) } }
 }

@@ -14,6 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.navigation.AppNavigation
+import com.merkost.metronome.platform.SystemBarAppearance
 import com.merkost.metronome.ui.theme.MetronomeTheme
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MetronomeTheme {
+                SystemBarAppearance(window)
                 AppNavigation()
             }
         }

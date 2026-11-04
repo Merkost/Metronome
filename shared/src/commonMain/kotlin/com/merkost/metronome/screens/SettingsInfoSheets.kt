@@ -20,8 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.BookOpen
 import com.composables.icons.lucide.ExternalLink
 import com.composables.icons.lucide.Lucide
@@ -33,7 +31,6 @@ import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.PracticeBackupControls
 import com.merkost.metronome.components.TimestampMillisecondsFormatter
 import com.merkost.metronome.ui.cornerRadiusLarge
-import com.merkost.metronome.ui.cornerRadiusXLarge
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.sheetButtonHeight
@@ -53,7 +50,7 @@ internal fun SettingsPracticeSheet(
     onReset: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppBottomSheet("Your practice", onDismiss) { dismissAnimated ->
+    AppBottomSheet("Practice data", onDismiss) { dismissAnimated ->
         SettingsPracticeContent(todayTime, totalTime, practiceStreak, playing, onReset, dismissAnimated) {
             PracticeBackupControls()
         }
@@ -61,7 +58,7 @@ internal fun SettingsPracticeSheet(
 }
 
 @Composable
-private fun SettingsPracticeContent(
+internal fun SettingsPracticeContent(
     todayTime: Long,
     totalTime: Long,
     practiceStreak: Int,
@@ -71,23 +68,22 @@ private fun SettingsPracticeContent(
     backupControls: @Composable () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        Text("A quiet record of time spent practicing.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Surface(shape = RoundedCornerShape(cornerRadiusXLarge), color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Today", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                Text(TimestampMillisecondsFormatter.formatHuman(todayTime), style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                Text("Time counts while the metronome plays.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer, textAlign = TextAlign.Center)
+        Text("Statistics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                Text("Today", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(TimestampMillisecondsFormatter.formatHuman(todayTime), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
             SettingsPracticeStatistic("Total practice", TimestampMillisecondsFormatter.formatHuman(totalTime), Modifier.weight(1f))
             SettingsPracticeStatistic("Practice streak", "$practiceStreak ${if (practiceStreak == 1) "day" else "days"}", Modifier.weight(1f))
         }
-        Text("Practice time is saved when playback pauses. Practice statistics are stored on this device.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Time counts during playback and is saved when you pause. Statistics stay on this device.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         backupControls()
         Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
             Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                Text("Start a fresh count.", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("Reset statistics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text("Clear practice statistics. Your presets and practice sets are kept.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 TextButton(onClick = onReset, enabled = !playing, modifier = Modifier.heightIn(min = minimumTouchTargetSize)) {
                     Text("Reset practice statistics", fontWeight = FontWeight.SemiBold)
@@ -128,7 +124,7 @@ internal fun SettingsAboutSheet(
 }
 
 @Composable
-private fun SettingsAboutContent(
+internal fun SettingsAboutContent(
     version: String,
     onGuide: () -> Unit,
     onWhatsNew: () -> Unit,
@@ -139,17 +135,18 @@ private fun SettingsAboutContent(
     onDone: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-        Column(Modifier.fillMaxWidth().padding(vertical = spacingMedium), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            Image(painterResource(Res.drawable.ic_launcher), null, modifier = Modifier.size(72.dp).clip(RoundedCornerShape(cornerRadiusLarge)))
-            Text("Metronome", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.ExtraBold)
-            Text("Practice & Tempo", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (version.isNotBlank()) Text("Version $version", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Row(Modifier.fillMaxWidth().padding(vertical = spacingSmall), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingMedium)) {
+            Image(painterResource(Res.drawable.ic_launcher), null, modifier = Modifier.size(minimumTouchTargetSize).clip(RoundedCornerShape(cornerRadiusLarge)))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
+                Text("Metronome", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                if (version.isNotBlank()) Text("Version $version", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
-        SettingsLink("Practice guide", "A few taps to find your rhythm", Lucide.BookOpen, onGuide)
-        SettingsLink("What's new", "Fresh additions for your practice", Lucide.Sparkles, onWhatsNew)
+        SettingsLink("Practice guide", "Tempo, rhythm & practice tools", Lucide.BookOpen, onGuide)
+        SettingsLink("What's new", "Latest updates", Lucide.Sparkles, onWhatsNew)
         SettingsLink("Contact support", "Ask a question or share feedback", Lucide.Mail, onContact)
-        SettingsLink("Rate the app", "Help someone else find their rhythm", Lucide.Star, onRate)
-        SettingsLink("Metronome website", "Web app, support & more", Lucide.ExternalLink, onWebsite, external = true)
+        SettingsLink("Rate the app", "Leave a store review", Lucide.Star, onRate)
+        SettingsLink("Metronome website", "Web app & support", Lucide.ExternalLink, onWebsite, external = true)
         SettingsLink("Privacy policy", "How your information is handled", Lucide.ShieldCheck, onPrivacy, external = true)
         Button(onClick = onDone, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight)) {
             Text("Done", fontWeight = FontWeight.Bold)
@@ -165,10 +162,10 @@ internal fun SettingsGuideSheet(onDismiss: () -> Unit) {
 @Composable
 private fun SettingsGuideContent(onDone: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        SettingsGuideStep("Find your pace.", "Slide the tempo, tap a rhythm or enter an exact BPM. Press Play when you're ready.")
-        SettingsGuideStep("Shape the bar.", "Tap a beat to cycle through normal, accent and mute. A filled dot plays the accent sound; the outer ring follows the active beat.")
-        SettingsGuideStep("Keep a good setup.", "Save a preset to return to a tempo and rhythm. Arrange presets into a practice set with time or bar goals.")
-        SettingsGuideStep("Build your rhythm.", "Use the timer for a focused block, Tempo trainer to build speed and Gap trainer to practice through silence.")
+        SettingsGuideStep("Tempo", "Slide the tempo, tap a rhythm or enter an exact BPM. Press Play when you're ready.")
+        SettingsGuideStep("Rhythm", "Tap a beat to cycle through normal, accent and mute. A filled dot plays the accent sound; the outer ring follows the active beat.")
+        SettingsGuideStep("Saved setups", "Save a preset to return to a tempo and rhythm. Arrange presets into a practice set with time or bar goals.")
+        SettingsGuideStep("Training tools", "Use the timer for a focused block, Tempo trainer to build speed and Gap trainer to practice through silence.")
         Button(onClick = onDone, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight)) {
             Text("Got it", fontWeight = FontWeight.Bold)
         }
@@ -210,5 +207,5 @@ private fun SettingsGuidePreview() {
 @Preview
 @Composable
 private fun SettingsGuideStepPreview() {
-    MaterialTheme { SettingsGuideStep("Find your pace.", "Slide the tempo, tap a rhythm or enter an exact BPM.") }
+    MaterialTheme { SettingsGuideStep("Tempo", "Slide the tempo, tap a rhythm or enter an exact BPM.") }
 }
