@@ -608,6 +608,13 @@ class MetronomeViewModel(
         viewModelScope.launch { appDatastore.saveStopWhenTimerEnds(enabled) }
     }
 
+    val phraseLength: StateFlow<Int> = appDatastore.phraseLength
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
+    fun onPhraseLengthChanged(bars: Int) {
+        viewModelScope.launch { appDatastore.savePhraseLength(bars) }
+    }
+
     val lastTrainerConfig = appDatastore.lastTrainerConfig
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 

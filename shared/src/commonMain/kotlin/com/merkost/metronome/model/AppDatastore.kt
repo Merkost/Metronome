@@ -45,6 +45,9 @@ interface AppDatastore {
     val stopWhenTimerEnds: Flow<Boolean>
     suspend fun saveStopWhenTimerEnds(enabled: Boolean)
 
+    val phraseLength: Flow<Int>
+    suspend fun savePhraseLength(bars: Int)
+
     val subdivision: Flow<Subdivision>
     suspend fun saveSubdivision(subdivision: Subdivision)
 

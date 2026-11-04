@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composables.icons.lucide.Flag
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Music
 import com.composables.icons.lucide.Plus
@@ -82,7 +83,7 @@ private val BARS_OPTIONS = listOf(1, 2, 4, 8)
 private val GAP_PLAY_OPTIONS = listOf(2, 4, 8)
 private val GAP_MUTE_OPTIONS = listOf(1, 2, 4)
 
-enum class TempoSheetSection { SUBDIVISION, TRAINER, GAP }
+enum class TempoSheetSection { SUBDIVISION, TRAINER, GAP, PHRASE }
 
 @Composable
 fun TempoTrainerSheet(
@@ -113,6 +114,8 @@ fun TempoTrainerSheet(
     onUpdateGapTrainer: (GapTrainerConfig) -> Unit,
     onStopGapTrainer: () -> Unit,
     onDismiss: () -> Unit,
+    phraseLength: Int = 0,
+    onPhraseLengthChanged: (Int) -> Unit = {},
 ) {
     AppBottomSheet(title = "Tempo", onDismiss = onDismiss) { dismissAnimated ->
         var expandedSection by remember {
@@ -186,6 +189,21 @@ fun TempoTrainerSheet(
                     selected = subdivision,
                     display = { it.label },
                     onSelect = onSubdivisionChanged,
+                )
+            }
+            HorizontalDivider()
+
+            ExpandableSection(
+                icon = { SectionIcon(Lucide.Flag, phraseLength != 0) },
+                title = "Phrase",
+                summary = phraseSummary(phraseLength),
+                summaryActive = phraseLength != 0,
+                expanded = expandedSection == TempoSheetSection.PHRASE,
+                onToggle = { toggle(TempoSheetSection.PHRASE) },
+            ) {
+                PhraseSectionContent(
+                    phraseLength = phraseLength,
+                    onPhraseLengthChanged = onPhraseLengthChanged,
                 )
             }
             HorizontalDivider()

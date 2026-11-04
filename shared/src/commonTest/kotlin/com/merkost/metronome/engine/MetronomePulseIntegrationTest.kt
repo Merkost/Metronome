@@ -510,6 +510,63 @@ class MetronomePulseIntegrationTest {
         }
     }
 
+    @Test
+    fun phraseMarkerAccentsOnlyTheFirstBarOfEachPhrase() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPhraseLengthChanged(4)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            repeat(9) { step(state, 500) }
+            val high = Beat.HIGH
+            val low = Beat.LOW
+            assertEquals(listOf(high, low, low, low, low, low, low, low, high, low), state.player.beats)
+        }
+    }
+
+    @Test
+    fun phraseMarkerKeepsTheBeatGrid() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPhraseLengthChanged(4)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            assertEquals(1, state.player.beats.size)
+            repeat(9) { index ->
+                step(state, 500)
+                assertEquals(index + 2, state.player.beats.size)
+            }
+        }
+    }
+
+    @Test
+    fun countInIsNotPartOfThePhrase() = runTest {
+        fixture(countIn = true) { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPhraseLengthChanged(4)
+            runCurrent()
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            repeat(7) { step(state, 500) }
+            val high = Beat.HIGH
+            val low = Beat.LOW
+            assertEquals(listOf(high, high, high, low, low, low, low, low), state.player.beats)
+        }
+    }
+
+    @Test
+    fun phraseOffPlaysTheWrittenPattern() = runTest {
+        fixture { state ->
+            state.viewModel.onTimeSignatureChanged(TimeSignature.TWO_FOUR)
+            state.viewModel.onPlayPauseClicked(false)
+            runCurrent()
+            repeat(3) { step(state, 500) }
+            assertEquals(listOf(Beat.HIGH, Beat.LOW, Beat.HIGH, Beat.LOW), state.player.beats)
+        }
+    }
+
     private fun TestScope.step(state: Fixture, millis: Long) {
         state.source.time += millis.milliseconds
         advanceTimeBy(millis)

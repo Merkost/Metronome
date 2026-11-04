@@ -2,6 +2,7 @@ package com.merkost.metronome.engine
 
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.BeatPulse
+import com.merkost.metronome.model.phraseBeat
 import com.merkost.metronome.platform.AudioFocusController
 import com.merkost.metronome.platform.HapticProvider
 import com.merkost.metronome.viewModels.MetronomeViewModel
@@ -112,7 +113,7 @@ class MetronomeEngine(
                                 val beatStart = timeline.deadline
                                 delayUntil(beatStart)
                                 val state = viewModel.metronomeState.value
-                                val beat = state.beats[index]
+                                val beat = phraseBeat(state.beats[index], index, barNumber, viewModel.phraseLength.value)
                                 val stereo = viewModel.currentStereo.value
                                 val volume = viewModel.clickVolume.value
                                 if (index == 0) viewModel.onBarStarted(barNumber)

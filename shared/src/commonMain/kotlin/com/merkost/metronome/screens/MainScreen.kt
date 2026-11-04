@@ -77,6 +77,7 @@ import com.composables.icons.lucide.Volume2
 import com.composables.icons.lucide.VolumeX
 import com.merkost.metronome.components.AppIconButton
 import com.merkost.metronome.components.MetronomeMark
+import com.merkost.metronome.components.PhraseBarCounter
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.AppSlider
 import com.merkost.metronome.components.MainButtonsRow
@@ -94,6 +95,7 @@ import com.merkost.metronome.navigation.AppPresentation
 import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.model.beatFlashVisible
 import com.merkost.metronome.model.gapStripState
+import com.merkost.metronome.model.phraseBarLabel
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
@@ -319,6 +321,7 @@ fun MainScreen(
     val countInRemaining by viewModel.countInRemaining.collectAsState()
     val practiceTimerStoppedPlayback by viewModel.practiceTimerStoppedPlayback.collectAsState()
     val tempoTrainerStoppedNotice by viewModel.tempoTrainerStoppedNotice.collectAsState()
+    val phraseLength by viewModel.phraseLength.collectAsState()
 
     val beatIndicatorSpec = AppAnimations.Emphasized
 
@@ -449,6 +452,16 @@ fun MainScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(spacingSmall)
                         ) {
+                            if (phraseLength != 0) {
+                                PhraseBarCounter(
+                                    label = phraseBarLabel(currentBar, phraseLength, isPlaying, countInRemaining),
+                                    phraseLength = phraseLength,
+                                    onClick = {
+                                        tempoSheetSection = TempoSheetSection.PHRASE
+                                        showTempoSheet = true
+                                    },
+                                )
+                            }
                             val tempoLabel = if (metronomeState.subdivision == Subdivision.QUARTER) {
                                 metronomeState.tempoName
                             } else {
@@ -932,6 +945,8 @@ fun MainScreen(
                 }
             },
             onSubdivisionChanged = viewModel::onSubdivisionChanged,
+            phraseLength = phraseLength,
+            onPhraseLengthChanged = viewModel::onPhraseLengthChanged,
             onStartTrainer = { config ->
                 if (practiceSessionState.session != null) {
                     pendingStructuredAction = { viewModel.replacePracticeSessionWithTempoTrainer(config) }

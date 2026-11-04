@@ -37,6 +37,7 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
         private val LAST_TIMER_MINUTES = intPreferencesKey("LAST_TIMER_MINUTES")
         private val STOP_WHEN_TIMER_ENDS = booleanPreferencesKey("STOP_WHEN_TIMER_ENDS")
         private val SUBDIVISION = stringPreferencesKey("SUBDIVISION")
+        private val PHRASE_LENGTH = intPreferencesKey("PHRASE_LENGTH")
         private val GAP_PLAY_BARS = intPreferencesKey("GAP_PLAY_BARS")
         private val GAP_MUTE_BARS = intPreferencesKey("GAP_MUTE_BARS")
         private val KEEP_SCREEN_AWAKE = booleanPreferencesKey("KEEP_SCREEN_AWAKE")
@@ -280,6 +281,15 @@ class AppDatastoreImpl(private val dataStore: DataStore<Preferences>) : AppDatas
             preferences[TRAINER_END_BPM] = config.endBpm
             preferences[TRAINER_INCREMENT] = config.increment
             preferences[TRAINER_BARS_PER_STEP] = config.barsPerStep
+        }
+    }
+
+    override val phraseLength: Flow<Int> = dataStore.data
+        .map { preferences -> (preferences[PHRASE_LENGTH] ?: 0).takeIf { it in PHRASE_LENGTHS } ?: 0 }
+
+    override suspend fun savePhraseLength(bars: Int) {
+        dataStore.edit { preferences ->
+            preferences[PHRASE_LENGTH] = bars.takeIf { it in PHRASE_LENGTHS } ?: 0
         }
     }
 
