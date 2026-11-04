@@ -25,6 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
@@ -47,7 +50,11 @@ fun StatusStrip(
     modifier: Modifier = Modifier,
     onStop: (() -> Unit)? = null,
     titleModifier: Modifier = Modifier,
+    description: String? = null,
+    onClickLabel: String? = null,
+    stopLabel: String = "Stop",
 ) {
+    val textSemantics = if (description != null) Modifier.clearAndSetSemantics {} else Modifier
     val interactionSource = remember { MutableInteractionSource() }
     val animatedProgress by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
@@ -69,9 +76,11 @@ fun StatusStrip(
                     size = size.copy(width = size.width * animatedProgress)
                 )
             }
+            .then(if (description != null) Modifier.semantics { contentDescription = description } else Modifier)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
+                onClickLabel = onClickLabel,
                 onClick = onClick
             ),
     ) {
@@ -92,7 +101,7 @@ fun StatusStrip(
                 text = title,
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                 color = accent,
-                modifier = titleModifier,
+                modifier = titleModifier.then(textSemantics),
             )
             Spacer(Modifier.weight(1f))
             AnimatedContent(
@@ -104,6 +113,7 @@ fun StatusStrip(
                     text = text,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = textSemantics,
                 )
             }
             if (onStop != null) {
@@ -111,7 +121,7 @@ fun StatusStrip(
                 AppIconButton(onClick = onStop) {
                     Icon(
                         imageVector = Lucide.X,
-                        contentDescription = "Stop",
+                        contentDescription = stopLabel,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )

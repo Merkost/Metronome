@@ -93,6 +93,7 @@ import androidx.compose.ui.keepScreenOn
 import com.merkost.metronome.navigation.AppPresentation
 import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.model.flashEnabledFor
+import com.merkost.metronome.model.gapStripState
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MetronomeState
@@ -616,28 +617,22 @@ fun MainScreen(
                         ) {
                             val config = gapTrainerConfig ?: lastShownGapConfig
                             if (config != null) {
-                                val gapBar = (currentBar - gapTrainerStartBar).coerceAtLeast(0)
-                                val muted = viewModel.isGapBarMuted(currentBar)
-                                val leadIn = currentBar < gapTrainerStartBar
+                                val strip = gapStripState(
+                                    config = config,
+                                    currentBar = currentBar,
+                                    startBar = gapTrainerStartBar,
+                                    muted = viewModel.isGapBarMuted(currentBar),
+                                    isPlaying = isPlaying,
+                                    countInRemaining = countInRemaining,
+                                )
                                 StatusStrip(
-                                    icon = if (muted) {
-                                        Lucide.VolumeX
-                                    } else {
-                                        Lucide.Volume2
-                                    },
-                                    title = when {
-                                        !isPlaying -> "Gap trainer"
-                                        leadIn && muted -> "Muted · finishing this bar"
-                                        leadIn -> "Click · finishing this bar"
-                                        muted -> "Muted · bar ${config.barInPhase(gapBar)}/${config.muteBars}"
-                                        else -> "Click · bar ${config.barInPhase(gapBar)}/${config.playBars}"
-                                    },
-                                    caption = if (isPlaying) {
-                                        "${config.playBars} + ${config.muteBars} bars"
-                                    } else {
-                                        "paused"
-                                    },
-                                    progress = config.cycleProgress(gapBar),
+                                    icon = if (strip.muted) Lucide.VolumeX else Lucide.Volume2,
+                                    title = strip.title,
+                                    caption = strip.caption,
+                                    progress = strip.progress,
+                                    description = strip.description,
+                                    onClickLabel = "Edit gap trainer",
+                                    stopLabel = "Stop gap trainer",
                                     accent = MaterialTheme.colorScheme.primary,
                                     onClick = {
                                         tempoSheetSection = TempoSheetSection.GAP
