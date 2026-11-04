@@ -69,6 +69,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.seconds
 
 
+private val TEMPO_TRAINER_NOTICE_MIN = 2.seconds
+
 class MetronomeViewModel(
     private val appDatastore: AppDatastore,
     private val hapticProvider: HapticProvider,
@@ -560,9 +562,32 @@ class MetronomeViewModel(
         activePresetTracker.removed(id)
     }
 
+    private val _tempoTrainerStoppedNotice = MutableStateFlow(false)
+    val tempoTrainerStoppedNotice: StateFlow<Boolean> = _tempoTrainerStoppedNotice.asStateFlow()
+    private var tempoTrainerNoticeJob: Job? = null
+
+    private fun showTempoTrainerStoppedNotice() {
+        tempoTrainerNoticeJob?.cancel()
+        _tempoTrainerStoppedNotice.value = true
+        val state = _metronomeState.value
+        val hold = maxOf(state.beatDuration * state.beats.size, TEMPO_TRAINER_NOTICE_MIN)
+        tempoTrainerNoticeJob = viewModelScope.launch {
+            delay(hold)
+            _tempoTrainerStoppedNotice.value = false
+        }
+    }
+
+    private fun clearTempoTrainerStoppedNotice() {
+        tempoTrainerNoticeJob?.cancel()
+        tempoTrainerNoticeJob = null
+        _tempoTrainerStoppedNotice.value = false
+    }
+
     private fun commitPracticePreset(preset: PracticePreset) {
+        val hadTempoTrainer = _gradualTempoConfig.value != null
         stopGradualTempo()
         _metronomeState.update { it.applyPracticePreset(preset) }
+        if (hadTempoTrainer) showTempoTrainerStoppedNotice()
         index.value = -1
         _countInEnabled.value = preset.countInEnabled
         viewModelScope.launch {
@@ -689,6 +714,7 @@ class MetronomeViewModel(
     fun startGradualTempo(config: GradualTempoConfig) {
         if (!acceptPlaybackRequest()) return
         markConfigurationEdited()
+        clearTempoTrainerStoppedNotice()
         gradualTempoDismissJob?.cancel()
         gradualTempoDismissJob = null
         _gradualTempoConfig.value = config

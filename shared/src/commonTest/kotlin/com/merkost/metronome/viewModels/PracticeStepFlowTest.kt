@@ -135,6 +135,74 @@ class PracticeStepFlowTest {
         }
     }
 
+    private fun manualPreset() = PracticePreset(
+        id = "manual", name = "Manual", createdAtEpochMillis = 0L, lastUsedAtEpochMillis = null,
+        isFavourite = false, sortPosition = 0, bpm = 80, timeSignature = TimeSignature.FOUR_FOUR,
+        subdivision = Subdivision.QUARTER, beats = listOf(Beat.HIGH, Beat.LOW, Beat.LOW, Beat.LOW),
+        countInEnabled = false,
+    )
+
+    @Test
+    fun applyingAPresetDuringATempoTrainerShowsANoticeForOneBar() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.startGradualTempo(GradualTempoConfig(startBpm = 90, endBpm = 120))
+            runCurrent()
+            fixture.viewModel.onStopClicked()
+            runCurrent()
+            assertFalse(fixture.viewModel.tempoTrainerStoppedNotice.value)
+
+            fixture.viewModel.applyPracticePreset(manualPreset())
+            runCurrent()
+
+            assertTrue(fixture.viewModel.tempoTrainerStoppedNotice.value)
+            advanceTimeBy(2_900L)
+            runCurrent()
+            assertTrue(fixture.viewModel.tempoTrainerStoppedNotice.value)
+            advanceTimeBy(200L)
+            runCurrent()
+            assertFalse(fixture.viewModel.tempoTrainerStoppedNotice.value)
+        }
+    }
+
+    @Test
+    fun applyingAPresetWithoutATempoTrainerShowsNoNotice() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.applyPracticePreset(manualPreset())
+            runCurrent()
+            assertFalse(fixture.viewModel.tempoTrainerStoppedNotice.value)
+        }
+    }
+
+    @Test
+    fun aPresetQueuedWhilePlayingShowsTheNoticeAfterTheBarBoundary() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.startGradualTempo(GradualTempoConfig(startBpm = 90, endBpm = 120))
+            runCurrent()
+            fixture.viewModel.applyPracticePreset(manualPreset())
+            runCurrent()
+            assertFalse(fixture.viewModel.tempoTrainerStoppedNotice.value)
+            fixture.viewModel.onBarCompleted(1)
+            runCurrent()
+            assertTrue(fixture.viewModel.tempoTrainerStoppedNotice.value)
+        }
+    }
+
+    @Test
+    fun startingATempoTrainerClearsTheNotice() = runTest {
+        withFixture { fixture ->
+            fixture.viewModel.startGradualTempo(GradualTempoConfig(startBpm = 90, endBpm = 120))
+            runCurrent()
+            fixture.viewModel.onStopClicked()
+            runCurrent()
+            fixture.viewModel.applyPracticePreset(manualPreset())
+            runCurrent()
+            assertTrue(fixture.viewModel.tempoTrainerStoppedNotice.value)
+            fixture.viewModel.startGradualTempo(GradualTempoConfig(startBpm = 90, endBpm = 120))
+            runCurrent()
+            assertFalse(fixture.viewModel.tempoTrainerStoppedNotice.value)
+        }
+    }
+
     @Test
     fun theTimerEndingStopsPlaybackAfterTheCurrentBarWhenTheOptionIsOn() = runTest {
         withFixture { fixture ->

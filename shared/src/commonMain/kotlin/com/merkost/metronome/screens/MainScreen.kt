@@ -318,6 +318,7 @@ fun MainScreen(
     val keepScreenAwake by viewModel.keepScreenAwake.collectAsState()
     val countInRemaining by viewModel.countInRemaining.collectAsState()
     val practiceTimerStoppedPlayback by viewModel.practiceTimerStoppedPlayback.collectAsState()
+    val tempoTrainerStoppedNotice by viewModel.tempoTrainerStoppedNotice.collectAsState()
 
     val beatIndicatorSpec = AppAnimations.Emphasized
 
@@ -576,6 +577,25 @@ fun MainScreen(
                             },
                         verticalArrangement = Arrangement.spacedBy(spacingMedium)
                     ) {
+                        AnimatedVisibility(
+                            visible = tempoTrainerStoppedNotice && gradualTempoConfig == null,
+                            enter = AppAnimations.expandEnter,
+                            exit = AppAnimations.shrinkExit,
+                            modifier = Modifier.padding(horizontal = horizontalPadding)
+                        ) {
+                            StatusStrip(
+                                icon = Lucide.TrendingUp,
+                                title = "Tempo trainer stopped",
+                                caption = "preset applied",
+                                progress = 0f,
+                                accent = MaterialTheme.colorScheme.tertiary,
+                                onClick = {
+                                    tempoSheetSection = TempoSheetSection.TRAINER
+                                    showTempoSheet = true
+                                },
+                            )
+                        }
+
                         AnimatedVisibility(
                             visible = gradualTempoConfig != null,
                             enter = AppAnimations.expandEnter,
