@@ -19,7 +19,8 @@ class AppPresentationTest {
     @Test
     fun desktopNavigationChangesAtTheDocumentedWindowBoundary() {
         assertFalse(usesDesktopSidebar(AppPresentation.Desktop, 520f))
-        assertFalse(usesDesktopSidebar(AppPresentation.Desktop, 839f))
+        assertFalse(usesDesktopSidebar(AppPresentation.Desktop, 719f))
+        assertTrue(usesDesktopSidebar(AppPresentation.Desktop, 720f))
         assertTrue(usesDesktopSidebar(AppPresentation.Desktop, 840f))
         assertTrue(usesDesktopSidebar(AppPresentation.Desktop, 1440f))
     }

@@ -66,8 +66,8 @@ private data class DesktopDestination(
 
 private val desktopDestinations = listOf(
     DesktopDestination(MainDestination.Main, "Metronome", "Tempo", Lucide.Timer),
-    DesktopDestination(MainDestination.PracticePresets, "Saved tempos", "Saved", Lucide.Bookmark),
-    DesktopDestination(MainDestination.PracticeSets, "Practice sets", "Practice", Lucide.Layers),
+    DesktopDestination(MainDestination.PracticePresets, "Presets", "Presets", Lucide.Bookmark),
+    DesktopDestination(MainDestination.PracticeSets, "Practice sets", "Sets", Lucide.Layers),
     DesktopDestination(MainDestination.Settings, "Settings", "Settings", Lucide.Settings),
 )
 

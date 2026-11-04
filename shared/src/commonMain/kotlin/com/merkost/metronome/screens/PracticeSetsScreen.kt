@@ -1,5 +1,9 @@
 package com.merkost.metronome.screens
 
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
+import com.merkost.metronome.navigation.LocalAppPresentation
+import com.merkost.metronome.navigation.AppPresentation
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -92,6 +96,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PracticeSetsScreen(
     upPress: () -> Unit,
@@ -158,18 +163,21 @@ fun PracticeSetsScreen(
     }
 
     val editor = uiState.editor
+    val handleBack: () -> Unit = {
+        when {
+            editor?.isSaving == true -> Unit
+            editor?.hasUnsavedChanges == true -> showDiscardDialog = true
+            editor != null -> viewModel.cancelEditing()
+            uiState.isReordering -> viewModel.setReordering(false)
+            else -> upPress()
+        }
+    }
+    BackHandler(enabled = editor != null || uiState.isReordering, onBack = handleBack)
     PracticeSetsContent(
         uiState = uiState,
         persistenceWarning = practiceSessionState.persistenceWarning,
         snackbarHostState = snackbarHostState,
-        onBack = {
-            when {
-                editor?.isSaving == true -> Unit
-                editor?.hasUnsavedChanges == true -> showDiscardDialog = true
-                editor != null -> viewModel.cancelEditing()
-                else -> upPress()
-            }
-        },
+        onBack = handleBack,
         onCreate = viewModel::beginCreate,
         onPreviewStarter = viewModel::beginStarter,
         onStart = { practiceSet ->
@@ -202,6 +210,7 @@ fun PracticeSetsScreen(
             title = stringResource(Res.string.practice_set_delete_title, practiceSet.name),
             text = stringResource(Res.string.practice_set_delete_body),
             confirmLabel = stringResource(Res.string.delete),
+            destructive = true,
             dismissLabel = stringResource(Res.string.cancel),
             onConfirm = {
                 viewModel.delete(practiceSet.id)
@@ -216,6 +225,7 @@ fun PracticeSetsScreen(
             title = stringResource(Res.string.practice_set_unsaved_title),
             text = stringResource(Res.string.practice_set_unsaved_body),
             confirmLabel = stringResource(Res.string.discard),
+            destructive = true,
             dismissLabel = stringResource(Res.string.cancel),
             onConfirm = {
                 showDiscardDialog = false
@@ -277,6 +287,7 @@ internal fun PracticeSetNavigationGuard(editor: () -> PracticeSetEditorState?, o
             title = stringResource(Res.string.practice_set_unsaved_title),
             text = stringResource(Res.string.practice_set_unsaved_body),
             confirmLabel = stringResource(Res.string.discard),
+            destructive = true,
             dismissLabel = stringResource(Res.string.cancel),
             onConfirm = {
                 if (currentEditor()?.isSaving != true) {
@@ -387,8 +398,10 @@ internal fun PracticeSetsLibrary(
                     )
                 },
                 navigationIcon = {
-                    AppIconButton(onClick = onBack) {
-                        Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
+                    if (LocalAppPresentation.current != AppPresentation.Desktop) {
+                        AppIconButton(onClick = onBack) {
+                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft, contentDescription = stringResource(Res.string.back))
+                        }
                     }
                 },
                 actions = {

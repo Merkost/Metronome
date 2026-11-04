@@ -1,5 +1,6 @@
 package com.merkost.metronome.screens
 
+import com.composables.icons.lucide.ChartNoAxesColumn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -190,8 +191,9 @@ fun SettingsScreen(upPress: () -> Unit) {
     if (showResetConfirmation) {
         AppDialog(
             title = "Reset practice statistics?",
-            text = "This clears your today, total practice time of ${TimestampMillisecondsFormatter.formatHuman(totalTime)} and streak. Your presets and practice sets are kept. This can't be undone.",
+            text = "Clears today's time, your streak and ${TimestampMillisecondsFormatter.formatHuman(totalTime)} of total practice. Your presets and practice sets are kept. This can't be undone.",
             confirmLabel = "Reset statistics",
+            destructive = true,
             onConfirm = {
                 if (!playing) viewModel.resetTotalTime()
                 showResetConfirmation = false
@@ -316,7 +318,7 @@ internal fun SettingsScreenContent(
                     Text(if (desktop) "Choose how each beat moves." else "Animations follow your device's motion preference.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 SettingsGroup("Practice data") {
-                    SettingsLink("Statistics & backups", "Practice time, export & import", Lucide.Timer, actions.onPractice)
+                    SettingsLink("Statistics & backups", "Practice time, export & import", Lucide.ChartNoAxesColumn, actions.onPractice)
                 }
                 SettingsGroup("Help") {
                     SettingsLink("What's new", "Latest updates", Lucide.Sparkles, actions.onWhatsNew)

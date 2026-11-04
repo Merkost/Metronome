@@ -47,7 +47,7 @@ internal class DesktopNavigationGuard {
 }
 
 internal fun usesDesktopSidebar(presentation: AppPresentation, widthDp: Float): Boolean =
-    presentation == AppPresentation.Desktop && widthDp >= 840f
+    presentation == AppPresentation.Desktop && widthDp >= 720f
 
 internal fun navigateDesktop(backStack: MutableList<NavKey>, destination: MainDestination) {
     val entries = if (destination == MainDestination.Main) listOf(MainDestination.Main)

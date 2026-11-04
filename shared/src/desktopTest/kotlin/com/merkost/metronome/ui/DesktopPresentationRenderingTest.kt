@@ -69,7 +69,7 @@ class DesktopPresentationRenderingTest {
                 }
             }
         }
-        val labels = listOf("Metronome", "Saved tempos", "Practice sets", "Settings")
+        val labels = listOf("Metronome", "Presets", "Practice sets", "Settings")
         val tabs = labels.map { label ->
             onNode(hasContentDescription(label)).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
         }
@@ -77,10 +77,10 @@ class DesktopPresentationRenderingTest {
         tabs.zipWithNext().forEach { (first, next) -> assertTrue(first.bottom <= next.top) }
         val pane = onNodeWithTag("instrumentPane").fetchSemanticsNode().boundsInRoot
         assertTrue(pane.left >= 200f && pane.width >= 790f)
-        onNode(hasContentDescription("Saved tempos")).performClick()
+        onNode(hasContentDescription("Presets")).performClick()
         waitForIdle()
         assertEquals(MainDestination.PracticePresets, selected)
-        onNode(hasContentDescription("Saved tempos")).assertIsSelected()
+        onNode(hasContentDescription("Presets")).assertIsSelected()
     }
 
     @Test
@@ -94,7 +94,7 @@ class DesktopPresentationRenderingTest {
                 }
             }
         }
-        val tabs = listOf("Metronome", "Saved tempos", "Practice sets", "Settings").map { label ->
+        val tabs = listOf("Metronome", "Presets", "Practice sets", "Settings").map { label ->
             onNode(hasContentDescription(label)).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
         }
         tabs.forEach {

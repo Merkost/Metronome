@@ -1,5 +1,6 @@
 package com.merkost.metronome.screens
 
+import com.composables.icons.lucide.Layers
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -197,7 +198,7 @@ fun TempoTrainerSheet(
                 expanded = expandedSection == TempoSheetSection.SUBDIVISION,
                 onToggle = { toggle(TempoSheetSection.SUBDIVISION) },
             ) {
-                SectionCaption("Extra softer clicks between beats")
+                SectionCaption("Softer clicks between the main beats")
                 FlowRowChips(
                     options = Subdivision.entries,
                     selected = subdivision,
@@ -373,7 +374,7 @@ private fun PracticePresetsQuickSection(
             shape = CircleShape,
             modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         ) {
-            Icon(Lucide.Music, contentDescription = null)
+            Icon(Lucide.Layers, contentDescription = null)
             Spacer(Modifier.width(spacingSmall))
             Text(stringResource(Res.string.practice_sets))
         }

@@ -954,6 +954,7 @@ fun MainScreen(
             title = "Reset practice statistics?",
             text = "Clear today’s practice time, your streak and total time. Your presets and practice sets are kept.",
             confirmLabel = "Reset statistics",
+            destructive = true,
             dismissLabel = "Cancel",
             onConfirm = {
                 viewModel.resetPracticeStatistics()
