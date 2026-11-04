@@ -1,5 +1,7 @@
 package com.merkost.metronome.components
 
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -130,6 +132,7 @@ private fun RepeatingStepButton(
             .pressScale(interactionSource, pressedScale = PressedScaleControl)
             .clip(CircleShape)
             .background(container)
+            .pointerHoverIcon(PointerIcon.Hand)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,

@@ -1,5 +1,8 @@
 package com.merkost.metronome.components
 
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -129,8 +132,9 @@ private fun AppSegmentedOption(
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.collectIsPressedAsState()
     val focused by interactions.collectIsFocusedAsState()
+    val hovered by interactions.collectIsHoveredAsState()
     val interactionColor by animateColorAsState(
-        MaterialTheme.colorScheme.onSurface.copy(alpha = when { pressed -> 0.08f; focused -> 0.12f; else -> 0f }),
+        MaterialTheme.colorScheme.onSurface.copy(alpha = when { pressed -> 0.10f; focused -> 0.12f; hovered -> 0.06f; else -> 0f }),
         AppAnimations.press(),
         label = "segmentInteraction",
     )
@@ -141,6 +145,7 @@ private fun AppSegmentedOption(
     )
     Box(
         modifier.clip(RoundedCornerShape(cornerRadiusMedium))
+            .pointerHoverIcon(PointerIcon.Hand)
             .selectable(
                 selected = selected,
                 interactionSource = interactions,

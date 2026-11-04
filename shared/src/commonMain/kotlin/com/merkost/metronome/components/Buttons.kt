@@ -1,5 +1,7 @@
 package com.merkost.metronome.components
 
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -117,7 +119,7 @@ fun AppIconButton(
     val interactionSource = remember { MutableInteractionSource() }
     IconButton(
         onClick = onClick,
-        modifier = modifier.pressScale(interactionSource, PressedScaleControl),
+        modifier = modifier.pressScale(interactionSource, PressedScaleControl).pointerHoverIcon(PointerIcon.Hand),
         enabled = enabled,
         interactionSource = interactionSource,
         content = content,
@@ -158,6 +160,7 @@ fun MyIconButton(
             .pressScale(interactionSource, PressedScaleControl)
             .clip(CircleShape)
             .background(containerColor)
+            .pointerHoverIcon(PointerIcon.Hand)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,

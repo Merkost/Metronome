@@ -256,8 +256,8 @@ internal fun ActiveTimerContent(
             ) { (finished, playing) ->
                 Text(
                     text = when {
-                        finished && stoppedPlayback -> "${TimestampMillisecondsFormatter.format(timerGoal)} practised · stopped"
-                        finished -> listOfNotNull("${TimestampMillisecondsFormatter.format(timerGoal)} practised", streakDayLine(practiceStreak)).joinToString(" · ")
+                        finished && stoppedPlayback -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced · stopped"
+                        finished -> listOfNotNull("${TimestampMillisecondsFormatter.format(timerGoal)} practiced", streakDayLine(practiceStreak)).joinToString(" · ")
                         playing -> "of ${TimestampMillisecondsFormatter.format(timerGoal)}"
                         else -> "paused — counts down while playing"
                     },

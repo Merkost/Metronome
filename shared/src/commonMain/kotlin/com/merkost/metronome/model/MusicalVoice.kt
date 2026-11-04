@@ -30,7 +30,7 @@ fun practiceSummaryLine(totalMillis: Long, streakDays: Int): String? {
         else -> "$minutes min"
     }
     val streak = if (streakDays >= 2) " · $streakDays-day streak" else ""
-    return "$time practised$streak"
+    return "$time practiced$streak"
 }
 
 fun timerFinishedHeadline(minutes: Int): String =

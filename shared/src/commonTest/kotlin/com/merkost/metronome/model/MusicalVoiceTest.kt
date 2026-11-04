@@ -50,14 +50,14 @@ class MusicalVoiceTest {
 
     @Test
     fun practiceSummaryReadsHoursThenStreak() {
-        assertEquals("142 h practised · 12-day streak", practiceSummaryLine(142L * 3_600_000L, 12))
-        assertEquals("1 h 30 min practised · 2-day streak", practiceSummaryLine(90L * 60_000L, 2))
+        assertEquals("142 h practiced · 12-day streak", practiceSummaryLine(142L * 3_600_000L, 12))
+        assertEquals("1 h 30 min practiced · 2-day streak", practiceSummaryLine(90L * 60_000L, 2))
     }
 
     @Test
     fun practiceSummaryDropsTheStreakWhenItIsNotYetAStreak() {
-        assertEquals("42 min practised", practiceSummaryLine(42L * 60_000L, 0))
-        assertEquals("42 min practised", practiceSummaryLine(42L * 60_000L, 1))
+        assertEquals("42 min practiced", practiceSummaryLine(42L * 60_000L, 0))
+        assertEquals("42 min practiced", practiceSummaryLine(42L * 60_000L, 1))
     }
 
     @Test

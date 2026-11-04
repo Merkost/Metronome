@@ -57,6 +57,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -268,6 +270,7 @@ fun Modifier.pressableSurface(
     pressedScale: Float = PressedScaleSurface,
     role: Role = Role.Button,
     rippled: Boolean = true,
+    hoverShape: Shape = RoundedCornerShape(cornerRadiusLarge),
 ): Modifier = composed {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -282,6 +285,7 @@ fun Modifier.pressableSurface(
             scaleX = scale
             scaleY = scale
         }
+        .hoverTint(interactionSource, hoverShape, enabled)
         .clickable(
             interactionSource = interactionSource,
             indication = indication,

@@ -1,5 +1,6 @@
 package com.merkost.metronome.components
 
+import com.merkost.metronome.ui.hoverTint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -53,6 +54,7 @@ fun PillChip(
         modifier = modifier
             .pressScale(interactionSource, pressedScale = PressedScaleControl)
             .clip(RoundedCornerShape(50))
+            .hoverTint(interactionSource, RoundedCornerShape(50))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -155,12 +154,10 @@ private fun DesktopNavigationItem(
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val hovered by interactionSource.collectIsHoveredAsState()
     val focused by interactionSource.collectIsFocusedAsState()
     val background by animateColorAsState(
         targetValue = when {
             selected -> MaterialTheme.colorScheme.primaryContainer
-            hovered -> MaterialTheme.colorScheme.surfaceContainerHighest
             else -> MaterialTheme.colorScheme.surface.copy(alpha = 0f)
         },
         animationSpec = AppAnimations.standard(),
@@ -174,6 +171,7 @@ private fun DesktopNavigationItem(
     )
     val shape = RoundedCornerShape(cornerRadiusMedium)
     val container = modifier.clip(shape).background(background)
+        .hoverTint(interactionSource, shape, enabled = !selected)
         .then(if (focused) Modifier.border(1.dp, MaterialTheme.colorScheme.primary, shape) else Modifier)
         .selectable(selected = selected, role = Role.Tab, interactionSource = interactionSource, indication = null, onClick = onClick)
         .semantics { contentDescription = item.label }
