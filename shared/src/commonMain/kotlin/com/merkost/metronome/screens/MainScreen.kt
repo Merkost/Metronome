@@ -618,6 +618,7 @@ fun MainScreen(
                             if (config != null) {
                                 val gapBar = (currentBar - gapTrainerStartBar).coerceAtLeast(0)
                                 val muted = viewModel.isGapBarMuted(currentBar)
+                                val leadIn = currentBar < gapTrainerStartBar
                                 StatusStrip(
                                     icon = if (muted) {
                                         Lucide.VolumeX
@@ -626,6 +627,8 @@ fun MainScreen(
                                     },
                                     title = when {
                                         !isPlaying -> "Gap trainer"
+                                        leadIn && muted -> "Muted · finishing this bar"
+                                        leadIn -> "Click · finishing this bar"
                                         muted -> "Muted · bar ${config.barInPhase(gapBar)}/${config.muteBars}"
                                         else -> "Click · bar ${config.barInPhase(gapBar)}/${config.playBars}"
                                     },
