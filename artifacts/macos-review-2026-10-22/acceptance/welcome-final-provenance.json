@@ -1,0 +1,352 @@
+{
+  "createdAtUtc": "2026-10-22T07:57:24.349325+00:00",
+  "purpose": "Fresh native welcome acceptance without touching existing data",
+  "acceptanceApp": "/Users/merkost/StudioProjects/Metronome/artifacts/macos-review-2026-10-22/acceptance/Metronome Welcome Acceptance Final.app",
+  "bundleIdentifier": "com.merkost.metronome.acceptance.ab5eef93ee2b543b29e13ab0311f6a9c7",
+  "runtimeBundleIdentifier": "com.oracle.java.com.merkost.metronome.acceptance.ab5eef93ee2b543b29e13ab0311f6a9c7",
+  "displayName": "Metronome Welcome Acceptance Final",
+  "sourceApp": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app",
+  "sourcePackage": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/pkg/Metronome-1.5.0.pkg",
+  "sourcePackageSha256": "3365107e87412ed09bfa39be99757ef9367f4422ffd640c5aa5f52356caece82",
+  "sourcePackageMatchesPriorVerification": true,
+  "identity": "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)",
+  "allNativeCodeHasMatchingTeamId": true,
+  "nativeBinaryCount": 30,
+  "sandboxAndHardenedRuntimePreserved": true,
+  "libraryValidationPreserved": true,
+  "appEntitlements": {
+    "com.apple.security.app-sandbox": true,
+    "com.apple.security.cs.allow-jit": true,
+    "com.apple.security.files.user-selected.read-write": true
+  },
+  "runtimeEntitlements": {},
+  "launcherConfigurationIdentical": true,
+  "jarCount": 79,
+  "jars": [
+    {
+      "path": "Contents/app/stately-concurrent-collections-jvm-2.1.0-b7acc01ab9a6662528925fb79d422dd1.jar",
+      "sha256": "6ce3ba9028407aba3b814fe9f58b03ded59b5d1694c6abe04b328cb83852436f"
+    },
+    {
+      "path": "Contents/app/kotlinx-coroutines-core-jvm-1.11.0-41a5e9a2f2c9affb9d9ab254be5a984f.jar",
+      "sha256": "3fcd911c04a487221d405e4b686a342ddbc2e1af867403eb369c54c37a6a5cc8"
+    },
+    {
+      "path": "Contents/app/datastore-preferences-core-jvm-1.2.1-a71e7c68fc6dd85f6237335722cd925.jar",
+      "sha256": "5359f847582cf1eb50bac2b9ca120090cd1ca726baa0e6e6a2e2313390c68835"
+    },
+    {
+      "path": "Contents/app/ui-unit-desktop-1.12.1-7ef6fe1b7eef6348891d94869166a6f7.jar",
+      "sha256": "6e0d4685dca2cedf7ded2dc528d702f5abb118603e25eb52da1661c13575ca43"
+    },
+    {
+      "path": "Contents/app/runtime-desktop-1.12.1-1f10feae5687d5ddef2226983a95b8e.jar",
+      "sha256": "81a6eb4d4a038def51844d49a1bb84d5fedbfb7676d0dd92be1d4713f1936a9c"
+    },
+    {
+      "path": "Contents/app/datastore-core-okio-jvm-1.2.1-38c87b659b5e43255f87474fab30457f.jar",
+      "sha256": "ee9588efe19762037be8756d3a5fd55be908c7b9deb8edf09d17534db5ec4d1d"
+    },
+    {
+      "path": "Contents/app/koin-compose-jvm-4.2.2-fef56dff985d468e4bc99dd050d584.jar",
+      "sha256": "ce29748a00cf4cb19d814a04026bedd8b7ae446f8cf99ff65913e3647cb3e8df"
+    },
+    {
+      "path": "Contents/app/runtime-saveable-desktop-1.12.1-20894c61e27fb5db944c2ca8876eb2.jar",
+      "sha256": "706778979a6926ecee71f33b6db127949559ea69a61e146b7db55b723258a4fb"
+    },
+    {
+      "path": "Contents/app/ui-text-desktop-1.12.1-5e3686245ced4825d1d811c323ec58fb.jar",
+      "sha256": "da2bfb735d51b35d62f06262483e3305bc81bae436a8537feeabde5fc4b8ad85"
+    },
+    {
+      "path": "Contents/app/desktopApp-b952b4895c2b528395971a212af8dca.jar",
+      "sha256": "e507af94321592ddbb14d9773e18314968b1f51b081b7acac948e81fba020d89"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-compose-desktop-2.11.0-b6b9988570b5c2c9e248104289c72a74.jar",
+      "sha256": "46c2f0e78cac71fd6dbe5117b015b9bdd0e7ad89691684ac092cc0029cafacca"
+    },
+    {
+      "path": "Contents/app/cedar-logging-jvm-92e4b1e8114d1960a080b4d7c1518d90.jar",
+      "sha256": "753392b59fadf17862ca17a8025d342e2f8650c8701c5294dbcaae95343d8d55"
+    },
+    {
+      "path": "Contents/app/atomicfu-jvm-0.28.0-70921245a0aed3c3e3d17c34ca3dbd87.jar",
+      "sha256": "e28cf934fe8ed3affecf7703c058379d79f7e1d88ae19cdf22dd68ad8d3045e1"
+    },
+    {
+      "path": "Contents/app/navigation3-ui-desktop-1.1.2-7829cdeac97ad4de55eb5e40d65cadd.jar",
+      "sha256": "77d0ff4d5e67e45b9caca726a37127da10535cc2b9170eb18e17d052e79e43a2"
+    },
+    {
+      "path": "Contents/app/navigationevent-compose-desktop-1.1.0-6370d5c46488f619be7b5e63333545d2.jar",
+      "sha256": "2ba852c14d3c6bbe8433d70556a019bec263bf83bc2fd862a8cb83116adfdac3"
+    },
+    {
+      "path": "Contents/app/koin-core-viewmodel-jvm-4.2.2-c83c3eed9aa366b766f986361891384.jar",
+      "sha256": "27e77822890a1110aa0b38b42737cb7e8cd119cf4914eec5c36bd436b7fe9f99"
+    },
+    {
+      "path": "Contents/app/datastore-core-jvm-1.2.1-68bd30a82462b130b953a7a0ade6b318.jar",
+      "sha256": "9c66b3f6dd71691240f4f54cc44e8199b628831dee4c38e45a5849d3a9932a04"
+    },
+    {
+      "path": "Contents/app/jbr-api-1.9.0-4ae6ce27bcafb233efdbf54395d03.jar",
+      "sha256": "9502d8edade2f95c2a01045912195e8585792a46e92c4530a4575957a9751989"
+    },
+    {
+      "path": "Contents/app/kotlinx-datetime-jvm-0.8.0-74607e75425578a6983dcb8528507cd.jar",
+      "sha256": "5506f55e909c8651c0efca30339d4a320a52abdef56829923b12f8ee2aec01fb"
+    },
+    {
+      "path": "Contents/app/runtime-annotation-jvm-1.12.1-4190aa9d3047cacca43687b075ca9f41.jar",
+      "sha256": "8f35dda73d4c8aca8df14bd4f7b8d6d55a0a9d4d7cc61f12ed4ffa9fde5ad813"
+    },
+    {
+      "path": "Contents/app/datastore-preferences-external-protobuf-1.2.1-80e72813e22e9695eaf82ff9ccb727e0.jar",
+      "sha256": "a5896fff2574ba8a305940930a6c257d220f56863f7bcec4aae69b530c878d5b"
+    },
+    {
+      "path": "Contents/app/runtime-saveable-desktop-1.12.1-b997262ae4482c23c7c8a0c47e846924.jar",
+      "sha256": "ae14302f5065f1caf69c9e6b43845e5bb0d3d6d355007a0c5b7f4acae172f7d7"
+    },
+    {
+      "path": "Contents/app/navigationevent-desktop-1.1.1-5d6b5b7abab9bd6abdc6485ffd91541.jar",
+      "sha256": "b8757bf1c5780b5669408d4981bd88d52af69d9809b3a50205b9175dd394d008"
+    },
+    {
+      "path": "Contents/app/kotlinx-serialization-json-jvm-1.7.3-b1f7c0e3bc8e8a591b83ff602cebd0.jar",
+      "sha256": "0d710c2064a5194985c77733a23c1c3d530d90e746d7a0867692fb690175a13f"
+    },
+    {
+      "path": "Contents/app/stately-concurrency-jvm-2.1.0-caa3a637b3459827e138cf78b9f31c55.jar",
+      "sha256": "8499bb1833304f1baff55c6a9c8aaf5ca2918567b98be09a444ac0c5bdc9b871"
+    },
+    {
+      "path": "Contents/app/okio-jvm-3.9.1-8017bd41eff99c44380b364e9ad7e5e.jar",
+      "sha256": "78308574c0183a968b45fd558818a538cf639e649e0fc1c9142b29adc8db1d17"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-desktop-2.11.0-f82f9216259467601fb180d915a6b118.jar",
+      "sha256": "8084962a31c7ccfa778309277868cb2af22342fff4d31c9fef40118bddc95e39"
+    },
+    {
+      "path": "Contents/app/material-ripple-desktop-1.12.1-14de3de9fc704811971ae5fc7fe212a.jar",
+      "sha256": "e5e588b64f56b0262a904b183e81ffd6da02361fda3b0de74e45010562cdc057"
+    },
+    {
+      "path": "Contents/app/runtime-desktop-1.12.1-b7d07b28974ce573c251fcf21c78ac5.jar",
+      "sha256": "413b7c378e17e3c6d587d8a9f0f9df9a15ef74aad159a29597220eccee542993"
+    },
+    {
+      "path": "Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar",
+      "sha256": "facb580117877444f67d97a8d8962e2deec66a84b4eeaa4f91cbbfca64244d98"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-navigation3-desktop-2.11.0-52bf98f2bedb9f10b32d33ea69283d3.jar",
+      "sha256": "43510af5158143aff2a16a2639b02a2a92a5d2a7530fd78ea25da73dd98cc24c"
+    },
+    {
+      "path": "Contents/app/jspecify-1.0.0-9133aba420d0ca3b01dbb6ae9992cf6.jar",
+      "sha256": "92c2ad0a5f2f04bff8767a379d74763ef4ee78eb1acc28fa81b398d7922afa27"
+    },
+    {
+      "path": "Contents/app/ui-desktop-1.12.1-c4ace5714b95bdaa8dfbefbef8c45514.jar",
+      "sha256": "924ff31ee2108f18392d1fa0977d160c70969245f9aa55c76d5657f51eafa85a"
+    },
+    {
+      "path": "Contents/app/library-desktop-1.12.1-1a84e4497278b2a22fcd2fa02e3deac.jar",
+      "sha256": "f96253dc21c0289bd12e3698cd00be4b9243126524c998c9f95afcc35560b579"
+    },
+    {
+      "path": "Contents/app/lifecycle-runtime-compose-desktop-2.11.0-39a884fc9f780a0a4c984b5f429825.jar",
+      "sha256": "7c121061ea574f45a082f9036c4fc0b88cf9dd6ea856f89f463b8ffd46663f66"
+    },
+    {
+      "path": "Contents/app/material-desktop-1.12.1-921af98aef5117e3c225b2aa7fe7b5d9.jar",
+      "sha256": "c1d62795dc5304e83d947f0aa67afb40a8a33f794da4ea144d24ff6790199c3b"
+    },
+    {
+      "path": "Contents/app/core-common-2.2.0-2212d240dfe1e8a7598ee117ccc316d.jar",
+      "sha256": "d36682253372b67cc080986ff883048f6c67a9e6db85c08861069e3351bd633f"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-savedstate-desktop-2.11.0-32f127f2f7fce65ea95a871fd81b1a2.jar",
+      "sha256": "ce9b55ca4d458f561b76ce31b42e32d2b153e2adba419decea54359b45d891cb"
+    },
+    {
+      "path": "Contents/app/animation-core-desktop-1.12.1-e9420621a5a999d679c6cbd2f1a42.jar",
+      "sha256": "24fdb3ae7a57ff2f4292bbd211c559e7d02a50e76cb6c5a96bbeda432b21c44e"
+    },
+    {
+      "path": "Contents/app/datastore-preferences-proto-1.2.1-f7b9c81898907447e4911df25f047.jar",
+      "sha256": "056f38b51729db897a8226749bde44568913298523ecbb50a354e244135e18c7"
+    },
+    {
+      "path": "Contents/app/savedstate-compose-desktop-1.4.0-8de11644e97845eaa45d9e74fdec755.jar",
+      "sha256": "52f52658b6972ce9833bec2fee501143fa8765605d86d90b2e73c718c9fa8674"
+    },
+    {
+      "path": "Contents/app/skiko-awt-runtime-macos-arm64-0.150.1-76bff0485a4784a11628eb3354251bb.jar",
+      "sha256": "a8a102f3610b8d122314d8b0ca857586c3c64ce11702bc12a8adc16794e3d536"
+    },
+    {
+      "path": "Contents/app/savedstate-compose-desktop-1.4.0-84ed9710e312be7017fd7498fe747a.jar",
+      "sha256": "f34992485b0896c702672f6d817928d6af6559dd17756c001e9797251a743c9f"
+    },
+    {
+      "path": "Contents/app/icons-lucide-jvm-1.1.0-508f66b424118c386de2a3269fae242e.jar",
+      "sha256": "4b46dde2d8e3ead6d2ebb16b507861f010e2e68b886aaeffd7b833bcfa9fe982"
+    },
+    {
+      "path": "Contents/app/skiko-awt-0.150.1-68b78f48c75f4f82c8e747df5df4883a.jar",
+      "sha256": "d9657ff09093f5ab6012934614a4bbeb05211eb5197b93ee72bde3009b14209c"
+    },
+    {
+      "path": "Contents/app/lifecycle-runtime-compose-desktop-2.11.0-b176c793de60d9c31bc2ae3987f7d29e.jar",
+      "sha256": "93a5b82f586ba85875f5ff3db90e3cac9a5f094805f94785469a5c4e007dceec"
+    },
+    {
+      "path": "Contents/app/savedstate-desktop-1.4.0-e2a50762f9c6de234b04b12926df6b3.jar",
+      "sha256": "5a72fd3f672b2426811871ba9e856e3227728abebae3642303d35f79f1b0e391"
+    },
+    {
+      "path": "Contents/app/ui-graphics-desktop-1.12.1-6fa07bde255e7be1447cd8eabce6901d.jar",
+      "sha256": "de7faaef4815201cc1179c33f32c3d3a6f176cf04f3778ffa76a085837154320"
+    },
+    {
+      "path": "Contents/app/lifecycle-common-jvm-2.11.0-abf33538971706e734094ccec7f03f.jar",
+      "sha256": "87307b0c6f4123f4ad87658b84d1b793062613c38cec1f04ce674fc11df02103"
+    },
+    {
+      "path": "Contents/app/kotlinx-serialization-core-jvm-1.7.3-58c2ba33122ceccf1b35147f3db945f8.jar",
+      "sha256": "d0cf0dc3a1c84c77cb271a3ddf2a8b54c074c4f892429ea0389ed77cec7f5a95"
+    },
+    {
+      "path": "Contents/app/ui-util-desktop-1.12.1-8f9524bdc94dc578c1cf5d640b48d99.jar",
+      "sha256": "af9a4dbe3b657e1c9dd827b13f3b87cb38004dff8cb58f6be46777e607413bdd"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-compose-desktop-2.11.0-9b8cf0a583b9f95d6c80da92f398b5.jar",
+      "sha256": "ace860cfa370be19e35b1c8894d57bdfb349928c447b29fd551c834623724407"
+    },
+    {
+      "path": "Contents/app/kotlin-stdlib-2.4.20-99b8b084c36f4bb0ecfbfcbce05dd1c2.jar",
+      "sha256": "13c87c37c6b52494c8d81ffd5651f20a1793ed086eea4a5c0f85d78438faa688"
+    },
+    {
+      "path": "Contents/app/kotlinx-coroutines-swing-1.11.0-e2b21cfe6937a29f4b6eb63570c77085.jar",
+      "sha256": "ce19282ab336702757b9d7a2c2f6e7e3980b53a9d4610862a0ccdb6560b97480"
+    },
+    {
+      "path": "Contents/app/foundation-desktop-1.12.1-af970f7348edc832f57bd29a9aceaf.jar",
+      "sha256": "f5f1366951130ad3a6ee7a0867da8dcae4f6c15cc49c0535b15dc18c5c2e00ea"
+    },
+    {
+      "path": "Contents/app/koin-compose-viewmodel-jvm-4.2.2-2f49ef2fb5f4d6f1e3caacf67df531.jar",
+      "sha256": "d590cb948e2134d16c29d292cdc153bddd8b9911434eee0a97454d6d47cdcc4a"
+    },
+    {
+      "path": "Contents/app/lifecycle-runtime-desktop-2.11.0-db02cb9fa9bf7526ffd1fef044cdbf.jar",
+      "sha256": "0a064380d0420fd130ddbff9adcef9271abb9ea5467b60595209d4ee13206062"
+    },
+    {
+      "path": "Contents/app/runtime-retain-desktop-1.12.1-1a6731c44f232c5d9e1fb10edac28de.jar",
+      "sha256": "e90301989291e4bbcc54c19f51fb9a1135afce7e4d69aa61e71318b7973e3385"
+    },
+    {
+      "path": "Contents/app/koin-core-jvm-4.2.2-994c7c1ccb4a746fb81c32726ee66a.jar",
+      "sha256": "78b188d0c183b9be444c646670a2917755ae02456d1fc91ddadd0ae0bef6c058"
+    },
+    {
+      "path": "Contents/app/ui-backhandler-desktop-1.12.1-35874ca299568adff7969876bded31ff.jar",
+      "sha256": "fdfe70211de339ddb269d8968bf484587a8a90aa9bd6b8788c4fd4ede7d028a6"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-navigation3-desktop-2.11.0-5ba6f05f1969e9687ca56d4746954650.jar",
+      "sha256": "6f52e3173e56e65612c69494b715d8b3f5cbb169d2a05f3f1f53f05d373ebac0"
+    },
+    {
+      "path": "Contents/app/ui-geometry-desktop-1.12.1-29a565e9b56c42fc9a78ad6247868345.jar",
+      "sha256": "c0b346986f3c08f1b2087c6ef4174af6d83b6885efec7c097fae321b767a0813"
+    },
+    {
+      "path": "Contents/app/lifecycle-runtime-desktop-2.11.0-f14af19f336c43981285f2b83ea88f.jar",
+      "sha256": "a1a949a1920d407f97d0be9d5ac0511e8e007b45c22b8b75567336ec08927dac"
+    },
+    {
+      "path": "Contents/app/stately-strict-jvm-2.1.0-4aa938e33acc448c4ebd7f76848d22.jar",
+      "sha256": "6f780ad2f988c2ee6533ebd02ecf6fcb05dd04230b21300d52640c1d6a55163f"
+    },
+    {
+      "path": "Contents/app/ui-tooling-preview-desktop-1.12.1-3548dd9011fded88e7f44967f5c29e4.jar",
+      "sha256": "0da63cd561e0d514ca850ce402169474803113981af7fabf99baeeb883240945"
+    },
+    {
+      "path": "Contents/app/material3-desktop-1.9.0-e8b6edb91fefebc65537db222e7bd1.jar",
+      "sha256": "ca96ffe2fc4a5269d74079c0e4c9a26cf206830aa686518b3b6b395db5aeea17"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-savedstate-desktop-2.11.0-2527aa4d8d1c0962b7ae1dc31a16597.jar",
+      "sha256": "3ef6517c09f712b41a77722974210bf0e78b6fa75700940930c5484636faf8a9"
+    },
+    {
+      "path": "Contents/app/annotation-jvm-1.9.1-1d6a04b3b9847638d0529df8ef76a.jar",
+      "sha256": "5c638851e7e762cfa4197b583d1bcdfae8e3bcbc2c704578ec7c95e7e836355a"
+    },
+    {
+      "path": "Contents/app/foundation-layout-desktop-1.12.1-a74242b69b6ea3e0269ad27af719fbe5.jar",
+      "sha256": "f724a4f7b0779e07ad2f5152c0dfd4b5d6ad20ea6ae95299aa06b5d86e125232"
+    },
+    {
+      "path": "Contents/app/annotations-23.0.0-8484cd17d040d837983323f760b2c660.jar",
+      "sha256": "a62b671c95e176ef660d1bfbd4a9db033adea83306be31734db02a3072d79b8a"
+    },
+    {
+      "path": "Contents/app/lifecycle-common-jvm-2.11.0-14b667ae927764855aedc4f3c099.jar",
+      "sha256": "8c8cba74ce3f18cd4e71f2e15f7e1250fef9c075e6b895b2ae9f095eec280baa"
+    },
+    {
+      "path": "Contents/app/lifecycle-viewmodel-desktop-2.11.0-eb8f3804e7967444ef57615880a76b.jar",
+      "sha256": "b611e4f2bb4a68dfb9ace8d5eca2ea2a80a3d6f80189fc4a7999875fb16e8774"
+    },
+    {
+      "path": "Contents/app/navigationevent-compose-desktop-1.1.1-7c81c6a8aa54e8beed4bae895cb91.jar",
+      "sha256": "876b6778c0bc7754bfa08f24d79e8303b725613f3654798bd12132b37695eb78"
+    },
+    {
+      "path": "Contents/app/desktop-jvm-1.12.1-4ae609894295d208af37cd66a73dcb.jar",
+      "sha256": "1085c64e00ddb200775ccded57078b9973761520b933fe453692a1b4f85eab5b"
+    },
+    {
+      "path": "Contents/app/collection-jvm-1.5.0-4421442c114a4f8c8fe587cf2d668237.jar",
+      "sha256": "3d4dc77ada96d75bbf7dd386ea7593ab45cdf57c26bbfcd0a03f0ee7c3c8079d"
+    },
+    {
+      "path": "Contents/app/library-desktop-1.12.1-606da0e78c77fbaa9c61416f66f56357.jar",
+      "sha256": "bdef5b1d4c8143fb286b47cd62a5dd6d0a469e0ed0a321093205e117eb8a9067"
+    },
+    {
+      "path": "Contents/app/navigation3-runtime-desktop-1.2.0-c372665b2a98bdcaca658664dab6c2c.jar",
+      "sha256": "a89eda0ade5acb4125a8f530e34748eadbf3f8334443da93453d1388abe95811"
+    },
+    {
+      "path": "Contents/app/animation-desktop-1.12.1-fdae3e449cd09fba75baf68dd23ffc.jar",
+      "sha256": "9b9af6a482a47bc830d31cc400b848531a189c6cd98fe7b12073d3de2f670f83"
+    },
+    {
+      "path": "Contents/runtime/Contents/Home/lib/jrt-fs.jar",
+      "sha256": "9fb1f37627d35604d6c86fff28f9dad4c98662c8660abe7dce5e6ae9b8bcd72d"
+    }
+  ],
+  "identicalNonCodeResourceFiles": 204,
+  "dataPath": "Normal default data path inside a fresh random bundle identity container; no override/reset",
+  "copySignatureVerification": "/Users/merkost/StudioProjects/Metronome/artifacts/macos-review-2026-10-22/acceptance/Metronome Welcome Acceptance Final.app: valid on disk\n/Users/merkost/StudioProjects/Metronome/artifacts/macos-review-2026-10-22/acceptance/Metronome Welcome Acceptance Final.app: satisfies its Designated Requirement",
+  "sourceSignatureVerification": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app: valid on disk\n/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app: satisfies its Designated Requirement",
+  "launched": true,
+  "acceptanceResult": "Passed native welcome at 1000x780 and 520x600, Get started, populated backup import, Escape after file panel, and onboarding/data/appearance persistence after Quit and relaunch.",
+  "frozenForAcceptance": true,
+  "limitations": "Local isolated test identity. Never upload this fixture. Production signed app and PKG remain separate release artifacts.",
+  "acceptanceReceipt": "../tests/native-acceptance.json"
+}

@@ -1,0 +1,143 @@
+{
+  "createdAtUtc": "2026-10-22T07:48:29.682884+00:00",
+  "scope": "Actual native Mac app screenshots. Technical export removes only the 56-pixel native window title bar. UI pixels are unchanged; no overlays or fabricated content. Original captures are preserved.",
+  "screenshots": [
+    {
+      "source": "artifacts/macos-review-2026-10-22/native/02-instrument-light-raw.jpg",
+      "sourceSha256": "a9c096e7e5da31f06b83614ba29b4826459dc36e24f28ba3d32e1dc0fd888d7d",
+      "sourceDimensions": [
+        2560,
+        1656
+      ],
+      "sourceMode": "RGB",
+      "export": "artifacts/macos-review-2026-10-22/store/screenshots/01-metronome.png",
+      "exportSha256": "078e141d6f0f5c3331d49c08d6621013c88aac98eb2e3fcfe115a738e3af9e84",
+      "exportDimensions": [
+        2560,
+        1600
+      ],
+      "exportMode": "RGB",
+      "alphaChannel": false,
+      "cropRectangle": [
+        0,
+        56,
+        2560,
+        1656
+      ],
+      "bytes": 255947
+    },
+    {
+      "source": "artifacts/macos-review-2026-10-22/native/03-click-sounds-raw.jpg",
+      "sourceSha256": "185ed34e1dc8b340b84fe4991e13419b9023d9c4a92cdb4351d4836246d2347a",
+      "sourceDimensions": [
+        2560,
+        1656
+      ],
+      "sourceMode": "RGB",
+      "export": "artifacts/macos-review-2026-10-22/store/screenshots/02-click-sounds.png",
+      "exportSha256": "4dd15ac16527533ff6f91bd0c3342071481513c9e0222c835d53bd0ffa7c547f",
+      "exportDimensions": [
+        2560,
+        1600
+      ],
+      "exportMode": "RGB",
+      "alphaChannel": false,
+      "cropRectangle": [
+        0,
+        56,
+        2560,
+        1656
+      ],
+      "bytes": 338220
+    },
+    {
+      "source": "artifacts/macos-review-2026-10-22/native/04-tempo-trainer-raw.jpg",
+      "sourceSha256": "8d1b247577faa6e23e7e1d1097ef6f08ff5d9edf6860516ba8f43b199ce270f2",
+      "sourceDimensions": [
+        2560,
+        1656
+      ],
+      "sourceMode": "RGB",
+      "export": "artifacts/macos-review-2026-10-22/store/screenshots/03-tempo-trainer.png",
+      "exportSha256": "8de6468804496d9bc7085bfb772d91fdbe3abbfb8ca97f8de7fc4c296752c989",
+      "exportDimensions": [
+        2560,
+        1600
+      ],
+      "exportMode": "RGB",
+      "alphaChannel": false,
+      "cropRectangle": [
+        0,
+        56,
+        2560,
+        1656
+      ],
+      "bytes": 389410
+    },
+    {
+      "source": "artifacts/macos-review-2026-10-22/native/05-saved-tempos-raw.jpg",
+      "sourceSha256": "bbf7681e8d23ff38c33c7a38e47eb6bfc71835f586fd9aa5068656d494d9b128",
+      "sourceDimensions": [
+        2560,
+        1656
+      ],
+      "sourceMode": "RGB",
+      "export": "artifacts/macos-review-2026-10-22/store/screenshots/04-saved-tempos.png",
+      "exportSha256": "df06cd66f898682d08a0ab3f03255edd76acabb065dfeab5aa3b0500467a0a92",
+      "exportDimensions": [
+        2560,
+        1600
+      ],
+      "exportMode": "RGB",
+      "alphaChannel": false,
+      "cropRectangle": [
+        0,
+        56,
+        2560,
+        1656
+      ],
+      "bytes": 215533
+    },
+    {
+      "source": "artifacts/macos-review-2026-10-22/native/06-settings-raw.jpg",
+      "sourceSha256": "d685f743e3acc53c79c8b7a05640648fb565e5c2eb5299fec08b4928abe3fcfc",
+      "sourceDimensions": [
+        2560,
+        1656
+      ],
+      "sourceMode": "RGB",
+      "export": "artifacts/macos-review-2026-10-22/store/screenshots/05-settings.png",
+      "exportSha256": "4866a22f916fa01e8cb054f11f314e7721ad1770e91750084eb75cd18efde899",
+      "exportDimensions": [
+        2560,
+        1600
+      ],
+      "exportMode": "RGB",
+      "alphaChannel": false,
+      "cropRectangle": [
+        0,
+        56,
+        2560,
+        1656
+      ],
+      "bytes": 303687
+    }
+  ],
+  "visualReview": {
+    "reviewedAtUtc": "2026-10-22T07:48:57.564949+00:00",
+    "allExportsInspected": true,
+    "observations": [
+      "Instrument controls and navigation are intact.",
+      "All seven click choices are visible; Clave preview is active in the captured state.",
+      "Tempo trainer controls and start action are intact.",
+      "Three saved practice presets are visible.",
+      "Settings is a scrollable view; additional sections continue below the captured viewport."
+    ],
+    "technicalChecks": [
+      "PNG 2560x1600 for every export.",
+      "RGB mode, no alpha or transparency key.",
+      "Exported pixels match the exact source crop after RGB conversion.",
+      "All raw JPEG captures retained unchanged."
+    ]
+  }
+}

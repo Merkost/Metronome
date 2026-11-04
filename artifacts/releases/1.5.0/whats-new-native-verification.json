@@ -1,0 +1,24 @@
+{
+  "verifiedAtUtc": "2026-10-11T23:44:23.484723+00:00",
+  "version": "1.5.0",
+  "result": "BUILD SUCCESSFUL",
+  "tests": 2,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "cases": [
+    "releaseSheetShowsOnlyThreeCurrentBenefitsAndDismissesOnce[iosSimulatorArm64]",
+    "narrowDarkRtlWithDoubleTextKeepsEveryBenefitAndDismissalFullyReachable[iosSimulatorArm64]"
+  ],
+  "log": "/private/tmp/metronome-release-150-whats-new-native.log",
+  "xmlSha256": "e2e3717c4c3aa55bbf5f7def26316a86924a32bceeed8ef1afcd3e9fb6916feb",
+  "sourceSha256": {
+    "shared/src/commonMain/kotlin/com/merkost/metronome/screens/WhatsNewSheet.kt": "a6fa1037980db77419a24ff9a72ffdcaf43b1cecb66725e5cd38ea1f7efb61f3",
+    "shared/src/commonMain/composeResources/values/strings.xml": "3d958f204432059063ea2e01575129fbb8f3945be44b29c9939e4894c5c7355e",
+    "shared/src/iosTest/kotlin/com/merkost/metronome/screens/WhatsNewRenderingTest.kt": "22417b1d9f0d6ae8932a15b11594bb3192d114c293d043b8cc2f2218b1770f23"
+  },
+  "deviceId": "73631849-FAD8-4315-9D68-20DBC320489C",
+  "runtime": "iOS26.4.1",
+  "standalone": false,
+  "scope": "Production WhatsNewSheet through real AppBottomSheet in native offscreen renderer; exact3currentbenefits, text layout, bounded scroll and one dismissal. Separate from UIKit-device navigation/physical gestures."
+}

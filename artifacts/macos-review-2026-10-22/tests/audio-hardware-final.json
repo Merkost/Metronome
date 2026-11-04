@@ -1,0 +1,138 @@
+{
+  "checkedAtUtc": "2026-10-22T07:37:11.055216+00:00",
+  "appPath": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app",
+  "runtimePath": "/Users/merkost/Library/Java/JavaVirtualMachines/jbr-21.0.11/Contents/Home",
+  "checksPassed": true,
+  "scope": "Unsandboxed output submission through packaged production classes and audio. Does not measure speakers, hearing, latency, stereo audibility, route changes, or the signed app sandbox.",
+  "events": [
+    {
+      "type": "provenance",
+      "playerOrigin": "file:/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar",
+      "audioOrigin": "jar:file:/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/app/shared-desktop-19e423636dea2561fe9aa2e446ec8d.jar!/audio/origin-manifest.json",
+      "audioManifestSha256": "a7664fea98e636cf06bba7fd2135268c914a7ce6ac461e57be68b07f95487893",
+      "defaultMixer": "Default Audio Device"
+    },
+    {
+      "type": "submission",
+      "sound": "WOOD",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "WOOD",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLICK",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLICK",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLASSIC",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLASSIC",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "SOFT",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "SOFT",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "RIM",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "RIM",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLAVE",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "CLAVE",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "STUDIO",
+      "beat": "LOW",
+      "left": 1.0,
+      "right": 0.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "submission",
+      "sound": "STUDIO",
+      "beat": "HIGH",
+      "left": 0.0,
+      "right": 1.0,
+      "callbackThread": "Metronome audio 1"
+    },
+    {
+      "type": "summary",
+      "sounds": 7,
+      "acceptedSubmissions": 14,
+      "failedSubmissions": 0,
+      "muteSuppressed": true,
+      "releaseSuppressedPlayback": true,
+      "scope": "Production callbacks after PCM acceptance; no speaker, audibility, latency, or sandbox measurement"
+    }
+  ],
+  "stderr": ""
+}

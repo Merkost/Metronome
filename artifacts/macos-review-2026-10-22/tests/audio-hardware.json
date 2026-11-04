@@ -1,0 +1,17 @@
+{
+  "checkedAtUtc": "2026-10-22T00:29:50.092966+00:00",
+  "appPath": "/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app",
+  "runtimePath": "/Users/merkost/Library/Java/JavaVirtualMachines/jbr-21.0.11/Contents/Home",
+  "checksPassed": false,
+  "scope": "Unsandboxed output submission through packaged production classes and audio. Does not measure speakers, hearing, latency, stereo audibility, route changes, or the signed app sandbox.",
+  "events": [
+    {
+      "type": "provenance",
+      "playerOrigin": "file:/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/app/shared-desktop-5777302db23921c8854837babe672c.jar",
+      "audioOrigin": "jar:file:/Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/app/shared-desktop-5777302db23921c8854837babe672c.jar!/audio/origin-manifest.json",
+      "audioManifestSha256": "a7664fea98e636cf06bba7fd2135268c914a7ce6ac461e57be68b07f95487893",
+      "defaultMixer": "Default Audio Device"
+    }
+  ],
+  "stderr": "Exception in thread \"main\" java.lang.IllegalStateException: No accepted output submission for WOOD LOW. Check the Mac's default output device.\n\tat AudioPlaybackSmoke.submit(AudioPlaybackSmoke.java:74)\n\tat AudioPlaybackSmoke.main(AudioPlaybackSmoke.java:40)\n"
+}
