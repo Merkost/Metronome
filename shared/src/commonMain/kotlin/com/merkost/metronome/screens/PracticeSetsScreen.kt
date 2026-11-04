@@ -43,7 +43,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import com.merkost.metronome.components.AppSnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -394,7 +394,7 @@ internal fun PracticeSetsLibrary(
         title = stringResource(Res.string.practice_sets),
         subtitle = "Routines made of your presets",
         onBack = onBack,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
         actions = {
             if (uiState.sets.isNotEmpty()) {
                 TextButton(onClick = { onReorderingChanged(!uiState.isReordering) }) {
@@ -533,7 +533,7 @@ private fun PracticeSetEditor(
     onReorderingChanged: (Boolean) -> Unit,
 ) {
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {

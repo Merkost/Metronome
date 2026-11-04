@@ -29,7 +29,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import com.merkost.metronome.components.AppSnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -109,7 +109,6 @@ import androidx.compose.animation.core.SpringSpec
 import com.merkost.metronome.model.countInWord
 import com.merkost.metronome.model.gapClickResting
 import com.merkost.metronome.model.gapStripState
-import com.merkost.metronome.model.tempoMarking
 import com.merkost.metronome.model.phraseBarLabel
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
@@ -368,7 +367,7 @@ fun MainScreen(
             .then(if (!desktop && isPlaying && keepScreenAwake) Modifier.keepScreenOn() else Modifier)
     ) {
         Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
+            snackbarHost = { AppSnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
                     title = {
@@ -600,9 +599,9 @@ fun MainScreen(
                                     }
                                     Text(
                                         text = when {
-                                            countingIn -> "${metronomeState.rhythm} BPM · ${tempoMarking(metronomeState.rhythm)}"
+                                            countingIn -> "${metronomeState.rhythm} BPM · ${metronomeState.tempoName}"
                                             clickResting -> "The click is resting. Keep the pulse."
-                                            else -> "BPM · ${tempoMarking(metronomeState.rhythm)}"
+                                            else -> "BPM"
                                         },
                                         style = MaterialTheme.typography.labelLarge,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,

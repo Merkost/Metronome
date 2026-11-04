@@ -7,32 +7,6 @@ import kotlin.test.assertNull
 class MusicalVoiceTest {
 
     @Test
-    fun tempoMarkingFollowsTheClassicalBands() {
-        assertEquals("Largo", tempoMarking(40))
-        assertEquals("Adagio", tempoMarking(70))
-        assertEquals("Andante", tempoMarking(80))
-        assertEquals("Moderato", tempoMarking(110))
-        assertEquals("Allegro", tempoMarking(120))
-        assertEquals("Vivace", tempoMarking(160))
-        assertEquals("Presto", tempoMarking(200))
-    }
-
-    @Test
-    fun tempoMarkingChangesExactlyAtTheBandEdges() {
-        assertEquals("Grave", tempoMarking(39))
-        assertEquals("Largo", tempoMarking(59))
-        assertEquals("Larghetto", tempoMarking(60))
-        assertEquals("Adagio", tempoMarking(66))
-        assertEquals("Andante", tempoMarking(76))
-        assertEquals("Andante", tempoMarking(107))
-        assertEquals("Moderato", tempoMarking(108))
-        assertEquals("Allegro", tempoMarking(120))
-        assertEquals("Allegro", tempoMarking(155))
-        assertEquals("Vivace", tempoMarking(156))
-        assertEquals("Presto", tempoMarking(176))
-    }
-
-    @Test
     fun countInSpeaksTheRemainingBeatsAsWords() {
         assertEquals("Four", countInWord(4))
         assertEquals("Three", countInWord(3))

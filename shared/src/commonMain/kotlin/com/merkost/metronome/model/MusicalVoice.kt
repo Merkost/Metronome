@@ -5,18 +5,6 @@ private val countWords = listOf(
     "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
 )
 
-fun tempoMarking(bpm: Int): String = when {
-    bpm < 40 -> "Grave"
-    bpm < 60 -> "Largo"
-    bpm < 66 -> "Larghetto"
-    bpm < 76 -> "Adagio"
-    bpm < 108 -> "Andante"
-    bpm < 120 -> "Moderato"
-    bpm < 156 -> "Allegro"
-    bpm < 176 -> "Vivace"
-    else -> "Presto"
-}
-
 fun countInWord(remaining: Int): String = countWords.getOrNull(remaining - 1) ?: remaining.toString()
 
 fun practiceSummaryLine(totalMillis: Long, streakDays: Int): String? {
