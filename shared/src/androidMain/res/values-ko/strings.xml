@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Metronome</string>
+    <string name="settings">설정</string>
+    <string name="notification_title">Metronome</string>
+    <string name="notification_permission_title">권한 필요</string>
+    <string name="notification_permission_description">백그라운드에서 작동하려면 Metronome의 알림 접근을 허용해 주세요.</string>
+    <string name="notification_message">백그라운드에서 실행 중</string>
+    <string name="app_full_name">Metronome: 연습 &amp; 템포</string>
+    <string name="notification_permission_yes">예</string>
+    <string name="notification_permission_no">아니요</string>
+    <string name="android_support_intro">겪고 계신 문제나 궁금한 점을 아래에 적어 주세요.</string>
+    <string name="android_support_chooser">이메일 보내기…</string>
+    <string name="android_support_no_email">설치된 이메일 앱이 없어요.</string>
+    <string name="android_service_channel">Metronome 서비스</string>
+    <string name="android_service_pause">일시정지</string>
+    <string name="android_service_play">재생</string>
+    <string name="android_service_stop">정지</string>
+    <string name="android_service_status_playing">%1$s · 재생 중</string>
+    <string name="android_service_status_paused">%1$s · 일시정지됨</string>
+</resources>
