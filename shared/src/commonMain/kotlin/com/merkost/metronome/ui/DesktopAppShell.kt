@@ -52,6 +52,7 @@ import com.composables.icons.lucide.Timer
 import com.merkost.metronome.components.MetronomeMark
 import com.merkost.metronome.navigation.AppPresentation
 import com.merkost.metronome.navigation.LocalAppViewportSize
+import com.merkost.metronome.navigation.LocalWindowTitleInset
 import com.merkost.metronome.navigation.MainDestination
 import com.merkost.metronome.navigation.usesDesktopSidebar
 import com.merkost.metronome.ui.theme.readableThemeColor
@@ -79,6 +80,7 @@ fun DesktopAppShell(
     playing: Boolean = false,
     content: @Composable () -> Unit,
 ) {
+    val titleInset = LocalWindowTitleInset.current
     BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         val wide = usesDesktopSidebar(AppPresentation.Desktop, maxWidth.value)
         CompositionLocalProvider(LocalAppViewportSize provides DpSize(maxWidth, maxHeight)) {
@@ -87,6 +89,7 @@ fun DesktopAppShell(
                     Column(
                         modifier = Modifier.width(200.dp).fillMaxHeight()
                             .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            .padding(top = titleInset)
                             .padding(horizontal = horizontalPadding, vertical = spacingMedium),
                         verticalArrangement = Arrangement.spacedBy(spacingSmall),
                     ) {
@@ -124,7 +127,7 @@ fun DesktopAppShell(
                     Box(Modifier.weight(1f).fillMaxHeight()) { content() }
                 }
             } else {
-                Column(Modifier.fillMaxSize()) {
+                Column(Modifier.fillMaxSize().padding(top = titleInset)) {
                     Row(
                         modifier = Modifier.fillMaxWidth().selectableGroup()
                             .padding(horizontal = spacingSmall, vertical = spacingSmall),
