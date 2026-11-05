@@ -221,6 +221,6 @@ The website should also add a canonical URL, Open Graph metadata, a social previ
 3. Change the Apple primary category to Music.
 4. Publish the approved name, subtitle, keywords and descriptions.
 5. Replace the store screenshots with the current product narrative.
-6. Add the native review-request policy in `docs/superpowers/plans/2026-08-31-native-in-app-review.md`.
+6. Add the native review-request policy in `project-docs/plans/2026-08-31-native-in-app-review.md`.
 7. Test screenshot and icon alternatives once listing traffic can produce a meaningful result.
 8. Localise the app and store metadata together, beginning with Spanish, German, Portuguese and Japanese.

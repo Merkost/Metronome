@@ -42,18 +42,18 @@ A precise, distraction-free metronome with a substantial practice toolkit built 
 
 - Current product name: **Metronome: Feel the Beat!**
 - Current on-device display name: **Metronome**
-- Approved next store name: **Metronome: BPM & Practice**
+- Store name: **Metronome: Practice & Tempo** (approved 2026-09-03, recorded in `project-docs/store/aso-strategy.md`)
 - Approved App Store subtitle: **Precise Timing & Rhythm Tools**
 - Approved product tagline: **Precise timing. Better practice.**
 - The voice should be clear, calm, useful, and credible to musicians rather than promotional or distracting.
-- Store metadata should retain immediate category recognition, communicate precision and practice value, and avoid unsupported superiority claims. The approved metadata package is recorded in `docs/aso-strategy.md`.
+- Store metadata should retain immediate category recognition, communicate precision and practice value, and avoid unsupported superiority claims. The approved metadata package is recorded in `project-docs/store/aso-strategy.md`.
 
 ## Evidence on Hand
 
 - Current features and technical overview: `README.md`
-- Shipped practice capabilities and roadmap: `docs/ROADMAP.md`
+- Shipped practice capabilities and roadmap: `project-docs/strategy/ROADMAP.md`
 - Release history and timing claims: `CHANGELOG.md`
-- Current store copy and confirmed no-ads/offline claims: `RELEASE_NOTES.md`
+- Current store copy and confirmed no-ads/offline claims: `CHANGELOG.md` and `project-docs/releases/`
 - Privacy commitments and Android telemetry disclosure: `docs/privacy.html`
 - Existing product page, screenshots, store links, and current tagline: `docs/index.html` and `docs/screenshots/`
 - Android package identity: `com.merkost.metronome`

@@ -7,7 +7,7 @@
 > **Superseded 2026-11-04 (roadmap D4, R4-02).** Focus handling is now: permanent `AUDIOFOCUS_LOSS` stops with no resume; `LOSS_TRANSIENT` pauses and resumes on `GAIN` only if it arrives within 30 s and the user has not pressed play in the meantime; `LOSS_TRANSIENT_CAN_DUCK` dips the click to 40% and `GAIN` restores it. `setWillPauseWhenDucked(true)` is kept on purpose: it stops the system from also ducking automatically, so the 40% dip is ours alone rather than stacked on the system's. iOS follows the same table through the interruption-ended `ShouldResume` option (began = transient loss, ended with ShouldResume = gain, ended without it = permanent loss) and treats old-route-unavailable (headphones unplugged) as permanent loss. The logic is `PlaybackFocusCoordinator` in `engine/PlaybackFocusPolicy.kt`, covered by `PlaybackFocusCoordinatorTest` and four engine tests in `MetronomePulseIntegrationTest`. A resume restarts from beat one of a fresh bar; it does not rejoin mid-bar.
 
 > Items covered: **H1** (iOS audio-graph data race), **L7** (Android dropped click on sound switch), **L8** (Android audio focus & lifecycle).
-> Source of record: `docs/metronome-precision-audit.md` §3 (findings) and §4 (Phase 2).
+> Source of record: `project-docs/engineering/metronome-precision-audit.md` §3 (findings) and §4 (Phase 2).
 
 ---
 
@@ -459,4 +459,4 @@ None of these block implementation; defaults above are safe to proceed with if n
 - **AVAudioEngine / AVAudioPlayerNode are not thread-safe; confine graph mutation to one thread.** Apple — *HelloMetronome* sample (single-queue access to the engine) — https://developer.apple.com/library/archive/samplecode/HelloMetronome/Introduction/Intro.html ; Apple — AVAudioEngine docs — https://developer.apple.com/documentation/avfaudio/avaudioengine
 - **Android audio focus — `AudioFocusRequest` (API 26+), `AUDIOFOCUS_GAIN`/`_GAIN_TRANSIENT`, abandon on stop, stop on `AUDIOFOCUS_LOSS`, never double-request, `setWillPauseWhenDucked`.** Android Developers — *Manage audio focus* — https://developer.android.com/media/optimize/audio-focus ; Android Developers Blog — *Respecting Audio Focus* — https://android-developers.googleblog.com/2013/08/respecting-audio-focus.html
 - **SoundPool load-then-swap — `setOnLoadCompleteListener` (`status == 0`), `load` returns a non-zero sample id, `unload` after swap.** Android — `SoundPool` reference — https://developer.android.com/reference/android/media/SoundPool
-- Cross-reference: `docs/metronome-precision-audit.md` §3 (H1, L7, L8) and §4 Phase 2.
+- Cross-reference: `project-docs/engineering/metronome-precision-audit.md` §3 (H1, L7, L8) and §4 Phase 2.

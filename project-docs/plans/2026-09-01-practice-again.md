@@ -8,7 +8,7 @@
 
 **Tech Stack:** Kotlin Multiplatform, Compose Multiplatform Material 3, DataStore Preferences, Koin, StateFlow and SharedFlow, Compose Resources, kotlin.test.
 
-**Spec:** `docs/superpowers/specs/2026-09-01-precision-practice-again-design.md`
+**Spec:** `project-docs/specs/2026-09-01-precision-practice-again-design.md`
 
 ## Global Constraints
 
@@ -34,7 +34,7 @@
 - Modify `MetronomeViewModel.kt`: derive recent set, record completed finish, expose failure events, and mark replacement finishes.
 - Modify `PracticeSetComponents.kt`: stateless `PracticeAgainRow` with previews.
 - Modify `TempoTrainerSheet.kt` and `MainScreen.kt`: render and start Practice Again through existing conflicts and errors.
-- Modify `strings.xml` and `docs/ROADMAP.md`: accessible copy and verified feature status.
+- Modify `strings.xml` and `project-docs/strategy/ROADMAP.md`: accessible copy and verified feature status.
 
 ### Task 1: Completion metadata and tolerant codec
 
@@ -434,7 +434,7 @@ Expected: no output. Commit only in an isolated clean tree with `feat: integrate
 ### Task 7: Final verification and roadmap
 
 **Files:**
-- Modify: `docs/ROADMAP.md`
+- Modify: `project-docs/strategy/ROADMAP.md`
 - Create: `.impeccable/review/practice-again-ios.png`
 - Create: `.impeccable/review/practice-again-accessibility-ios.png`
 

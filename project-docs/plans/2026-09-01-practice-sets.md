@@ -8,7 +8,7 @@
 
 **Tech Stack:** Kotlin Multiplatform, Compose Multiplatform Material 3, Kotlin coroutines and StateFlow, DataStore Preferences, Koin, Compose Resources, kotlin.test, kotlinx-coroutines-test.
 
-**Spec:** `docs/superpowers/specs/2026-09-01-practice-sets-design.md`
+**Spec:** `project-docs/specs/2026-09-01-practice-sets-design.md`
 
 ## Global Constraints
 
@@ -598,7 +598,7 @@ Expected: session, review, and preset boundary tests pass.
 ### Task 9: Full verification, runtime review, and roadmap update
 
 **Files:**
-- Modify: `docs/ROADMAP.md`
+- Modify: `project-docs/strategy/ROADMAP.md`
 - Capture: `.impeccable/review/practice-sets-phone-ios.png`
 - Capture: `.impeccable/review/practice-sets-accessibility-ios.png`
 

@@ -3,7 +3,7 @@
 > Status: review complete; no code changed.
 > Scope: value, beauty, appeal, reliability and market position of `Metronome: Practice & Tempo` 1.3.0 (versionCode 9, branch `dev` at c374edd), against the metronome category on both stores.
 > Method: 8 parallel code readers (one per subsystem) + 5 research agents (competitors, platform defaults, store standing, musician needs) + 3 screenshot critics → 111 high/medium findings → adversarial verification by two independent readers per area (code-truth lens and user-impact lens, tiebreak on disagreement). Verification completed for the main surface, tempo sheet, presets/sets and settings; the remaining areas were verified by hand in this session against the cited lines. Every finding in Appendix A carries its verification mark.
-> Companion: `docs/competitive-landscape-2026-09.md` (the competitor detail this document summarises).
+> Companion: `project-docs/strategy/competitive-landscape-2026-09.md` (the competitor detail this document summarises).
 > Evidence standard: no claim here is from memory. Store, DNS and crash facts were fetched on 2026-09-05; code claims cite `file:line` on `dev`; the 139 shared unit tests were run and pass.
 
 ---
@@ -53,7 +53,7 @@
 | Web build `/app/` | Same fate as the site. 15.3 MB raw (8.6 + 6.2 MB wasm + 0.5 MB JS), ~5.1 MB gzipped. |
 | Repository | `dev` is 71 commits ahead of `main`, at 1.3.0 versionCode 9. Branch `origin/chore/cloudflare-pages` (today) adds a GitHub Actions deploy to Cloudflare Pages with brotli, which would take the wasm to ~4.5 MB on the wire and fix the hosting; it still needs the DNS record. |
 
-> **Addendum, later on 2026-09-05.** After this section was written, `dev` was merged into `main` (the branches are now identical), the Cloudflare Pages workflow was merged and a DNS record created: `metronome.merkost.dev` now resolves (Cloudflare) and serves the rebuilt site and `/app/` over HTTPS. The dead App Store id and the design-process comment are gone from the published site. The stores still carry 1.2.1 under the old name, 1.3.0 is still untagged and unpublished, and Crashlytics is configured on iOS as well as Android (`iosApp/iosApp/iOSApp.swift:8`), which §6.6 and the plan in §7 should be read with. The roadmap in `docs/ROADMAP.md` starts from this later state.
+> **Addendum, later on 2026-09-05.** After this section was written, `dev` was merged into `main` (the branches are now identical), the Cloudflare Pages workflow was merged and a DNS record created: `metronome.merkost.dev` now resolves (Cloudflare) and serves the rebuilt site and `/app/` over HTTPS. The dead App Store id and the design-process comment are gone from the published site. The stores still carry 1.2.1 under the old name, 1.3.0 is still untagged and unpublished, and Crashlytics is configured on iOS as well as Android (`iosApp/iosApp/iOSApp.swift:8`), which §6.6 and the plan in §7 should be read with. The roadmap in `project-docs/strategy/ROADMAP.md` starts from this later state.
 
 ### 2.2 Search visibility
 
@@ -63,7 +63,7 @@ Checked via the iTunes Search API (US, top ~190 results) and Play web search (to
 - The App Store results are dominated by Smart Metronome & Tuner (4.71 / 59.7K ratings), Pro Metronome (4.71 / 20.3K), Metronome Ϟ (4.65 / 37K), Soundbrenner (4.7 / 48K), TonalEnergy (4.8 / 58K). Play by Metronome Beats (4.76 / 182K), Soundbrenner (4.59 / 90K), Pro Metronome, Smart Metronome, Tack.
 - On the open web, `gap trainer` belongs to Gap Click by Benny Greb; `tempo trainer` is owned by golf and fitness apps; `practice sets` has no product search intent at all (only how-to articles).
 - The app appears for exactly one query: its own old name.
-- The name PRODUCT.md still lists as "approved next store name", **Metronome: BPM & Practice**, is already a live competitor (`id6748179477`) that ranks for "metronome practice app". `docs/aso-strategy.md`'s **Metronome: Practice & Tempo** avoids the collision and should be treated as canonical; PRODUCT.md:41-43 needs updating.
+- The name PRODUCT.md still lists as "approved next store name", **Metronome: BPM & Practice**, is already a live competitor (`id6748179477`) that ranks for "metronome practice app". `project-docs/store/aso-strategy.md`'s **Metronome: Practice & Tempo** avoids the collision and should be treated as canonical; PRODUCT.md:41-43 needs updating.
 
 ### 2.3 Crash health and release state
 
@@ -80,7 +80,7 @@ Release cadence from CHANGELOG: 1.1.0 (11 Jun), 1.2.0 (13 Jun), 1.2.1 (15 Jun), 
 
 ### 2.4 Competitive position in one table
 
-Full detail, prices, ratings and sources are in `docs/competitive-landscape-2026-09.md`. The short version:
+Full detail, prices, ratings and sources are in `project-docs/strategy/competitive-landscape-2026-09.md`. The short version:
 
 | | Metronome (this app) | Soundbrenner | Pro Metronome | Tempo (Frozen Ape) | Metronome Beats | Tack | Time Guru |
 |---|---|---|---|---|---|---|---|
@@ -308,7 +308,7 @@ Consequences a musician can perceive:
 
 ### 6.2 Android audio and background
 
-- **Audio focus: any transient or may-duck request stops the session permanently** (V1; recorded decision in `docs/metronome-phase2-plan.md`: "stop, don't duck"). `AndroidAudioFocusController.kt:12-18` maps `LOSS`, `LOSS_TRANSIENT` and `LOSS_TRANSIENT_CAN_DUCK` all to stop, with `setWillPauseWhenDucked(true)`, and there is no `AUDIOFOCUS_GAIN` branch. A navigation prompt, an assistant response or a notification sound ends the practice session and nothing resumes. The decision was documented; its cost mid-practice was not weighed against the alternative (duck to a lower gain, resume on gain).
+- **Audio focus: any transient or may-duck request stops the session permanently** (V1; recorded decision in `project-docs/engineering/metronome-phase2-plan.md`: "stop, don't duck"). `AndroidAudioFocusController.kt:12-18` maps `LOSS`, `LOSS_TRANSIENT` and `LOSS_TRANSIENT_CAN_DUCK` all to stop, with `setWillPauseWhenDucked(true)`, and there is no `AUDIOFOCUS_GAIN` branch. A navigation prompt, an assistant response or a notification sound ends the practice session and nothing resumes. The decision was documented; its cost mid-practice was not weighed against the alternative (duck to a lower gain, resume on gain).
 - **Background playback rests on a bound-only service with no wake lock** (V1). `MainActivity.kt:49` binds with `BIND_AUTO_CREATE`; nothing calls `startForegroundService`, `unbindService` or `onTaskRemoved`; the engine is a Koin single independent of the service. Swiping the task from Recents or a configuration change destroys the service with the Activity. No `WAKE_LOCK` permission; with the screen off during long silent bars the CPU can idle.
 - **Notification has only a Stop action** (`MetronomeService.kt:80-97`): no play/pause, no `MediaSession`, so no lock-screen or headset control, which is the most-cited "phone locked" complaint on Android.
 - No `ACTION_AUDIO_BECOMING_NOISY` receiver: unplugging headphones sends the click to the speaker (iOS stops on `OldDeviceUnavailable`).

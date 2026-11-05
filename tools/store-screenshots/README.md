@@ -64,7 +64,7 @@ and renders a row of pills under the subtitle.
 
 Only claims that are true of the shipped build belong here. Do not add
 "Featured", "Editor's Choice", award or rating badges — both stores prohibit
-implying editorial endorsement, and `docs/aso-strategy.md` rules out
+implying editorial endorsement, and `project-docs/store/aso-strategy.md` rules out
 review-derived claims until there is a real review corpus.
 
 ## Alternate renderer output sizes
