@@ -77,6 +77,10 @@ import com.merkost.metronome.ui.spacingSmall
 import metronome.shared.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import metronome.shared.generated.resources.session_again_description
+import metronome.shared.generated.resources.session_bar_progress
+import metronome.shared.generated.resources.set_step_count
+import org.jetbrains.compose.resources.pluralStringResource
 
 @Composable
 fun PracticeAgainRow(
@@ -84,8 +88,9 @@ fun PracticeAgainRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val description = stringResource(
-        Res.string.practice_again_description,
+    val description = pluralStringResource(
+        Res.plurals.session_again_description,
+        practiceSet.steps.size,
         practiceSet.name,
         practiceSet.steps.size,
     )
@@ -132,7 +137,7 @@ fun PracticeAgainRow(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = stringResource(Res.string.practice_set_step_count, practiceSet.steps.size),
+                    text = pluralStringResource(Res.plurals.set_step_count, practiceSet.steps.size, practiceSet.steps.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -281,7 +286,7 @@ fun PracticeSetRow(
                     val detail = when {
                         missingPresetCount > 0 -> stringResource(Res.string.practice_step_missing)
                         isActive -> stringResource(Res.string.practice_set_active)
-                        else -> stringResource(Res.string.practice_set_step_count, practiceSet.steps.size)
+                        else -> pluralStringResource(Res.plurals.set_step_count, practiceSet.steps.size, practiceSet.steps.size)
                     }
                     Text(
                         text = detail,
@@ -660,8 +665,9 @@ fun sessionProgressLabel(session: ActivePracticeSession): String {
             session.elapsedMillis / 60_000L,
             target.minutes,
         )
-        is PracticeStepTarget.Bars -> stringResource(
-            Res.string.practice_session_bar_progress,
+        is PracticeStepTarget.Bars -> pluralStringResource(
+            Res.plurals.session_bar_progress,
+            target.count,
             session.completedBars,
             target.count,
         )
