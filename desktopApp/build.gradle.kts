@@ -23,7 +23,7 @@ dependencies {
 }
 
 val macVersion = "1.6.0"
-val macBuild = "1"
+val macBuild = "2"
 
 fun macSetting(property: String, environment: String) =
     providers.gradleProperty(property).orElse(providers.environmentVariable(environment))

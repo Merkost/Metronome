@@ -63,7 +63,7 @@
                 CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
                 COMBINE_HIDPI_IMAGES = NO;
                 COPY_PHASE_STRIP = NO;
-                CURRENT_PROJECT_VERSION = 1;
+                CURRENT_PROJECT_VERSION = 2;
                 DEBUG_INFORMATION_FORMAT = dwarf;
                 DEPLOYMENT_POSTPROCESSING = NO;
                 ENABLE_APP_SANDBOX = YES;

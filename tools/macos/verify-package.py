@@ -330,7 +330,7 @@ def main():
     parser.add_argument("--pkg", type=Path)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--expected-version", default="1.6.0")
-    parser.add_argument("--expected-build", default="1")
+    parser.add_argument("--expected-build", default="2")
     parser.add_argument("--unsigned", action="store_true")
     parser.add_argument("--testflight", action="store_true")
     parser.add_argument("--jdk-home", type=Path, default=os.environ.get("METRONOME_MACOS_JDK_HOME") or os.environ.get("JAVA_HOME"))

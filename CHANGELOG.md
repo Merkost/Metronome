@@ -11,7 +11,7 @@ to. Newest first.
 ---
 
 ## 1.6.0 — Speaks your language
-_2026-11-05 · Android versionCode 13 · iOS build 5 · macOS build 1_
+_2026-11-05 · Android versionCode 13 · iOS build 5 · macOS build 2_
 
 Metronome in ten languages, a desktop app for the Mac and an instrument
 with more voice. This release also carries everything prepared for 1.5.0, which
