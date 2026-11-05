@@ -112,7 +112,7 @@ def decode(raw):
 
 
 def load_file(path, report):
-    where = str(path.relative_to(ROOT))
+    where = str(path.relative_to(ROOT)) if ROOT in path.parents else str(path)
     raw = path.read_text(encoding="utf-8")
     try:
         ET.fromstring(raw)
@@ -171,7 +171,7 @@ def load_locale(directory_path, report):
         entries, file_order = loaded
         for name in file_order:
             if name in merged:
-                report.error(str(file.relative_to(ROOT)), f"duplicate key {name} across files")
+                report.error(str(file), f"duplicate key {name} across files")
                 continue
             merged[name] = entries[name]
             order.append(name)
@@ -179,7 +179,8 @@ def load_locale(directory_path, report):
 
 
 def words(text):
-    return len(re.findall(r"[^\s·→−–—]+", text))
+    stripped = PLACEHOLDER.sub(" ", text).replace("BPM", " ")
+    return len(re.findall(r"[^\W\d_]+", stripped))
 
 
 def check_root(root, report, strict_locales, only=None):
@@ -190,7 +191,7 @@ def check_root(root, report, strict_locales, only=None):
     if english is None:
         return 0
     base, base_order = english
-    label = str(root.relative_to(ROOT))
+    label = str(root.relative_to(ROOT)) if ROOT in root.parents else str(root)
     checked = 0
     present = sorted(
         d.name for d in root.iterdir()
@@ -274,7 +275,10 @@ def main():
     if "--only" in sys.argv:
         only = sys.argv[sys.argv.index("--only") + 1]
     strict = "--allow-missing-locales" not in sys.argv and only is None
-    for root in RESOURCE_ROOTS:
+    roots = RESOURCE_ROOTS
+    if "--root" in sys.argv:
+        roots = [Path(sys.argv[i + 1]).resolve() for i, a in enumerate(sys.argv) if a == "--root"]
+    for root in roots:
         total += check_root(root, report, strict, only)
     for line in report.warnings:
         print(line)
