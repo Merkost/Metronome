@@ -55,3 +55,10 @@ artifacts/aso-screenshots/*/
 # Committing it added ~6 MB per build, and it is not reproducible across
 # machines, so the checked-in copy churned on every rebuild.
 docs/app/
+
+artifacts/**/*.xcarchive
+artifacts/**/*.xcarchive.zip
+artifacts/**/*.pkg
+artifacts/**/*.aab
+artifacts/**/*.ipa
+artifacts/*/raw/
