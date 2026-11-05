@@ -11,6 +11,12 @@ import androidx.compose.ui.Modifier
 import com.merkost.metronome.components.AppChip
 import com.merkost.metronome.model.PHRASE_LENGTHS
 import com.merkost.metronome.ui.spacingSmall
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.phrase_bars
+import metronome.shared.generated.resources.phrase_hint
+import metronome.shared.generated.resources.phrase_off
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -21,7 +27,7 @@ fun PhraseSectionContent(
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
         Text(
-            text = "Accents the first bar of each phrase",
+            text = stringResource(Res.string.phrase_hint),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -33,11 +39,13 @@ fun PhraseSectionContent(
                 AppChip(
                     selected = phraseLength == length,
                     onClick = { onPhraseLengthChanged(length) },
-                    label = if (length == 0) "Off" else length.toString(),
+                    label = if (length == 0) stringResource(Res.string.phrase_off) else length.toString(),
                 )
             }
         }
     }
 }
 
-fun phraseSummary(phraseLength: Int): String = if (phraseLength == 0) "Off" else "$phraseLength bars"
+@Composable
+fun phraseSummary(phraseLength: Int): String =
+    if (phraseLength == 0) stringResource(Res.string.phrase_off) else pluralStringResource(Res.plurals.phrase_bars, phraseLength, phraseLength)

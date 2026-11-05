@@ -22,16 +22,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.merkost.metronome.model.PracticeDay
 import com.merkost.metronome.model.PracticeWeek
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.model.weekStripDescription
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.spacingSmall
-
-private val dayLetters = listOf("M", "T", "W", "T", "F", "S", "S")
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.week_day_friday
+import metronome.shared.generated.resources.week_day_monday
+import metronome.shared.generated.resources.week_day_saturday
+import metronome.shared.generated.resources.week_day_sunday
+import metronome.shared.generated.resources.week_day_thursday
+import metronome.shared.generated.resources.week_day_tuesday
+import metronome.shared.generated.resources.week_day_wednesday
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WeekStrip(week: PracticeWeek, modifier: Modifier = Modifier) {
+    val description = weekStripDescription(week).asString()
+    val dayLetters = listOf(
+        stringResource(Res.string.week_day_monday),
+        stringResource(Res.string.week_day_tuesday),
+        stringResource(Res.string.week_day_wednesday),
+        stringResource(Res.string.week_day_thursday),
+        stringResource(Res.string.week_day_friday),
+        stringResource(Res.string.week_day_saturday),
+        stringResource(Res.string.week_day_sunday),
+    )
     Row(
-        modifier = modifier.semantics(mergeDescendants = true) { contentDescription = weekStripDescription(week) },
+        modifier = modifier.semantics(mergeDescendants = true) { contentDescription = description },
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {

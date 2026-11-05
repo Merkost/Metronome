@@ -50,10 +50,24 @@ import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.rhythm_beat_pattern
+import metronome.shared.generated.resources.rhythm_beat_pattern_hint
+import metronome.shared.generated.resources.rhythm_count_in
+import metronome.shared.generated.resources.rhythm_count_in_hint
+import metronome.shared.generated.resources.rhythm_legend_accent
+import metronome.shared.generated.resources.rhythm_legend_muted
+import metronome.shared.generated.resources.rhythm_legend_normal
+import metronome.shared.generated.resources.rhythm_presets_hint
+import metronome.shared.generated.resources.rhythm_subdivision
+import metronome.shared.generated.resources.rhythm_subdivision_hint
+import metronome.shared.generated.resources.rhythm_time_signature
+import metronome.shared.generated.resources.rhythm_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun RhythmSheet(state: MetronomeState, selectedIndex: Int, countInEnabled: Boolean, onCountInChanged: (Boolean) -> Unit, onTimeSignatureChanged: (TimeSignature) -> Unit, onSubdivisionChanged: (Subdivision) -> Unit, onBeatChanged: (Int, Beat) -> Unit, onDismiss: () -> Unit) {
-    AppBottomSheet(title = "Rhythm", onDismiss = onDismiss) {
+    AppBottomSheet(title = stringResource(Res.string.rhythm_title), onDismiss = onDismiss) {
         RhythmContent(state, selectedIndex, countInEnabled, onCountInChanged, onTimeSignatureChanged, onSubdivisionChanged, onBeatChanged)
     }
 }
@@ -63,7 +77,7 @@ fun RhythmSheet(state: MetronomeState, selectedIndex: Int, countInEnabled: Boole
 internal fun RhythmContent(state: MetronomeState, selectedIndex: Int, countInEnabled: Boolean, onCountInChanged: (Boolean) -> Unit, onTimeSignatureChanged: (TimeSignature) -> Unit, onSubdivisionChanged: (Subdivision) -> Unit, onBeatChanged: (Int, Beat) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium + spacingSmall)) {
         Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            Text("Time signature", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.semantics { heading() })
+            Text(stringResource(Res.string.rhythm_time_signature), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.semantics { heading() })
             FlowRow(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 TimeSignature.entries.forEach { signature ->
                     RhythmChoice(signature.label, state.timeSignature == signature) { onTimeSignatureChanged(signature) }
@@ -71,26 +85,26 @@ internal fun RhythmContent(state: MetronomeState, selectedIndex: Int, countInEna
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            Text("Beat pattern", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.semantics { heading() })
-            Text("Tap to cycle accent, normal and mute.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(Res.string.rhythm_beat_pattern), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.semantics { heading() })
+            Text(stringResource(Res.string.rhythm_beat_pattern_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             MetronomeBalls(selectedIndex, state.beats, state.playing, AppAnimations.Emphasized, arrangementSpacing = spacingSmall, ballSize = if (state.beats.size > 5) BallSizeCompact else BallSize, modifier = Modifier.fillMaxWidth().animateContentSize(AppAnimations.emphasized()), onBallClicked = onBeatChanged)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(spacingMedium), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                BeatLegend(Beat.HIGH, "Accent")
-                BeatLegend(Beat.LOW, "Normal")
-                BeatLegend(Beat.MUTE, "Muted")
+                BeatLegend(Beat.HIGH, stringResource(Res.string.rhythm_legend_accent))
+                BeatLegend(Beat.LOW, stringResource(Res.string.rhythm_legend_normal))
+                BeatLegend(Beat.MUTE, stringResource(Res.string.rhythm_legend_muted))
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            Text("Subdivision", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.semantics { heading() })
-            Text("Softer clicks between the main beats.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(Res.string.rhythm_subdivision), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.semantics { heading() })
+            Text(stringResource(Res.string.rhythm_subdivision_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             FlowRow(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 Subdivision.entries.forEach { subdivision ->
-                    RhythmChoice(subdivision.label, state.subdivision == subdivision) { onSubdivisionChanged(subdivision) }
+                    RhythmChoice(stringResource(subdivision.labelRes), state.subdivision == subdivision) { onSubdivisionChanged(subdivision) }
                 }
             }
         }
-        SettingsSwitch("Count-in", countInEnabled, onCountInChanged, "One bar before playback.")
-        Text("Presets keep your rhythm and count-in.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        SettingsSwitch(stringResource(Res.string.rhythm_count_in), countInEnabled, onCountInChanged, stringResource(Res.string.rhythm_count_in_hint))
+        Text(stringResource(Res.string.rhythm_presets_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
