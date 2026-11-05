@@ -58,6 +58,7 @@ import com.composables.icons.lucide.Pencil
 import com.composables.icons.lucide.Play
 import com.composables.icons.lucide.RotateCcw
 import com.composables.icons.lucide.Trash2
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.practiceSets.ActivePracticeSession
 import com.merkost.metronome.practiceSets.PracticePlaybackIntent
 import com.merkost.metronome.practiceSets.PracticeSet
@@ -410,7 +411,7 @@ fun PracticeSetStepRow(
                         fontWeight = FontWeight.SemiBold,
                     )
                     Text(
-                        text = preset?.rhythmSummary ?: stringResource(Res.string.practice_step_missing_body),
+                        text = preset?.rhythmSummary?.asString() ?: stringResource(Res.string.practice_step_missing_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = if (preset == null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     )

@@ -72,6 +72,7 @@ import com.merkost.metronome.viewModels.PracticePresetsUiState
 import com.merkost.metronome.viewModels.PracticePresetsViewModel
 import com.merkost.metronome.viewModels.PresetUiEvent
 import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_preset_summary
 import metronome.shared.generated.resources.back
 import metronome.shared.generated.resources.cancel
 import metronome.shared.generated.resources.create_preset
@@ -230,7 +231,7 @@ fun PracticePresetsScreen(
                 )
             },
             summary = currentEditor.draft.run {
-                "$bpm BPM · ${timeSignature.label}" + if (subdivision.label.isNotBlank()) " · ${subdivision.label}" else ""
+                stringResource(Res.string.main_preset_summary, bpm, timeSignature.label, stringResource(subdivision.labelRes))
             },
             error = editorError,
             onConfirm = { name ->

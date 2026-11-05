@@ -6,6 +6,7 @@ import com.merkost.metronome.components.EmptyState
 import com.merkost.metronome.components.EmptyStateArt
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.navigation.AppPresentation
 import androidx.compose.foundation.clickable
@@ -720,7 +721,7 @@ private fun PresetPickerSheet(
                         Column(modifier = Modifier.heightIn(min = com.merkost.metronome.ui.minimumTouchTargetSize).padding(vertical = spacingSmall)) {
                             Text(preset.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                             Text(
-                                preset.rhythmSummary,
+                                preset.rhythmSummary.asString(),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )

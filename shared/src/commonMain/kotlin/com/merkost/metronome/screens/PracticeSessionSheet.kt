@@ -38,6 +38,7 @@ import com.composables.icons.lucide.RotateCcw
 import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.sessionProgressLabel
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.practiceSets.ActivePracticeSession
 import com.merkost.metronome.practiceSets.PracticePlaybackIntent
 import com.merkost.metronome.practiceSets.PracticeStepTarget
@@ -144,7 +145,7 @@ internal fun PracticeSessionContent(
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            step.preset.rhythmSummary,
+                            step.preset.rhythmSummary.asString(),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
