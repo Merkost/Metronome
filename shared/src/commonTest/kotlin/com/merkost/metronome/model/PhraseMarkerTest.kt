@@ -3,6 +3,8 @@ package com.merkost.metronome.model
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.phrase_bar_of
 
 class PhraseMarkerTest {
     @Test
@@ -40,8 +42,8 @@ class PhraseMarkerTest {
 
     @Test
     fun labelReadsBar7Of12() {
-        assertEquals("Bar 7 of 12", phraseBarLabel(6, 12, isPlaying = true, countInRemaining = 0))
-        assertEquals("Bar 1 of 12", phraseBarLabel(12, 12, isPlaying = true, countInRemaining = 0))
+        assertEquals(UiText.of(Res.string.phrase_bar_of, 7, 12), phraseBarLabel(6, 12, isPlaying = true, countInRemaining = 0))
+        assertEquals(UiText.of(Res.string.phrase_bar_of, 1, 12), phraseBarLabel(12, 12, isPlaying = true, countInRemaining = 0))
     }
 
     @Test

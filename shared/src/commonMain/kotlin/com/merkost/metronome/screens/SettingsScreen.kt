@@ -61,6 +61,7 @@ import com.merkost.metronome.ui.spacingLarge
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.theme.AppColorScheme
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.model.practiceSummaryLine
 import com.merkost.metronome.viewModels.MetronomeViewModel
 import com.merkost.metronome.viewModels.SettingsViewModel
@@ -230,7 +231,7 @@ fun SettingsScreen(upPress: () -> Unit) {
             supportsHaptics = !desktop,
             version = version,
             previewError = previewError,
-            practiceSummary = practiceSummaryLine(totalTime, practiceStreak),
+            practiceSummary = practiceSummaryLine(totalTime, practiceStreak)?.asString(),
         ),
         actions = SettingsActions(
             onColorScheme = viewModel::onColorSchemeChanged,
