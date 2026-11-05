@@ -107,6 +107,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
+import metronome.shared.generated.resources.preset_screen_subtitle
+import metronome.shared.generated.resources.preset_in_use_sets_more_count
+import org.jetbrains.compose.resources.pluralStringResource
 
 private sealed interface PresetEditor {
     val draft: PracticePresetDraft
@@ -271,7 +274,7 @@ fun PracticePresetsScreen(
         AppDialog(
             title = stringResource(Res.string.preset_in_use_title),
             text = if (remainingCount > 0) {
-                stringResource(Res.string.preset_in_use_sets_more, visibleNames, remainingCount)
+                pluralStringResource(Res.plurals.preset_in_use_sets_more_count, remainingCount, visibleNames, remainingCount)
             } else {
                 stringResource(Res.string.preset_in_use_sets, visibleNames)
             },
@@ -306,7 +309,7 @@ internal fun PracticePresetsContent(
     val useStackedSummary = LocalDensity.current.fontScale >= 1.3f
     PageScaffold(
         title = stringResource(Res.string.practice_presets),
-        subtitle = "Saved tempo and rhythm setups",
+        subtitle = stringResource(Res.string.preset_screen_subtitle),
         onBack = onBack,
         snackbarHost = { AppSnackbarHost(snackbarHostState) },
         actions = {

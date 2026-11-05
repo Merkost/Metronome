@@ -39,6 +39,17 @@ class PracticeStarterRepositoryTest {
     }
 
     @Test
+    fun draftUsesTheSuppliedNamesAndDefaultsToEnglish() {
+        val repository = repository(InMemoryPreferencesDataStore())
+        val english = repository.draft(emptyList())
+        assertEquals("A steady warm-up", english.name)
+        assertEquals(listOf("Easy start", "Build the pulse", "Find your flow"), english.pendingPresets.map { it.name })
+        val custom = repository.draft(emptyList(), StarterNames(listOf("Eins", "Zwei", "Drei"), "Ein ruhiges Aufwärmen"))
+        assertEquals("Ein ruhiges Aufwärmen", custom.name)
+        assertEquals(listOf("Eins", "Zwei", "Drei"), custom.pendingPresets.map { it.name })
+    }
+
+    @Test
     fun presetLimitFailureLeavesBothCollectionsUntouched() = runTest {
         val existing = List(PracticePreset.MAX_PRESETS) { preset("existing-$it", 100) }
         val encoded = PracticePresetCodec.encode(existing)

@@ -13,22 +13,33 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.merkost.metronome.backup.PracticeBackupRepository
+import com.merkost.metronome.backup.backupText
+import com.merkost.metronome.model.UiText
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.platform.BackupFileActions
 import com.merkost.metronome.ui.spacingSmall
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.backup_controls_body
+import metronome.shared.generated.resources.backup_controls_title
+import metronome.shared.generated.resources.backup_import_added
+import metronome.shared.generated.resources.backup_import_failed
+import metronome.shared.generated.resources.backup_presets_count
+import metronome.shared.generated.resources.backup_sets_count
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PracticeBackupControls() {
     val repository: PracticeBackupRepository = koinInject()
     val scope = rememberCoroutineScope()
-    var status by remember { mutableStateOf<String?>(null) }
+    var status by remember { mutableStateOf<UiText?>(null) }
     var busy by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-        Text("Your setups", style = MaterialTheme.typography.titleMedium)
-        Text("Back up your presets and practice sets. Import adds setups and keeps your current ones.", style = MaterialTheme.typography.bodySmall)
+        Text(stringResource(Res.string.backup_controls_title), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(Res.string.backup_controls_body), style = MaterialTheme.typography.bodySmall)
         BackupFileActions(
             enabled = !busy,
             export = repository::export,
@@ -37,11 +48,15 @@ fun PracticeBackupControls() {
                     busy = true
                     try {
                         val result = repository.import(raw)
-                        status = "Added ${result.presetsAdded} presets and ${result.setsAdded} sets."
+                        status = UiText.of(
+                            Res.string.backup_import_added,
+                            UiText.quantity(Res.plurals.backup_presets_count, result.presetsAdded),
+                            UiText.quantity(Res.plurals.backup_sets_count, result.setsAdded),
+                        )
                     } catch (cancelled: CancellationException) {
                         throw cancelled
                     } catch (failure: Exception) {
-                        status = failure.message ?: "Couldn't import the backup. Your current setups are kept."
+                        status = failure.backupText(Res.string.backup_import_failed)
                     } finally {
                         busy = false
                     }
@@ -49,7 +64,7 @@ fun PracticeBackupControls() {
             },
             onMessage = { status = it },
         )
-        status?.let { BackupStatus(it) }
+        status?.let { BackupStatus(it.asString()) }
     }
 }
 

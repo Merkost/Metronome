@@ -12,6 +12,7 @@ import com.merkost.metronome.practiceSets.PracticeSetValidationError
 import com.merkost.metronome.practiceSets.PracticeStepTarget
 import com.merkost.metronome.practiceSets.PracticeStarterRepository
 import com.merkost.metronome.practiceSets.PracticeStarterResult
+import com.merkost.metronome.practiceSets.StarterNames
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.presets.PracticePresetRepository
 import kotlinx.coroutines.CoroutineScope
@@ -103,12 +104,12 @@ class PracticeSetsViewModel(
         }
     }
 
-    fun beginStarter() {
+    fun beginStarter(starterNames: StarterNames = StarterNames.English) {
         val repository = starterRepository ?: run {
             emit(PracticeSetUiEvent.StorageFailure)
             return
         }
-        val draft = repository.draft(uiState.value.presets)
+        val draft = repository.draft(uiState.value.presets, starterNames)
         mutableUiState.update {
             it.copy(editor = PracticeSetEditorState(
                 sourceId = null,
