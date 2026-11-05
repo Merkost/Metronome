@@ -3,6 +3,7 @@ package com.merkost.metronome.navigation
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.DpSize
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,7 @@ sealed interface AppCommand {
 }
 
 val LocalAppPresentation = staticCompositionLocalOf { AppPresentation.Compact }
+val LocalWindowTitleInset = staticCompositionLocalOf { 0.dp }
 val LocalAppCommands = staticCompositionLocalOf<Flow<AppCommand>> { emptyFlow() }
 internal val LocalAppViewportSize = staticCompositionLocalOf { DpSize.Unspecified }
 internal val LocalDesktopNavigationGuard = staticCompositionLocalOf<DesktopNavigationGuard?> { null }

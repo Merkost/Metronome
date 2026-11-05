@@ -1,5 +1,8 @@
 package com.merkost.metronome.viewModels
 
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
+import com.merkost.metronome.model.PracticeWeek
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.model.ThemeMode
@@ -42,6 +45,10 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
     val practiceStreak = appDatastore.practiceStreak
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+
+    val practiceWeek: StateFlow<PracticeWeek?> = appDatastore.practiceWeek
+        .map<PracticeWeek, PracticeWeek?> { it }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
     val beatDisplayStyle = appDatastore.beatDisplayStyle
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), BeatDisplayStyle.DOTS)
     val liveActivityEnabled = appDatastore.liveActivityEnabled

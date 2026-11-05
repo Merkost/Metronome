@@ -1,5 +1,8 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.components.WeekStrip
+import com.merkost.metronome.model.PracticeWeek
+import com.merkost.metronome.model.weekSentence
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,9 +52,10 @@ internal fun SettingsPracticeSheet(
     playing: Boolean,
     onReset: () -> Unit,
     onDismiss: () -> Unit,
+    week: PracticeWeek? = null,
 ) {
     AppBottomSheet("Practice data", onDismiss) { dismissAnimated ->
-        SettingsPracticeContent(todayTime, totalTime, practiceStreak, playing, onReset, dismissAnimated) {
+        SettingsPracticeContent(todayTime, totalTime, practiceStreak, playing, onReset, dismissAnimated, week = week) {
             PracticeBackupControls()
         }
     }
@@ -65,10 +69,19 @@ internal fun SettingsPracticeContent(
     playing: Boolean,
     onReset: () -> Unit,
     onDone: () -> Unit,
+    week: PracticeWeek? = null,
     backupControls: @Composable () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
         Text("Statistics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        if (week != null) {
+            Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
+                    Text(weekSentence(week) ?: "Nothing logged yet this week. Your first session will appear here.", style = MaterialTheme.typography.bodyMedium)
+                    WeekStrip(week)
+                }
+            }
+        }
         Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 Text("Today", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -183,7 +196,7 @@ private fun SettingsGuideStep(title: String, description: String) {
 @Preview
 @Composable
 private fun SettingsPracticePreview() {
-    MaterialTheme { SettingsPracticeContent(720_000L, 18_600_000L, 3, false, {}, {}, {}) }
+    MaterialTheme { SettingsPracticeContent(720_000L, 18_600_000L, 3, false, {}, {}) {} }
 }
 
 @Preview

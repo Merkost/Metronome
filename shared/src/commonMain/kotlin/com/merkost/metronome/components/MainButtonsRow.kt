@@ -55,12 +55,14 @@ fun MainButtonsRow(
         )
 
         Spacer(modifier = Modifier.size(horizontalPadding))
-        PlayButton(
-            Modifier,
-            isPlaying = isPlaying,
-            barStart = barStart,
-            onClick = { onPlayPause(isPlaying) }
-        )
+        HintTooltip(if (isPlaying) "Pause · Space" else "Play · Space") {
+            PlayButton(
+                Modifier,
+                isPlaying = isPlaying,
+                barStart = barStart,
+                onClick = { onPlayPause(isPlaying) }
+            )
+        }
         Spacer(modifier = Modifier.size(horizontalPadding))
 
         val haptics = rememberAppHaptics()

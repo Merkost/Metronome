@@ -1,5 +1,6 @@
 package com.merkost.metronome.viewModels
 
+import com.merkost.metronome.model.PracticeWeek
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.model.MAX_BPM
@@ -524,6 +525,10 @@ class MetronomeViewModel(
 
     val practiceStreak = appDatastore.practiceStreak
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+
+    val practiceWeek: StateFlow<PracticeWeek?> = appDatastore.practiceWeek
+        .map<PracticeWeek, PracticeWeek?> { it }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     val savedTempos = appDatastore.savedTempos
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())

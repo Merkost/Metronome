@@ -29,6 +29,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import com.merkost.metronome.model.PracticeWeek
 import com.merkost.metronome.components.AppSnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -230,6 +231,7 @@ fun MainScreen(
     val totalPracticeTime by viewModel.totalPracticeTime.collectAsState()
     val todayPracticeTime by viewModel.todayPracticeTime.collectAsState()
     val practiceStreak by viewModel.practiceStreak.collectAsState()
+    val practiceWeek by viewModel.practiceWeek.collectAsState()
     var showTimerSheet by remember { mutableStateOf(false) }
     var showPracticeSessionSheet by remember { mutableStateOf(false) }
     var pendingStructuredAction by remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -554,6 +556,7 @@ fun MainScreen(
                             ) {
                                 MyIconButton(
                                     Lucide.Minus,
+                                    hint = "Slower · ↓",
                                     onClick = viewModel::onSliderValueDecreased
                                 )
                                 val countingIn = countInRemaining > 0
@@ -609,6 +612,7 @@ fun MainScreen(
                                 }
                                 MyIconButton(
                                     Lucide.Plus,
+                                    hint = "Faster · ↑",
                                     onClick = viewModel::onSliderValueIncreased
                                 )
                             }
@@ -999,6 +1003,7 @@ fun MainScreen(
             lastTimerMinutes = lastTimerMinutes,
             todayPracticeTime = todayPracticeTime,
             practiceStreak = practiceStreak,
+            practiceWeek = practiceWeek,
             totalPracticeTime = totalPracticeTime,
             stopWhenTimerEnds = stopWhenTimerEnds,
             onStopWhenTimerEndsChange = viewModel::onStopWhenTimerEndsChanged,

@@ -1,5 +1,6 @@
 package com.merkost.metronome.desktop
 
+import com.merkost.metronome.navigation.LocalWindowTitleInset
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -129,6 +130,7 @@ fun main() {
             }
         }
 
+        val unifiedTitleBar = System.getProperty("os.name").orEmpty().startsWith("Mac")
         Window(
             onCloseRequest = { visible = false },
             title = "Metronome",
@@ -141,6 +143,11 @@ fun main() {
             DisposableEffect(window) {
                 mainWindow.set(window)
                 window.minimumSize = Dimension(520, 600)
+                if (unifiedTitleBar) {
+                    window.rootPane.putClientProperty("apple.awt.fullWindowContent", true)
+                    window.rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
+                    window.rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
+                }
                 if (Taskbar.isTaskbarSupported()) {
                     val taskbar = Taskbar.getTaskbar()
                     if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
@@ -230,6 +237,7 @@ fun main() {
                 CompositionLocalProvider(
                     LocalAppPresentation provides AppPresentation.Desktop,
                     LocalAppCommands provides commands,
+                    LocalWindowTitleInset provides if (unifiedTitleBar) 28.dp else 0.dp,
                 ) {
                     MetronomeTheme {
                         Surface(color = MaterialTheme.colorScheme.surface) {

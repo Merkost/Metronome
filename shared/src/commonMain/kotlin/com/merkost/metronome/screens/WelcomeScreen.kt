@@ -1,5 +1,9 @@
 package com.merkost.metronome.screens
 
+import com.composables.icons.lucide.Volume2
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -80,6 +84,8 @@ fun WelcomeScreen(
     onComplete: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier,
+    hearing: Boolean = false,
+    onHearBar: (() -> Unit)? = null,
 ) {
     val accessibilityLayout = LocalDensity.current.fontScale > 1.4f
     var completionPending by remember { mutableStateOf(false) }
@@ -141,6 +147,18 @@ fun WelcomeScreen(
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                         )
+                    }
+                    if (onHearBar != null) {
+                        OutlinedButton(
+                            onClick = onHearBar,
+                            enabled = !busy,
+                            shape = CircleShape,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("welcomeHear"),
+                        ) {
+                            Icon(Lucide.Volume2, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(spacingSmall))
+                            Text(if (hearing) "Listening…" else "Hear one bar", fontWeight = FontWeight.SemiBold)
+                        }
                     }
                     WelcomeAction(
                         label = if (busy) "Getting ready…" else "Get started",

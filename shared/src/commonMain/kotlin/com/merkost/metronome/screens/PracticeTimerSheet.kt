@@ -1,5 +1,7 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.components.WeekStrip
+import com.merkost.metronome.model.PracticeWeek
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +64,7 @@ fun PracticeTimerSheet(
     onRestart: () -> Unit,
     onStop: () -> Unit,
     onDismiss: () -> Unit,
+    practiceWeek: PracticeWeek? = null,
 ) {
     AppBottomSheet(title = "Practice timer", onDismiss = onDismiss) { dismissAnimated ->
         var lastActiveGoal by remember { mutableStateOf(timerGoal ?: 0L) }
@@ -89,6 +92,7 @@ fun PracticeTimerSheet(
                     onStopWhenTimerEndsChange = onStopWhenTimerEndsChange,
                     stoppedPlayback = stoppedPlayback,
                     practiceStreak = practiceStreak,
+                    week = practiceWeek,
                 )
             } else {
                 ConfigTimerContent(
@@ -230,6 +234,7 @@ internal fun ActiveTimerContent(
     onStopWhenTimerEndsChange: (Boolean) -> Unit = {},
     stoppedPlayback: Boolean = false,
     practiceStreak: Int = 0,
+    week: PracticeWeek? = null,
 ) {
     val done = timerRemaining <= 0L
 
@@ -267,6 +272,8 @@ internal fun ActiveTimerContent(
                 )
             }
         }
+
+        if (done && week != null) WeekStrip(week)
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(spacingSmall, Alignment.CenterHorizontally),
