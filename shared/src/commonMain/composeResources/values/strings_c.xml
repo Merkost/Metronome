@@ -1,0 +1,78 @@
+<resources>
+    <string name="preset_screen_subtitle">Saved tempo and rhythm setups</string>
+    <string name="set_screen_subtitle">Routines made of your presets</string>
+    <string name="starter_card_title">Try a warm-up</string>
+    <string name="starter_card_summary">60 → 72 → 84 BPM · 6 min</string>
+    <string name="starter_card_action">Preview &amp; edit</string>
+    <string name="starter_editor_hint">Edit the steps below. Nothing is added until you save.</string>
+    <string name="starter_preset_easy_start">Easy start</string>
+    <string name="starter_preset_build_pulse">Build the pulse</string>
+    <string name="starter_preset_find_flow">Find your flow</string>
+    <string name="starter_set_name">A steady warm-up</string>
+    <plurals name="set_step_count">
+        <item quantity="one">%1$d step</item>
+        <item quantity="other">%1$d steps</item>
+    </plurals>
+    <plurals name="set_target_bars_summary">
+        <item quantity="one">%1$d bar</item>
+        <item quantity="other">%1$d bars</item>
+    </plurals>
+    <plurals name="session_again_description">
+        <item quantity="one">Practice %1$s again, %2$d step</item>
+        <item quantity="other">Practice %1$s again, %2$d steps</item>
+    </plurals>
+    <plurals name="session_bar_progress">
+        <item quantity="one">%1$d of %2$d bar</item>
+        <item quantity="other">%1$d of %2$d bars</item>
+    </plurals>
+    <plurals name="preset_in_use_sets_more_count">
+        <item quantity="one">Remove this preset from %1$s and %2$d more practice set before deleting it.</item>
+        <item quantity="other">Remove this preset from %1$s and %2$d more practice sets before deleting it.</item>
+    </plurals>
+    <string name="backup_export">Export backup</string>
+    <string name="backup_export_description">Save your presets &amp; practice sets</string>
+    <string name="backup_import">Import backup</string>
+    <string name="backup_import_description">Add setups from a backup</string>
+    <string name="backup_copy">Copy backup</string>
+    <string name="backup_copy_description">Copy your presets &amp; practice sets</string>
+    <string name="backup_paste">Paste backup</string>
+    <string name="backup_paste_description">Add setups from your clipboard</string>
+    <string name="backup_controls_title">Your setups</string>
+    <string name="backup_controls_body">Back up your presets and practice sets. Import adds setups and keeps your current ones.</string>
+    <string name="backup_import_added">Added %1$s and %2$s.</string>
+    <plurals name="backup_presets_count">
+        <item quantity="one">%1$d preset</item>
+        <item quantity="other">%1$d presets</item>
+    </plurals>
+    <plurals name="backup_sets_count">
+        <item quantity="one">%1$d set</item>
+        <item quantity="other">%1$d sets</item>
+    </plurals>
+    <string name="backup_import_failed">Couldn&apos;t import the backup. Your current setups are kept.</string>
+    <string name="backup_export_dialog_title">Export Metronome backup</string>
+    <string name="backup_import_dialog_title">Import Metronome backup</string>
+    <string name="backup_exported">Backup exported.</string>
+    <string name="backup_copied">Backup copied. Save it in a text file to keep a copy.</string>
+    <string name="backup_copy_failed">Couldn&apos;t copy the backup. Check your browser clipboard permission.</string>
+    <string name="backup_paste_first">Copy a Metronome backup first, then paste it here.</string>
+    <string name="backup_export_failed">Couldn&apos;t export this backup.</string>
+    <string name="backup_export_failed_location">Couldn&apos;t export this backup. Try another location.</string>
+    <string name="backup_prepare_failed">Couldn&apos;t prepare this backup.</string>
+    <string name="backup_open_failed">Couldn&apos;t open this backup.</string>
+    <string name="backup_no_file_picker">No file picker is available.</string>
+    <string name="backup_none_selected">No backup selected.</string>
+    <string name="backup_size_unreadable">Couldn&apos;t read the backup size.</string>
+    <string name="backup_choose_text">Choose a text backup.</string>
+    <string name="backup_choose_file">Choose a backup file.</string>
+    <string name="backup_not_utf8">Choose a UTF-8 text backup.</string>
+    <string name="backup_too_large">This backup is too large.</string>
+    <string name="backup_invalid">Choose a valid Metronome backup.</string>
+    <string name="backup_incomplete">The backup is incomplete.</string>
+    <string name="backup_unexpected_contents">The backup has unexpected contents.</string>
+    <string name="backup_invalid_setup">The backup contains an invalid setup.</string>
+    <string name="backup_too_many_setups">The backup contains too many setups.</string>
+    <string name="backup_duplicate_setups">The backup contains duplicate setups.</string>
+    <string name="backup_missing_preset">The backup is missing a preset used by a set.</string>
+    <string name="backup_no_room_presets">There isn&apos;t enough room for these presets. Your current setups are kept.</string>
+    <string name="backup_no_room_sets">There isn&apos;t enough room for these sets. Your current setups are kept.</string>
+</resources>
