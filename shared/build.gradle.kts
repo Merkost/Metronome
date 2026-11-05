@@ -120,6 +120,10 @@ kotlin {
     }
 }
 
+compose.resources {
+    publicResClass = true
+}
+
 android {
     namespace = "com.merkost.metronome"
     compileSdk = libs.versions.compileSdk.get().toInt()
