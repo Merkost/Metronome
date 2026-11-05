@@ -45,6 +45,11 @@ import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.ceil
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_shortcut_practice
+import metronome.shared.generated.resources.main_shortcut_practice_caption
+import metronome.shared.generated.resources.main_shortcut_sound
+import org.jetbrains.compose.resources.stringResource
 
 private val ShortcutIconSize = 20.dp
 private val ShortcutChevronSize = 16.dp
@@ -60,10 +65,13 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
     val density = LocalDensity.current
     val titleStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
     val captionStyle = MaterialTheme.typography.bodySmall
-    val captions = remember { listOf("Timer & trainers") + ClickSound.entries.map { it.displayName } }
-    val minimumTextWidth = remember(measurer, titleStyle, captionStyle) {
+    val practiceTitle = stringResource(Res.string.main_shortcut_practice)
+    val soundTitle = stringResource(Res.string.main_shortcut_sound)
+    val practiceCaption = stringResource(Res.string.main_shortcut_practice_caption)
+    val captions = remember(practiceCaption) { listOf(practiceCaption) + ClickSound.entries.map { it.displayName } }
+    val minimumTextWidth = remember(measurer, titleStyle, captionStyle, practiceTitle, soundTitle, captions) {
         maxOf(
-            listOf("Practice", "Sound").maxOf { measurer.measure(AnnotatedString(it), titleStyle).multiParagraph.intrinsics.maxIntrinsicWidth },
+            listOf(practiceTitle, soundTitle).maxOf { measurer.measure(AnnotatedString(it), titleStyle).multiParagraph.intrinsics.maxIntrinsicWidth },
             captions.maxOf { measurer.measure(AnnotatedString(it), captionStyle).multiParagraph.intrinsics.minIntrinsicWidth },
         )
     }
@@ -75,9 +83,9 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
         val horizontalExtras = ShortcutIconSize + ShortcutChevronSize + spacingSmall * 2
         val iconsAbove = sideBySide && cardWidth < minimum + ShortcutHorizontalPadding * 2 + horizontalExtras
         val textWidth = with(density) { (cardWidth - ShortcutHorizontalPadding * 2 - if (iconsAbove) 0.dp else horizontalExtras).toPx().toInt().coerceAtLeast(1) }
-        val metrics = remember(measurer, density, titleStyle, captionStyle, textWidth, iconsAbove) {
+        val metrics = remember(measurer, density, titleStyle, captionStyle, textWidth, iconsAbove, practiceTitle, soundTitle, captions) {
             val constraints = Constraints(maxWidth = textWidth)
-            val titleHeight = with(density) { listOf("Practice", "Sound").maxOf { measurer.measure(AnnotatedString(it), titleStyle, constraints = constraints).size.height }.toDp() }
+            val titleHeight = with(density) { listOf(practiceTitle, soundTitle).maxOf { measurer.measure(AnnotatedString(it), titleStyle, constraints = constraints).size.height }.toDp() }
             val captionHeight = with(density) { captions.maxOf { measurer.measure(AnnotatedString(it), captionStyle, constraints = constraints).size.height }.toDp() }
             val textHeight = titleHeight + ShortcutTextGap + captionHeight
             val contentHeight = if (iconsAbove) ShortcutIconSize + spacingSmall + textHeight else maxOf(ShortcutIconSize, textHeight)
@@ -85,13 +93,13 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
         }
         if (sideBySide) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                MainShortcut(Lucide.Sparkles, "Practice", "Timer & trainers", onPractice, metrics, Modifier.weight(1f))
-                MainShortcut(Lucide.Headphones, "Sound", selectedSound.displayName, onSound, metrics, Modifier.weight(1f))
+                MainShortcut(Lucide.Sparkles, practiceTitle, practiceCaption, onPractice, metrics, Modifier.weight(1f))
+                MainShortcut(Lucide.Headphones, soundTitle, selectedSound.displayName, onSound, metrics, Modifier.weight(1f))
             }
         } else {
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                MainShortcut(Lucide.Sparkles, "Practice", "Timer & trainers", onPractice, metrics, Modifier.fillMaxWidth())
-                MainShortcut(Lucide.Headphones, "Sound", selectedSound.displayName, onSound, metrics, Modifier.fillMaxWidth())
+                MainShortcut(Lucide.Sparkles, practiceTitle, practiceCaption, onPractice, metrics, Modifier.fillMaxWidth())
+                MainShortcut(Lucide.Headphones, soundTitle, selectedSound.displayName, onSound, metrics, Modifier.fillMaxWidth())
             }
         }
     }

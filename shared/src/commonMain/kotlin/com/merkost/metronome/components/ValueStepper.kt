@@ -44,6 +44,10 @@ import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.stepperButtonSize
 import kotlinx.coroutines.delay
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_decrease
+import metronome.shared.generated.resources.main_increase
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ValueStepper(
@@ -149,7 +153,7 @@ private fun RepeatingStepButton(
             ),
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Icon(icon, contentDescription = if (icon == Lucide.Minus) "Decrease" else "Increase", modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = stringResource(if (icon == Lucide.Minus) Res.string.main_decrease else Res.string.main_increase), modifier = Modifier.size(20.dp))
         }
     }
 }

@@ -2,6 +2,7 @@ package com.merkost.metronome.screens
 
 import com.merkost.metronome.components.WeekStrip
 import com.merkost.metronome.model.PracticeWeek
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.model.weekSentence
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -77,7 +78,7 @@ internal fun SettingsPracticeContent(
         if (week != null) {
             Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    Text(weekSentence(week) ?: "Nothing logged yet this week. Your first session will appear here.", style = MaterialTheme.typography.bodyMedium)
+                    Text(weekSentence(week)?.asString() ?: "Nothing logged yet this week. Your first session will appear here.", style = MaterialTheme.typography.bodyMedium)
                     WeekStrip(week)
                 }
             }

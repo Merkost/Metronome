@@ -56,6 +56,14 @@ import com.merkost.metronome.ui.PressedScaleControl
 import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.rememberAppHaptics
 import kotlin.math.ceil
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_beat_accented
+import metronome.shared.generated.resources.main_beat_change_to
+import metronome.shared.generated.resources.main_beat_muted
+import metronome.shared.generated.resources.main_beat_normal
+import metronome.shared.generated.resources.main_beat_number
+import metronome.shared.generated.resources.main_beat_set_to
+import org.jetbrains.compose.resources.stringResource
 
 private const val INDICATOR_ARRIVAL_ALPHA = 0.35f
 
@@ -214,10 +222,11 @@ fun MetronomeBalls(
     }
 }
 
+@Composable
 private fun beatLabel(beat: Beat): String = when (beat) {
-    Beat.HIGH -> "accented"
-    Beat.LOW -> "normal"
-    Beat.MUTE -> "muted"
+    Beat.HIGH -> stringResource(Res.string.main_beat_accented)
+    Beat.LOW -> stringResource(Res.string.main_beat_normal)
+    Beat.MUTE -> stringResource(Res.string.main_beat_muted)
 }
 
 @Composable
@@ -250,7 +259,13 @@ private fun Ball(
 
     val interactionSource = remember { MutableInteractionSource() }
     val haptics = rememberAppHaptics()
-    val beatDescription = beatLabel(beat)
+    val beatLabels = Beat.entries.associateWith { beatLabel(it) }
+    val beatDescription = beatLabels.getValue(beat)
+    val changeLabel = stringResource(Res.string.main_beat_change_to, beatLabels.getValue(beat.next()))
+    val beatName = stringResource(Res.string.main_beat_number, index + 1)
+    val setActions = Beat.entries.filter { it != beat }.map { target ->
+        target to stringResource(Res.string.main_beat_set_to, index + 1, beatLabels.getValue(target))
+    }
 
     Box(
         modifier = Modifier
@@ -260,17 +275,17 @@ private fun Ball(
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple(bounded = true),
-                onClickLabel = "Change to ${beatLabel(beat.next())}",
+                onClickLabel = changeLabel,
             ) {
                 haptics.select()
                 onClick()
             }
             .semantics {
-                contentDescription = "Beat ${index + 1}"
+                contentDescription = beatName
                 stateDescription = beatDescription
                 role = Role.Button
-                customActions = Beat.entries.filter { it != beat }.map { target ->
-                    CustomAccessibilityAction("Set beat ${index + 1} to ${beatLabel(target)}") {
+                customActions = setActions.map { (target, actionLabel) ->
+                    CustomAccessibilityAction(actionLabel) {
                         onSetBeat(target)
                         true
                     }

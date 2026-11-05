@@ -1,6 +1,7 @@
 package com.merkost.metronome.navigation
 
 import androidx.compose.animation.AnimatedContent
+import com.merkost.metronome.model.asString
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import com.merkost.metronome.ui.DesktopAppShell
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import metronome.shared.generated.resources.Res
 
 internal val mainNavigationSavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -91,7 +93,7 @@ fun AppNavigation() {
                     ) {
                         MetronomeMark(Modifier.size(80.dp), MaterialTheme.colorScheme.primary)
                         onboardingLoadError?.let { error ->
-                            Text(error, style = MaterialTheme.typography.bodyMedium)
+                            Text(error.asString(), style = MaterialTheme.typography.bodyMedium)
                             Button(onClick = viewModel::retryOnboardingLoad) { Text("Try again") }
                         }
                     }
@@ -120,7 +122,7 @@ private fun WelcomeRoute(viewModel: MetronomeViewModel, previewController: Sound
     }
     WelcomeScreen(
         isSaving = isSaving,
-        error = error,
+        error = error?.asString(),
         onComplete = finish,
         onSkip = finish,
         hearing = hearing != null,

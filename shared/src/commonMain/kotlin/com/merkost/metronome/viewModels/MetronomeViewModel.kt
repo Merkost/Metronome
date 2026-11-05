@@ -4,6 +4,7 @@ import com.merkost.metronome.model.PracticeWeek
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.metronome.model.MAX_BPM
+import com.merkost.metronome.model.UiText
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.AppDatastore
 import com.merkost.metronome.model.Beat
@@ -74,6 +75,15 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.seconds
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_error_load_setup
+import metronome.shared.generated.resources.main_error_pause_before_preview
+import metronome.shared.generated.resources.main_error_pause_failed
+import metronome.shared.generated.resources.main_error_reset_statistics
+import metronome.shared.generated.resources.main_error_save_click
+import metronome.shared.generated.resources.main_error_save_count_in
+import metronome.shared.generated.resources.main_error_save_practice_time
+import metronome.shared.generated.resources.main_error_welcome
 
 
 private val TEMPO_TRAINER_NOTICE_MIN = 2.seconds
@@ -183,7 +193,7 @@ class MetronomeViewModel(
 
     private val mutableOnboardingLoaded = MutableStateFlow(false)
     val onboardingLoaded = mutableOnboardingLoaded.asStateFlow()
-    private val mutableOnboardingLoadError = MutableStateFlow<String?>(null)
+    private val mutableOnboardingLoadError = MutableStateFlow<UiText?>(null)
     val onboardingLoadError = mutableOnboardingLoadError.asStateFlow()
     private var onboardingLoadJob: Job? = null
     private val mutableOnboardingVisible = MutableStateFlow(false)
@@ -192,7 +202,7 @@ class MetronomeViewModel(
     val onboardingInitialSound = mutableOnboardingInitialSound.asStateFlow()
     private val mutableOnboardingSaving = MutableStateFlow(false)
     val onboardingSaving = mutableOnboardingSaving.asStateFlow()
-    private val mutableOnboardingError = MutableStateFlow<String?>(null)
+    private val mutableOnboardingError = MutableStateFlow<UiText?>(null)
     val onboardingError = mutableOnboardingError.asStateFlow()
     private var allowPlaybackAfterOnboarding = false
 
@@ -223,7 +233,7 @@ class MetronomeViewModel(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                mutableOnboardingError.value = "Couldn’t finish the welcome. Please try again."
+                mutableOnboardingError.value = UiText.of(Res.string.main_error_welcome)
             } finally {
                 mutableOnboardingSaving.value = false
             }
@@ -234,7 +244,7 @@ class MetronomeViewModel(
         allowPlaybackAfterOnboarding = false
     }
 
-    private val mutableSoundSelectionError = MutableStateFlow<String?>(null)
+    private val mutableSoundSelectionError = MutableStateFlow<UiText?>(null)
     val soundSelectionError = mutableSoundSelectionError.asStateFlow()
 
     fun onSoundSelected(sound: ClickSound) {
@@ -245,7 +255,7 @@ class MetronomeViewModel(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                mutableSoundSelectionError.value = "Couldn’t save your click. Please try again."
+                mutableSoundSelectionError.value = UiText.of(Res.string.main_error_save_click)
             }
         }
     }
@@ -258,7 +268,7 @@ class MetronomeViewModel(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                mutableSoundSelectionError.value = "Couldn’t save count-in. Please try again."
+                mutableSoundSelectionError.value = UiText.of(Res.string.main_error_save_count_in)
             }
         }
     }
@@ -271,7 +281,7 @@ class MetronomeViewModel(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                mutableSoundSelectionError.value = "Couldn’t reset your statistics. Please try again."
+                mutableSoundSelectionError.value = UiText.of(Res.string.main_error_reset_statistics)
             }
         }
     }
@@ -335,12 +345,12 @@ class MetronomeViewModel(
                 metronomeState.first { !it.playing }
                 true
             } ?: false
-            if (!paused) mutableSoundSelectionError.value = "Pause playback before previewing a click."
+            if (!paused) mutableSoundSelectionError.value = UiText.of(Res.string.main_error_pause_before_preview)
             paused
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {
-            mutableSoundSelectionError.value = "Couldn’t pause playback. Please try again."
+            mutableSoundSelectionError.value = UiText.of(Res.string.main_error_pause_failed)
             false
         }
     }
@@ -393,7 +403,7 @@ class MetronomeViewModel(
                 } catch (error: CancellationException) {
                     throw error
                 } catch (error: Exception) {
-                    mutableSoundSelectionError.value = "Couldn’t save your practice time. Please try again."
+                    mutableSoundSelectionError.value = UiText.of(Res.string.main_error_save_practice_time)
                     return@collectLatest
                 }
                 if (suppressReviewForCurrentPause || applicationExitRequested) {
@@ -1099,7 +1109,7 @@ class MetronomeViewModel(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                mutableOnboardingLoadError.value = "Couldn’t load your setup. Please try again."
+                mutableOnboardingLoadError.value = UiText.of(Res.string.main_error_load_setup)
                 return@launch
             }
             try {

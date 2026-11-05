@@ -1,5 +1,8 @@
 package com.merkost.metronome.model
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.phrase_bar_of
+
 val PHRASE_LENGTHS = listOf(0, 4, 8, 12, 16)
 
 fun phraseBeat(beat: Beat, beatIndex: Int, barNumber: Int, phraseLength: Int): Beat {
@@ -12,7 +15,7 @@ fun phraseBeat(beat: Beat, beatIndex: Int, barNumber: Int, phraseLength: Int): B
     }
 }
 
-fun phraseBarLabel(currentBar: Int, phraseLength: Int, isPlaying: Boolean, countInRemaining: Int): String? {
+fun phraseBarLabel(currentBar: Int, phraseLength: Int, isPlaying: Boolean, countInRemaining: Int): UiText? {
     if (phraseLength <= 0 || !isPlaying || countInRemaining > 0) return null
-    return "Bar ${currentBar % phraseLength + 1} of $phraseLength"
+    return UiText.of(Res.string.phrase_bar_of, currentBar % phraseLength + 1, phraseLength)
 }

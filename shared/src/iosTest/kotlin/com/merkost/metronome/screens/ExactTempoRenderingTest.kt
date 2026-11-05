@@ -57,7 +57,7 @@ class ExactTempoRenderingTest {
             TempoAdjustment.DOUBLE to "94",
             TempoAdjustment.PLUS_FIVE to "99",
         ).forEach { (adjustment, expected) ->
-            reveal(onNode(hasContentDescription(adjustment.description))).assertIsEnabled().performClick()
+            reveal(onNode(hasContentDescription(adjustment.englishDescription))).assertIsEnabled().performClick()
             advance(64)
             assertEquals(expected, draft())
             assertEquals(emptyList(), events.applied, "Quick adjustment must preserve live playback tempo")
@@ -77,7 +77,7 @@ class ExactTempoRenderingTest {
             val apply = onNode(hasText("Set tempo"))
             reveal(apply).assertIsNotEnabled().performTouchInput { click() }
             TempoAdjustment.entries.forEach { adjustment ->
-                onNode(hasContentDescription(adjustment.description)).assertIsNotEnabled()
+                onNode(hasContentDescription(adjustment.englishDescription)).assertIsNotEnabled()
             }
             assertEquals(emptyList(), events.applied)
             assertEquals(0, events.dismissals)
@@ -85,10 +85,10 @@ class ExactTempoRenderingTest {
         onNode(editable).performTextReplacement("40")
         advance(1_000)
         onNode(hasText("Set tempo")).assertIsEnabled()
-        onNode(hasContentDescription(TempoAdjustment.MINUS_FIVE.description)).assertIsNotEnabled()
-        onNode(hasContentDescription(TempoAdjustment.HALF.description)).assertIsNotEnabled()
-        onNode(hasContentDescription(TempoAdjustment.DOUBLE.description)).assertIsEnabled()
-        onNode(hasContentDescription(TempoAdjustment.PLUS_FIVE.description)).assertIsEnabled()
+        onNode(hasContentDescription(TempoAdjustment.MINUS_FIVE.englishDescription)).assertIsNotEnabled()
+        onNode(hasContentDescription(TempoAdjustment.HALF.englishDescription)).assertIsNotEnabled()
+        onNode(hasContentDescription(TempoAdjustment.DOUBLE.englishDescription)).assertIsEnabled()
+        onNode(hasContentDescription(TempoAdjustment.PLUS_FIVE.englishDescription)).assertIsEnabled()
     }
 
     @Test
@@ -112,14 +112,14 @@ class ExactTempoRenderingTest {
         onNode(editable).performTextReplacement("220")
         advance(1_000)
         TempoAdjustment.entries.forEach { adjustment ->
-            val action = onNode(hasContentDescription(adjustment.description))
+            val action = onNode(hasContentDescription(adjustment.englishDescription))
             reveal(action)
             val bounds = action.fetchSemanticsNode().boundsInRoot
             assertTrue(bounds.width >= 47.5f && bounds.height >= 47.5f, "Quick adjustments need 48dp targets. bounds=$bounds")
         }
-        onNode(hasContentDescription(TempoAdjustment.PLUS_FIVE.description)).assertIsNotEnabled()
-        onNode(hasContentDescription(TempoAdjustment.DOUBLE.description)).assertIsNotEnabled()
-        onNode(hasContentDescription(TempoAdjustment.MINUS_FIVE.description)).performClick()
+        onNode(hasContentDescription(TempoAdjustment.PLUS_FIVE.englishDescription)).assertIsNotEnabled()
+        onNode(hasContentDescription(TempoAdjustment.DOUBLE.englishDescription)).assertIsNotEnabled()
+        onNode(hasContentDescription(TempoAdjustment.MINUS_FIVE.englishDescription)).performClick()
         advance(64)
         assertEquals("215", draft())
         assertEquals(emptyList(), events.applied)
@@ -207,3 +207,11 @@ private class TempoEditorEvents {
     val applied = mutableListOf<Int>()
     var dismissals = 0
 }
+
+private val TempoAdjustment.englishDescription: String
+    get() = when (this) {
+        TempoAdjustment.MINUS_FIVE -> "Decrease tempo by 5 BPM"
+        TempoAdjustment.HALF -> "Halve tempo"
+        TempoAdjustment.DOUBLE -> "Double tempo"
+        TempoAdjustment.PLUS_FIVE -> "Increase tempo by 5 BPM"
+    }
