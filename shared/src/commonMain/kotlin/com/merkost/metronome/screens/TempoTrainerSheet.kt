@@ -54,6 +54,7 @@ import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TempoStepMode
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.model.trainerProgressCaption
 import com.merkost.metronome.model.trainerRuleCaption
 import com.merkost.metronome.model.trainerSummaryFor
@@ -73,6 +74,33 @@ import metronome.shared.generated.resources.practice_sets
 import metronome.shared.generated.resources.recent
 import metronome.shared.generated.resources.save_current_setup
 import org.jetbrains.compose.resources.stringResource
+import metronome.shared.generated.resources.gap_bars_caption
+import metronome.shared.generated.resources.gap_title
+import metronome.shared.generated.resources.hub_tempo_trainer
+import metronome.shared.generated.resources.rhythm_subdivision
+import metronome.shared.generated.resources.trainer_bars_count
+import metronome.shared.generated.resources.trainer_bpm
+import metronome.shared.generated.resources.trainer_config_hint
+import metronome.shared.generated.resources.trainer_edit_settings
+import metronome.shared.generated.resources.trainer_every
+import metronome.shared.generated.resources.trainer_gap_hint
+import metronome.shared.generated.resources.trainer_gap_mute
+import metronome.shared.generated.resources.trainer_gap_play
+import metronome.shared.generated.resources.trainer_gap_start
+import metronome.shared.generated.resources.trainer_gap_start_and_play
+import metronome.shared.generated.resources.trainer_gap_stop
+import metronome.shared.generated.resources.trainer_off
+import metronome.shared.generated.resources.trainer_phrase
+import metronome.shared.generated.resources.trainer_reset_to
+import metronome.shared.generated.resources.trainer_sheet_title
+import metronome.shared.generated.resources.trainer_start
+import metronome.shared.generated.resources.trainer_start_and_play
+import metronome.shared.generated.resources.trainer_start_button
+import metronome.shared.generated.resources.trainer_step
+import metronome.shared.generated.resources.trainer_stop_keep
+import metronome.shared.generated.resources.trainer_subdivision_hint
+import metronome.shared.generated.resources.trainer_target
+import org.jetbrains.compose.resources.pluralStringResource
 
 private val TEMPO_PRESETS = listOf(
     "Largo" to 50,
@@ -125,9 +153,9 @@ fun TempoTrainerSheet(
 ) {
     AppBottomSheet(
         title = when (initialSection) {
-            TempoSheetSection.TRAINER -> "Tempo trainer"
-            TempoSheetSection.GAP -> "Gap trainer"
-            else -> "Tempo"
+            TempoSheetSection.TRAINER -> stringResource(Res.string.hub_tempo_trainer)
+            TempoSheetSection.GAP -> stringResource(Res.string.gap_title)
+            else -> stringResource(Res.string.trainer_sheet_title)
         },
         onDismiss = onDismiss,
     ) { dismissAnimated ->
@@ -192,17 +220,17 @@ fun TempoTrainerSheet(
             }
             ExpandableSection(
                 icon = { SectionIcon(Lucide.Music, subdivision != Subdivision.QUARTER) },
-                title = "Subdivision",
-                summary = subdivision.label,
+                title = stringResource(Res.string.rhythm_subdivision),
+                summary = stringResource(subdivision.labelRes),
                 summaryActive = subdivision != Subdivision.QUARTER,
                 expanded = expandedSection == TempoSheetSection.SUBDIVISION,
                 onToggle = { toggle(TempoSheetSection.SUBDIVISION) },
             ) {
-                SectionCaption("Softer clicks between the main beats")
+                SectionCaption(stringResource(Res.string.trainer_subdivision_hint))
                 FlowRowChips(
                     options = Subdivision.entries,
                     selected = subdivision,
-                    display = { it.label },
+                    display = { stringResource(it.labelRes) },
                     onSelect = onSubdivisionChanged,
                 )
             }
@@ -210,7 +238,7 @@ fun TempoTrainerSheet(
 
             ExpandableSection(
                 icon = { SectionIcon(Lucide.Flag, phraseLength != 0) },
-                title = "Phrase",
+                title = stringResource(Res.string.trainer_phrase),
                 summary = phraseSummary(phraseLength),
                 summaryActive = phraseLength != 0,
                 expanded = expandedSection == TempoSheetSection.PHRASE,
@@ -234,8 +262,8 @@ fun TempoTrainerSheet(
                         activeConfig != null,
                     )
                 },
-                title = "Tempo trainer",
-                summary = activeConfig?.let { "$currentBpm → ${it.endBpm}" } ?: "Off",
+                title = stringResource(Res.string.hub_tempo_trainer),
+                summary = activeConfig?.let { "$currentBpm → ${it.endBpm}" } ?: stringResource(Res.string.trainer_off),
                 summaryActive = activeConfig != null,
                 expanded = expandedSection == TempoSheetSection.TRAINER,
                 onToggle = { toggle(TempoSheetSection.TRAINER) },
@@ -285,8 +313,8 @@ fun TempoTrainerSheet(
 
             ExpandableSection(
                 icon = { SectionIcon(Lucide.VolumeX, activeGapConfig != null) },
-                title = "Gap trainer",
-                summary = activeGapConfig?.let { "${it.playBars} + ${it.muteBars} bars" } ?: "Off",
+                title = stringResource(Res.string.gap_title),
+                summary = activeGapConfig?.let { pluralStringResource(Res.plurals.gap_bars_caption, it.muteBars, it.playBars, it.muteBars) } ?: stringResource(Res.string.trainer_off),
                 summaryActive = activeGapConfig != null,
                 expanded = expandedSection == TempoSheetSection.GAP,
                 onToggle = { toggle(TempoSheetSection.GAP) },
@@ -447,7 +475,7 @@ private fun AnimatedSectionCaption(text: String) {
 private fun <T> FlowRowChips(
     options: List<T>,
     selected: T,
-    display: (T) -> String,
+    display: @Composable (T) -> String,
     onSelect: (T) -> Unit,
 ) {
     FlowRow(
@@ -486,7 +514,7 @@ private fun OptionChipsRow(
     label: String,
     options: List<Int>,
     selected: Int,
-    display: (Int) -> String,
+    display: @Composable (Int) -> String,
     onSelect: (Int) -> Unit,
 ) {
     if (LocalDensity.current.fontScale >= 1.3f) {
@@ -529,14 +557,15 @@ internal fun TrainerConfigContent(
     var stepMode by remember { mutableStateOf(seedConfig?.stepMode ?: TempoStepMode.BARS) }
 
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        SectionCaption("Changes tempo automatically while you play")
+        SectionCaption(stringResource(Res.string.trainer_config_hint))
 
         Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            listOf("Start" to startBpm, "Target" to endBpm).forEach { (label, value) ->
+            listOf(true to startBpm, false to endBpm).forEach { (isStart, value) ->
+                val label = stringResource(if (isStart) Res.string.trainer_start else Res.string.trainer_target)
                 if (LocalDensity.current.fontScale >= 1.3f) {
                     ValueStepper(
                         value = value,
-                        onValueChange = { if (label == "Start") startBpm = it else endBpm = it },
+                        onValueChange = { if (isStart) startBpm = it else endBpm = it },
                         range = MIN_BPM..MAX_BPM,
                         label = label,
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -546,7 +575,7 @@ internal fun TrainerConfigContent(
                         Text(label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
                         ValueStepper(
                             value = value,
-                            onValueChange = { if (label == "Start") startBpm = it else endBpm = it },
+                            onValueChange = { if (isStart) startBpm = it else endBpm = it },
                             range = MIN_BPM..MAX_BPM,
                         )
                     }
@@ -555,7 +584,7 @@ internal fun TrainerConfigContent(
         }
 
         OptionChipsRow(
-            label = "Step",
+            label = stringResource(Res.string.trainer_step),
             options = INCREMENT_OPTIONS,
             selected = increment,
             display = { if (endBpm >= startBpm) "+$it" else "−$it" },
@@ -576,16 +605,16 @@ internal fun TrainerConfigContent(
         )
         if (stepMode == TempoStepMode.BARS) {
             OptionChipsRow(
-                label = "Every",
+                label = stringResource(Res.string.trainer_every),
                 options = BARS_OPTIONS,
                 selected = barsPerStep,
-                display = { if (it == 1) "$it bar" else "$it bars" },
+                display = { pluralStringResource(Res.plurals.trainer_bars_count, it, it) },
                 onSelect = { barsPerStep = it },
             )
         }
 
         val config = GradualTempoConfig(startBpm, endBpm, increment, barsPerStep, stepMode)
-        SectionCaption(trainerSummaryFor(config, beatsPerBar))
+        SectionCaption(trainerSummaryFor(config, beatsPerBar).asString())
 
         Button(
             onClick = { onStartTrainer(config) },
@@ -594,7 +623,7 @@ internal fun TrainerConfigContent(
             modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         ) {
             Text(
-                text = if (isPlaying) "Start trainer" else "Start trainer & play",
+                text = stringResource(if (isPlaying) Res.string.trainer_start_button else Res.string.trainer_start_and_play),
                 fontWeight = FontWeight.Bold,
             )
         }
@@ -626,14 +655,14 @@ private fun ActiveTrainerContent(
                 )
                 Spacer(Modifier.width(spacingSmall))
                 Text(
-                    text = "BPM",
+                    text = stringResource(Res.string.trainer_bpm),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            SectionCaption(trainerRuleCaption(config))
+            SectionCaption(trainerRuleCaption(config).asString())
             AnimatedSectionCaption(
-                trainerProgressCaption(config, currentBpm, currentBar, isPlaying, gapRunning),
+                trainerProgressCaption(config, currentBpm, currentBar, isPlaying, gapRunning).asString(),
             )
         }
 
@@ -648,10 +677,10 @@ private fun ActiveTrainerContent(
 
         val stopActions: @Composable (Modifier) -> Unit = { actionModifier ->
             MySecondaryButton(onClick = onStopKeep, shape = CircleShape, modifier = actionModifier) {
-                SheetSecondaryLabel("Stop, keep $currentBpm BPM")
+                SheetSecondaryLabel(stringResource(Res.string.trainer_stop_keep, currentBpm))
             }
             MySecondaryButton(onClick = onStopReset, shape = CircleShape, modifier = actionModifier) {
-                SheetSecondaryLabel("Reset to ${config.startBpm}")
+                SheetSecondaryLabel(stringResource(Res.string.trainer_reset_to, config.startBpm))
             }
         }
         if (LocalDensity.current.fontScale >= 1.3f) {
@@ -665,7 +694,7 @@ private fun ActiveTrainerContent(
         }
 
         TextButton(onClick = onEdit) {
-            Text("Edit settings", fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.trainer_edit_settings), fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -685,22 +714,22 @@ internal fun GapTrainerContent(
     val active = activeConfig != null
 
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        SectionCaption("Mutes the click for some bars — keep time yourself")
+        SectionCaption(stringResource(Res.string.trainer_gap_hint))
         OptionChipsRow(
-            label = "Play",
+            label = stringResource(Res.string.trainer_gap_play),
             options = GAP_PLAY_OPTIONS,
             selected = playBars,
-            display = { if (it == 1) "$it bar" else "$it bars" },
+            display = { pluralStringResource(Res.plurals.trainer_bars_count, it, it) },
             onSelect = {
                 playBars = it
                 if (active) onUpdate(GapTrainerConfig(it, muteBars))
             },
         )
         OptionChipsRow(
-            label = "Mute",
+            label = stringResource(Res.string.trainer_gap_mute),
             options = GAP_MUTE_OPTIONS,
             selected = muteBars,
-            display = { if (it == 1) "$it bar" else "$it bars" },
+            display = { pluralStringResource(Res.plurals.trainer_bars_count, it, it) },
             onSelect = {
                 muteBars = it
                 if (active) onUpdate(GapTrainerConfig(playBars, it))
@@ -717,7 +746,7 @@ internal fun GapTrainerContent(
                     shape = CircleShape,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    SheetSecondaryLabel("Stop gap trainer")
+                    SheetSecondaryLabel(stringResource(Res.string.trainer_gap_stop))
                 }
             } else {
                 Button(
@@ -726,7 +755,7 @@ internal fun GapTrainerContent(
                     modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
                 ) {
                     Text(
-                        text = if (isPlaying) "Start gap trainer" else "Start gap trainer & play",
+                        text = stringResource(if (isPlaying) Res.string.trainer_gap_start else Res.string.trainer_gap_start_and_play),
                         fontWeight = FontWeight.Bold,
                     )
                 }

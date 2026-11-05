@@ -1,5 +1,9 @@
 package com.merkost.metronome.components
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.common_pause_metronome
+import metronome.shared.generated.resources.common_start_metronome
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.animation.AnimatedContent
@@ -249,7 +253,7 @@ fun PlayButton(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = if (playing) Lucide.Pause else Lucide.Play,
-                    contentDescription = if (playing) "Pause metronome" else "Start metronome",
+                    contentDescription = stringResource(if (playing) Res.string.common_pause_metronome else Res.string.common_start_metronome),
                     modifier = Modifier.size(playButtonIconSize)
                 )
             }

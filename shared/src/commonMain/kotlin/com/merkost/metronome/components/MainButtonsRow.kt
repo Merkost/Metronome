@@ -27,6 +27,12 @@ import com.merkost.metronome.model.StopWatchState
 import com.merkost.metronome.ui.horizontalPadding
 import com.merkost.metronome.ui.rememberAppHaptics
 import com.merkost.metronome.ui.spacingSmall
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_hint_pause
+import metronome.shared.generated.resources.main_hint_play
+import metronome.shared.generated.resources.main_tap
+import metronome.shared.generated.resources.main_tempo
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MainButtonsRow(
@@ -55,7 +61,7 @@ fun MainButtonsRow(
         )
 
         Spacer(modifier = Modifier.size(horizontalPadding))
-        HintTooltip(if (isPlaying) "Pause · Space" else "Play · Space") {
+        HintTooltip(stringResource(if (isPlaying) Res.string.main_hint_pause else Res.string.main_hint_play)) {
             PlayButton(
                 Modifier,
                 isPlaying = isPlaying,
@@ -87,7 +93,7 @@ fun MainButtonsRow(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    listOf("Tap", "Tempo").forEach { line ->
+                    listOf(stringResource(Res.string.main_tap), stringResource(Res.string.main_tempo)).forEach { line ->
                         Text(
                             text = line,
                             modifier = Modifier.fillMaxWidth(),

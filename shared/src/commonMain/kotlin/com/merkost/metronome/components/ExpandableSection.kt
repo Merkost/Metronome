@@ -1,5 +1,9 @@
 package com.merkost.metronome.components
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.common_collapsed
+import metronome.shared.generated.resources.common_expanded
+import org.jetbrains.compose.resources.stringResource
 import com.merkost.metronome.ui.hoverTint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -57,6 +61,8 @@ fun ExpandableSection(
     onToggle: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val expandedText = stringResource(Res.string.common_expanded)
+    val collapsedText = stringResource(Res.string.common_collapsed)
     val chevronRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         animationSpec = AppAnimations.Emphasized,
@@ -105,7 +111,7 @@ fun ExpandableSection(
                     onClick = onToggle
                 )
                 .semantics {
-                    stateDescription = if (expanded) "Expanded" else "Collapsed"
+                    stateDescription = if (expanded) expandedText else collapsedText
                 }
                 .padding(vertical = spacingMedium, horizontal = spacingSmall / 2)
         ) {

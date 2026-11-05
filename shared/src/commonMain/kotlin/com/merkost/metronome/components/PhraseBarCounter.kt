@@ -18,16 +18,25 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.unit.dp
+import com.merkost.metronome.model.UiText
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.ui.AppAnimations
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.phrase_counter_description
+import metronome.shared.generated.resources.phrase_edit
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PhraseBarCounter(
-    label: String?,
+    label: UiText?,
     phraseLength: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var shown by remember { mutableStateOf(label) }
+    val counterDescription = pluralStringResource(Res.plurals.phrase_counter_description, phraseLength, phraseLength)
+    val editLabel = stringResource(Res.string.phrase_edit)
     if (label != null) shown = label
     AnimatedVisibility(
         visible = label != null,
@@ -40,21 +49,21 @@ fun PhraseBarCounter(
             modifier = Modifier
                 .heightIn(min = 48.dp)
                 .clearAndSetSemantics {
-                    contentDescription = "Phrase counter, $phraseLength bars"
+                    contentDescription = counterDescription
                     role = Role.Button
-                    onClick(label = "Edit phrase") {
+                    onClick(label = editLabel) {
                         onClick()
                         true
                     }
                 },
         ) {
             AnimatedContent(
-                targetState = shown.orEmpty(),
+                targetState = shown,
                 transitionSpec = { AppAnimations.fadeThroughFixedSize },
                 label = "phraseBarLabel",
             ) { text ->
                 Text(
-                    text = text,
+                    text = text?.asString().orEmpty(),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

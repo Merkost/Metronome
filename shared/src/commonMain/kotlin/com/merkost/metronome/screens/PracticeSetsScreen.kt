@@ -6,6 +6,7 @@ import com.merkost.metronome.components.EmptyState
 import com.merkost.metronome.components.EmptyStateArt
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.navigation.AppPresentation
 import androidx.compose.foundation.clickable
@@ -78,6 +79,7 @@ import com.merkost.metronome.navigation.MainDestination
 import com.merkost.metronome.practiceSets.PracticeSessionStartResult
 import com.merkost.metronome.practiceSets.PracticeSet
 import com.merkost.metronome.practiceSets.PracticeSetValidationError
+import com.merkost.metronome.practiceSets.StarterNames
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
@@ -99,6 +101,15 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.starter_preset_build_pulse
+import metronome.shared.generated.resources.starter_preset_easy_start
+import metronome.shared.generated.resources.starter_preset_find_flow
+import metronome.shared.generated.resources.starter_set_name
+import metronome.shared.generated.resources.set_screen_subtitle
+import metronome.shared.generated.resources.starter_editor_hint
+import metronome.shared.generated.resources.set_step_count
+import org.jetbrains.compose.resources.pluralStringResource
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -166,6 +177,14 @@ fun PracticeSetsScreen(
         }
     }
 
+    val starterNames = StarterNames(
+        presetNames = listOf(
+            stringResource(Res.string.starter_preset_easy_start),
+            stringResource(Res.string.starter_preset_build_pulse),
+            stringResource(Res.string.starter_preset_find_flow),
+        ),
+        setName = stringResource(Res.string.starter_set_name),
+    )
     val editor = uiState.editor
     val handleBack: () -> Unit = {
         when {
@@ -183,7 +202,7 @@ fun PracticeSetsScreen(
         snackbarHostState = snackbarHostState,
         onBack = handleBack,
         onCreate = viewModel::beginCreate,
-        onPreviewStarter = viewModel::beginStarter,
+        onPreviewStarter = { viewModel.beginStarter(starterNames) },
         onStart = { practiceSet ->
             if (metronomeViewModel.hasStructuredPracticeConflict()) {
                 pendingStart = practiceSet
@@ -392,7 +411,7 @@ internal fun PracticeSetsLibrary(
     val stacked = LocalDensity.current.fontScale >= 1.3f
     PageScaffold(
         title = stringResource(Res.string.practice_sets),
-        subtitle = "Routines made of your presets",
+        subtitle = stringResource(Res.string.set_screen_subtitle),
         onBack = onBack,
         snackbarHost = { AppSnackbarHost(snackbarHostState) },
         actions = {
@@ -575,7 +594,7 @@ private fun PracticeSetEditor(
                 if (editor.isStarter) {
                     item(key = "starter-explanation") {
                         Text(
-                            "Edit the steps below. Nothing is added until you save.",
+                            stringResource(Res.string.starter_editor_hint),
                             modifier = Modifier.animateItem(fadeInSpec = AppAnimations.quick(), placementSpec = AppAnimations.standard(), fadeOutSpec = AppAnimations.quick()),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -598,7 +617,7 @@ private fun PracticeSetEditor(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
-                                stringResource(Res.string.practice_set_step_count, editor.steps.size),
+                                pluralStringResource(Res.plurals.set_step_count, editor.steps.size, editor.steps.size),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.weight(1f),
@@ -702,7 +721,7 @@ private fun PresetPickerSheet(
                         Column(modifier = Modifier.heightIn(min = com.merkost.metronome.ui.minimumTouchTargetSize).padding(vertical = spacingSmall)) {
                             Text(preset.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                             Text(
-                                preset.rhythmSummary,
+                                preset.rhythmSummary.asString(),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )

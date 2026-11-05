@@ -1,7 +1,10 @@
 package com.merkost.metronome.engine
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.sound_error_pause_playback
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
+import com.merkost.metronome.model.UiText
 import com.merkost.metronome.platform.AudioFocusController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -88,7 +91,7 @@ class SoundPreviewControllerTest {
         controller.preview(ClickSound.CLAVE)
         runCurrent()
         assertEquals(0, focus.requests)
-        assertEquals("Pause playback to preview a sound.", controller.errorMessage.value)
+        assertEquals(UiText.of(Res.string.sound_error_pause_playback), controller.errorMessage.value)
 
         playing = false
         focus.granted = false

@@ -5,14 +5,6 @@ data class SavedTempo(
     val timeSignature: TimeSignature,
     val subdivision: Subdivision,
 ) {
-    val label: String
-        get() = buildString {
-            append("$bpm · ${timeSignature.label}")
-            if (subdivision != Subdivision.QUARTER) {
-                append(" · ${subdivision.label}")
-            }
-        }
-
     fun encode(): String = "$bpm:${timeSignature.name}:${subdivision.name}"
 
     companion object {

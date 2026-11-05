@@ -39,13 +39,37 @@ import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.pulseOnAppear
 import com.merkost.metronome.ui.pulseOnChange
 import com.merkost.metronome.ui.sheetButtonHeight
+import com.merkost.metronome.model.UiText
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.model.streakDayLine
 import com.merkost.metronome.model.timerFinishedHeadline
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.duration_minutes
+import metronome.shared.generated.resources.hub_streak
+import metronome.shared.generated.resources.hub_streak_days
+import metronome.shared.generated.resources.hub_today
+import metronome.shared.generated.resources.hub_total
+import metronome.shared.generated.resources.timer_counts_down
+import metronome.shared.generated.resources.timer_done
+import metronome.shared.generated.resources.timer_duration_description
+import metronome.shared.generated.resources.timer_extend
+import metronome.shared.generated.resources.timer_of_goal
+import metronome.shared.generated.resources.timer_paused_caption
+import metronome.shared.generated.resources.timer_practiced_stopped
+import metronome.shared.generated.resources.timer_restart
+import metronome.shared.generated.resources.timer_start
+import metronome.shared.generated.resources.timer_start_and_play
+import metronome.shared.generated.resources.timer_stop
+import metronome.shared.generated.resources.timer_stop_when_up
+import metronome.shared.generated.resources.timer_stop_when_up_hint
+import metronome.shared.generated.resources.timer_title
+import metronome.shared.generated.resources.voice_practiced
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 private val DURATION_PRESETS = listOf(5, 10, 15, 20, 30)
-private const val STOP_WHEN_TIME_IS_UP_SUBTITLE = "Finishes the bar in progress, then stops"
 
 @Composable
 fun PracticeTimerSheet(
@@ -66,7 +90,7 @@ fun PracticeTimerSheet(
     onDismiss: () -> Unit,
     practiceWeek: PracticeWeek? = null,
 ) {
-    AppBottomSheet(title = "Practice timer", onDismiss = onDismiss) { dismissAnimated ->
+    AppBottomSheet(title = stringResource(Res.string.timer_title), onDismiss = onDismiss) { dismissAnimated ->
         var lastActiveGoal by remember { mutableStateOf(timerGoal ?: 0L) }
         LaunchedEffect(timerGoal) {
             timerGoal?.let { lastActiveGoal = it }
@@ -145,7 +169,7 @@ internal fun ConfigTimerContent(
                 AppChip(
                     selected = minutes == preset,
                     onClick = { minutes = preset },
-                    label = "$preset min",
+                    label = stringResource(Res.string.duration_minutes, preset),
                 )
             }
         }
@@ -156,20 +180,20 @@ internal fun ConfigTimerContent(
             valueRange = 1f..60f,
             steps = 58,
             modifier = Modifier.fillMaxWidth(),
-            accessibilityLabel = "Practice timer duration, $minutes minutes",
+            accessibilityLabel = pluralStringResource(Res.plurals.timer_duration_description, minutes, minutes),
         )
 
         Text(
-            text = "Counts down while the metronome plays",
+            text = stringResource(Res.string.timer_counts_down),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         SettingsSwitch(
-            title = "Stop when time is up",
+            title = stringResource(Res.string.timer_stop_when_up),
             checked = stopWhenTimerEnds,
             onCheckedChange = onStopWhenTimerEndsChange,
-            subtitle = STOP_WHEN_TIME_IS_UP_SUBTITLE,
+            subtitle = stringResource(Res.string.timer_stop_when_up_hint),
         )
 
         Button(
@@ -178,7 +202,7 @@ internal fun ConfigTimerContent(
             modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight),
         ) {
             Text(
-                text = if (isPlaying) "Start timer" else "Start timer & play",
+                text = stringResource(if (isPlaying) Res.string.timer_start else Res.string.timer_start_and_play),
                 fontWeight = FontWeight.Bold,
             )
         }
@@ -187,9 +211,9 @@ internal fun ConfigTimerContent(
 
         if (LocalDensity.current.fontScale >= 1.3f) {
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                StatText("Today", TimestampMillisecondsFormatter.formatHuman(todayPracticeTime))
-                StatText("Streak", if (practiceStreak > 0) { if (practiceStreak == 1) "1 day" else "$practiceStreak days" } else "—")
-                StatText("Total", TimestampMillisecondsFormatter.formatHuman(totalPracticeTime))
+                StatText(stringResource(Res.string.hub_today), TimestampMillisecondsFormatter.formatHuman(todayPracticeTime))
+                StatText(stringResource(Res.string.hub_streak), if (practiceStreak > 0) pluralStringResource(Res.plurals.hub_streak_days, practiceStreak, practiceStreak) else "—")
+                StatText(stringResource(Res.string.hub_total), TimestampMillisecondsFormatter.formatHuman(totalPracticeTime))
             }
         } else {
             Row(
@@ -197,14 +221,14 @@ internal fun ConfigTimerContent(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 StatText(
-                    label = "Today",
+                    label = stringResource(Res.string.hub_today),
                     value = TimestampMillisecondsFormatter.formatHuman(todayPracticeTime),
                     modifier = Modifier.weight(1f),
                 )
                 StatText(
-                    label = "Streak",
+                    label = stringResource(Res.string.hub_streak),
                     value = if (practiceStreak > 0) {
-                        if (practiceStreak == 1) "1 day" else "$practiceStreak days"
+                        pluralStringResource(Res.plurals.hub_streak_days, practiceStreak, practiceStreak)
                     } else {
                         "—"
                     },
@@ -212,7 +236,7 @@ internal fun ConfigTimerContent(
                     alignCenter = true,
                 )
                 StatText(
-                    label = "Total",
+                    label = stringResource(Res.string.hub_total),
                     value = TimestampMillisecondsFormatter.formatHuman(totalPracticeTime),
                     modifier = Modifier.weight(1f),
                     alignEnd = true,
@@ -249,7 +273,7 @@ internal fun ActiveTimerContent(
                 label = "timerHeadline",
             ) { finished ->
                 Text(
-                    text = if (finished) timerFinishedHeadline((timerGoal / 60_000L).toInt()) else TimestampMillisecondsFormatter.format(timerRemaining),
+                    text = if (finished) timerFinishedHeadline((timerGoal / 60_000L).toInt()).asString() else TimestampMillisecondsFormatter.format(timerRemaining),
                     style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold),
                     modifier = if (finished) Modifier.pulseOnAppear(peakScale = 1.06f) else Modifier,
                 )
@@ -261,10 +285,16 @@ internal fun ActiveTimerContent(
             ) { (finished, playing) ->
                 Text(
                     text = when {
-                        finished && stoppedPlayback -> "${TimestampMillisecondsFormatter.format(timerGoal)} practiced · stopped"
-                        finished -> listOfNotNull("${TimestampMillisecondsFormatter.format(timerGoal)} practiced", streakDayLine(practiceStreak)).joinToString(" · ")
-                        playing -> "of ${TimestampMillisecondsFormatter.format(timerGoal)}"
-                        else -> "paused — counts down while playing"
+                        finished && stoppedPlayback -> stringResource(Res.string.timer_practiced_stopped, TimestampMillisecondsFormatter.format(timerGoal))
+                        finished -> UiText.Joined(
+                            listOfNotNull(
+                                UiText.of(Res.string.voice_practiced, TimestampMillisecondsFormatter.format(timerGoal)),
+                                streakDayLine(practiceStreak),
+                            ),
+                            " · ",
+                        ).asString()
+                        playing -> stringResource(Res.string.timer_of_goal, TimestampMillisecondsFormatter.format(timerGoal))
+                        else -> stringResource(Res.string.timer_paused_caption)
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -280,19 +310,19 @@ internal fun ActiveTimerContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onExtend(5) }) {
-                Text("+5 min", fontWeight = FontWeight.Bold)
+                Text(stringResource(Res.string.timer_extend), fontWeight = FontWeight.Bold)
             }
             TextButton(onClick = onRestart) {
-                Text("Restart", fontWeight = FontWeight.Bold)
+                Text(stringResource(Res.string.timer_restart), fontWeight = FontWeight.Bold)
             }
         }
 
         if (!done) {
             SettingsSwitch(
-                title = "Stop when time is up",
+                title = stringResource(Res.string.timer_stop_when_up),
                 checked = stopWhenTimerEnds,
                 onCheckedChange = onStopWhenTimerEndsChange,
-                subtitle = STOP_WHEN_TIME_IS_UP_SUBTITLE,
+                subtitle = stringResource(Res.string.timer_stop_when_up_hint),
             )
         }
 
@@ -306,7 +336,7 @@ internal fun ActiveTimerContent(
                 transitionSpec = { AppAnimations.fadeThrough },
                 label = "timerStopLabel",
             ) { finished ->
-                Text(text = if (finished) "Done" else "Stop timer", fontWeight = FontWeight.Bold)
+                Text(text = stringResource(if (finished) Res.string.timer_done else Res.string.timer_stop), fontWeight = FontWeight.Bold)
             }
         }
     }

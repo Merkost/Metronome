@@ -4,6 +4,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.duration_hours_minutes
+import metronome.shared.generated.resources.duration_minutes
+import metronome.shared.generated.resources.week_sentence
+import metronome.shared.generated.resources.week_strip_days
+import metronome.shared.generated.resources.week_strip_none
 
 class PracticeLogTest {
 
@@ -83,7 +89,7 @@ class PracticeLogTest {
             wednesday to 0L,
         )
         assertEquals(
-            "This week you practiced 3 h 20 min across 2 days.",
+            UiText.quantity(Res.plurals.week_sentence, 2, UiText.of(Res.string.duration_hours_minutes, 3, 20), 2),
             weekSentence(PracticeLog.week(log, wednesday)),
         )
     }
@@ -91,7 +97,7 @@ class PracticeLogTest {
     @Test
     fun weekSentenceHandlesOneDayAndNoPractice() {
         val one = PracticeLog.week(mapOf(wednesday to 25L * 60_000L), wednesday)
-        assertEquals("This week you practiced 25 min on 1 day.", weekSentence(one))
+        assertEquals(UiText.quantity(Res.plurals.week_sentence, 1, UiText.of(Res.string.duration_minutes, 25), 1), weekSentence(one))
         assertNull(weekSentence(PracticeLog.week(emptyMap(), wednesday)))
     }
 
@@ -106,10 +112,10 @@ class PracticeLogTest {
 
     @Test
     fun stripDescriptionReadsOutHowManyDaysWerePracticed() {
-        assertEquals("No practice yet this week", weekStripDescription(PracticeLog.week(emptyMap(), wednesday)))
+        assertEquals(UiText.of(Res.string.week_strip_none), weekStripDescription(PracticeLog.week(emptyMap(), wednesday)))
         val one = PracticeLog.week(mapOf(wednesday to 120_000L), wednesday)
-        assertEquals("Practiced 1 day this week", weekStripDescription(one))
+        assertEquals(UiText.quantity(Res.plurals.week_strip_days, 1), weekStripDescription(one))
         val two = PracticeLog.week(mapOf(wednesday to 120_000L, wednesday - 1 to 120_000L), wednesday)
-        assertEquals("Practiced 2 days this week", weekStripDescription(two))
+        assertEquals(UiText.quantity(Res.plurals.week_strip_days, 2), weekStripDescription(two))
     }
 }

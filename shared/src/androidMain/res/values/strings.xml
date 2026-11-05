@@ -6,4 +6,15 @@
     <string name="notification_permission_description">Allow Metronome access to notifications in order to work in background.</string>
     <string name="notification_message">Running in background</string>
     <string name="app_full_name">Metronome: Practice &amp; Tempo</string>
+    <string name="notification_permission_yes">Yes</string>
+    <string name="notification_permission_no">No</string>
+    <string name="android_support_intro">Please describe the issue you\'re experiencing or your question below:</string>
+    <string name="android_support_chooser">Send email...</string>
+    <string name="android_support_no_email">There are no email clients installed.</string>
+    <string name="android_service_channel">Metronome service</string>
+    <string name="android_service_pause">Pause</string>
+    <string name="android_service_play">Play</string>
+    <string name="android_service_stop">Stop</string>
+    <string name="android_service_status_playing">%1$s · Playing</string>
+    <string name="android_service_status_paused">%1$s · Paused</string>
 </resources>

@@ -1,5 +1,10 @@
 package com.merkost.metronome.model
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.week_sentence
+import metronome.shared.generated.resources.week_strip_days
+import metronome.shared.generated.resources.week_strip_none
+
 data class PracticeDay(
     val epochDay: Long,
     val millis: Long,
@@ -59,22 +64,13 @@ object PracticeLog {
     }
 }
 
-fun weekSentence(week: PracticeWeek): String? {
+fun weekSentence(week: PracticeWeek): UiText? {
     if (week.daysPracticed == 0) return null
-    val totalMinutes = week.totalMillis / 60_000L
-    val hours = totalMinutes / 60
-    val minutes = totalMinutes % 60
-    val time = when {
-        hours > 0 && minutes > 0 -> "$hours h $minutes min"
-        hours > 0 -> "$hours h"
-        else -> "$minutes min"
-    }
-    val span = if (week.daysPracticed == 1) "on 1 day" else "across ${week.daysPracticed} days"
-    return "This week you practiced $time $span."
+    val time = durationText(week.totalMillis / 60_000L)
+    return UiText.quantity(Res.plurals.week_sentence, week.daysPracticed, time, week.daysPracticed)
 }
 
-fun weekStripDescription(week: PracticeWeek): String = when (week.daysPracticed) {
-    0 -> "No practice yet this week"
-    1 -> "Practiced 1 day this week"
-    else -> "Practiced ${week.daysPracticed} days this week"
+fun weekStripDescription(week: PracticeWeek): UiText = when (week.daysPracticed) {
+    0 -> UiText.of(Res.string.week_strip_none)
+    else -> UiText.quantity(Res.plurals.week_strip_days, week.daysPracticed)
 }

@@ -11,14 +11,23 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.merkost.metronome.backup.MaximumBackupCharacters
+import com.merkost.metronome.backup.backupText
+import com.merkost.metronome.backup.requireBackup
+import com.merkost.metronome.model.UiText
 import com.merkost.metronome.components.PracticeBackupActions
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.backup_export_failed_location
+import metronome.shared.generated.resources.backup_exported
+import metronome.shared.generated.resources.backup_open_failed
+import metronome.shared.generated.resources.backup_prepare_failed
+import metronome.shared.generated.resources.backup_too_large
 
 @Composable
-actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onImport: (String) -> Unit, onMessage: (String) -> Unit) {
+actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onImport: (String) -> Unit, onMessage: (UiText) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val exportAction by rememberUpdatedState(export)
@@ -36,11 +45,11 @@ actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onI
                 withContext(Dispatchers.IO) {
                     requireNotNull(context.contentResolver.openOutputStream(uri)).bufferedWriter().use { it.write(raw) }
                 }
-                messageAction("Backup exported.")
+                messageAction(UiText.of(Res.string.backup_exported))
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
-                messageAction("Couldn't export this backup. Try another location.")
+                messageAction(UiText.of(Res.string.backup_export_failed_location))
             } finally { working = false }
         }
     }
@@ -54,7 +63,7 @@ actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onI
                         while (true) {
                             val count = input.read(buffer)
                             if (count < 0) break
-                            require(text.length + count <= MaximumBackupCharacters) { "This backup is too large." }
+                            requireBackup(text.length + count <= MaximumBackupCharacters, Res.string.backup_too_large)
                             text.append(buffer, 0, count)
                         }
                         text.toString()
@@ -64,7 +73,7 @@ actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onI
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (failure: Exception) {
-                messageAction(failure.message ?: "Couldn't open this backup.")
+                messageAction(failure.backupText(Res.string.backup_open_failed))
             } finally { working = false }
         }
     }
@@ -81,7 +90,7 @@ actual fun BackupFileActions(enabled: Boolean, export: suspend () -> String, onI
                     throw cancelled
                 } catch (_: Exception) {
                     working = false
-                    messageAction("Couldn't prepare this backup.")
+                    messageAction(UiText.of(Res.string.backup_prepare_failed))
                 }
             }
         },

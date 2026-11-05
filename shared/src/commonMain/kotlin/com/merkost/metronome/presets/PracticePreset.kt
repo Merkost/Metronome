@@ -6,6 +6,7 @@ import com.merkost.metronome.model.MIN_BPM
 import com.merkost.metronome.model.MetronomeState
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.model.UiText
 
 data class PracticePreset(
     val id: String,
@@ -20,11 +21,13 @@ data class PracticePreset(
     val beats: List<Beat>,
     val countInEnabled: Boolean,
 ) {
-    val rhythmSummary: String
-        get() = buildString {
-            append("$bpm BPM · ${timeSignature.label}")
-            if (subdivision != Subdivision.QUARTER) {
-                append(" · ${subdivision.label}")
+    val rhythmSummary: UiText
+        get() {
+            val meter = UiText.plain("$bpm BPM · ${timeSignature.label}")
+            return if (subdivision == Subdivision.QUARTER) {
+                meter
+            } else {
+                UiText.Joined(listOf(meter, UiText.of(subdivision.labelRes)), " · ")
             }
         }
 

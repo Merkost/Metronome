@@ -38,6 +38,7 @@ import com.composables.icons.lucide.RotateCcw
 import com.merkost.metronome.components.AppBottomSheet
 import com.merkost.metronome.components.AppDialog
 import com.merkost.metronome.components.sessionProgressLabel
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.practiceSets.ActivePracticeSession
 import com.merkost.metronome.practiceSets.PracticePlaybackIntent
 import com.merkost.metronome.practiceSets.PracticeStepTarget
@@ -51,6 +52,8 @@ import com.merkost.metronome.ui.spacingSmall
 import metronome.shared.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import metronome.shared.generated.resources.set_target_bars_summary
+import org.jetbrains.compose.resources.pluralStringResource
 
 @Composable
 fun PracticeSessionSheet(
@@ -142,7 +145,7 @@ internal fun PracticeSessionContent(
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            step.preset.rhythmSummary,
+                            step.preset.rhythmSummary.asString(),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -240,7 +243,7 @@ private fun UpcomingStep(index: Int, step: ResolvedPracticeStep) {
                     Res.string.practice_target_minutes_summary,
                     target.minutes,
                 )
-                is PracticeStepTarget.Bars -> stringResource(Res.string.practice_target_bars_summary, target.count)
+                is PracticeStepTarget.Bars -> pluralStringResource(Res.plurals.set_target_bars_summary, target.count, target.count)
             },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -28,7 +28,7 @@ struct MetronomeLiveActivityWidget: Widget {
                 DynamicIslandExpandedRegion(.bottom) {
                     Button(intent: TogglePlaybackIntent()) {
                         Label(
-                            context.state.isPlaying ? "Pause" : "Play",
+                            LocalizedStringKey(context.state.isPlaying ? "Pause" : "Play"),
                             systemImage: context.state.isPlaying ? "pause.fill" : "play.fill"
                         )
                         .frame(maxWidth: .infinity)

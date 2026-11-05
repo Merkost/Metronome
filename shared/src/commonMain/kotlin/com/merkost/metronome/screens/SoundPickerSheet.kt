@@ -1,5 +1,15 @@
 package com.merkost.metronome.screens
 
+import com.merkost.metronome.model.UiText
+import com.merkost.metronome.model.asString
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.sound_picker_hint_paused
+import metronome.shared.generated.resources.sound_picker_hint_preview
+import metronome.shared.generated.resources.sound_picker_title
+import metronome.shared.generated.resources.sound_preview_named
+import metronome.shared.generated.resources.sound_preview_stop_named
+import metronome.shared.generated.resources.sound_tone_profile
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -56,10 +66,10 @@ fun SoundPickerSheet(
     onSelect: (ClickSound) -> Unit,
     onPreview: (ClickSound) -> Unit,
     onDismiss: () -> Unit,
-    errorMessage: String? = null,
+    errorMessage: UiText? = null,
     previewEnabled: Boolean = true,
 ) {
-    AppBottomSheet(title = "Click sound", onDismiss = onDismiss) {
+    AppBottomSheet(title = stringResource(Res.string.sound_picker_title), onDismiss = onDismiss) {
         SoundPickerContent(selectedSound, previewSound, onSelect, onPreview, errorMessage, previewEnabled)
     }
 }
@@ -70,7 +80,7 @@ internal fun SoundPickerContent(
     previewSound: ClickSound?,
     onSelect: (ClickSound) -> Unit,
     onPreview: (ClickSound) -> Unit,
-    errorMessage: String? = null,
+    errorMessage: UiText? = null,
     previewEnabled: Boolean = true,
 ) {
     Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
@@ -80,16 +90,16 @@ internal fun SoundPickerContent(
             label = "soundPreviewAvailability",
         ) { canPreview ->
             Text(
-                if (canPreview) "Choose a sound. Preview one bar at 100 BPM." else "Choose a sound. Pause playback to preview.",
+                stringResource(if (canPreview) Res.string.sound_picker_hint_preview else Res.string.sound_picker_hint_paused),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Text("Tone profile · low → high", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(Res.string.sound_tone_profile), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         ClickSound.entries.forEach { sound ->
             SoundPickerRow(sound, sound == selectedSound, previewSound == sound, { onSelect(sound) }, { onPreview(sound) }, previewEnabled)
         }
-        errorMessage?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+        errorMessage?.let { Text(it.asString(), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
     }
 }
 
@@ -108,9 +118,12 @@ private fun SoundPickerRow(
     )
     val titleStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
     val measurer = rememberTextMeasurer()
+    val soundNames = ClickSound.entries.map { stringResource(it.nameRes) }
     val minimumTitleWidth = with(LocalDensity.current) {
-        ClickSound.entries.maxOf { measurer.measure(AnnotatedString(it.displayName), titleStyle, softWrap = false, maxLines = 1).size.width }.toDp()
+        soundNames.maxOf { measurer.measure(AnnotatedString(it), titleStyle, softWrap = false, maxLines = 1).size.width }.toDp()
     }
+    val soundName = stringResource(sound.nameRes)
+    val previewDescription = stringResource(if (previewing) Res.string.sound_preview_stop_named else Res.string.sound_preview_named, soundName)
     val profileWidth = 72.dp
     val selectionTint by animateColorAsState(
         if (chosen) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
@@ -132,7 +145,7 @@ private fun SoundPickerRow(
             val inlineProfile = maxWidth >= minimumTitleWidth + profileWidth + 20.dp + spacingSmall * 2
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    Text(sound.displayName, modifier = Modifier.weight(1f), style = titleStyle, color = selectionTint)
+                    Text(soundName, modifier = Modifier.weight(1f), style = titleStyle, color = selectionTint)
                     if (inlineProfile) SoundToneHistogram(sound, chosen, Modifier.width(profileWidth))
                     Box(Modifier.size(20.dp), contentAlignment = Alignment.Center) {
                         AnimatedContent(chosen, transitionSpec = { AppAnimations.fadeScaleTransform }, label = "chosenSound") { selected ->
@@ -140,7 +153,7 @@ private fun SoundPickerRow(
                         }
                     }
                 }
-                Text(sound.description, style = MaterialTheme.typography.bodySmall, color = selectionTint)
+                Text(stringResource(sound.descriptionRes), style = MaterialTheme.typography.bodySmall, color = selectionTint)
                 if (!inlineProfile) SoundToneHistogram(sound, chosen, Modifier.width(profileWidth))
             }
         }
@@ -148,7 +161,7 @@ private fun SoundPickerRow(
             onClick = onPreview,
             enabled = previewEnabled,
             modifier = Modifier.size(minimumTouchTargetSize).semantics {
-                contentDescription = if (previewing) "Stop ${sound.displayName} preview" else "Preview ${sound.displayName}"
+                contentDescription = previewDescription
             },
         ) {
             AnimatedContent(previewing, modifier = Modifier.clearAndSetSemantics {}, transitionSpec = { AppAnimations.fadeScaleTransform }, label = "soundPreview") { playing ->

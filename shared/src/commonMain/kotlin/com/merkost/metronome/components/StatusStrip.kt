@@ -38,6 +38,9 @@ import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.statusStripHeight
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_stop
+import org.jetbrains.compose.resources.stringResource
 
 data class StatusStripAction(
     val icon: ImageVector,
@@ -58,7 +61,7 @@ fun StatusStrip(
     titleModifier: Modifier = Modifier,
     description: String? = null,
     onClickLabel: String? = null,
-    stopLabel: String = "Stop",
+    stopLabel: String = stringResource(Res.string.main_stop),
     action: StatusStripAction? = null,
 ) {
     val textSemantics = if (description != null) Modifier.clearAndSetSemantics {} else Modifier

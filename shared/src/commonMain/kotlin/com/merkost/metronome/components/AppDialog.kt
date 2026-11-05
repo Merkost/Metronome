@@ -1,5 +1,8 @@
 package com.merkost.metronome.components
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.cancel
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +19,7 @@ fun AppDialog(
     confirmLabel: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    dismissLabel: String = "Cancel",
+    dismissLabel: String = stringResource(Res.string.cancel),
     destructive: Boolean = false,
 ) {
     AlertDialog(

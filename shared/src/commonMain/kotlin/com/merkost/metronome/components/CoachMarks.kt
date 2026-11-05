@@ -63,23 +63,33 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import org.jetbrains.compose.resources.stringResource
 import metronome.shared.generated.resources.Res
 import metronome.shared.generated.resources.coach_mark_skip
+import metronome.shared.generated.resources.coach_back
+import metronome.shared.generated.resources.coach_got_it
+import metronome.shared.generated.resources.coach_next
+import metronome.shared.generated.resources.coach_play_body
+import metronome.shared.generated.resources.coach_play_title
+import metronome.shared.generated.resources.coach_shape_body
+import metronome.shared.generated.resources.coach_shape_title
+import metronome.shared.generated.resources.coach_tempo_body
+import metronome.shared.generated.resources.coach_tempo_title
+import org.jetbrains.compose.resources.StringResource
 
-private data class CoachStep(val title: String, val description: String, val tooltipBelow: Boolean)
+private data class CoachStep(val title: StringResource, val description: StringResource, val tooltipBelow: Boolean)
 
 private val coachSteps = listOf(
     CoachStep(
-        "Shape your beat",
-        "Tap any circle to cycle accented, normal, and muted beats.",
+        Res.string.coach_shape_title,
+        Res.string.coach_shape_body,
         true
     ),
     CoachStep(
-        "Set your tempo",
-        "Drag the slider or use the buttons. The tempo name opens presets, subdivisions, and trainers.",
+        Res.string.coach_tempo_title,
+        Res.string.coach_tempo_body,
         true
     ),
     CoachStep(
-        "Ready to play",
-        "Hit play to start. Tap Tempo matches any song, and the timer tracks your practice.",
+        Res.string.coach_play_title,
+        Res.string.coach_play_body,
         false
     ),
 )
@@ -248,12 +258,12 @@ private fun TooltipContent(
         verticalArrangement = Arrangement.spacedBy(spacingMedium)
     ) {
         Text(
-            text = currentStep.title,
+            text = stringResource(currentStep.title),
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = currentStep.description,
+            text = stringResource(currentStep.description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -274,7 +284,7 @@ private fun TooltipContent(
                 ) {
                     TextButton(onClick = onBack) {
                         Text(
-                            text = "Back",
+                            text = stringResource(Res.string.coach_back),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -285,7 +295,7 @@ private fun TooltipContent(
                     shape = CircleShape,
                 ) {
                     Text(
-                        text = if (isLast) "Got it" else "Next",
+                        text = stringResource(if (isLast) Res.string.coach_got_it else Res.string.coach_next),
                         fontWeight = FontWeight.Bold,
                     )
                 }

@@ -24,9 +24,16 @@ import com.merkost.metronome.model.GradualTempoConfig
 import com.merkost.metronome.model.TempoStepMode
 import com.merkost.metronome.ui.sheetButtonHeight
 import com.merkost.metronome.ui.spacingSmall
-
-fun gapCycleFallbackCaption(barsPerStep: Int): String =
-    "Gap trainer is off · steps every $barsPerStep bars until it starts"
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.trainer_gap_off_fallback
+import metronome.shared.generated.resources.trainer_mode_bars
+import metronome.shared.generated.resources.trainer_mode_gap_cycle
+import metronome.shared.generated.resources.trainer_mode_manual
+import metronome.shared.generated.resources.trainer_step_back
+import metronome.shared.generated.resources.trainer_step_next
+import metronome.shared.generated.resources.trainer_steps_label
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -44,7 +51,7 @@ fun TrainerStepModeRow(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = "Steps",
+                text = stringResource(Res.string.trainer_steps_label),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.width(44.dp),
@@ -56,23 +63,23 @@ fun TrainerStepModeRow(
                 AppChip(
                     selected = selected == TempoStepMode.BARS,
                     onClick = { onSelect(TempoStepMode.BARS) },
-                    label = "Bars",
+                    label = stringResource(Res.string.trainer_mode_bars),
                 )
                 AppChip(
                     selected = selected == TempoStepMode.GAP_CYCLE,
                     onClick = { onSelect(TempoStepMode.GAP_CYCLE) },
-                    label = "Gap cycle",
+                    label = stringResource(Res.string.trainer_mode_gap_cycle),
                 )
                 AppChip(
                     selected = selected == TempoStepMode.MANUAL,
                     onClick = { onSelect(TempoStepMode.MANUAL) },
-                    label = "When I tap",
+                    label = stringResource(Res.string.trainer_mode_manual),
                 )
             }
         }
         if (selected == TempoStepMode.GAP_CYCLE && !gapRunning) {
             Text(
-                text = gapCycleFallbackCaption(barsPerStep),
+                text = pluralStringResource(Res.plurals.trainer_gap_off_fallback, barsPerStep, barsPerStep),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -98,7 +105,7 @@ fun ManualStepControls(
             shape = CircleShape,
             modifier = buttonModifier,
         ) {
-            SheetSecondaryLabel("Step back")
+            SheetSecondaryLabel(stringResource(Res.string.trainer_step_back))
         }
     }
     val forward: @Composable (Modifier) -> Unit = { buttonModifier ->
@@ -108,7 +115,7 @@ fun ManualStepControls(
             shape = CircleShape,
             modifier = buttonModifier.heightIn(min = sheetButtonHeight),
         ) {
-            Text(text = "Next step", fontWeight = FontWeight.Bold, maxLines = 1)
+            Text(text = stringResource(Res.string.trainer_step_next), fontWeight = FontWeight.Bold, maxLines = 1)
         }
     }
     if (stacked) {

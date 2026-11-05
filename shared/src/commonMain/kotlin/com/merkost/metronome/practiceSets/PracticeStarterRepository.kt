@@ -9,9 +9,16 @@ import com.merkost.metronome.model.TimeSignature
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.presets.PracticePresetCodec
 import kotlinx.coroutines.CancellationException
+import metronome.shared.generated.resources.Res
 
 private val starterPresetsKey = stringPreferencesKey("PRACTICE_PRESETS")
 private val starterSetsKey = stringPreferencesKey("PRACTICE_SETS")
+
+data class StarterNames(val presetNames: List<String>, val setName: String) {
+    companion object {
+        val English = StarterNames(listOf("Easy start", "Build the pulse", "Find your flow"), "A steady warm-up")
+    }
+}
 
 data class PracticeStarterDraft(val name: String, val steps: List<PracticeSetStep>, val pendingPresets: List<PracticePreset>)
 
@@ -29,8 +36,8 @@ class PracticeStarterRepository(
     private val nextId: () -> String,
     private val nowMillis: () -> Long,
 ) {
-    fun draft(existingPresets: List<PracticePreset>): PracticeStarterDraft {
-        val names = listOf("Easy start", "Build the pulse", "Find your flow")
+    fun draft(existingPresets: List<PracticePreset>, starterNames: StarterNames = StarterNames.English): PracticeStarterDraft {
+        val names = starterNames.presetNames
         val tempos = listOf(60, 72, 84)
         val pending = mutableListOf<PracticePreset>()
         val used = existingPresets.mapTo(mutableSetOf()) { it.id }
@@ -52,7 +59,7 @@ class PracticeStarterRepository(
                 ).also { pending += it }
             PracticeSetStep(uniqueId(used), preset.id, PracticeStepTarget.Duration(2))
         }
-        return PracticeStarterDraft("A steady warm-up", steps, pending)
+        return PracticeStarterDraft(starterNames.setName, steps, pending)
     }
 
     suspend fun save(draft: PracticeSetDraft, pendingPresets: List<PracticePreset>): PracticeStarterResult {

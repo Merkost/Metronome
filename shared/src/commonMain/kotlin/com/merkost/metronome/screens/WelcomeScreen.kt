@@ -1,5 +1,20 @@
 package com.merkost.metronome.screens
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.welcome_get_started
+import metronome.shared.generated.resources.welcome_getting_ready
+import metronome.shared.generated.resources.welcome_headline
+import metronome.shared.generated.resources.welcome_hear_bar
+import metronome.shared.generated.resources.welcome_listening
+import metronome.shared.generated.resources.welcome_pace_body
+import metronome.shared.generated.resources.welcome_pace_title
+import metronome.shared.generated.resources.welcome_practice_body
+import metronome.shared.generated.resources.welcome_practice_title
+import metronome.shared.generated.resources.welcome_skip
+import metronome.shared.generated.resources.welcome_sound_body
+import metronome.shared.generated.resources.welcome_sound_title
+import metronome.shared.generated.resources.welcome_tagline
+import org.jetbrains.compose.resources.stringResource
 import com.composables.icons.lucide.Volume2
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
@@ -131,7 +146,7 @@ fun WelcomeScreen(
                         )
                     }
                 },
-                actions = { TextButton(onClick = { complete(onSkip) }, enabled = !busy) { Text("Skip") } },
+                actions = { TextButton(onClick = { complete(onSkip) }, enabled = !busy) { Text(stringResource(Res.string.welcome_skip)) } },
             )
         },
         bottomBar = {
@@ -157,11 +172,11 @@ fun WelcomeScreen(
                         ) {
                             Icon(Lucide.Volume2, contentDescription = null, modifier = Modifier.size(20.dp))
                             Spacer(Modifier.width(spacingSmall))
-                            Text(if (hearing) "Listening…" else "Hear one bar", fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(if (hearing) Res.string.welcome_listening else Res.string.welcome_hear_bar), fontWeight = FontWeight.SemiBold)
                         }
                     }
                     WelcomeAction(
-                        label = if (busy) "Getting ready…" else "Get started",
+                        label = stringResource(if (busy) Res.string.welcome_getting_ready else Res.string.welcome_get_started),
                         busy = busy,
                         onClick = { complete(onComplete) },
                     )
@@ -181,22 +196,22 @@ fun WelcomeScreen(
                     OnboardingIllustration(Modifier.fillMaxWidth().height(heroHeight).testTag("welcomeGraphic"))
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
                         Text(
-                            "Find your rhythm.",
+                            stringResource(Res.string.welcome_headline),
                             style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth().semantics { heading() },
                         )
                         Text(
-                            "A steady beat, at your pace.",
+                            stringResource(Res.string.welcome_tagline),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                         )
                     }
                     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                        WelcomeFeature(Lucide.SlidersHorizontal, "Your pace", "Tap a tempo. Find your flow.", "pace")
-                        WelcomeFeature(Lucide.Headphones, "Your sound", "Clicks, accents and subdivisions.", "sound")
-                        WelcomeFeature(Lucide.Timer, "Your practice", "Timers, trainers and saved routines.", "practice")
+                        WelcomeFeature(Lucide.SlidersHorizontal, stringResource(Res.string.welcome_pace_title), stringResource(Res.string.welcome_pace_body), "pace")
+                        WelcomeFeature(Lucide.Headphones, stringResource(Res.string.welcome_sound_title), stringResource(Res.string.welcome_sound_body), "sound")
+                        WelcomeFeature(Lucide.Timer, stringResource(Res.string.welcome_practice_title), stringResource(Res.string.welcome_practice_body), "practice")
                     }
                 }
             }
@@ -226,10 +241,11 @@ private fun WelcomeAction(label: String, busy: Boolean, onClick: () -> Unit) {
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+    val labelCandidates = listOf(stringResource(Res.string.welcome_get_started), stringResource(Res.string.welcome_getting_ready))
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val textWidth = with(density) { (maxWidth - spacingMedium * 2 - spacingSmall - 24.dp).roundToPx().coerceAtLeast(1) }
         val textHeight = with(density) {
-            listOf("Get started", "Getting ready…").maxOf {
+            labelCandidates.maxOf {
                 measurer.measure(AnnotatedString(it), style, constraints = Constraints(maxWidth = textWidth)).size.height
             }.toDp()
         }

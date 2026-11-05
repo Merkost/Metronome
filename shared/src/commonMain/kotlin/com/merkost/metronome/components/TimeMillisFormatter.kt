@@ -1,5 +1,11 @@
 package com.merkost.metronome.components
 
+import androidx.compose.runtime.Composable
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.duration_hours_minutes
+import metronome.shared.generated.resources.duration_minutes
+import org.jetbrains.compose.resources.stringResource
+
 object TimestampMillisecondsFormatter {
 
     private const val DEFAULT_TIME = "0:00"
@@ -19,14 +25,15 @@ object TimestampMillisecondsFormatter {
         }
     }
 
+    @Composable
     fun formatHuman(timestamp: Long): String {
         val totalMinutes = timestamp / 60_000
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
         return when {
-            hours > 0 -> "$hours h $minutes min"
-            minutes > 0 -> "$minutes min"
-            else -> "0 min"
+            hours > 0 -> stringResource(Res.string.duration_hours_minutes, hours, minutes)
+            minutes > 0 -> stringResource(Res.string.duration_minutes, minutes)
+            else -> stringResource(Res.string.duration_minutes, 0)
         }
     }
 

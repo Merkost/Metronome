@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Metronome</string>
+    <string name="settings">Impostazioni</string>
+    <string name="notification_title">Metronome</string>
+    <string name="notification_permission_title">Autorizzazione necessaria</string>
+    <string name="notification_permission_description">Consenti a Metronome di inviare notifiche per funzionare in background.</string>
+    <string name="notification_message">In esecuzione in background</string>
+    <string name="app_full_name">Metronome: Studio &amp; Tempo</string>
+    <string name="notification_permission_yes">Sì</string>
+    <string name="notification_permission_no">No</string>
+    <string name="android_support_intro">Descrivi qui sotto il problema che riscontri o la tua domanda:</string>
+    <string name="android_support_chooser">Invia email…</string>
+    <string name="android_support_no_email">Non è installato alcun client di posta.</string>
+    <string name="android_service_channel">Servizio Metronome</string>
+    <string name="android_service_pause">Pausa</string>
+    <string name="android_service_play">Avvia</string>
+    <string name="android_service_stop">Ferma</string>
+    <string name="android_service_status_playing">%1$s · In riproduzione</string>
+    <string name="android_service_status_paused">%1$s · In pausa</string>
+</resources>

@@ -96,7 +96,6 @@ import com.merkost.metronome.components.StatusStripAction
 import com.merkost.metronome.model.NoSoundHint
 import com.merkost.metronome.model.TempoStepMode
 import com.merkost.metronome.model.tempoTrainerStripState
-import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.ChevronUp
 import com.merkost.metronome.components.PresetNameDialog
 import com.merkost.metronome.components.PresetSaveChoiceDialog
@@ -108,6 +107,8 @@ import com.merkost.metronome.model.beatFlashVisible
 import com.merkost.metronome.model.indicatorCrossfades
 import com.merkost.metronome.model.indicatorStiffnessFor
 import androidx.compose.animation.core.SpringSpec
+import com.merkost.metronome.model.asString
+import com.merkost.metronome.model.resolve
 import com.merkost.metronome.model.countInWord
 import com.merkost.metronome.model.gapClickResting
 import com.merkost.metronome.model.gapStripState
@@ -171,6 +172,41 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import metronome.shared.generated.resources.main_click_resting
+import metronome.shared.generated.resources.main_count_in_caption
+import metronome.shared.generated.resources.main_exact_tempo_description
+import metronome.shared.generated.resources.main_hint_faster
+import metronome.shared.generated.resources.main_hint_slower
+import metronome.shared.generated.resources.main_listen
+import metronome.shared.generated.resources.main_open_rhythm
+import metronome.shared.generated.resources.main_preset_summary
+import metronome.shared.generated.resources.main_reset_body
+import metronome.shared.generated.resources.main_reset_confirm
+import metronome.shared.generated.resources.main_reset_title
+import metronome.shared.generated.resources.main_tempo_label
+import metronome.shared.generated.resources.main_tempo_slider_description
+import metronome.shared.generated.resources.strip_audio_unavailable
+import metronome.shared.generated.resources.strip_audio_unavailable_description
+import metronome.shared.generated.resources.strip_click_volume_description
+import metronome.shared.generated.resources.strip_click_volume_off
+import metronome.shared.generated.resources.strip_dismiss
+import metronome.shared.generated.resources.strip_edit_gap_trainer
+import metronome.shared.generated.resources.strip_edit_tempo_trainer
+import metronome.shared.generated.resources.strip_media_volume_buttons_description
+import metronome.shared.generated.resources.strip_media_volume_off
+import metronome.shared.generated.resources.strip_media_volume_tappable_description
+import metronome.shared.generated.resources.strip_open_settings
+import metronome.shared.generated.resources.strip_open_settings_action
+import metronome.shared.generated.resources.strip_preset_applied
+import metronome.shared.generated.resources.strip_show_volume_controls
+import metronome.shared.generated.resources.strip_stop_tempo_trainer
+import metronome.shared.generated.resources.strip_tap_to_adjust
+import metronome.shared.generated.resources.strip_tap_to_retry
+import metronome.shared.generated.resources.strip_trainer_stopped
+import metronome.shared.generated.resources.strip_try_again
+import metronome.shared.generated.resources.strip_use_volume_buttons
+import metronome.shared.generated.resources.trainer_gap_stop
+import metronome.shared.generated.resources.trainer_step_next
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -243,7 +279,7 @@ fun MainScreen(
     var presetEditorDraft by remember { mutableStateOf<PracticePresetDraft?>(null) }
     var showPresetSaveChoice by remember { mutableStateOf(false) }
     LaunchedEffect(soundSelectionError) {
-        soundSelectionError?.let { snackbarHostState.showSnackbar(it) }
+        soundSelectionError?.let { snackbarHostState.showSnackbar(it.resolve()) }
     }
 
     val gradualTempoConfig by viewModel.gradualTempoConfig.collectAsState()
@@ -397,7 +433,7 @@ fun MainScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(metronomeState.timeSignature.label, style = MaterialTheme.typography.labelLarge)
-                                Icon(Lucide.ChevronDown, contentDescription = "Open rhythm", modifier = Modifier.size(16.dp))
+                                Icon(Lucide.ChevronDown, contentDescription = stringResource(Res.string.main_open_rhythm), modifier = Modifier.size(16.dp))
                             }
                         }
                         if (!desktop) {
@@ -490,7 +526,7 @@ fun MainScreen(
                             val tempoLabel = if (metronomeState.subdivision == Subdivision.QUARTER) {
                                 metronomeState.tempoName
                             } else {
-                                "${metronomeState.tempoName} · ${metronomeState.subdivision.label}"
+                                stringResource(Res.string.main_tempo_label, metronomeState.tempoName, stringResource(metronomeState.subdivision.labelRes))
                             }
                             TextButton(
                                 onClick = {
@@ -557,10 +593,11 @@ fun MainScreen(
                             ) {
                                 MyIconButton(
                                     Lucide.Minus,
-                                    hint = "Slower · ↓",
+                                    hint = stringResource(Res.string.main_hint_slower),
                                     onClick = viewModel::onSliderValueDecreased
                                 )
                                 val countingIn = countInRemaining > 0
+                                val exactTempoDescription = stringResource(Res.string.main_exact_tempo_description, metronomeState.rhythm)
                                 val clickResting = gapClickResting(
                                     gapActive = gapTrainerConfig != null,
                                     currentBar = currentBar,
@@ -571,7 +608,7 @@ fun MainScreen(
                                 )
                                 Column(
                                     modifier = Modifier.weight(1f)
-                                        .semantics { contentDescription = "Tempo ${metronomeState.rhythm} BPM. Enter exact tempo" }
+                                        .semantics { contentDescription = exactTempoDescription }
                                         .pressableSurface(
                                             onClick = { showExactTempo = true },
                                             pressedScale = 1f,
@@ -585,7 +622,7 @@ fun MainScreen(
                                     )
                                     if (countingIn || clickResting) {
                                         Text(
-                                            text = if (countingIn) countInWord(countInRemaining) else "Listen",
+                                            text = if (countingIn) countInWord(countInRemaining).asString() else stringResource(Res.string.main_listen),
                                             style = tempoStyle,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             textAlign = TextAlign.Center,
@@ -604,8 +641,8 @@ fun MainScreen(
                                     }
                                     Text(
                                         text = when {
-                                            countingIn -> "${metronomeState.rhythm} BPM · ${metronomeState.tempoName}"
-                                            clickResting -> "The click is resting. Keep the pulse."
+                                            countingIn -> stringResource(Res.string.main_count_in_caption, metronomeState.rhythm, metronomeState.tempoName)
+                                            clickResting -> stringResource(Res.string.main_click_resting)
                                             else -> "BPM"
                                         },
                                         style = MaterialTheme.typography.labelLarge,
@@ -614,7 +651,7 @@ fun MainScreen(
                                 }
                                 MyIconButton(
                                     Lucide.Plus,
-                                    hint = "Faster · ↑",
+                                    hint = stringResource(Res.string.main_hint_faster),
                                     onClick = viewModel::onSliderValueIncreased
                                 )
                             }
@@ -625,7 +662,7 @@ fun MainScreen(
                             onValueChange = viewModel::onSliderValueChanged,
                             valueRange = viewModel.metronomeRange,
                             steps = viewModel.steps,
-                            accessibilityLabel = "Tempo, ${metronomeState.rhythm} BPM",
+                            accessibilityLabel = stringResource(Res.string.main_tempo_slider_description, metronomeState.rhythm),
                         )
                         MainShortcuts(
                             selectedSound = selectedSound,
@@ -651,13 +688,13 @@ fun MainScreen(
                         ) {
                             StatusStrip(
                                 icon = Lucide.VolumeX,
-                                title = "Audio unavailable",
-                                caption = "tap to retry",
+                                title = stringResource(Res.string.strip_audio_unavailable),
+                                caption = stringResource(Res.string.strip_tap_to_retry),
                                 progress = 0f,
                                 accent = MaterialTheme.colorScheme.error,
-                                description = "Audio is unavailable. The click stopped. Tap to try again.",
-                                onClickLabel = "Try again",
-                                stopLabel = "Dismiss",
+                                description = stringResource(Res.string.strip_audio_unavailable_description),
+                                onClickLabel = stringResource(Res.string.strip_try_again),
+                                stopLabel = stringResource(Res.string.strip_dismiss),
                                 onClick = { viewModel.onPlayPauseClicked(false) },
                                 onStop = viewModel::dismissAudioUnavailable,
                                 modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
@@ -676,20 +713,20 @@ fun MainScreen(
                                 val tappable = !mediaOff || viewModel.canShowVolumeControls
                                 StatusStrip(
                                     icon = Lucide.VolumeX,
-                                    title = if (mediaOff) "Media volume is off" else "Click volume is off",
+                                    title = stringResource(if (mediaOff) Res.string.strip_media_volume_off else Res.string.strip_click_volume_off),
                                     caption = when {
-                                        !mediaOff -> "open settings"
-                                        tappable -> "tap to adjust"
-                                        else -> "use volume buttons"
+                                        !mediaOff -> stringResource(Res.string.strip_open_settings)
+                                        tappable -> stringResource(Res.string.strip_tap_to_adjust)
+                                        else -> stringResource(Res.string.strip_use_volume_buttons)
                                     },
                                     progress = 0f,
                                     accent = MaterialTheme.colorScheme.error,
                                     description = when {
-                                        !mediaOff -> "Click volume is at zero in settings."
-                                        tappable -> "Media volume is off. Turn it up to hear the click."
-                                        else -> "Media volume is off. Use the volume buttons to hear the click."
+                                        !mediaOff -> stringResource(Res.string.strip_click_volume_description)
+                                        tappable -> stringResource(Res.string.strip_media_volume_tappable_description)
+                                        else -> stringResource(Res.string.strip_media_volume_buttons_description)
                                     },
-                                    onClickLabel = if (mediaOff) "Show volume controls" else "Open settings",
+                                    onClickLabel = stringResource(if (mediaOff) Res.string.strip_show_volume_controls else Res.string.strip_open_settings_action),
                                     onClick = when {
                                         !mediaOff -> onSettingsClicked
                                         tappable -> viewModel::showVolumeControls
@@ -708,8 +745,8 @@ fun MainScreen(
                         ) {
                             StatusStrip(
                                 icon = Lucide.TrendingUp,
-                                title = "Tempo trainer stopped",
-                                caption = "preset applied",
+                                title = stringResource(Res.string.strip_trainer_stopped),
+                                caption = stringResource(Res.string.strip_preset_applied),
                                 progress = 0f,
                                 accent = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
@@ -742,16 +779,16 @@ fun MainScreen(
                                     } else {
                                         Lucide.TrendingDown
                                     },
-                                    title = strip.title,
-                                    caption = strip.caption,
+                                    title = strip.title.asString(),
+                                    caption = strip.caption.asString(),
                                     progress = strip.progress,
-                                    description = strip.description,
-                                    onClickLabel = "Edit tempo trainer",
-                                    stopLabel = "Stop tempo trainer",
+                                    description = strip.description.asString(),
+                                    onClickLabel = stringResource(Res.string.strip_edit_tempo_trainer),
+                                    stopLabel = stringResource(Res.string.strip_stop_tempo_trainer),
                                     action = if (manual) {
                                         StatusStripAction(
                                             icon = if (config.ascending) Lucide.ChevronUp else Lucide.ChevronDown,
-                                            label = "Next step",
+                                            label = stringResource(Res.string.trainer_step_next),
                                             onClick = viewModel::stepTempoTrainerForward,
                                         )
                                     } else {
@@ -786,12 +823,12 @@ fun MainScreen(
                                 )
                                 StatusStrip(
                                     icon = if (strip.muted) Lucide.VolumeX else Lucide.Volume2,
-                                    title = strip.title,
-                                    caption = strip.caption,
+                                    title = strip.title.asString(),
+                                    caption = strip.caption.asString(),
                                     progress = strip.progress,
-                                    description = strip.description,
-                                    onClickLabel = "Edit gap trainer",
-                                    stopLabel = "Stop gap trainer",
+                                    description = strip.description.asString(),
+                                    onClickLabel = stringResource(Res.string.strip_edit_gap_trainer),
+                                    stopLabel = stringResource(Res.string.trainer_gap_stop),
                                     accent = MaterialTheme.colorScheme.primary,
                                     onClick = {
                                         tempoSheetSection = TempoSheetSection.GAP
@@ -984,11 +1021,11 @@ fun MainScreen(
 
     if (showResetPracticeConfirmation) {
         AppDialog(
-            title = "Reset practice statistics?",
-            text = "Clear today’s practice time, your streak and total time. Your presets and practice sets are kept.",
-            confirmLabel = "Reset statistics",
+            title = stringResource(Res.string.main_reset_title),
+            text = stringResource(Res.string.main_reset_body),
+            confirmLabel = stringResource(Res.string.main_reset_confirm),
             destructive = true,
-            dismissLabel = "Cancel",
+            dismissLabel = stringResource(Res.string.cancel),
             onConfirm = {
                 viewModel.resetPracticeStatistics()
                 showResetPracticeConfirmation = false
@@ -1151,7 +1188,7 @@ fun MainScreen(
             PresetNameDialog(
                 title = stringResource(Res.string.create_preset),
                 initialName = draft.name,
-                summary = draft.run { "$bpm BPM · ${timeSignature.label} · ${subdivision.label}" },
+                summary = draft.run { stringResource(Res.string.main_preset_summary, bpm, timeSignature.label, stringResource(subdivision.labelRes)) },
                 error = null,
                 onConfirm = { name ->
                     presetsViewModel.create(draft.copy(name = name))
