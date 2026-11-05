@@ -30,7 +30,7 @@ class DesktopPlatformActions : PlatformActions {
 
 class DesktopAppVersionProvider : AppVersionProvider {
     override fun getAppVersion(): AppVersionInfo = AppVersionInfo(
-        System.getProperty("metronome.version", "1.5.0"),
+        System.getProperty("metronome.version", "1.6.0"),
         System.getProperty("metronome.build", "1").toLongOrNull() ?: 1L,
     )
 }

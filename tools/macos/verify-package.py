@@ -329,7 +329,7 @@ def main():
     parser.add_argument("--app", type=Path, required=True)
     parser.add_argument("--pkg", type=Path)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
-    parser.add_argument("--expected-version", default="1.5.0")
+    parser.add_argument("--expected-version", default="1.6.0")
     parser.add_argument("--expected-build", default="1")
     parser.add_argument("--unsigned", action="store_true")
     parser.add_argument("--testflight", action="store_true")

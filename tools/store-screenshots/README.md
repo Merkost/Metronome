@@ -79,11 +79,11 @@ Figma-derived App Store set uses its numbered file order.
 
 ## November 2026 set
 
-The refreshed set lives in the **Metronome — Nov 2026** page of the same Figma file, next to the
-previous **Metronome** page, which is kept unchanged as history. It has three sections: Google Play
-(1080×1920, six frames), Mac App Store (2560×1600, four frames) and iPhone 6.9″ (1320×2868, six
-frames). Exports are in `artifacts/store-screenshots-2026-11/{google-play,mac,iphone-6.9}/`.
+The refreshed set sits on the **Metronome** page of the same Figma file, below the previous eight
+frames, which are kept unchanged as history. It has two sections: iPhone 6.9″ (1320×2868, six frames
+from the iOS simulator) and Mac App Store (2560×1600, four frames). Exports are in
+`artifacts/store-screenshots-2026-11/{iphone-6.9,mac}/`.
 
-Sources are real captures of the current build: `capture-android-v2.sh` for the emulator (demo-mode
-status bar, 9:41), `xcrun simctl io screenshot` plus `axe tap --label` for the iOS simulator, and
-`screencapture -R` on a 1280×800 desktop window for the Mac.
+Sources are real captures of the current build: `xcrun simctl io screenshot` plus `axe tap --label`
+for the iOS simulator, and `screencap` on a 1280×800 desktop window for the Mac.
+`capture-android-v2.sh` remains for Android captures.
