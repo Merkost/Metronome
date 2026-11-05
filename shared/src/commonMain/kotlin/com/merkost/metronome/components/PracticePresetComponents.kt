@@ -58,6 +58,7 @@ import com.composables.icons.lucide.Pencil
 import com.composables.icons.lucide.Plus
 import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Trash2
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.PressedScaleSurface
@@ -185,7 +186,7 @@ fun PracticePresetRow(
                     }
                 }
                 Text(
-                    text = "${preset.rhythmSummary} · ${stringResource(if (preset.countInEnabled) Res.string.count_in_on else Res.string.count_in_off)}",
+                    text = "${preset.rhythmSummary.asString()} · ${stringResource(if (preset.countInEnabled) Res.string.count_in_on else Res.string.count_in_off)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,

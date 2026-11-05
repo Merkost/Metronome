@@ -51,8 +51,38 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import org.koin.compose.KoinContext
+import metronome.shared.generated.resources.app_name
+import metronome.shared.generated.resources.menu_view
+import metronome.shared.generated.resources.shell_presets
+import metronome.shared.generated.resources.practice_sets
+import metronome.shared.generated.resources.menu_playback
+import metronome.shared.generated.resources.menu_stop
+import metronome.shared.generated.resources.menu_start
+import metronome.shared.generated.resources.menu_tap_tempo
+import metronome.shared.generated.resources.menu_faster
+import metronome.shared.generated.resources.menu_slower
+import metronome.shared.generated.resources.menu_window
+import metronome.shared.generated.resources.menu_close
+import metronome.shared.generated.resources.menu_minimize
+import metronome.shared.generated.resources.menu_zoom
+import metronome.shared.generated.resources.menu_help
+import metronome.shared.generated.resources.menu_support
+import metronome.shared.generated.resources.menu_rate
+import metronome.shared.generated.resources.about_dialog_text
+import metronome.shared.generated.resources.done
+import metronome.shared.generated.resources.shell_audio_error_title
+import metronome.shared.generated.resources.shell_audio_error_fallback
+import metronome.shared.generated.resources.common_ok
+import metronome.shared.generated.resources.shell_quit_error_title
+import metronome.shared.generated.resources.shell_quit_error_message
+import metronome.shared.generated.resources.common_try_again
+import metronome.shared.generated.resources.shell_quit_keep_open
+import metronome.shared.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
+
+private class AudioFailure(val message: String?)
 
 fun main() {
     System.setProperty("apple.awt.application.name", "Metronome")
@@ -63,8 +93,8 @@ fun main() {
         val commands = remember { MutableSharedFlow<AppCommand>(extraBufferCapacity = 16) }
         var visible by remember { mutableStateOf(true) }
         var showAbout by remember { mutableStateOf(false) }
-        var audioError by remember { mutableStateOf<String?>(null) }
-        var quitError by remember { mutableStateOf<String?>(null) }
+        var audioError by remember { mutableStateOf<AudioFailure?>(null) }
+        var quitError by remember { mutableStateOf(false) }
         var quitting by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
         val windowState = rememberWindowState(width = 1000.dp, height = 780.dp)
@@ -112,7 +142,7 @@ fun main() {
                     if (error is CancellationException && error !is kotlinx.coroutines.TimeoutCancellationException) throw error
                     reveal()
                     quitting = false
-                    quitError = "Your latest practice progress couldn’t be saved. Please try quitting again."
+                    quitError = true
                 }
             }
         }
@@ -126,7 +156,7 @@ fun main() {
         LaunchedEffect(player) {
             player.failures.collect { error ->
                 viewModel.onStopClicked()
-                audioError = error.message ?: "Check the Mac's sound output, then try playback again."
+                audioError = AudioFailure(error.message)
             }
         }
 
@@ -182,54 +212,71 @@ fun main() {
                 }
             }
 
+            val appName = stringResource(Res.string.app_name)
+            val viewMenu = stringResource(Res.string.menu_view)
+            val presetsItem = stringResource(Res.string.shell_presets)
+            val practiceSetsItem = stringResource(Res.string.practice_sets)
+            val playbackMenu = stringResource(Res.string.menu_playback)
+            val playbackToggleItem = stringResource(if (playing) Res.string.menu_stop else Res.string.menu_start)
+            val tapTempoItem = stringResource(Res.string.menu_tap_tempo)
+            val fasterItem = stringResource(Res.string.menu_faster)
+            val slowerItem = stringResource(Res.string.menu_slower)
+            val windowMenu = stringResource(Res.string.menu_window)
+            val closeItem = stringResource(Res.string.menu_close)
+            val minimizeItem = stringResource(Res.string.menu_minimize)
+            val zoomItem = stringResource(Res.string.menu_zoom)
+            val helpMenu = stringResource(Res.string.menu_help)
+            val supportItem = stringResource(Res.string.menu_support)
+            val rateItem = stringResource(Res.string.menu_rate)
+
             MenuBar {
-                Menu("View", enabled = !quitting) {
-                    Item("Metronome", shortcut = KeyShortcut(Key.One, meta = true), enabled = ready) {
+                Menu(viewMenu, enabled = !quitting) {
+                    Item(appName, shortcut = KeyShortcut(Key.One, meta = true), enabled = ready) {
                         navigate(MainDestination.Main)
                     }
-                    Item("Presets", shortcut = KeyShortcut(Key.Two, meta = true), enabled = ready) {
+                    Item(presetsItem, shortcut = KeyShortcut(Key.Two, meta = true), enabled = ready) {
                         navigate(MainDestination.PracticePresets)
                     }
-                    Item("Practice sets", shortcut = KeyShortcut(Key.Three, meta = true), enabled = ready) {
+                    Item(practiceSetsItem, shortcut = KeyShortcut(Key.Three, meta = true), enabled = ready) {
                         navigate(MainDestination.PracticeSets)
                     }
                 }
-                Menu("Playback", enabled = !quitting) {
+                Menu(playbackMenu, enabled = !quitting) {
                     Item(
-                        if (playing) "Stop" else "Start",
+                        playbackToggleItem,
                         shortcut = KeyShortcut(Key.Enter, meta = true),
                         enabled = ready,
                         onClick = { viewModel.onPlayPauseClicked(viewModel.isPlaying.value) },
                     )
-                    Item("Tap tempo", shortcut = KeyShortcut(Key.T, meta = true), enabled = ready) {
+                    Item(tapTempoItem, shortcut = KeyShortcut(Key.T, meta = true), enabled = ready) {
                         viewModel.onTempoTap()
                     }
                     Separator()
-                    Item("Faster", shortcut = KeyShortcut(Key.Equals, meta = true), enabled = ready) {
+                    Item(fasterItem, shortcut = KeyShortcut(Key.Equals, meta = true), enabled = ready) {
                         viewModel.onSliderValueIncreased()
                     }
-                    Item("Slower", shortcut = KeyShortcut(Key.Minus, meta = true), enabled = ready) {
+                    Item(slowerItem, shortcut = KeyShortcut(Key.Minus, meta = true), enabled = ready) {
                         viewModel.onSliderValueDecreased()
                     }
                 }
-                Menu("Window") {
-                    Item("Close", shortcut = KeyShortcut(Key.W, meta = true)) {
+                Menu(windowMenu) {
+                    Item(closeItem, shortcut = KeyShortcut(Key.W, meta = true)) {
                         visible = false
                     }
-                    Item("Minimize", shortcut = KeyShortcut(Key.M, meta = true)) {
+                    Item(minimizeItem, shortcut = KeyShortcut(Key.M, meta = true)) {
                         windowState.isMinimized = true
                     }
-                    Item("Zoom") {
+                    Item(zoomItem) {
                         windowState.placement =
                             if (windowState.placement == WindowPlacement.Maximized) WindowPlacement.Floating
                             else WindowPlacement.Maximized
                     }
                     Separator()
-                    Item("Metronome", enabled = !quitting) { reveal() }
+                    Item(appName, enabled = !quitting) { reveal() }
                 }
-                Menu("Help") {
-                    Item("Metronome support", onClick = actions::contactSupport)
-                    Item("Rate Metronome", onClick = actions::rateApp)
+                Menu(helpMenu) {
+                    Item(supportItem, onClick = actions::contactSupport)
+                    Item(rateItem, onClick = actions::rateApp)
                 }
             }
 
@@ -248,33 +295,33 @@ fun main() {
                                 onDismissRequest = { showAbout = false },
                                 title = { Text("Metronome") },
                                 text = {
-                                    Text("Precise timing. Better practice.\n\nVersion ${version?.versionName.orEmpty()} (${version?.versionNumber ?: 1})\n\nSpace: start or stop\n↑ / ↓: adjust tempo\n\nMade by Merkost")
+                                    Text(stringResource(Res.string.about_dialog_text, version?.versionName.orEmpty(), version?.versionNumber ?: 1))
                                 },
                                 confirmButton = {
-                                    TextButton(onClick = { showAbout = false }) { Text("Done") }
+                                    TextButton(onClick = { showAbout = false }) { Text(stringResource(Res.string.done)) }
                                 },
                             )
                         }
-                        audioError?.let { message ->
+                        audioError?.let { failure ->
                             AlertDialog(
                                 onDismissRequest = { audioError = null },
-                                title = { Text("Sound output unavailable") },
-                                text = { Text(message) },
+                                title = { Text(stringResource(Res.string.shell_audio_error_title)) },
+                                text = { Text(failure.message ?: stringResource(Res.string.shell_audio_error_fallback)) },
                                 confirmButton = {
-                                    TextButton(onClick = { audioError = null }) { Text("OK") }
+                                    TextButton(onClick = { audioError = null }) { Text(stringResource(Res.string.common_ok)) }
                                 },
                             )
                         }
-                        quitError?.let { message ->
+                        if (quitError) {
                             AlertDialog(
-                                onDismissRequest = { quitError = null },
-                                title = { Text("Couldn’t finish saving") },
-                                text = { Text(message) },
+                                onDismissRequest = { quitError = false },
+                                title = { Text(stringResource(Res.string.shell_quit_error_title)) },
+                                text = { Text(stringResource(Res.string.shell_quit_error_message)) },
                                 confirmButton = {
-                                    TextButton(onClick = { quitError = null; quit() }) { Text("Try again") }
+                                    TextButton(onClick = { quitError = false; quit() }) { Text(stringResource(Res.string.common_try_again)) }
                                 },
                                 dismissButton = {
-                                    TextButton(onClick = { quitError = null }) { Text("Keep open") }
+                                    TextButton(onClick = { quitError = false }) { Text(stringResource(Res.string.shell_quit_keep_open)) }
                                 },
                             )
                         }

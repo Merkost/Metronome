@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
+import com.merkost.metronome.R
 
 class AndroidPlatformActions(private val context: Context) : PlatformActions {
 
@@ -22,7 +23,7 @@ class AndroidPlatformActions(private val context: Context) : PlatformActions {
                 putExtra(Intent.EXTRA_SUBJECT, "Support Request from Metronome App")
                 putExtra(
                     Intent.EXTRA_TEXT,
-                    "Please describe the issue you're experiencing or your question below:\n" +
+                    context.getString(R.string.android_support_intro) + "\n" +
                             "\n\n\n\n\n" +
                             "Device Information:\n" +
                             "OS Version: $osVersion\n" +
@@ -33,11 +34,11 @@ class AndroidPlatformActions(private val context: Context) : PlatformActions {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
-            context.startActivity(Intent.createChooser(emailIntent, "Send email...").apply {
+            context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.android_support_chooser)).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             })
         }.onFailure {
-            Toast.makeText(context, "There are no email clients installed.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.android_support_no_email), Toast.LENGTH_SHORT).show()
         }
     }
 

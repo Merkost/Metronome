@@ -72,6 +72,7 @@ import com.merkost.metronome.viewModels.PracticePresetsUiState
 import com.merkost.metronome.viewModels.PracticePresetsViewModel
 import com.merkost.metronome.viewModels.PresetUiEvent
 import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_preset_summary
 import metronome.shared.generated.resources.back
 import metronome.shared.generated.resources.cancel
 import metronome.shared.generated.resources.create_preset
@@ -87,7 +88,6 @@ import metronome.shared.generated.resources.preset_deleted
 import metronome.shared.generated.resources.preset_duplicated
 import metronome.shared.generated.resources.preset_invalid
 import metronome.shared.generated.resources.preset_in_use_sets
-import metronome.shared.generated.resources.preset_in_use_sets_more
 import metronome.shared.generated.resources.preset_in_use_title
 import metronome.shared.generated.resources.preset_limit_reached
 import metronome.shared.generated.resources.preset_migration_failed
@@ -107,6 +107,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
+import metronome.shared.generated.resources.preset_screen_subtitle
+import metronome.shared.generated.resources.preset_in_use_sets_more_count
+import org.jetbrains.compose.resources.pluralStringResource
 
 private sealed interface PresetEditor {
     val draft: PracticePresetDraft
@@ -227,7 +230,7 @@ fun PracticePresetsScreen(
                 )
             },
             summary = currentEditor.draft.run {
-                "$bpm BPM · ${timeSignature.label}" + if (subdivision.label.isNotBlank()) " · ${subdivision.label}" else ""
+                stringResource(Res.string.main_preset_summary, bpm, timeSignature.label, stringResource(subdivision.labelRes))
             },
             error = editorError,
             onConfirm = { name ->
@@ -271,7 +274,7 @@ fun PracticePresetsScreen(
         AppDialog(
             title = stringResource(Res.string.preset_in_use_title),
             text = if (remainingCount > 0) {
-                stringResource(Res.string.preset_in_use_sets_more, visibleNames, remainingCount)
+                pluralStringResource(Res.plurals.preset_in_use_sets_more_count, remainingCount, visibleNames, remainingCount)
             } else {
                 stringResource(Res.string.preset_in_use_sets, visibleNames)
             },
@@ -306,7 +309,7 @@ internal fun PracticePresetsContent(
     val useStackedSummary = LocalDensity.current.fontScale >= 1.3f
     PageScaffold(
         title = stringResource(Res.string.practice_presets),
-        subtitle = "Saved tempo and rhythm setups",
+        subtitle = stringResource(Res.string.preset_screen_subtitle),
         onBack = onBack,
         snackbarHost = { AppSnackbarHost(snackbarHostState) },
         actions = {

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.Subdivision
 import com.merkost.metronome.model.TimeSignature
+import com.merkost.metronome.model.UiText
 import com.merkost.metronome.practiceSets.PracticeSet
 import com.merkost.metronome.practiceSets.PracticeSetCodec
 import com.merkost.metronome.practiceSets.PracticeSetStep
@@ -15,6 +16,11 @@ import com.merkost.metronome.presets.PracticePreset
 import com.merkost.metronome.presets.PracticePresetCodec
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.backup_incomplete
+import metronome.shared.generated.resources.backup_invalid
+import metronome.shared.generated.resources.backup_no_room_presets
+import metronome.shared.generated.resources.backup_unexpected_contents
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -36,6 +42,20 @@ class PracticeBackupCodecTest {
         val backup = PracticeBackup(listOf(preset), listOf(set))
 
         assertEquals(backup, PracticeBackupCodec.decode(PracticeBackupCodec.encode(backup)))
+    }
+
+    @Test
+    fun rejectionsCarryLocalizableReasons() {
+        val valid = PracticeBackupCodec.encode(PracticeBackup(listOf(preset("p")), emptyList()))
+        val reasons = listOf(
+            "" to Res.string.backup_invalid,
+            valid.dropLast(1) to Res.string.backup_incomplete,
+            valid + "unexpected" to Res.string.backup_unexpected_contents,
+        )
+        reasons.forEach { (raw, reason) ->
+            val failure = assertFailsWith<BackupException> { PracticeBackupCodec.decode(raw) }
+            assertEquals(UiText.of(reason), failure.text)
+        }
     }
 
     @Test
@@ -168,8 +188,9 @@ class PracticeBackupRepositoryTest {
         val before = store.data.first()
         val incoming = PracticeBackup(listOf(preset("new")), listOf(practiceSet("new-set", "new")))
 
-        assertFailsWith<IllegalArgumentException> { PracticeBackupRepository(store).import(PracticeBackupCodec.encode(incoming)) }
+        val failure = assertFailsWith<BackupException> { PracticeBackupRepository(store).import(PracticeBackupCodec.encode(incoming)) }
 
+        assertEquals(UiText.of(Res.string.backup_no_room_presets), failure.text)
         assertEquals(before, store.data.first())
     }
 

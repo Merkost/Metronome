@@ -46,10 +46,21 @@ import com.merkost.metronome.ui.pressScale
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.exact_decrease_five
+import metronome.shared.generated.resources.exact_double
+import metronome.shared.generated.resources.exact_error
+import metronome.shared.generated.resources.exact_halve
+import metronome.shared.generated.resources.exact_increase_five
+import metronome.shared.generated.resources.exact_label
+import metronome.shared.generated.resources.exact_range
+import metronome.shared.generated.resources.exact_set_tempo
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ExactTempoSheet(currentBpm: Int, onApply: (Int) -> Unit, onDismiss: () -> Unit) {
-    AppBottomSheet(title = "Set tempo", onDismiss = onDismiss) { dismissAnimated ->
+    AppBottomSheet(title = stringResource(Res.string.exact_set_tempo), onDismiss = onDismiss) { dismissAnimated ->
         ExactTempoContent(currentBpm, onApply, dismissAnimated)
     }
 }
@@ -82,12 +93,12 @@ internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismis
         }
     }
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        Text("$MIN_BPM–$MAX_BPM BPM", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(Res.string.exact_range, MIN_BPM, MAX_BPM), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         AppTextField(
             value = input,
             onValueChange = { input = it.copy(text = sanitizeTempoInput(it.text)) },
             modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-            label = "Tempo in BPM",
+            label = stringResource(Res.string.exact_label),
             isError = tempoInputShowsError(input.text),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { apply() }),
@@ -95,6 +106,7 @@ internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismis
         FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
             TempoAdjustment.entries.forEach { adjustment ->
                 val adjusted = bpm?.let(adjustment::applyTo)
+                val adjustmentDescription = stringResource(adjustment.description)
                 TextButton(
                     onClick = {
                         adjusted?.let { value ->
@@ -104,7 +116,7 @@ internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismis
                     },
                     enabled = adjusted != null,
                     modifier = Modifier.heightIn(min = minimumTouchTargetSize).widthIn(min = minimumTouchTargetSize)
-                        .semantics { contentDescription = adjustment.description },
+                        .semantics { contentDescription = adjustmentDescription },
                 ) {
                     Text(adjustment.label)
                 }
@@ -112,7 +124,7 @@ internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismis
         }
         AnimatedVisibility(visible = tempoInputShowsError(input.text), enter = AppAnimations.expandEnter, exit = AppAnimations.shrinkExit) {
             Text(
-                "Enter a whole number from $MIN_BPM to $MAX_BPM.",
+                stringResource(Res.string.exact_error, MIN_BPM, MAX_BPM),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
@@ -124,16 +136,16 @@ internal fun ExactTempoContent(currentBpm: Int, onApply: (Int) -> Unit, onDismis
             modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight).pressScale(applyInteraction, PressedScaleSurface),
             interactionSource = applyInteraction,
         ) {
-            Text("Set tempo")
+            Text(stringResource(Res.string.exact_set_tempo))
         }
     }
 }
 
-internal enum class TempoAdjustment(val label: String, val description: String) {
-    MINUS_FIVE("−5", "Decrease tempo by 5 BPM"),
-    HALF("÷2", "Halve tempo"),
-    DOUBLE("×2", "Double tempo"),
-    PLUS_FIVE("+5", "Increase tempo by 5 BPM");
+internal enum class TempoAdjustment(val label: String, val description: StringResource) {
+    MINUS_FIVE("−5", Res.string.exact_decrease_five),
+    HALF("÷2", Res.string.exact_halve),
+    DOUBLE("×2", Res.string.exact_double),
+    PLUS_FIVE("+5", Res.string.exact_increase_five);
 
     fun applyTo(bpm: Int): Int? {
         if (bpm !in MIN_BPM..MAX_BPM) return null

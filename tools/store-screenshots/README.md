@@ -76,3 +76,14 @@ review-derived claims until there is a real review corpus.
 
 The frame order in `frames.json` applies to this alternate renderer. The
 Figma-derived App Store set uses its numbered file order.
+
+## November 2026 set
+
+The refreshed set lives in the **Metronome — Nov 2026** page of the same Figma file, next to the
+previous **Metronome** page, which is kept unchanged as history. It has three sections: Google Play
+(1080×1920, six frames), Mac App Store (2560×1600, four frames) and iPhone 6.9″ (1320×2868, six
+frames). Exports are in `artifacts/store-screenshots-2026-11/{google-play,mac,iphone-6.9}/`.
+
+Sources are real captures of the current build: `capture-android-v2.sh` for the emulator (demo-mode
+status bar, 9:41), `xcrun simctl io screenshot` plus `axe tap --label` for the iOS simulator, and
+`screencapture -R` on a 1280×800 desktop window for the Mac.

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Metronome</string>
+    <string name="settings">設定</string>
+    <string name="notification_title">Metronome</string>
+    <string name="notification_permission_title">許可が必要です</string>
+    <string name="notification_permission_description">バックグラウンドで動作させるため、Metronomeに通知へのアクセスを許可してください。</string>
+    <string name="notification_message">バックグラウンドで実行中</string>
+    <string name="app_full_name">Metronome: 練習とテンポ</string>
+    <string name="notification_permission_yes">はい</string>
+    <string name="notification_permission_no">いいえ</string>
+    <string name="android_support_intro">発生している問題やご質問を、以下に記入してください。</string>
+    <string name="android_support_chooser">メールを送信…</string>
+    <string name="android_support_no_email">メールアプリがインストールされていません。</string>
+    <string name="android_service_channel">Metronomeサービス</string>
+    <string name="android_service_pause">一時停止</string>
+    <string name="android_service_play">再生</string>
+    <string name="android_service_stop">停止</string>
+    <string name="android_service_status_playing">%1$s · 再生中</string>
+    <string name="android_service_status_paused">%1$s · 一時停止中</string>
+</resources>

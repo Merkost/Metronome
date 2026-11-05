@@ -25,6 +25,9 @@ import com.merkost.metronome.ui.progressRingSize
 import com.merkost.metronome.ui.pulseOnAppear
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.main_timer_done
+import org.jetbrains.compose.resources.stringResource
 
 private sealed interface TimerChipMode {
     data class Stopwatch(val elapsed: Long) : TimerChipMode
@@ -109,7 +112,7 @@ fun TimerChip(
                             )
                         }
                         Text(
-                            text = "Done",
+                            text = stringResource(Res.string.main_timer_done),
                             maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                             color = MaterialTheme.colorScheme.primary,

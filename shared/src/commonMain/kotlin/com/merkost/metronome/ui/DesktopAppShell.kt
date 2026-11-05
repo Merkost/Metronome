@@ -1,5 +1,15 @@
 package com.merkost.metronome.ui
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.app_name
+import metronome.shared.generated.resources.practice_sets
+import metronome.shared.generated.resources.settings
+import metronome.shared.generated.resources.shell_destination_hint
+import metronome.shared.generated.resources.shell_keyboard_hint
+import metronome.shared.generated.resources.shell_presets
+import metronome.shared.generated.resources.shell_sets
+import metronome.shared.generated.resources.shell_tempo
+import org.jetbrains.compose.resources.stringResource
 import com.merkost.metronome.components.HintTooltip
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -56,21 +66,22 @@ import com.merkost.metronome.navigation.LocalWindowTitleInset
 import com.merkost.metronome.navigation.MainDestination
 import com.merkost.metronome.navigation.usesDesktopSidebar
 import com.merkost.metronome.ui.theme.readableThemeColor
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private data class DesktopDestination(
     val destination: MainDestination,
-    val label: String,
-    val compactLabel: String,
+    val label: StringResource,
+    val compactLabel: StringResource,
     val icon: ImageVector,
-    val hint: String,
+    val shortcut: String,
 )
 
 private val desktopDestinations = listOf(
-    DesktopDestination(MainDestination.Main, "Metronome", "Tempo", Lucide.Timer, "Metronome · ⌘1"),
-    DesktopDestination(MainDestination.PracticePresets, "Presets", "Presets", Lucide.Bookmark, "Presets · ⌘2"),
-    DesktopDestination(MainDestination.PracticeSets, "Practice sets", "Sets", Lucide.Layers, "Practice sets · ⌘3"),
-    DesktopDestination(MainDestination.Settings, "Settings", "Settings", Lucide.Settings, "Settings · ⌘,"),
+    DesktopDestination(MainDestination.Main, Res.string.app_name, Res.string.shell_tempo, Lucide.Timer, "⌘1"),
+    DesktopDestination(MainDestination.PracticePresets, Res.string.shell_presets, Res.string.shell_presets, Lucide.Bookmark, "⌘2"),
+    DesktopDestination(MainDestination.PracticeSets, Res.string.practice_sets, Res.string.shell_sets, Lucide.Layers, "⌘3"),
+    DesktopDestination(MainDestination.Settings, Res.string.settings, Res.string.settings, Lucide.Settings, "⌘,"),
 )
 
 @Composable
@@ -116,7 +127,7 @@ fun DesktopAppShell(
                         }
                         if (selectedDestination == MainDestination.Main) {
                             Text(
-                                "Space to play or pause\n↑ ↓ to adjust tempo",
+                                stringResource(Res.string.shell_keyboard_hint),
                                 modifier = Modifier.padding(top = spacingLarge, bottom = spacingSmall),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -159,6 +170,7 @@ private fun DesktopNavigationItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val label = stringResource(item.label)
     val interactionSource = remember { MutableInteractionSource() }
     val focused by interactionSource.collectIsFocusedAsState()
     val background by animateColorAsState(
@@ -180,9 +192,9 @@ private fun DesktopNavigationItem(
         .hoverTint(interactionSource, shape, enabled = !selected)
         .then(if (focused) Modifier.border(1.dp, MaterialTheme.colorScheme.primary, shape) else Modifier)
         .selectable(selected = selected, role = Role.Tab, interactionSource = interactionSource, indication = null, onClick = onClick)
-        .semantics { contentDescription = item.label }
+        .semantics { contentDescription = label }
         .heightIn(min = minimumTouchTargetSize)
-    HintTooltip(item.hint, modifier = modifier) {
+    HintTooltip(stringResource(Res.string.shell_destination_hint, label, item.shortcut), modifier = modifier) {
     if (compact) {
         Column(
             modifier = container.padding(horizontal = spacingSmall / 2, vertical = spacingSmall),
@@ -190,7 +202,7 @@ private fun DesktopNavigationItem(
             verticalArrangement = Arrangement.spacedBy(spacingSmall / 2),
         ) {
             Icon(item.icon, null, tint = foreground, modifier = Modifier.size(20.dp))
-            Text(item.compactLabel, color = foreground, style = MaterialTheme.typography.labelMedium, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium)
+            Text(stringResource(item.compactLabel), color = foreground, style = MaterialTheme.typography.labelMedium, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium)
         }
     } else {
         Row(
@@ -199,7 +211,7 @@ private fun DesktopNavigationItem(
             horizontalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {
             Icon(item.icon, null, tint = foreground, modifier = Modifier.size(20.dp))
-            Text(item.label, color = foreground, style = MaterialTheme.typography.labelLarge, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium)
+            Text(label, color = foreground, style = MaterialTheme.typography.labelLarge, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium)
         }
     }
     }

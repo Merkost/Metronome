@@ -27,6 +27,11 @@ import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.starter_card_action
+import metronome.shared.generated.resources.starter_card_summary
+import metronome.shared.generated.resources.starter_card_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PracticeStarterCard(onPreview: () -> Unit, modifier: Modifier = Modifier) {
@@ -40,13 +45,13 @@ internal fun PracticeStarterCard(onPreview: () -> Unit, modifier: Modifier = Mod
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
-            Text("Try a warm-up", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(Res.string.starter_card_title), style = MaterialTheme.typography.titleSmall)
             Text(
-                "60 → 72 → 84 BPM · 6 min",
+                stringResource(Res.string.starter_card_summary),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text("Preview & edit", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            Text(stringResource(Res.string.starter_card_action), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         }
         Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowLeft else Lucide.ArrowRight, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }

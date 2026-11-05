@@ -1,5 +1,8 @@
 package com.merkost.metronome.components
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.common_close_named
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -154,7 +157,7 @@ private fun DesktopAppSheet(
                         fontWeight = FontWeight.Bold,
                     )
                     AppIconButton(onClick = dismissAnimated, enabled = !closing, modifier = Modifier.size(minimumTouchTargetSize)) {
-                        Icon(Lucide.X, "Close $title")
+                        Icon(Lucide.X, stringResource(Res.string.common_close_named, title))
                     }
                 }
                 AppBottomSheetBody(

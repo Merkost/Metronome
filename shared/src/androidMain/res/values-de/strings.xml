@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Metronome</string>
+    <string name="settings">Einstellungen</string>
+    <string name="notification_title">Metronome</string>
+    <string name="notification_permission_title">Berechtigung erforderlich</string>
+    <string name="notification_permission_description">Erlaube Metronome den Zugriff auf Benachrichtigungen, damit es im Hintergrund funktioniert.</string>
+    <string name="notification_message">Läuft im Hintergrund</string>
+    <string name="app_full_name">Metronome: Üben &amp; Tempo</string>
+    <string name="notification_permission_yes">Ja</string>
+    <string name="notification_permission_no">Nein</string>
+    <string name="android_support_intro">Bitte beschreibe unten das Problem oder deine Frage:</string>
+    <string name="android_support_chooser">E-Mail senden…</string>
+    <string name="android_support_no_email">Es ist keine E-Mail-App installiert.</string>
+    <string name="android_service_channel">Metronome-Dienst</string>
+    <string name="android_service_pause">Pause</string>
+    <string name="android_service_play">Start</string>
+    <string name="android_service_stop">Stopp</string>
+    <string name="android_service_status_playing">%1$s · Wiedergabe</string>
+    <string name="android_service_status_paused">%1$s · Pausiert</string>
+</resources>

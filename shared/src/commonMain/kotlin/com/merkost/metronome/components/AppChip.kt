@@ -1,5 +1,8 @@
 package com.merkost.metronome.components
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.common_remove_named
+import org.jetbrains.compose.resources.stringResource
 import com.merkost.metronome.ui.hoverTint
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.animation.animateColorAsState
@@ -106,7 +109,7 @@ fun AppChip(
                 AppIconButton(onClick = onTrailingClose) {
                     Icon(
                         imageVector = Lucide.X,
-                        contentDescription = "Remove $label",
+                        contentDescription = stringResource(Res.string.common_remove_named, label),
                         tint = contentColor,
                         modifier = Modifier.size(14.dp)
                     )

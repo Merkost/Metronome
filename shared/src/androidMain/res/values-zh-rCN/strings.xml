@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Metronome</string>
+    <string name="settings">设置</string>
+    <string name="notification_title">Metronome</string>
+    <string name="notification_permission_title">需要权限</string>
+    <string name="notification_permission_description">请允许 Metronome 发送通知，以便在后台运行。</string>
+    <string name="notification_message">正在后台运行</string>
+    <string name="app_full_name">Metronome：练习与速度</string>
+    <string name="notification_permission_yes">是</string>
+    <string name="notification_permission_no">否</string>
+    <string name="android_support_intro">请在下方描述所遇到的问题或疑问：</string>
+    <string name="android_support_chooser">发送电子邮件…</string>
+    <string name="android_support_no_email">未安装任何电子邮件应用。</string>
+    <string name="android_service_channel">Metronome 服务</string>
+    <string name="android_service_pause">暂停</string>
+    <string name="android_service_play">播放</string>
+    <string name="android_service_stop">停止</string>
+    <string name="android_service_status_playing">%1$s · 播放中</string>
+    <string name="android_service_status_paused">%1$s · 已暂停</string>
+</resources>

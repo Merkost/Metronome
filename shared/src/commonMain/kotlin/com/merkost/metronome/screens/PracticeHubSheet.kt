@@ -43,6 +43,26 @@ import com.merkost.metronome.ui.pressableSurface
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.duration_minutes
+import metronome.shared.generated.resources.hub_gap_trainer
+import metronome.shared.generated.resources.hub_practice_data
+import metronome.shared.generated.resources.hub_practice_data_caption
+import metronome.shared.generated.resources.hub_practice_sets
+import metronome.shared.generated.resources.hub_practice_summary
+import metronome.shared.generated.resources.hub_presets
+import metronome.shared.generated.resources.hub_privacy
+import metronome.shared.generated.resources.hub_saved_setups
+import metronome.shared.generated.resources.hub_streak
+import metronome.shared.generated.resources.hub_streak_days
+import metronome.shared.generated.resources.hub_tempo_trainer
+import metronome.shared.generated.resources.hub_timer
+import metronome.shared.generated.resources.hub_title
+import metronome.shared.generated.resources.hub_today
+import metronome.shared.generated.resources.hub_total
+import metronome.shared.generated.resources.hub_training_tools
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PracticeHubSheet(
@@ -60,57 +80,57 @@ fun PracticeHubSheet(
     onOpenPracticeData: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppBottomSheet(title = "Practice", onDismiss = onDismiss) { dismissAnimated ->
+    AppBottomSheet(title = stringResource(Res.string.hub_title), onDismiss = onDismiss) { dismissAnimated ->
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(spacingSmall),
         ) {
-            Text("Saved setups", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.semantics { heading() })
-            PracticeHubRow(Lucide.Bookmark, "Presets", value = presetCount.toString()) {
+            Text(stringResource(Res.string.hub_saved_setups), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.semantics { heading() })
+            PracticeHubRow(Lucide.Bookmark, stringResource(Res.string.hub_presets), value = presetCount.toString()) {
                 onOpenPresets()
                 dismissAnimated()
             }
-            PracticeHubRow(Lucide.Layers, "Practice sets", value = practiceSetCount.toString()) {
+            PracticeHubRow(Lucide.Layers, stringResource(Res.string.hub_practice_sets), value = practiceSetCount.toString()) {
                 onOpenPracticeSets()
                 dismissAnimated()
             }
-            Text("Training tools", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = spacingMedium))
-            PracticeHubRow(Lucide.Timer, "Timer", value = "$timerMinutes min") {
+            Text(stringResource(Res.string.hub_training_tools), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = spacingMedium))
+            PracticeHubRow(Lucide.Timer, stringResource(Res.string.hub_timer), value = stringResource(Res.string.duration_minutes, timerMinutes)) {
                 onOpenTimer()
                 dismissAnimated()
             }
-            PracticeHubRow(Lucide.TrendingUp, "Tempo trainer") {
+            PracticeHubRow(Lucide.TrendingUp, stringResource(Res.string.hub_tempo_trainer)) {
                 onOpenTempoTrainer()
                 dismissAnimated()
             }
-            PracticeHubRow(Lucide.VolumeX, "Gap trainer") {
+            PracticeHubRow(Lucide.VolumeX, stringResource(Res.string.hub_gap_trainer)) {
                 onOpenGapTrainer()
                 dismissAnimated()
             }
             HorizontalDivider(modifier = Modifier.padding(top = spacingMedium))
-            Text("Practice summary", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = spacingMedium))
+            Text(stringResource(Res.string.hub_practice_summary), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = spacingMedium))
             if (LocalDensity.current.fontScale >= 1.3f) {
                 Column(verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    PracticeHubStatistic("Today", TimestampMillisecondsFormatter.formatHuman(todayPracticeTime))
-                    PracticeHubStatistic("Streak", "$practiceStreak ${if (practiceStreak == 1) "day" else "days"}")
-                    PracticeHubStatistic("Total", TimestampMillisecondsFormatter.formatHuman(totalPracticeTime))
+                    PracticeHubStatistic(stringResource(Res.string.hub_today), TimestampMillisecondsFormatter.formatHuman(todayPracticeTime))
+                    PracticeHubStatistic(stringResource(Res.string.hub_streak), pluralStringResource(Res.plurals.hub_streak_days, practiceStreak, practiceStreak))
+                    PracticeHubStatistic(stringResource(Res.string.hub_total), TimestampMillisecondsFormatter.formatHuman(totalPracticeTime))
                 }
             } else {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = spacingSmall),
                     horizontalArrangement = Arrangement.spacedBy(spacingSmall),
                 ) {
-                    PracticeHubStatistic("Today", TimestampMillisecondsFormatter.formatHuman(todayPracticeTime), Modifier.weight(1f))
-                    PracticeHubStatistic("Streak", "$practiceStreak ${if (practiceStreak == 1) "day" else "days"}", Modifier.weight(1f))
-                    PracticeHubStatistic("Total", TimestampMillisecondsFormatter.formatHuman(totalPracticeTime), Modifier.weight(1f))
+                    PracticeHubStatistic(stringResource(Res.string.hub_today), TimestampMillisecondsFormatter.formatHuman(todayPracticeTime), Modifier.weight(1f))
+                    PracticeHubStatistic(stringResource(Res.string.hub_streak), pluralStringResource(Res.plurals.hub_streak_days, practiceStreak, practiceStreak), Modifier.weight(1f))
+                    PracticeHubStatistic(stringResource(Res.string.hub_total), TimestampMillisecondsFormatter.formatHuman(totalPracticeTime), Modifier.weight(1f))
                 }
             }
-            PracticeHubRow(Lucide.ChartNoAxesColumn, "Practice data", "Statistics and backups") {
+            PracticeHubRow(Lucide.ChartNoAxesColumn, stringResource(Res.string.hub_practice_data), stringResource(Res.string.hub_practice_data_caption)) {
                 onOpenPracticeData()
                 dismissAnimated()
             }
             Text(
-                "Your setups and practice data stay on this device.",
+                stringResource(Res.string.hub_privacy),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = spacingSmall),
@@ -174,6 +194,6 @@ private fun PracticeHubRowPreview() {
 @Composable
 private fun PracticeHubStatisticPreview() {
     MaterialTheme {
-        PracticeHubStatistic("Today", "12 min")
+        PracticeHubStatistic(stringResource(Res.string.hub_today), "12 min")
     }
 }
