@@ -10,6 +10,91 @@ to. Newest first.
 
 ---
 
+## 1.6.0 — Speaks your language
+_2026-11-05 · Android versionCode 13 · iOS build 5 · macOS build 1_
+
+Metronome in ten languages, a desktop app for the Mac and an instrument
+with more voice. This release also carries everything prepared for 1.5.0, which
+was never published on its own.
+
+**Highlights**
+- **Ten languages.** Spanish, French, German, Brazilian Portuguese, Italian,
+  Japanese, Korean, Simplified Chinese, Russian and Turkish across Android, iOS,
+  desktop and web, including the iOS Live Activity.
+- **Metronome for Mac.** A native desktop app with a sidebar, keyboard
+  shortcuts (Space, ⌘1 to ⌘3, ⌘,), shortcut hints as tooltips and a title bar
+  merged into the window.
+- **An instrument that talks back.** The count-in is spelled out in words,
+  tempo names sit in non-overlapping bands, Settings sums up your practice and
+  the timer and statistics show your week.
+- **Hear before you start.** A Hear one bar button on the welcome step and a
+  beat display preview in Settings. Colour schemes are drawn as miniature
+  instrument faces.
+- **More practice tools.** The tempo trainer can step after each gap cycle or
+  on tap, a phrase marker accents the first bar of each phrase, and an option
+  stops the metronome when the practice timer ends.
+- **Steadier in the background.** The click keeps playing when the Android
+  screen locks, Android gets lock-screen media controls, notifications duck the
+  click and playback resumes after short interruptions. If audio cannot start,
+  the metronome stops and says so, and a silent click explains why.
+- **A beat with character.** Each beat is a strike with a tempo-aware ring, the
+  constant halo is gone, the dark theme has a designed grey ladder, and motion
+  respects the system reduce motion setting.
+- **Everything from 1.5.0.** The one-screen welcome, a calmer main screen,
+  clearer Settings and more focused practice tools.
+
+**Fixes and interaction polish**
+- Singular forms read correctly ("1 bar", "1 step").
+- Hover tints no longer stack on the ripple on desktop.
+- Tempo names no longer overlap between bands.
+- The beat flash is limited to three flashes per second, and screen readers no
+  longer announce every beat.
+
+**Under the hood**
+- Pure sentence builders return `UiText`, backed by string resources.
+  `tools/check-translations.py` checks every locale file and a rendering test
+  covers the key screens in all ten locales. 826 unit and desktop tests pass.
+- Translations are machine-written and structurally checked, not yet reviewed
+  by native speakers.
+
+**Store message — Google Play** (488 of 500 characters)
+```
+Metronome 1.6.0
+
+• Now in ten languages: Spanish, French, German, Portuguese, Italian, Japanese, Korean, Chinese, Russian and Turkish
+• The count-in is spelled out in words, tempo names sit in clear bands and Settings sums up your practice
+• The tempo trainer can step after each gap cycle or when you tap
+• A phrase marker accents the first bar of every phrase
+• Lock-screen playback controls, and the click keeps going with the screen off
+• A new beat animation and a refined dark theme
+```
+
+**Store message — App Store** (1386 of 4000 characters)
+```
+A steadier, friendlier metronome
+
+Metronome 1.6.0 speaks your language, keeps time more reliably in the background and gives the beat more character.
+
+TEN LANGUAGES
+Metronome is now available in Spanish, French, German, Brazilian Portuguese, Italian, Japanese, Korean, Simplified Chinese, Russian and Turkish.
+
+AN INSTRUMENT THAT TALKS BACK
+The count-in is spelled out in words, tempo names such as Andante and Allegro sit in clear bands, and Settings sums up your practice. The timer and statistics show your week at a glance, and a Hear one bar button on the welcome screen lets you try the click before you start.
+
+MORE PRACTICE TOOLS
+The tempo trainer can step after each gap cycle or when you tap. A phrase marker accents the first bar of every phrase and counts the bars. An option stops the metronome when the practice timer ends.
+
+MORE RELIABLE IN THE BACKGROUND
+Short interruptions such as notifications no longer end the session, and the click resumes afterwards. If audio cannot start, the metronome stops and tells you why. If the click is silent because a volume is at zero, you get a hint.
+
+A BEAT WITH CHARACTER
+Each beat is a strike with a ring that follows the tempo, and the dark theme has a calmer grey ladder. The beat animation follows the system reduce motion setting.
+
+Also in this release: the cleaner welcome, calmer main screen and clearer Settings from 1.5.0.
+```
+
+---
+
 ## 1.5.0 — More space for your rhythm
 _Prepared 2026-10-12 · Android versionCode 12 · iOS build 4_
 

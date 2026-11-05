@@ -22,7 +22,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.swing)
 }
 
-val macVersion = "1.5.0"
+val macVersion = "1.6.0"
 val macBuild = "1"
 
 fun macSetting(property: String, environment: String) =
