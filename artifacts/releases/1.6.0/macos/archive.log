@@ -1,7 +1,7 @@
 Command line invocation:
     /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project desktopApp/macosXcode/MetronomeMac.xcodeproj -scheme "Metronome Mac" -configuration Release -destination generic/platform=macOS -derivedDataPath /private/tmp/MetronomeMacXcode -archivePath artifacts/releases/1.6.0/macos/Metronome-1.6.0-1.xcarchive archive
 
-2026-11-06 09:33:06.185 xcodebuild[37252:16446387] [MT] IDESchemeActionsInvocationRecord: Device <IDEOSXSupportCore.IDEMacPlaceholder: 0x789aff5400 (Any Mac | undefined_arch)> is missing operatingSystemVersion, operatingSystemVersionWithBuildNumber.
+2026-11-06 09:57:43.020 xcodebuild[61960:16564819] [MT] IDESchemeActionsInvocationRecord: Device <IDEOSXSupportCore.IDEMacPlaceholder: 0x7550082580 (Any Mac | undefined_arch)> is missing operatingSystemVersion, operatingSystemVersionWithBuildNumber.
 ComputePackagePrebuildTargetDependencyGraph
 
 Prepare packages
@@ -23,15 +23,11 @@ CreateBuildDescription
 
 ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.2.sdk -x c -c /dev/null
 
-Build description signature: b3fd5cb7bfcb07e45ff2c5e617763c71
-Build description path: /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome Mac/IntermediateBuildFilesPath/XCBuildData/b3fd5cb7bfcb07e45ff2c5e617763c71.xcbuilddata
+Build description signature: 23880ed18ca93e1dd954f53db43f6bd6
+Build description path: /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome Mac/IntermediateBuildFilesPath/XCBuildData/23880ed18ca93e1dd954f53db43f6bd6.xcbuilddata
 CreateBuildDirectory /tmp/MetronomeMacXcode/SDKExplicitPrecompiledModules
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
     builtin-create-build-directory /tmp/MetronomeMacXcode/SDKExplicitPrecompiledModules
-
-CreateBuildDirectory /tmp/MetronomeMacXcode/ModuleCache.noindex
-    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
-    builtin-create-build-directory /tmp/MetronomeMacXcode/ModuleCache.noindex
 
 CreateBuildDirectory /tmp/MetronomeMacXcode/CompilationCache.noindex
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
@@ -41,9 +37,9 @@ CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveI
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
     builtin-create-build-directory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/PrecompiledHeaders
 
-CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath
+CreateBuildDirectory /tmp/MetronomeMacXcode/ModuleCache.noindex
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
-    builtin-create-build-directory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath
+    builtin-create-build-directory /tmp/MetronomeMacXcode/ModuleCache.noindex
 
 CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
@@ -53,9 +49,9 @@ CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveI
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
     builtin-create-build-directory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/BuildProductsPath
 
-CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/ExplicitPrecompiledModules
+CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
-    builtin-create-build-directory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/ExplicitPrecompiledModules
+    builtin-create-build-directory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath
 
 CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/SwiftExplicitPrecompiledModules
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
@@ -64,6 +60,10 @@ CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveI
 WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/MetronomeMac-f993f87202a6ec497d105996272f55d4-VFS/all-product-headers.yaml
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
     write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/MetronomeMac-f993f87202a6ec497d105996272f55d4-VFS/all-product-headers.yaml
+
+CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/ExplicitPrecompiledModules
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
+    builtin-create-build-directory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/ExplicitPrecompiledModules
 
 CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/EagerLinkingTBDs/Release
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/MetronomeMac.xcodeproj
@@ -75,29 +75,33 @@ CreateBuildDirectory /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveI
 
 warning: Traditional headermap style is no longer supported; please migrate to using separate headermaps and set 'ALWAYS_SEARCH_USER_PATHS' to NO. (in target 'Metronome Mac' from project 'MetronomeMac')
 note: Run script build phase 'Stage verified Compose application' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'Metronome Mac' from project 'MetronomeMac')
-WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.hmap (in target 'Metronome Mac' from project 'MetronomeMac')
-    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
-    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.hmap
-
 WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.DependencyMetadataFileList (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
     write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.DependencyMetadataFileList
 
-WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Script-A00000000000000000000006.sh (in target 'Metronome Mac' from project 'MetronomeMac')
+WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.hmap (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
-    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Script-A00000000000000000000006.sh
+    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.hmap
 
 WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-project-headers.hmap (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
     write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-project-headers.hmap
 
-WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-own-target-headers.hmap (in target 'Metronome Mac' from project 'MetronomeMac')
+WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.DependencyStaticMetadataFileList (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
-    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-own-target-headers.hmap
+    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Script-A00000000000000000000006.sh (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Script-A00000000000000000000006.sh
 
 WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-generated-files.hmap (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
     write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-generated-files.hmap
+
+WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-own-target-headers.hmap (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-own-target-headers.hmap
 
 WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome-all-target-headers.hmap (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
@@ -114,10 +118,6 @@ SymLink /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/
 WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/DerivedSources/Entitlements.plist (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
     write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/DerivedSources/Entitlements.plist
-
-WriteAuxiliaryFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.DependencyStaticMetadataFileList (in target 'Metronome Mac' from project 'MetronomeMac')
-    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
-    write-file /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.DependencyStaticMetadataFileList
 
 MkDir /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app/Contents/MacOS (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
@@ -147,10 +147,6 @@ ProcessProductPackaging /Users/merkost/StudioProjects/Metronome/desktopApp/packa
 ProcessProductPackagingDER /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.app.xcent /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.app.xcent.der (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
     /usr/bin/derq query -f xml -i /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.app.xcent -o /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.app.xcent.der --raw
-
-ProcessInfoPlistFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app/Contents/Info.plist /Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/Info.plist (in target 'Metronome Mac' from project 'MetronomeMac')
-    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
-    builtin-infoPlistUtility /Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/Info.plist -producttype com.apple.product-type.application -genpkginfo /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app/Contents/PkgInfo -expandbuildsettings -platform macosx -o /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app/Contents/Info.plist
 
 PhaseScriptExecution Stage\ verified\ Compose\ application /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Script-A00000000000000000000006.sh (in target 'Metronome Mac' from project 'MetronomeMac')
     cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
@@ -457,7 +453,7 @@ PhaseScriptExecution Stage\ verified\ Compose\ application /tmp/MetronomeMacXcod
     export MAC_OS_X_VERSION_MAJOR\=270000
     export MAC_OS_X_VERSION_MINOR\=270200
     export MAKE_MERGEABLE\=NO
-    export MARKETING_VERSION\=1.5.0
+    export MARKETING_VERSION\=1.6.0
     export MERGEABLE_LIBRARY\=NO
     export MERGED_BINARY_TYPE\=none
     export MERGE_LINKED_LIBRARIES\=NO
@@ -728,24 +724,49 @@ PhaseScriptExecution Stage\ verified\ Compose\ application /tmp/MetronomeMacXcod
     export arch\=undefined_arch
     export variant\=normal
     /bin/sh -c /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\\\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\\\ Mac.build/Script-A00000000000000000000006.sh
-Traceback (most recent call last):
-  File "/Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/../../tools/macos/stage-xcode-app.py", line 53, in <module>
-    main()
-  File "/Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode/../../tools/macos/stage-xcode-app.py", line 26, in main
-    raise ValueError(f"Prepared application {key} does not match the Xcode target")
-ValueError: Prepared application CFBundleShortVersionString does not match the Xcode target
-Command PhaseScriptExecution failed with a nonzero exit code
+Staged 234 verified files for Xcode archiving
+
+ProcessInfoPlistFile /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app/Contents/Info.plist /Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/Info.plist (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    builtin-infoPlistUtility /Users/merkost/StudioProjects/Metronome/desktopApp/build/compose/binaries/main/app/Metronome.app/Contents/Info.plist -producttype com.apple.product-type.application -genpkginfo /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app/Contents/PkgInfo -expandbuildsettings -platform macosx -o /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app/Contents/Info.plist
+
+SetOwnerAndGroup merkost:staff /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    /usr/sbin/chown -RH merkost:staff /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app
+
+SetMode u+w,go-w,a+rX /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    /bin/chmod -RH u+w,go-w,a+rX /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app
+
+CodeSign /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    
+    Signing Identity:     "3rd Party Mac Developer Application: Konstantin Merenkov (P47X2292CM)"
+    
+    /usr/bin/codesign --force --sign E52D3624E70D7C3FCDC20C0FBE3AF19038F77AB1 -o runtime --entitlements /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Metronome.app.xcent --generate-entitlement-der --strip-disallowed-xattrs /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app
+/tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome Mac/InstallationBuildProductsLocation/Applications/Metronome.app: replacing existing signature
+
+RegisterExecutionPolicyException /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    builtin-RegisterExecutionPolicyException /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app
+
+Validate /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    builtin-validationUtility /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app -no-validate-extension -infoplist-subpath Contents/Info.plist
+
+Touch /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    /usr/bin/touch -c /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app
+
+RegisterWithLaunchServices /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app (in target 'Metronome Mac' from project 'MetronomeMac')
+    cd /Users/merkost/StudioProjects/Metronome/desktopApp/macosXcode
+    builtin-lsregisterurl --record-path /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/XCBuildData/registered-launchservices.txt -- /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/InstallationBuildProductsLocation/Applications/Metronome.app
+
+PruneExplicitPrecompiledModules /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome Mac/IntermediateBuildFilesPath/ExplicitPrecompiledModules
 
 PruneExplicitPrecompiledModules /tmp/MetronomeMacXcode/SDKExplicitPrecompiledModules
 
 PruneExplicitPrecompiledModules /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome Mac/IntermediateBuildFilesPath/SwiftExplicitPrecompiledModules
 
-PruneExplicitPrecompiledModules /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome Mac/IntermediateBuildFilesPath/ExplicitPrecompiledModules
+** ARCHIVE SUCCEEDED **
 
-** ARCHIVE FAILED **
-
-
-The following build commands failed:
-	PhaseScriptExecution Stage\ verified\ Compose\ application /tmp/MetronomeMacXcode/Build/Intermediates.noindex/ArchiveIntermediates/Metronome\ Mac/IntermediateBuildFilesPath/MetronomeMac.build/Release/Metronome\ Mac.build/Script-A00000000000000000000006.sh (in target 'Metronome Mac' from project 'MetronomeMac')
-	Archiving project MetronomeMac with scheme Metronome Mac
-(2 failures)
