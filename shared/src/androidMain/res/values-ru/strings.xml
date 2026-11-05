@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Metronome</string>
+    <string name="settings">Настройки</string>
+    <string name="notification_title">Metronome</string>
+    <string name="notification_permission_title">Нужно разрешение</string>
+    <string name="notification_permission_description">Разрешите Metronome показывать уведомления, чтобы приложение работало в фоне.</string>
+    <string name="notification_message">Работает в фоне</string>
+    <string name="app_full_name">Metronome: практика и темп</string>
+    <string name="notification_permission_yes">Да</string>
+    <string name="notification_permission_no">Нет</string>
+    <string name="android_support_intro">Опишите проблему или вопрос ниже:</string>
+    <string name="android_support_chooser">Отправить письмо…</string>
+    <string name="android_support_no_email">Не установлено ни одного почтового клиента.</string>
+    <string name="android_service_channel">Служба Metronome</string>
+    <string name="android_service_pause">Пауза</string>
+    <string name="android_service_play">Играть</string>
+    <string name="android_service_stop">Стоп</string>
+    <string name="android_service_status_playing">%1$s · Играет</string>
+    <string name="android_service_status_paused">%1$s · Пауза</string>
+</resources>
