@@ -1,5 +1,8 @@
 package com.merkost.metronome.navigation
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.common_try_again
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -92,7 +95,7 @@ fun AppNavigation() {
                         MetronomeMark(Modifier.size(80.dp), MaterialTheme.colorScheme.primary)
                         onboardingLoadError?.let { error ->
                             Text(error, style = MaterialTheme.typography.bodyMedium)
-                            Button(onClick = viewModel::retryOnboardingLoad) { Text("Try again") }
+                            Button(onClick = viewModel::retryOnboardingLoad) { Text(stringResource(Res.string.common_try_again)) }
                         }
                     }
                 }

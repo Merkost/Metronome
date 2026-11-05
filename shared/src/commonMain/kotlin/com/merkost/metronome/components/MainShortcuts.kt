@@ -1,5 +1,6 @@
 package com.merkost.metronome.components
 
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +61,7 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
     val density = LocalDensity.current
     val titleStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
     val captionStyle = MaterialTheme.typography.bodySmall
-    val captions = remember { listOf("Timer & trainers") + ClickSound.entries.map { it.displayName } }
+    val captions = listOf("Timer & trainers") + ClickSound.entries.map { stringResource(it.nameRes) }
     val minimumTextWidth = remember(measurer, titleStyle, captionStyle) {
         maxOf(
             listOf("Practice", "Sound").maxOf { measurer.measure(AnnotatedString(it), titleStyle).multiParagraph.intrinsics.maxIntrinsicWidth },
@@ -86,12 +87,12 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
         if (sideBySide) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 MainShortcut(Lucide.Sparkles, "Practice", "Timer & trainers", onPractice, metrics, Modifier.weight(1f))
-                MainShortcut(Lucide.Headphones, "Sound", selectedSound.displayName, onSound, metrics, Modifier.weight(1f))
+                MainShortcut(Lucide.Headphones, "Sound", stringResource(selectedSound.nameRes), onSound, metrics, Modifier.weight(1f))
             }
         } else {
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 MainShortcut(Lucide.Sparkles, "Practice", "Timer & trainers", onPractice, metrics, Modifier.fillMaxWidth())
-                MainShortcut(Lucide.Headphones, "Sound", selectedSound.displayName, onSound, metrics, Modifier.fillMaxWidth())
+                MainShortcut(Lucide.Headphones, "Sound", stringResource(selectedSound.nameRes), onSound, metrics, Modifier.fillMaxWidth())
             }
         }
     }

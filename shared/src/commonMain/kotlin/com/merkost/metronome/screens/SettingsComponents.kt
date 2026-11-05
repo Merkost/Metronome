@@ -1,5 +1,33 @@
 package com.merkost.metronome.screens
 
+import metronome.shared.generated.resources.color_blue
+import metronome.shared.generated.resources.color_mint
+import metronome.shared.generated.resources.color_mono
+import metronome.shared.generated.resources.color_pink
+import metronome.shared.generated.resources.color_system
+import metronome.shared.generated.resources.color_violet
+import metronome.shared.generated.resources.common_collapsed
+import metronome.shared.generated.resources.common_expanded
+import metronome.shared.generated.resources.settings_appearance
+import metronome.shared.generated.resources.settings_audio
+import metronome.shared.generated.resources.settings_beat_haptics
+import metronome.shared.generated.resources.settings_beat_haptics_subtitle
+import metronome.shared.generated.resources.settings_click_volume
+import metronome.shared.generated.resources.settings_click_volume_description
+import metronome.shared.generated.resources.settings_color_scheme
+import metronome.shared.generated.resources.settings_color_scheme_named
+import metronome.shared.generated.resources.settings_more_audio
+import metronome.shared.generated.resources.settings_more_by
+import metronome.shared.generated.resources.settings_open_web_app
+import metronome.shared.generated.resources.settings_pan_centre
+import metronome.shared.generated.resources.settings_pan_left
+import metronome.shared.generated.resources.settings_pan_right
+import metronome.shared.generated.resources.settings_preview_pause_hint
+import metronome.shared.generated.resources.settings_stereo_pan
+import metronome.shared.generated.resources.settings_stereo_pan_description
+import metronome.shared.generated.resources.settings_suby_description
+import metronome.shared.generated.resources.settings_theme
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -74,6 +102,7 @@ import com.merkost.metronome.components.SoundPreviewButton
 import com.merkost.metronome.components.rememberSoundPreviewMetrics
 import com.merkost.metronome.components.AppSegmentedControl
 import com.merkost.metronome.model.ThemeMode
+import com.merkost.metronome.model.asString
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.ui.AppAnimations
 import com.merkost.metronome.ui.cornerRadiusLarge
@@ -86,6 +115,7 @@ import com.merkost.metronome.ui.spacingSmall
 import com.merkost.metronome.ui.theme.AppColorScheme
 import metronome.shared.generated.resources.Res
 import metronome.shared.generated.resources.suby_icon
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
@@ -96,52 +126,57 @@ internal fun SettingsSoundPanel(state: SettingsUiState, actions: SettingsActions
     var advanced by rememberSaveable { mutableStateOf(false) }
     val volumeLabel = "${(state.volume * 100).roundToInt()}%"
     val stereoLabel = when {
-        state.stereo < 0 -> "Left ${-state.stereo * 20}%"
-        state.stereo > 0 -> "Right ${state.stereo * 20}%"
-        else -> "Centre"
+        state.stereo < 0 -> stringResource(Res.string.settings_pan_left, "${-state.stereo * 20}%")
+        state.stereo > 0 -> stringResource(Res.string.settings_pan_right, "${state.stereo * 20}%")
+        else -> stringResource(Res.string.settings_pan_centre)
     }
+    val expandedText = stringResource(Res.string.common_expanded)
+    val collapsedText = stringResource(Res.string.common_collapsed)
+    val clickVolumeDescription = stringResource(Res.string.settings_click_volume_description, volumeLabel)
+    val stereoPanTitle = stringResource(Res.string.settings_stereo_pan)
+    val stereoPanDescription = stringResource(Res.string.settings_stereo_pan_description, stereoLabel)
     Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 SettingsGlyph(Lucide.Volume2)
-                Text("Audio", modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.settings_audio), modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             }
             SettingsSoundSelectionRow(state, actions)
             AnimatedVisibility(state.playing, enter = AppAnimations.expandEnter, exit = AppAnimations.shrinkExit) {
-                Text("Pause playback to preview a click.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(Res.string.settings_preview_pause_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            SettingsSlider("Click volume", volumeLabel) {
+            SettingsSlider(stringResource(Res.string.settings_click_volume), volumeLabel) {
                 AppSlider(
                     value = state.volume,
                     onValueChange = actions.onVolume,
                     valueRange = 0f..1f,
-                    accessibilityLabel = "Click volume, $volumeLabel",
+                    accessibilityLabel = clickVolumeDescription,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-            state.previewError?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+            state.previewError?.let { Text(it.asString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
             if (state.supportsHaptics) {
-                SettingsSwitch("Beat haptics", state.hapticEnabled, actions.onHaptic, "Haptic feedback on each beat")
+                SettingsSwitch(stringResource(Res.string.settings_beat_haptics), state.hapticEnabled, actions.onHaptic, stringResource(Res.string.settings_beat_haptics_subtitle))
             }
             Row(
                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(cornerRadiusMedium))
                     .pressableSurface({ advanced = !advanced })
-                    .semantics { stateDescription = if (advanced) "Expanded" else "Collapsed" }
+                    .semantics { stateDescription = if (advanced) expandedText else collapsedText }
                     .heightIn(min = minimumTouchTargetSize),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("More audio controls", modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(Res.string.settings_more_audio), modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 SettingsChevron(advanced)
             }
             AnimatedVisibility(advanced, enter = AppAnimations.expandEnter, exit = AppAnimations.shrinkExit) {
-                SettingsSlider("Stereo pan", stereoLabel) {
+                SettingsSlider(stereoPanTitle, stereoLabel) {
                     AppSlider(
                         value = state.stereo.toFloat(),
                         onValueChange = actions.onStereo,
                         valueRange = -5f..5f,
                         steps = 9,
                         showActiveTicks = true,
-                        accessibilityLabel = "Stereo pan, $stereoLabel",
+                        accessibilityLabel = stereoPanDescription,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -156,11 +191,12 @@ private fun SettingsSoundSelectionRow(state: SettingsUiState, actions: SettingsA
     val density = LocalDensity.current
     val nameStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
     val descriptionStyle = MaterialTheme.typography.bodySmall
-    val minimumTextWidth = remember(measurer, nameStyle, descriptionStyle) {
-        ClickSound.entries.maxOf { sound ->
+    val soundTexts = ClickSound.entries.map { stringResource(it.nameRes) to stringResource(it.descriptionRes) }
+    val minimumTextWidth = remember(measurer, nameStyle, descriptionStyle, soundTexts) {
+        soundTexts.maxOf { (name, description) ->
             maxOf(
-                measurer.measure(AnnotatedString(sound.displayName), nameStyle).multiParagraph.intrinsics.minIntrinsicWidth,
-                measurer.measure(AnnotatedString(sound.description), descriptionStyle).multiParagraph.intrinsics.minIntrinsicWidth,
+                measurer.measure(AnnotatedString(name), nameStyle).multiParagraph.intrinsics.minIntrinsicWidth,
+                measurer.measure(AnnotatedString(description), descriptionStyle).multiParagraph.intrinsics.minIntrinsicWidth,
             )
         }
     }
@@ -201,10 +237,10 @@ private fun SettingsSoundPicker(state: SettingsUiState, actions: SettingsActions
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
             AnimatedContent(state.selectedSound, transitionSpec = { AppAnimations.fadeThrough }, label = "settingsSound") { sound ->
-                Text(sound.displayName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(sound.nameRes), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
             AnimatedContent(state.selectedSound, transitionSpec = { AppAnimations.fadeThrough }, label = "settingsSoundDescription") { sound ->
-                Text(sound.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(sound.descriptionRes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         Icon(if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight, null, modifier = Modifier.size(20.dp))
@@ -227,13 +263,14 @@ private fun SettingsSoundPickerPreview() {
 internal fun SettingsAppearancePanel(state: SettingsUiState, actions: SettingsActions) {
     val measurer = rememberTextMeasurer()
     val nameStyle = MaterialTheme.typography.labelLarge
+    val schemeNames = AppColorScheme.entries.map { stringResource(it.settingsNameRes) }
     val nameWidth = with(LocalDensity.current) {
-        AppColorScheme.entries.maxOf { measurer.measure(AnnotatedString(it.settingsName), nameStyle, softWrap = false, maxLines = 1).size.width }.toDp()
+        schemeNames.maxOf { measurer.measure(AnnotatedString(it), nameStyle, softWrap = false, maxLines = 1).size.width }.toDp()
     }
     Column(Modifier.fillMaxWidth().padding(vertical = spacingSmall), verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        Text("Appearance", modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(stringResource(Res.string.settings_appearance), modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("Colour scheme", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.settings_color_scheme), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
             AnimatedContent(
                 state.colorScheme,
                 modifier = Modifier.width(nameWidth),
@@ -241,7 +278,7 @@ internal fun SettingsAppearancePanel(state: SettingsUiState, actions: SettingsAc
                 contentAlignment = Alignment.CenterEnd,
                 label = "paletteName",
             ) { scheme ->
-                Text(scheme.settingsName, style = nameStyle, color = MaterialTheme.colorScheme.onSurfaceVariant, softWrap = false, maxLines = 1)
+                Text(stringResource(scheme.settingsNameRes), style = nameStyle, color = MaterialTheme.colorScheme.onSurfaceVariant, softWrap = false, maxLines = 1)
             }
         }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
@@ -250,9 +287,9 @@ internal fun SettingsAppearancePanel(state: SettingsUiState, actions: SettingsAc
                 SettingsPaletteChoice(palette, state.colorScheme == palette, { actions.onColorScheme(palette) }, Modifier.widthIn(min = minimumTouchTargetSize))
             }
         }
-        SettingsRow("Theme") {
+        SettingsRow(stringResource(Res.string.settings_theme)) {
             AppSegmentedControl(
-                options = ThemeMode.entries.map { it.label },
+                options = ThemeMode.entries.map { stringResource(it.labelRes) },
                 selectedIndex = ThemeMode.entries.indexOf(state.themeMode),
                 onSelect = { actions.onTheme(ThemeMode.entries[it]) },
             )
@@ -267,13 +304,15 @@ private fun SettingsPaletteChoice(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val paletteName = stringResource(palette.settingsNameRes)
+    val paletteDescription = stringResource(Res.string.settings_color_scheme_named, paletteName)
     val ring by animateDpAsState(if (isSelected) 2.dp else 0.dp, AppAnimations.emphasized(), label = "paletteRing")
     val ringColor by animateColorAsState(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0f), AppAnimations.standard(), label = "paletteRingColor")
     val labelColor by animateColorAsState(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, AppAnimations.standard(), label = "paletteLabel")
     Column(
         modifier = modifier.clip(RoundedCornerShape(cornerRadiusMedium))
             .pressableSurface(onClick, pressedScale = 1f, role = Role.RadioButton)
-            .semantics { contentDescription = "${palette.settingsName} colour scheme"
+            .semantics { contentDescription = paletteDescription
                 selected = isSelected }
             .padding(vertical = spacingSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -303,7 +342,7 @@ private fun SettingsPaletteChoice(
                 }
             }
         }
-        Text(palette.settingsName, style = MaterialTheme.typography.labelSmall, color = labelColor, fontWeight = FontWeight.SemiBold, softWrap = false, maxLines = 1)
+        Text(paletteName, style = MaterialTheme.typography.labelSmall, color = labelColor, fontWeight = FontWeight.SemiBold, softWrap = false, maxLines = 1)
     }
 }
 
@@ -315,11 +354,13 @@ internal fun SettingsDisclosure(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+    val expandedText = stringResource(Res.string.common_expanded)
+    val collapsedText = stringResource(Res.string.common_collapsed)
     Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth().pressableSurface({ expanded = !expanded })
-                    .semantics { stateDescription = if (expanded) "Expanded" else "Collapsed" }
+                    .semantics { stateDescription = if (expanded) expandedText else collapsedText }
                     .heightIn(min = minimumTouchTargetSize)
                     .padding(horizontalPadding),
                 horizontalArrangement = Arrangement.spacedBy(spacingSmall),
@@ -390,13 +431,13 @@ internal fun SettingsGroup(title: String, content: @Composable ColumnScope.() ->
 
 @Composable
 internal fun SettingsWebCard(onClick: () -> Unit) {
-    SettingsLink("Open web app", "metronome.merkost.dev", Lucide.Monitor, onClick, external = true)
+    SettingsLink(stringResource(Res.string.settings_open_web_app), "metronome.merkost.dev", Lucide.Monitor, onClick, external = true)
 }
 
 @Composable
 internal fun SettingsSubyCard(onClick: () -> Unit) {
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-        Text("More by Merkost", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = spacingSmall))
+        Text(stringResource(Res.string.settings_more_by), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = spacingSmall))
         Row(
             modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(cornerRadiusLarge))
                 .pressableSurface(onClick).heightIn(min = minimumTouchTargetSize).padding(vertical = spacingSmall),
@@ -406,7 +447,7 @@ internal fun SettingsSubyCard(onClick: () -> Unit) {
             Image(painterResource(Res.drawable.suby_icon), null, modifier = Modifier.size(40.dp).clip(RoundedCornerShape(cornerRadiusMedium)))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
                 Text("Suby", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                Text("Keep subscriptions & renewals in one place", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(Res.string.settings_suby_description), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Icon(Lucide.ExternalLink, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
         }
@@ -463,14 +504,14 @@ fun SettingsSwitch(title: String, checked: Boolean, onCheckedChange: (Boolean) -
     }
 }
 
-private val AppColorScheme.settingsName: String
+private val AppColorScheme.settingsNameRes: StringResource
     get() = when (this) {
-        AppColorScheme.MATERIAL3 -> "System"
-        AppColorScheme.BLACKNWHITE -> "Mono"
-        AppColorScheme.MELROSE -> "Violet"
-        AppColorScheme.PERIWINKLE -> "Blue"
-        AppColorScheme.MINT_GREEN -> "Mint"
-        AppColorScheme.PINK_LACE -> "Pink"
+        AppColorScheme.MATERIAL3 -> Res.string.color_system
+        AppColorScheme.BLACKNWHITE -> Res.string.color_mono
+        AppColorScheme.MELROSE -> Res.string.color_violet
+        AppColorScheme.PERIWINKLE -> Res.string.color_blue
+        AppColorScheme.MINT_GREEN -> Res.string.color_mint
+        AppColorScheme.PINK_LACE -> Res.string.color_pink
     }
 
 @Preview

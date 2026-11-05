@@ -1,5 +1,43 @@
 package com.merkost.metronome.screens
 
+import metronome.shared.generated.resources.about_contact
+import metronome.shared.generated.resources.about_contact_description
+import metronome.shared.generated.resources.about_guide
+import metronome.shared.generated.resources.about_guide_description
+import metronome.shared.generated.resources.about_privacy
+import metronome.shared.generated.resources.about_privacy_description
+import metronome.shared.generated.resources.about_rate
+import metronome.shared.generated.resources.about_rate_description
+import metronome.shared.generated.resources.about_version
+import metronome.shared.generated.resources.about_website
+import metronome.shared.generated.resources.about_website_description
+import metronome.shared.generated.resources.common_got_it
+import metronome.shared.generated.resources.done
+import metronome.shared.generated.resources.info_rhythm_body
+import metronome.shared.generated.resources.info_rhythm_title
+import metronome.shared.generated.resources.info_saved_body
+import metronome.shared.generated.resources.info_saved_title
+import metronome.shared.generated.resources.info_tempo_body
+import metronome.shared.generated.resources.info_tempo_title
+import metronome.shared.generated.resources.info_training_body
+import metronome.shared.generated.resources.info_training_title
+import metronome.shared.generated.resources.settings_help_about
+import metronome.shared.generated.resources.settings_latest_updates
+import metronome.shared.generated.resources.settings_practice_data
+import metronome.shared.generated.resources.settings_practice_streak
+import metronome.shared.generated.resources.settings_reset_description
+import metronome.shared.generated.resources.settings_reset_pause_hint
+import metronome.shared.generated.resources.settings_reset_practice_statistics
+import metronome.shared.generated.resources.settings_reset_statistics
+import metronome.shared.generated.resources.settings_statistics
+import metronome.shared.generated.resources.settings_statistics_note
+import metronome.shared.generated.resources.settings_streak_days
+import metronome.shared.generated.resources.settings_today
+import metronome.shared.generated.resources.settings_total_practice
+import metronome.shared.generated.resources.settings_week_empty
+import metronome.shared.generated.resources.whats_new_title
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 import com.merkost.metronome.components.WeekStrip
 import com.merkost.metronome.model.PracticeWeek
 import com.merkost.metronome.model.weekSentence
@@ -54,7 +92,7 @@ internal fun SettingsPracticeSheet(
     onDismiss: () -> Unit,
     week: PracticeWeek? = null,
 ) {
-    AppBottomSheet("Practice data", onDismiss) { dismissAnimated ->
+    AppBottomSheet(stringResource(Res.string.settings_practice_data), onDismiss) { dismissAnimated ->
         SettingsPracticeContent(todayTime, totalTime, practiceStreak, playing, onReset, dismissAnimated, week = week) {
             PracticeBackupControls()
         }
@@ -73,39 +111,39 @@ internal fun SettingsPracticeContent(
     backupControls: @Composable () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        Text("Statistics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(stringResource(Res.string.settings_statistics), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         if (week != null) {
             Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                    Text(weekSentence(week) ?: "Nothing logged yet this week. Your first session will appear here.", style = MaterialTheme.typography.bodyMedium)
+                    Text(weekSentence(week) ?: stringResource(Res.string.settings_week_empty), style = MaterialTheme.typography.bodyMedium)
                     WeekStrip(week)
                 }
             }
         }
         Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                Text("Today", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(Res.string.settings_today), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(TimestampMillisecondsFormatter.formatHuman(todayTime), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
-            SettingsPracticeStatistic("Total practice", TimestampMillisecondsFormatter.formatHuman(totalTime), Modifier.weight(1f))
-            SettingsPracticeStatistic("Practice streak", "$practiceStreak ${if (practiceStreak == 1) "day" else "days"}", Modifier.weight(1f))
+            SettingsPracticeStatistic(stringResource(Res.string.settings_total_practice), TimestampMillisecondsFormatter.formatHuman(totalTime), Modifier.weight(1f))
+            SettingsPracticeStatistic(stringResource(Res.string.settings_practice_streak), pluralStringResource(Res.plurals.settings_streak_days, practiceStreak, practiceStreak), Modifier.weight(1f))
         }
-        Text("Time counts during playback and is saved when you pause. Statistics stay on this device.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(Res.string.settings_statistics_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         backupControls()
         Surface(shape = RoundedCornerShape(cornerRadiusLarge), color = MaterialTheme.colorScheme.surfaceContainerLow) {
             Column(Modifier.padding(horizontalPadding), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
-                Text("Reset statistics", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text("Clear practice statistics. Your presets and practice sets are kept.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(Res.string.settings_reset_statistics), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(Res.string.settings_reset_description), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 TextButton(onClick = onReset, enabled = !playing, modifier = Modifier.heightIn(min = minimumTouchTargetSize)) {
-                    Text("Reset practice statistics", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.settings_reset_practice_statistics), fontWeight = FontWeight.SemiBold)
                 }
-                if (playing) Text("Pause playback before resetting your statistics.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (playing) Text(stringResource(Res.string.settings_reset_pause_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         Button(onClick = onDone, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight)) {
-            Text("Done", fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.done), fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -131,7 +169,7 @@ internal fun SettingsAboutSheet(
     onPrivacy: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppBottomSheet("Help & about", onDismiss) { dismissAnimated ->
+    AppBottomSheet(stringResource(Res.string.settings_help_about), onDismiss) { dismissAnimated ->
         SettingsAboutContent(version, onGuide, onWhatsNew, onContact, onRate, onWebsite, onPrivacy, dismissAnimated)
     }
 }
@@ -152,35 +190,35 @@ internal fun SettingsAboutContent(
             Image(painterResource(Res.drawable.ic_launcher), null, modifier = Modifier.size(minimumTouchTargetSize).clip(RoundedCornerShape(cornerRadiusLarge)))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacingSmall / 2)) {
                 Text("Metronome", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                if (version.isNotBlank()) Text("Version $version", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (version.isNotBlank()) Text(stringResource(Res.string.about_version, version), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        SettingsLink("Practice guide", "Tempo, rhythm & practice tools", Lucide.BookOpen, onGuide)
-        SettingsLink("What's new", "Latest updates", Lucide.Sparkles, onWhatsNew)
-        SettingsLink("Contact support", "Ask a question or share feedback", Lucide.Mail, onContact)
-        SettingsLink("Rate the app", "Leave a store review", Lucide.Star, onRate)
-        SettingsLink("Metronome website", "Web app & support", Lucide.ExternalLink, onWebsite, external = true)
-        SettingsLink("Privacy policy", "How your information is handled", Lucide.ShieldCheck, onPrivacy, external = true)
+        SettingsLink(stringResource(Res.string.about_guide), stringResource(Res.string.about_guide_description), Lucide.BookOpen, onGuide)
+        SettingsLink(stringResource(Res.string.whats_new_title), stringResource(Res.string.settings_latest_updates), Lucide.Sparkles, onWhatsNew)
+        SettingsLink(stringResource(Res.string.about_contact), stringResource(Res.string.about_contact_description), Lucide.Mail, onContact)
+        SettingsLink(stringResource(Res.string.about_rate), stringResource(Res.string.about_rate_description), Lucide.Star, onRate)
+        SettingsLink(stringResource(Res.string.about_website), stringResource(Res.string.about_website_description), Lucide.ExternalLink, onWebsite, external = true)
+        SettingsLink(stringResource(Res.string.about_privacy), stringResource(Res.string.about_privacy_description), Lucide.ShieldCheck, onPrivacy, external = true)
         Button(onClick = onDone, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight)) {
-            Text("Done", fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.done), fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
 internal fun SettingsGuideSheet(onDismiss: () -> Unit) {
-    AppBottomSheet("Practice guide", onDismiss) { dismissAnimated -> SettingsGuideContent(dismissAnimated) }
+    AppBottomSheet(stringResource(Res.string.about_guide), onDismiss) { dismissAnimated -> SettingsGuideContent(dismissAnimated) }
 }
 
 @Composable
 private fun SettingsGuideContent(onDone: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(spacingMedium)) {
-        SettingsGuideStep("Tempo", "Slide the tempo, tap a rhythm or enter an exact BPM. Press Play when you're ready.")
-        SettingsGuideStep("Rhythm", "Tap a beat to cycle accent, normal and mute. A filled dot plays the accent sound; the outer ring follows the active beat.")
-        SettingsGuideStep("Saved setups", "Save a preset to return to a tempo and rhythm. Arrange presets into a practice set with time or bar goals.")
-        SettingsGuideStep("Training tools", "Use the timer for a focused block, Tempo trainer to build speed and Gap trainer to practice through silence.")
+        SettingsGuideStep(stringResource(Res.string.info_tempo_title), stringResource(Res.string.info_tempo_body))
+        SettingsGuideStep(stringResource(Res.string.info_rhythm_title), stringResource(Res.string.info_rhythm_body))
+        SettingsGuideStep(stringResource(Res.string.info_saved_title), stringResource(Res.string.info_saved_body))
+        SettingsGuideStep(stringResource(Res.string.info_training_title), stringResource(Res.string.info_training_body))
         Button(onClick = onDone, shape = CircleShape, modifier = Modifier.fillMaxWidth().heightIn(min = sheetButtonHeight)) {
-            Text("Got it", fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.common_got_it), fontWeight = FontWeight.Bold)
         }
     }
 }

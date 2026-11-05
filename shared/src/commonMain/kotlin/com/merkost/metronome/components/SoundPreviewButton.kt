@@ -1,5 +1,11 @@
 package com.merkost.metronome.components
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.sound_preview
+import metronome.shared.generated.resources.sound_preview_description
+import metronome.shared.generated.resources.sound_preview_stop_description
+import metronome.shared.generated.resources.sound_stop
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -58,8 +64,9 @@ internal fun rememberSoundPreviewMetrics(): SoundPreviewMetrics {
     val style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
-    return remember(measurer, style, density) {
-        val labels = listOf("Preview", "Stop").map { measurer.measure(AnnotatedString(it), style, softWrap = false, maxLines = 1) }
+    val labelTexts = listOf(stringResource(Res.string.sound_preview), stringResource(Res.string.sound_stop))
+    return remember(measurer, style, density, labelTexts) {
+        val labels = labelTexts.map { measurer.measure(AnnotatedString(it), style, softWrap = false, maxLines = 1) }
         SoundPreviewMetrics(
             labelStyle = style,
             labelWidth = with(density) { ceil(labels.maxOf { it.multiParagraph.intrinsics.maxIntrinsicWidth }).toInt().toDp() },
@@ -90,10 +97,11 @@ fun SoundPreviewButton(
         AppAnimations.standard(),
         label = "previewForeground",
     )
+    val description = stringResource(if (previewing) Res.string.sound_preview_stop_description else Res.string.sound_preview_description)
     Surface(
         modifier = modifier.clip(CircleShape)
             .clickable(interactionSource = interactions, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
-            .semantics(mergeDescendants = true) { contentDescription = if (previewing) "Stop sound preview" else "Preview click sound" },
+            .semantics(mergeDescendants = true) { contentDescription = description },
         shape = CircleShape,
         color = MaterialTheme.colorScheme.primaryContainer,
     ) {
@@ -110,7 +118,7 @@ fun SoundPreviewButton(
             }
             Box(Modifier.width(metrics.labelWidth).height(metrics.labelHeight).clearAndSetSemantics {}, contentAlignment = Alignment.Center) {
                 AnimatedContent(previewing, modifier = Modifier.fillMaxSize(), transitionSpec = { AppAnimations.fadeThroughFixedSize }, contentAlignment = Alignment.Center, label = "previewLabel") { active ->
-                    Text(if (active) "Stop" else "Preview", style = labelStyle, color = foreground, softWrap = false, maxLines = 1)
+                    Text(stringResource(if (active) Res.string.sound_stop else Res.string.sound_preview), style = labelStyle, color = foreground, softWrap = false, maxLines = 1)
                 }
             }
         }
