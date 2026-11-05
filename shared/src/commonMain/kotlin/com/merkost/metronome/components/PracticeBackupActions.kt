@@ -48,6 +48,12 @@ import com.merkost.metronome.ui.minimumTouchTargetSize
 import com.merkost.metronome.ui.spacingMedium
 import com.merkost.metronome.ui.spacingSmall
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.backup_export
+import metronome.shared.generated.resources.backup_export_description
+import metronome.shared.generated.resources.backup_import
+import metronome.shared.generated.resources.backup_import_description
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PracticeBackupActions(
@@ -55,10 +61,10 @@ fun PracticeBackupActions(
     onExport: () -> Unit,
     onImport: () -> Unit,
     modifier: Modifier = Modifier,
-    exportLabel: String = "Export backup",
-    exportDescription: String = "Save your presets & practice sets",
-    importLabel: String = "Import backup",
-    importDescription: String = "Add setups from a backup",
+    exportLabel: String = stringResource(Res.string.backup_export),
+    exportDescription: String = stringResource(Res.string.backup_export_description),
+    importLabel: String = stringResource(Res.string.backup_import),
+    importDescription: String = stringResource(Res.string.backup_import_description),
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -167,6 +173,6 @@ private fun PracticeBackupActionsLargeTextPreview() {
 @Composable
 private fun PracticeBackupActionRowPreview() {
     MaterialTheme {
-        PracticeBackupActionRow("Export backup", "Save your presets & practice sets", Lucide.FileOutput, true, {})
+        PracticeBackupActionRow(stringResource(Res.string.backup_export), stringResource(Res.string.backup_export_description), Lucide.FileOutput, true, {})
     }
 }

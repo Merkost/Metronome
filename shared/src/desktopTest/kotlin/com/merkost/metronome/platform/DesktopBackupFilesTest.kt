@@ -1,6 +1,10 @@
 package com.merkost.metronome.platform
 
+import com.merkost.metronome.backup.BackupException
 import com.merkost.metronome.backup.MaximumBackupCharacters
+import com.merkost.metronome.model.UiText
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.backup_not_utf8
 import java.io.RandomAccessFile
 import java.nio.file.Files
 import kotlin.test.Test
@@ -40,7 +44,7 @@ class DesktopBackupFilesTest {
             val file = directory.resolve("invalid.json")
             file.writeBytes(byteArrayOf(0xC3.toByte(), 0x28))
             val failure = assertFailsWith<IllegalArgumentException> { DesktopBackupFiles.read(file) }
-            assertEquals("Choose a UTF-8 text backup.", failure.message)
+            assertEquals(UiText.of(Res.string.backup_not_utf8), (failure as BackupException).text)
         } finally {
             directory.deleteRecursively()
         }
