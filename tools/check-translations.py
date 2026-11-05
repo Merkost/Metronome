@@ -182,7 +182,7 @@ def words(text):
     return len(re.findall(r"[^\s·→−–—]+", text))
 
 
-def check_root(root, report, strict_locales):
+def check_root(root, report, strict_locales, only=None):
     if not root.exists():
         return 0
     english_dir = root / "values"
@@ -201,6 +201,8 @@ def check_root(root, report, strict_locales):
             if locale not in present:
                 report.error(label, f"missing locale directory {locale}")
     for locale in present:
+        if only and locale != only:
+            continue
         loaded = load_locale(root / locale, report)
         if loaded is None:
             continue
@@ -268,9 +270,12 @@ def check_root(root, report, strict_locales):
 def main():
     report = Report()
     total = 0
-    strict = "--allow-missing-locales" not in sys.argv
+    only = None
+    if "--only" in sys.argv:
+        only = sys.argv[sys.argv.index("--only") + 1]
+    strict = "--allow-missing-locales" not in sys.argv and only is None
     for root in RESOURCE_ROOTS:
-        total += check_root(root, report, strict)
+        total += check_root(root, report, strict, only)
     for line in report.warnings:
         print(line)
     for line in report.errors:
