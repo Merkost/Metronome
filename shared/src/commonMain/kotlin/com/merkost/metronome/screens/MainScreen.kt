@@ -29,6 +29,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import com.merkost.metronome.ui.cornerRadiusXLarge
 import com.merkost.metronome.model.PracticeWeek
 import com.merkost.metronome.components.AppSnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -574,6 +575,7 @@ fun MainScreen(
                                         .pressableSurface(
                                             onClick = { showExactTempo = true },
                                             pressedScale = 1f,
+                                            hoverShape = RoundedCornerShape(cornerRadiusXLarge),
                                         ),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                 ) {

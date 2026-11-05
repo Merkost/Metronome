@@ -1,5 +1,7 @@
 package com.merkost.metronome.ui
 
+import com.merkost.metronome.navigation.LocalAppPresentation
+import com.merkost.metronome.navigation.AppPresentation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
@@ -279,13 +281,14 @@ fun Modifier.pressableSurface(
         animationSpec = AppAnimations.Press,
         label = "surfacePressScale"
     )
-    val indication = if (rippled) LocalIndication.current else null
+    val desktop = LocalAppPresentation.current == AppPresentation.Desktop
+    val indication = if (rippled && !desktop) LocalIndication.current else null
     this
         .graphicsLayer {
             scaleX = scale
             scaleY = scale
         }
-        .hoverTint(interactionSource, hoverShape, enabled)
+        .hoverTint(interactionSource, hoverShape, enabled, includePressed = indication == null)
         .clickable(
             interactionSource = interactionSource,
             indication = indication,

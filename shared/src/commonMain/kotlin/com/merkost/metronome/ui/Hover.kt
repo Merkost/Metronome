@@ -31,12 +31,13 @@ fun Modifier.hoverTint(
     interactionSource: InteractionSource,
     shape: Shape = RoundedCornerShape(cornerRadiusLarge),
     enabled: Boolean = true,
+    includePressed: Boolean = true,
 ): Modifier {
     val hovered by interactionSource.collectIsHoveredAsState()
     val pressed by interactionSource.collectIsPressedAsState()
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val alpha by animateFloatAsState(
-        targetValue = if (enabled) hoverTintAlpha(hovered, pressed, dark) else 0f,
+        targetValue = if (enabled) hoverTintAlpha(hovered, pressed && includePressed, dark) else 0f,
         animationSpec = AppAnimations.quick(),
         label = "hoverTint",
     )
