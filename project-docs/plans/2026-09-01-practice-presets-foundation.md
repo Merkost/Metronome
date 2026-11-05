@@ -8,7 +8,7 @@
 
 **Tech Stack:** Kotlin Multiplatform, Compose Multiplatform Material 3, Kotlin coroutines and StateFlow, DataStore Preferences, Koin, Compose Resources, kotlin.test, kotlinx-coroutines-test.
 
-**Spec:** `docs/superpowers/specs/2026-09-01-practice-presets-foundation-design.md`
+**Spec:** `project-docs/specs/2026-09-01-practice-presets-foundation-design.md`
 
 ## Global Constraints
 
@@ -475,8 +475,8 @@ Expected: preset tests pass and shared Android compilation succeeds.
 
 **Files:**
 - Modify as findings require: files owned by Tasks 1–6
-- Modify: `docs/superpowers/specs/2026-09-01-practice-presets-foundation-design.md`
-- Modify: `docs/superpowers/plans/2026-09-01-practice-presets-foundation.md`
+- Modify: `project-docs/specs/2026-09-01-practice-presets-foundation-design.md`
+- Modify: `project-docs/plans/2026-09-01-practice-presets-foundation.md`
 
 **Interfaces:**
 - Consumes: the complete P1A feature.

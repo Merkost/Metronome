@@ -1,6 +1,6 @@
 # Metronome — Competitive Landscape, September 2026
 
-> Status: research complete on 2026-09-05. Companion to `docs/product-review-2026-09.md`, which draws its market conclusions from this document.
+> Status: research complete on 2026-09-05. Companion to `project-docs/strategy/product-review-2026-09.md`, which draws its market conclusions from this document.
 > Scope: the standalone metronome apps a musician finds on the App Store and Google Play, the design-led and specialist indies that roundups recommend, and the "default" alternatives (Google's search widget, GarageBand, YouTube, hardware, lesson apps) that capture the job without a store search.
 > Method: three research agents with web search and page fetches against primary sources (store listings and their review pages, developer sites) and the 2025–26 roundups (Practis, Musician Wave, BeatIt, Rhythm Notes, Bulletproof Musician, Lindeblad, Ted's List), plus a fourth agent on musician needs by segment (Reddit r/drums, r/Guitar, r/piano; Piano World; TalkBass; Gearspace; teacher blogs). Prices and ratings are as displayed on the US storefronts on the fetch date; "not found" is recorded rather than guessed. Every entry lists its sources.
 > Reading guide: §1 is the one-page summary; §2 the established apps; §3 the premium and indie apps; §4 the defaults; §5 category norms and differentiators; §6 the gap matrix against this app; §7 what musicians want; §8 monetisation; §9 sources.

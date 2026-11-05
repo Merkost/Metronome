@@ -1,8 +1,0 @@
-Metronome 1.6.0
-
-• Now in ten languages: Spanish, French, German, Portuguese, Italian, Japanese, Korean, Chinese, Russian and Turkish
-• The count-in is spelled out in words, tempo names sit in clear bands and Settings sums up your practice
-• The tempo trainer can step after each gap cycle or when you tap
-• A phrase marker accents the first bar of every phrase
-• Lock-screen playback controls, and the click keeps going with the screen off
-• A new beat animation and a refined dark theme

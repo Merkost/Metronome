@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-A metronome app built with Kotlin Multiplatform and Compose Multiplatform targeting Android and iOS.
+A metronome app built with Kotlin Multiplatform and Compose Multiplatform targeting Android, iOS, macOS (desktop) and the web (Wasm).
 
 ## Architecture
 
-- **Kotlin Multiplatform** with `commonMain`, `androidMain`, `iosMain` source sets
+- **Kotlin Multiplatform** with `commonMain`, `androidMain`, `iosMain`, `desktopMain` and `wasmJsMain` source sets
 - **Compose Multiplatform** for shared UI
 - **Koin** for dependency injection (interface-based platform abstraction, NOT `expect/actual`)
 - **DataStore Preferences** for persistent settings
@@ -21,6 +21,10 @@ shared/                 — KMP library module
   src/iosMain/          — iOS platform impls, MainViewController
 androidApp/             — Android application shell (Activity, Service, Firebase)
 iosApp/                 — Xcode project (Swift entry point, resources)
+desktopApp/             — macOS desktop packaging (Compose Desktop, Gradle)
+docs/                   — The published website (Cloudflare Pages); no internal writing
+project-docs/           — Internal documentation (see project-docs/README.md)
+tools/                  — Release verification, translation checker, screenshot capture
 ```
 
 ### Key Patterns
@@ -29,6 +33,17 @@ iosApp/                 — Xcode project (Swift entry point, resources)
 - **`expect/actual`** used only for composable functions that differ per platform: `DynamicTheme`, `PlatformUtils`, `PlatformSettingsComponents`.
 - **State management**: `MutableStateFlow` in ViewModels, collected via `collectAsState()` in composables.
 - **Single ViewModel pattern**: `MetronomeViewModel` is a `single{}` in Koin (not `viewModel{}`), shared across the app. `SettingsViewModel` uses `viewModel{}`.
+
+## Localization
+
+- All UI strings live in `shared/src/commonMain/composeResources/values/strings.xml`, translated into ten locales (`values-es`, `-fr`, `-de`, `-pt-rBR`, `-it`, `-ja`, `-ko`, `-zh-rCN`, `-ru`, `-tr`).
+- Model and view-model code describes copy with `UiText` and never builds user-facing English directly; composables call `asString()`.
+- New strings go to `values/strings.xml` first, then to every locale file, then run `python3 tools/check-translations.py`.
+
+## Documentation
+
+- Internal documentation lives in `project-docs/`; start at `project-docs/README.md`. Never put internal documents in `docs/`, which is published as the website.
+- Each release has `project-docs/releases/<version>/release-notes.md` (GitHub notes plus App Store and Google Play text) and a `CHANGELOG.md` entry.
 
 ## Build Commands
 

@@ -8,7 +8,7 @@
 
 **Tech Stack:** Kotlin Multiplatform, Kotlin time, coroutines, kotlin.test, kotlinx-coroutines-test.
 
-**Spec:** `docs/superpowers/specs/2026-09-01-precision-practice-again-design.md`
+**Spec:** `project-docs/specs/2026-09-01-precision-practice-again-design.md`
 
 ## Global Constraints
 
@@ -30,7 +30,7 @@
 - Create `shared/src/commonTest/kotlin/com/merkost/metronome/engine/BeatTimelineTest.kt`: deterministic cadence and stall tests.
 - Modify `shared/src/commonMain/kotlin/com/merkost/metronome/engine/MetronomeEngine.kt`: consume `BeatTimeline` for count-in and beat playback.
 - Modify `shared/src/commonTest/kotlin/com/merkost/metronome/engine/BeatEventsTest.kt`: complete subdivision and extreme-interval ordering coverage.
-- Modify `docs/ROADMAP.md`: mark deterministic cadence hardening implemented only after all gates pass.
+- Modify `project-docs/strategy/ROADMAP.md`: mark deterministic cadence hardening implemented only after all gates pass.
 
 ### Task 1: Deterministic beat timeline
 
@@ -298,7 +298,7 @@ Expected: no output, no player implementation changes, and no code comments. Com
 ### Task 4: Precision slice verification
 
 **Files:**
-- Modify: `docs/ROADMAP.md`
+- Modify: `project-docs/strategy/ROADMAP.md`
 
 **Interfaces:**
 - Consumes: Tasks 1–3 green evidence.
@@ -322,6 +322,6 @@ Expected: zero failures and no whitespace errors.
 
 - [ ] **Step 4: Record the precision milestone**
 
-Run: `git diff --stat -- shared/src/commonMain/kotlin/com/merkost/metronome/engine shared/src/commonTest/kotlin/com/merkost/metronome/engine docs/ROADMAP.md`
+Run: `git diff --stat -- shared/src/commonMain/kotlin/com/merkost/metronome/engine shared/src/commonTest/kotlin/com/merkost/metronome/engine project-docs/strategy/ROADMAP.md`
 
 Expected: only the timing slice and its roadmap line. Commit only in an isolated clean tree with `feat: harden metronome timing precision`.
