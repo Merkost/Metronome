@@ -143,3 +143,8 @@ android {
         }
     }
 }
+
+tasks.withType<Test>().configureEach {
+    systemProperty("user.language", "en")
+    systemProperty("user.country", "US")
+}
