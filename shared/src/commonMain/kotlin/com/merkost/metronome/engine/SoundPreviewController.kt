@@ -1,9 +1,16 @@
 package com.merkost.metronome.engine
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.sound_error_audio_unavailable
+import metronome.shared.generated.resources.sound_error_interrupted
+import metronome.shared.generated.resources.sound_error_load
+import metronome.shared.generated.resources.sound_error_pause_playback
+import metronome.shared.generated.resources.sound_error_play
 import com.merkost.metronome.model.Beat
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.MAX_BPM
 import com.merkost.metronome.model.MIN_BPM
+import com.merkost.metronome.model.UiText
 import com.merkost.metronome.platform.AudioFocusController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +30,7 @@ import kotlinx.coroutines.launch
 
 interface SoundPreviewController {
     val activeSound: StateFlow<ClickSound?>
-    val errorMessage: StateFlow<String?>
+    val errorMessage: StateFlow<UiText?>
     fun preview(sound: ClickSound, bpm: Int = 100, volume: Float = 1f, pan: Int = 0)
     fun updateOutput(volume: Float, pan: Int) {}
     fun stop()
@@ -38,8 +45,8 @@ class DefaultSoundPreviewController(
 ) : SoundPreviewController {
     private val mutableActiveSound = MutableStateFlow<ClickSound?>(null)
     override val activeSound: StateFlow<ClickSound?> = mutableActiveSound.asStateFlow()
-    private val mutableErrorMessage = MutableStateFlow<String?>(null)
-    override val errorMessage: StateFlow<String?> = mutableErrorMessage.asStateFlow()
+    private val mutableErrorMessage = MutableStateFlow<UiText?>(null)
+    override val errorMessage: StateFlow<UiText?> = mutableErrorMessage.asStateFlow()
     private var previewJob: Job? = null
     private var generation = 0L
     private var hasFocus = false
@@ -50,7 +57,7 @@ class DefaultSoundPreviewController(
         audioFocus.setOnFocusLost {
             scope.launch {
                 if (mutableActiveSound.value != null) {
-                    mutableErrorMessage.value = "Preview was interrupted. Try again when you're ready."
+                    mutableErrorMessage.value = UiText.of(Res.string.sound_error_interrupted)
                     stop()
                 }
             }
@@ -61,7 +68,7 @@ class DefaultSoundPreviewController(
         stop()
         mutableErrorMessage.value = null
         if (isPlaybackActive()) {
-            mutableErrorMessage.value = "Pause playback to preview a sound."
+            mutableErrorMessage.value = UiText.of(Res.string.sound_error_pause_playback)
             return
         }
         val focusGranted = try {
@@ -71,7 +78,7 @@ class DefaultSoundPreviewController(
             false
         }
         if (!focusGranted) {
-            mutableErrorMessage.value = "Audio is unavailable right now. Try the preview again."
+            mutableErrorMessage.value = UiText.of(Res.string.sound_error_audio_unavailable)
             return
         }
         hasFocus = true
@@ -86,7 +93,7 @@ class DefaultSoundPreviewController(
                     val failureMonitor = launch(start = CoroutineStart.UNDISPATCHED) {
                         player.failures.collect { error ->
                             onFailure(error)
-                            mutableErrorMessage.value = "Couldn't load this sound. Try another sound or preview again."
+                            mutableErrorMessage.value = UiText.of(Res.string.sound_error_load)
                             audition.cancel()
                         }
                     }
@@ -106,7 +113,7 @@ class DefaultSoundPreviewController(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
-                mutableErrorMessage.value = "Couldn't play the preview. Try another sound or preview again."
+                mutableErrorMessage.value = UiText.of(Res.string.sound_error_play)
                 onFailure(error)
             } finally {
                 if (generation == session) finish()

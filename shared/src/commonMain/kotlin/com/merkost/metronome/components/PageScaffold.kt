@@ -1,5 +1,8 @@
 package com.merkost.metronome.components
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.back
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -108,7 +111,7 @@ fun PageScaffold(
                     AppIconButton(onClick = onBack) {
                         Icon(
                             if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ArrowRight else Lucide.ArrowLeft,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(Res.string.back),
                         )
                     }
                 }

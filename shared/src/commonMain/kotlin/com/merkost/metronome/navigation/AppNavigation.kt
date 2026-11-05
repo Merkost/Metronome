@@ -1,5 +1,8 @@
 package com.merkost.metronome.navigation
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.common_try_again
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.animation.AnimatedContent
 import com.merkost.metronome.model.asString
 import androidx.compose.foundation.background
@@ -48,7 +51,6 @@ import com.merkost.metronome.ui.DesktopAppShell
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import metronome.shared.generated.resources.Res
 
 internal val mainNavigationSavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -94,7 +96,7 @@ fun AppNavigation() {
                         MetronomeMark(Modifier.size(80.dp), MaterialTheme.colorScheme.primary)
                         onboardingLoadError?.let { error ->
                             Text(error.asString(), style = MaterialTheme.typography.bodyMedium)
-                            Button(onClick = viewModel::retryOnboardingLoad) { Text("Try again") }
+                            Button(onClick = viewModel::retryOnboardingLoad) { Text(stringResource(Res.string.common_try_again)) }
                         }
                     }
                 }

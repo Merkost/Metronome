@@ -1,5 +1,37 @@
 package com.merkost.metronome.screens
 
+import metronome.shared.generated.resources.Res
+import metronome.shared.generated.resources.settings
+import metronome.shared.generated.resources.settings_background_playback
+import metronome.shared.generated.resources.settings_background_playback_subtitle
+import metronome.shared.generated.resources.settings_beat_display
+import metronome.shared.generated.resources.settings_beat_display_description
+import metronome.shared.generated.resources.settings_beat_flash
+import metronome.shared.generated.resources.settings_beat_flash_subtitle
+import metronome.shared.generated.resources.settings_beat_motion
+import metronome.shared.generated.resources.settings_beat_motion_desktop
+import metronome.shared.generated.resources.settings_count_in
+import metronome.shared.generated.resources.settings_count_in_subtitle
+import metronome.shared.generated.resources.settings_help
+import metronome.shared.generated.resources.settings_help_about
+import metronome.shared.generated.resources.settings_help_about_description
+import metronome.shared.generated.resources.settings_keep_awake
+import metronome.shared.generated.resources.settings_keep_awake_subtitle
+import metronome.shared.generated.resources.settings_latest_updates
+import metronome.shared.generated.resources.settings_playback
+import metronome.shared.generated.resources.settings_playback_description
+import metronome.shared.generated.resources.settings_playback_description_desktop
+import metronome.shared.generated.resources.settings_playback_desktop_note
+import metronome.shared.generated.resources.settings_practice_data
+import metronome.shared.generated.resources.settings_reset_message
+import metronome.shared.generated.resources.settings_reset_statistics
+import metronome.shared.generated.resources.settings_reset_title
+import metronome.shared.generated.resources.settings_statistics_backups
+import metronome.shared.generated.resources.settings_statistics_backups_description
+import metronome.shared.generated.resources.settings_style
+import metronome.shared.generated.resources.settings_subtitle_desktop
+import metronome.shared.generated.resources.whats_new_title
+import org.jetbrains.compose.resources.stringResource
 import com.merkost.metronome.components.BeatDisplayPreview
 import com.merkost.metronome.model.PracticeWeek
 import com.merkost.metronome.components.PageScaffold
@@ -53,6 +85,7 @@ import com.merkost.metronome.navigation.LocalAppPresentation
 import com.merkost.metronome.model.BeatDisplayStyle
 import com.merkost.metronome.model.ClickSound
 import com.merkost.metronome.model.ThemeMode
+import com.merkost.metronome.model.UiText
 import com.merkost.metronome.platform.AppVersionProvider
 import com.merkost.metronome.platform.PlatformActions
 import com.merkost.metronome.ui.horizontalPadding
@@ -87,7 +120,7 @@ internal data class SettingsUiState(
     val supportsDynamicColor: Boolean = false,
     val supportsHaptics: Boolean = true,
     val version: String = "",
-    val previewError: String? = null,
+    val previewError: UiText? = null,
     val practiceSummary: String? = null,
 )
 
@@ -199,9 +232,9 @@ fun SettingsScreen(upPress: () -> Unit) {
     }
     if (showResetConfirmation) {
         AppDialog(
-            title = "Reset practice statistics?",
-            text = "Clears today's time, your streak and ${TimestampMillisecondsFormatter.formatHuman(totalTime)} of total practice. Your presets and practice sets are kept. This can't be undone.",
-            confirmLabel = "Reset statistics",
+            title = stringResource(Res.string.settings_reset_title),
+            text = stringResource(Res.string.settings_reset_message, TimestampMillisecondsFormatter.formatHuman(totalTime)),
+            confirmLabel = stringResource(Res.string.settings_reset_statistics),
             destructive = true,
             onConfirm = {
                 if (!playing) viewModel.resetTotalTime()
@@ -272,8 +305,8 @@ internal fun SettingsScreenContent(
 ) {
     val desktop = LocalAppPresentation.current == AppPresentation.Desktop
     PageScaffold(
-        title = "Settings",
-        subtitle = if (desktop) state.practiceSummary ?: "Sound, appearance and practice data" else null,
+        title = stringResource(Res.string.settings),
+        subtitle = if (desktop) state.practiceSummary ?: stringResource(Res.string.settings_subtitle_desktop) else null,
         onBack = upPress,
         centerTitle = false,
     ) { insets ->
@@ -298,41 +331,41 @@ internal fun SettingsScreenContent(
                 SettingsSoundPanel(state, actions)
                 SettingsAppearancePanel(state, actions)
                 SettingsDisclosure(
-                    title = "Playback",
-                    description = if (desktop) "Prepare before the first beat" else "Count-in, screen & background audio",
+                    title = stringResource(Res.string.settings_playback),
+                    description = stringResource(if (desktop) Res.string.settings_playback_description_desktop else Res.string.settings_playback_description),
                     icon = Lucide.Timer,
                 ) {
-                    SettingsSwitch("Count-in", state.countInEnabled, actions.onCountIn, "One bar before playback")
+                    SettingsSwitch(stringResource(Res.string.settings_count_in), state.countInEnabled, actions.onCountIn, stringResource(Res.string.settings_count_in_subtitle))
                     if (!desktop) {
-                        SettingsSwitch("Keep screen awake", state.keepScreenAwake, actions.onKeepScreenAwake, "While the beat is playing")
-                        SettingsSwitch("Background playback", state.backgroundPlay, actions.onBackgroundPlay, "Play while using other apps")
+                        SettingsSwitch(stringResource(Res.string.settings_keep_awake), state.keepScreenAwake, actions.onKeepScreenAwake, stringResource(Res.string.settings_keep_awake_subtitle))
+                        SettingsSwitch(stringResource(Res.string.settings_background_playback), state.backgroundPlay, actions.onBackgroundPlay, stringResource(Res.string.settings_background_playback_subtitle))
                         LiveActivitySettingsRow(state.liveActivityEnabled, actions.onLiveActivity)
                     } else {
-                        Text("Playback continues while you use other apps. Quit Metronome to stop playback.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(Res.string.settings_playback_desktop_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 SettingsDisclosure(
-                    title = "Beat display",
-                    description = "Visual style & flash",
+                    title = stringResource(Res.string.settings_beat_display),
+                    description = stringResource(Res.string.settings_beat_display_description),
                     icon = Lucide.SlidersHorizontal,
                 ) {
-                    SettingsRow("Style") {
+                    SettingsRow(stringResource(Res.string.settings_style)) {
                         SettingsChoiceRow {
                             BeatDisplayStyle.entries.forEach { style ->
-                                AppChip(state.beatDisplayStyle == style, { actions.onBeatDisplay(style) }, style.label)
+                                AppChip(state.beatDisplayStyle == style, { actions.onBeatDisplay(style) }, stringResource(style.labelRes))
                             }
                         }
                     }
                     BeatDisplayPreview(state.beatDisplayStyle)
-                    SettingsSwitch("Beat flash", state.colorFlash, actions.onColorFlash, "Flashes each beat, downbeat only above 180 BPM")
-                    Text(if (desktop) "Choose how each beat moves." else "Animations follow your device's motion preference.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    SettingsSwitch(stringResource(Res.string.settings_beat_flash), state.colorFlash, actions.onColorFlash, stringResource(Res.string.settings_beat_flash_subtitle))
+                    Text(stringResource(if (desktop) Res.string.settings_beat_motion_desktop else Res.string.settings_beat_motion), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                SettingsGroup("Practice data") {
-                    SettingsLink("Statistics & backups", "Practice time, export & import", Lucide.ChartNoAxesColumn, actions.onPractice)
+                SettingsGroup(stringResource(Res.string.settings_practice_data)) {
+                    SettingsLink(stringResource(Res.string.settings_statistics_backups), stringResource(Res.string.settings_statistics_backups_description), Lucide.ChartNoAxesColumn, actions.onPractice)
                 }
-                SettingsGroup("Help") {
-                    SettingsLink("What's new", "Latest updates", Lucide.Sparkles, actions.onWhatsNew)
-                    SettingsLink("Help & about", "Guide, support & app information", Lucide.CircleHelp, actions.onAbout)
+                SettingsGroup(stringResource(Res.string.settings_help)) {
+                    SettingsLink(stringResource(Res.string.whats_new_title), stringResource(Res.string.settings_latest_updates), Lucide.Sparkles, actions.onWhatsNew)
+                    SettingsLink(stringResource(Res.string.settings_help_about), stringResource(Res.string.settings_help_about_description), Lucide.CircleHelp, actions.onAbout)
                     SettingsWebCard(actions.onWeb)
                 }
                 SettingsSubyCard(actions.onSuby)

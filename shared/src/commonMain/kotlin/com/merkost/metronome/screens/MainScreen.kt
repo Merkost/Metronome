@@ -95,7 +95,6 @@ import com.merkost.metronome.components.StatusStripAction
 import com.merkost.metronome.model.NoSoundHint
 import com.merkost.metronome.model.TempoStepMode
 import com.merkost.metronome.model.tempoTrainerStripState
-import com.composables.icons.lucide.ChevronDown
 import com.composables.icons.lucide.ChevronUp
 import com.merkost.metronome.components.PresetNameDialog
 import com.merkost.metronome.components.PresetSaveChoiceDialog

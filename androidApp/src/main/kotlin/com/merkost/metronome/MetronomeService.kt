@@ -130,7 +130,7 @@ class MetronomeService : Service(), KoinComponent {
     }
 
     private fun createChannel() {
-        val channel = NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_LOW)
+        val channel = NotificationChannel(CHANNEL_ID, getString(R.string.android_service_channel), NotificationManager.IMPORTANCE_LOW)
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
     }
 
@@ -206,24 +206,24 @@ class MetronomeService : Service(), KoinComponent {
         val toggle = if (playing) {
             Notification.Action.Builder(
                 Icon.createWithResource(this, android.R.drawable.ic_media_pause),
-                "Pause",
+                getString(R.string.android_service_pause),
                 serviceIntent(ACTION_PAUSE, 1),
             ).build()
         } else {
             Notification.Action.Builder(
                 Icon.createWithResource(this, android.R.drawable.ic_media_play),
-                "Play",
+                getString(R.string.android_service_play),
                 serviceIntent(ACTION_PLAY, 2),
             ).build()
         }
         val stop = Notification.Action.Builder(
             Icon.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel),
-            "Stop",
+            getString(R.string.android_service_stop),
             serviceIntent(ACTION_STOP, 3),
         ).build()
         return Notification.Builder(this, CHANNEL_ID)
             .setContentTitle("$bpm BPM")
-            .setContentText("$meter · ${if (playing) "Playing" else "Paused"}")
+            .setContentText(getString(if (playing) R.string.android_service_status_playing else R.string.android_service_status_paused, meter))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(contentIntent())
             .setDeleteIntent(serviceIntent(ACTION_STOP, 3))

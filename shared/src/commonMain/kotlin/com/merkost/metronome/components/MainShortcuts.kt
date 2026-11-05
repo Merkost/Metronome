@@ -1,5 +1,6 @@
 package com.merkost.metronome.components
 
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +50,6 @@ import metronome.shared.generated.resources.Res
 import metronome.shared.generated.resources.main_shortcut_practice
 import metronome.shared.generated.resources.main_shortcut_practice_caption
 import metronome.shared.generated.resources.main_shortcut_sound
-import org.jetbrains.compose.resources.stringResource
 
 private val ShortcutIconSize = 20.dp
 private val ShortcutChevronSize = 16.dp
@@ -68,7 +68,9 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
     val practiceTitle = stringResource(Res.string.main_shortcut_practice)
     val soundTitle = stringResource(Res.string.main_shortcut_sound)
     val practiceCaption = stringResource(Res.string.main_shortcut_practice_caption)
-    val captions = remember(practiceCaption) { listOf(practiceCaption) + ClickSound.entries.map { it.displayName } }
+    val soundNames = ClickSound.entries.map { stringResource(it.nameRes) }
+    val selectedSoundName = stringResource(selectedSound.nameRes)
+    val captions = remember(practiceCaption, soundNames) { listOf(practiceCaption) + soundNames }
     val minimumTextWidth = remember(measurer, titleStyle, captionStyle, practiceTitle, soundTitle, captions) {
         maxOf(
             listOf(practiceTitle, soundTitle).maxOf { measurer.measure(AnnotatedString(it), titleStyle).multiParagraph.intrinsics.maxIntrinsicWidth },
@@ -94,12 +96,12 @@ internal fun MainShortcuts(selectedSound: ClickSound, onPractice: () -> Unit, on
         if (sideBySide) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 MainShortcut(Lucide.Sparkles, practiceTitle, practiceCaption, onPractice, metrics, Modifier.weight(1f))
-                MainShortcut(Lucide.Headphones, soundTitle, selectedSound.displayName, onSound, metrics, Modifier.weight(1f))
+                MainShortcut(Lucide.Headphones, soundTitle, selectedSoundName, onSound, metrics, Modifier.weight(1f))
             }
         } else {
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(spacingSmall)) {
                 MainShortcut(Lucide.Sparkles, practiceTitle, practiceCaption, onPractice, metrics, Modifier.fillMaxWidth())
-                MainShortcut(Lucide.Headphones, soundTitle, selectedSound.displayName, onSound, metrics, Modifier.fillMaxWidth())
+                MainShortcut(Lucide.Headphones, soundTitle, selectedSoundName, onSound, metrics, Modifier.fillMaxWidth())
             }
         }
     }

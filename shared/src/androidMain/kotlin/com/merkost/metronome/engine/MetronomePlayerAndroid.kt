@@ -135,7 +135,7 @@ class MetronomePlayerAndroid(private val context: Context) : MetronomePlayer {
         }
         val sampleId = pool.load(context, soundResource(sound, accented), 1)
         if (sampleId == 0) {
-            mutableFailures.tryEmit(IllegalStateException("Unable to load ${sound.displayName}"))
+            mutableFailures.tryEmit(IllegalStateException("Unable to load ${sound.name}"))
             return
         }
         loadOwners[sampleId] = state

@@ -65,7 +65,7 @@ internal fun PermissionDialog(context: Context) {
                         openDialog = false
                     },
                 ) {
-                    Text(text = "No")
+                    Text(text = stringResource(R.string.notification_permission_no))
                 }
             },
             confirmButton = {
@@ -77,7 +77,7 @@ internal fun PermissionDialog(context: Context) {
                             notificationPermissions.launchPermissionRequest()
                         }
                     },
-                ) { Text(text = "Yes") }
+                ) { Text(text = stringResource(R.string.notification_permission_yes)) }
             }
         )
     }
@@ -98,13 +98,13 @@ internal fun OldPermissionDialog(context: Context) {
                 Button(
                     onClick = { openDialog = false },
                 ) {
-                    Text(text = "No")
+                    Text(text = stringResource(R.string.notification_permission_no))
                 }
             },
             confirmButton = {
                 Button(
                     onClick = { context.startNotificationSettings() },
-                ) { Text(text = "Yes") }
+                ) { Text(text = stringResource(R.string.notification_permission_yes)) }
             })
     }
 }
