@@ -34,15 +34,13 @@ data class MetronomeState(
     }
 
     val tempoName: String
-        get() {
-            return when (rhythm) {
-                in 168..200 -> "Presto"
-                in 120..168 -> "Allegro"
-                in 108..120 -> "Moderato"
-                in 76..108 -> "Andante"
-                in 66..76 -> "Adagio"
-                in 40..66 -> "Largo"
-                else -> "Prestissimo"
-            }
+        get() = when {
+            rhythm in 168..200 -> "Presto"
+            rhythm in 120..167 -> "Allegro"
+            rhythm in 108..119 -> "Moderato"
+            rhythm in 76..107 -> "Andante"
+            rhythm in 66..75 -> "Adagio"
+            rhythm in 40..65 -> "Largo"
+            else -> "Prestissimo"
         }
 }
